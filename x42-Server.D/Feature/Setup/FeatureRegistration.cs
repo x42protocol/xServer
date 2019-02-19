@@ -5,7 +5,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using X42.Utilities;
 
-namespace X42.Feature
+namespace X42.Feature.Setup
 {
     /// <summary>
     /// Defines methods for a representation of registered features of the Server.

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace X42.Feature
+namespace X42.Feature.Setup
 {
     /// <summary>
     /// Extensions to features collection.

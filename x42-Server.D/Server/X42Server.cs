@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using X42.Configuration;
 using X42.Utilities;
 using X42.MasterNode;
+using X42.Feature.Setup;
 
 namespace X42.Server
 {
@@ -20,7 +21,10 @@ namespace X42.Server
 
         /// <summary>Factory for creating loggers.</summary>
         private ILoggerFactory loggerFactory;
-        
+
+        /// <summary>Component responsible for starting and stopping all the node's features.</summary>
+        private ServerFeatureExecutor serverFeatureExecutor;
+
         /// <summary>Server command line and configuration file settings.</summary>
         public ServerSettings Settings { get; private set; }
         
@@ -162,12 +166,19 @@ namespace X42.Server
                 throw new ObjectDisposedException(nameof(X42Server));
 
             this.serverLifetime = this.Services.ServiceProvider.GetRequiredService<IX42ServerLifetime>() as X42ServerLifetime;
+            this.serverFeatureExecutor = this.Services.ServiceProvider.GetRequiredService<ServerFeatureExecutor>();
 
             if (this.serverLifetime == null)
                 throw new InvalidOperationException($"{nameof(IX42ServerLifetime)} must be set.");
             
+            if (this.serverFeatureExecutor == null)
+                throw new InvalidOperationException($"{nameof(ServerFeatureExecutor)} must be set.");
+
             this.logger.LogInformation("Starting server.");
-            
+
+            // Initialize all registered features.
+            this.serverFeatureExecutor.Initialize();
+
             // Fire IServerLifetime.Started.
             this.serverLifetime.NotifyStarted();
 

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using X42.Utilities;
 using X42.Server;
 
-namespace X42.Feature
+namespace X42.Feature.Setup
 {
     /// <summary>
     /// Starts and stops all features registered with a x42 server.

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using X42.Configuration;
-using X42.Feature;
+using X42.Feature.Setup;
 using X42.MasterNode;
 
 namespace X42.Server

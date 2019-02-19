@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace X42.Feature
+namespace X42.Feature.Setup
 {
     /// <summary>
     /// Defines methods for collection of features of the Server.

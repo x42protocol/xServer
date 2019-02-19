@@ -10,7 +10,7 @@ using X42.Utilities;
 using X42.Configuration.Logging;
 using X42.Configuration.Settings;
 using X42.Protocol;
-using X42.Feature;
+using X42.Feature.Setup;
 using System.Collections.Generic;
 
 namespace X42.Configuration

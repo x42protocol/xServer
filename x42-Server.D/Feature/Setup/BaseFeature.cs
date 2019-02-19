@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,7 +6,7 @@ using X42.Server;
 using X42.Utilities;
 using X42.Configuration;
 
-namespace X42.Feature
+namespace X42.Feature.Setup
 {
     /// <summary>
     /// Base server services, these are the services a server has to have.
@@ -49,12 +46,6 @@ namespace X42.Feature
 
         /// <summary>Factory for creating loggers.</summary>
         private readonly ILoggerFactory loggerFactory;
-        
-        /// <summary>Periodic task to save list of peers to disk.</summary>
-        private IAsyncLoop flushAddressManagerLoop;
-
-        /// <summary>Periodic task to save the chain to the database.</summary>
-        private IAsyncLoop flushChainLoop;
 
         /// <inheritdoc cref="Network"/>
         private readonly X42Server network;
@@ -88,8 +79,7 @@ namespace X42.Feature
         /// <inheritdoc />
         public override void Dispose()
         {
-            this.logger.LogInformation("Flushing peers.");
-            this.flushAddressManagerLoop.Dispose();
+            this.logger.LogInformation("Base disposted");
         }
     }
 

@@ -5,8 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using X42.Configuration;
 using X42.Utilities;
-using X42.Feature;
+using X42.Feature.Setup;
 using X42.MasterNode;
+using System.Linq;
 
 namespace X42.Server
 {
@@ -173,7 +174,7 @@ namespace X42.Server
                 // Signal server not built
                 return null;
             }
-            
+
             // Create configuration file if required
             this.ServerSettings?.CreateDefaultConfigurationFile(this.Features.FeatureRegistrations);
 
@@ -193,7 +194,12 @@ namespace X42.Server
             if (server == null)
                 throw new InvalidOperationException("X42Server not registered with provider");
 
-            server.Initialize(new ServerServiceProvider(serverServiceProvider));
+            server.Initialize(
+                new ServerServiceProvider(
+                    serverServiceProvider,
+                    this.Features.FeatureRegistrations.Select(s => s.FeatureType).ToList()
+                )
+            );
 
             return server;
         }

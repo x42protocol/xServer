@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using X42.Configuration;
-using X42.Feature;
+using X42.Feature.Setup;
 
 namespace X42.Server
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using X42.Utilities;
-using X42.Feature;
+using X42.Feature.Setup;
 
 namespace X42.Server
 {
@@ -62,11 +62,14 @@ namespace X42.Server
         /// Initializes a new instance of the object with service provider and list of registered feature types.
         /// </summary>
         /// <param name="serviceProvider">Provider to registered services.</param>
-        public ServerServiceProvider(IServiceProvider serviceProvider)
+        /// <param name="featureTypes">List of registered feature types.</param>
+        public ServerServiceProvider(IServiceProvider serviceProvider, List<Type> featureTypes)
         {
             Guard.NotNull(serviceProvider, nameof(serviceProvider));
+            Guard.NotNull(featureTypes, nameof(featureTypes));
 
             this.ServiceProvider = serviceProvider;
+            this.featureTypes = featureTypes;
         }
 
         /// <inheritdoc />

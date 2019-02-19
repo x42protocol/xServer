@@ -4,6 +4,7 @@ using X42.Server;
 using X42.Utilities.Extensions;
 using X42.Configuration;
 using X42.MasterNode;
+using X42.Feature.FullNode;
 
 namespace X42
 {
@@ -17,7 +18,7 @@ namespace X42
 
                 IX42Server server = new ServerBuilder()
                     .UseServerSettings(serverSettings)
-                    // TODO: Add FullNode Commincation feature.
+                    .UseFullNode()
                     // TODO: Add Database Types.
                     // TODO: Add API .UseApi()
                     .Build();

@@ -76,7 +76,8 @@ namespace X42.Configuration.Logging
 
             // Short Names
             { "configuration", $"{nameof(X42)}.{nameof(Server)}.{nameof(Configuration)}.*" },
-            { "server", $"{nameof(X42)}.{nameof(Server)}.*" }
+            { "server", $"{nameof(X42)}.{nameof(Server)}.*" },
+            { "fullnode", $"{nameof(X42)}.{nameof(Feature)}.{nameof(Feature.FullNode)}.*" }
         };
 
         public static void RegisterFeatureNamespace<T>(string key)
