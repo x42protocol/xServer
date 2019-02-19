@@ -5,6 +5,7 @@ using X42.Utilities.Extensions;
 using X42.Configuration;
 using X42.MasterNode;
 using X42.Feature.FullNode;
+using X42.Feature.Database;
 
 namespace X42
 {
@@ -19,7 +20,7 @@ namespace X42
                 IX42Server server = new ServerBuilder()
                     .UseServerSettings(serverSettings)
                     .UseFullNode()
-                    // TODO: Add Database Types.
+                    .UsePostgreSQL()
                     // TODO: Add API .UseApi()
                     .Build();
 
