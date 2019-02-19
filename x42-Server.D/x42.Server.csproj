@@ -42,7 +42,6 @@
 
   <ItemGroup>
     <Folder Include="Configuration\Settings\" />
-    <Folder Include="Controllers\" />
     <Folder Include="Utilities\Extensions\" />
   </ItemGroup>
 

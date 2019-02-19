@@ -150,7 +150,7 @@ namespace X42.Server
             this.AsyncLoopFactory = this.Services.ServiceProvider.GetService<IAsyncLoopFactory>();
 
             this.logger.LogInformation(x42.Properties.Resources.AsciiLogo);
-            this.logger.LogInformation("x42 Master Node initialized on {0}.", this.MasterNode.Name);
+            this.logger.LogInformation("x42-Server initialized {0}.", this.MasterNode.Name);
 
             this.State = X42ServerState.Initialized;
             this.StartTime = this.DateTimeProvider.GetUtcNow();

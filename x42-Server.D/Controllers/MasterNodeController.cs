@@ -15,6 +15,7 @@ using X42.Utilities.ModelStateErrors;
 using X42.Utilities.Extensions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = NLog.LogLevel;
+using X42.MasterNode;
 
 namespace X42.Controllers
 {
@@ -22,7 +23,7 @@ namespace X42.Controllers
     /// Provides methods that interact with the full node.
     /// </summary>
     [Route("api/[controller]")]
-    public class NodeController : Controller
+    public class MasterNodeContoller : Controller
     {
         /// <summary>x42 Server.</summary>
         private readonly IX42Server x42Server;
@@ -37,24 +38,24 @@ namespace X42.Controllers
         private readonly ServerSettings nodeSettings;
 
         /// <summary>Masternode.</summary>
-        private readonly X42Server network;
+        private readonly MasterNodeBase masterNode;
 
-        public NodeController(IX42Server x42Server, ILoggerFactory loggerFactory,
+        public MasterNodeContoller(IX42Server x42Server, ILoggerFactory loggerFactory,
             IDateTimeProvider dateTimeProvider,
-            ServerSettings nodeSettings,
-            X42Server network)
+            ServerSettings serverSettings,
+            MasterNodeBase masterNode)
         {
             Guard.NotNull(x42Server, nameof(x42Server));
-            Guard.NotNull(network, nameof(network));
+            Guard.NotNull(masterNode, nameof(masterNode));
             Guard.NotNull(loggerFactory, nameof(loggerFactory));
-            Guard.NotNull(nodeSettings, nameof(nodeSettings));
+            Guard.NotNull(serverSettings, nameof(serverSettings));
             Guard.NotNull(dateTimeProvider, nameof(dateTimeProvider));
 
             this.x42Server = x42Server;
             this.logger = loggerFactory.CreateLogger(this.GetType().FullName);
             this.dateTimeProvider = dateTimeProvider;
-            this.nodeSettings = nodeSettings;
-            this.network = network;
+            this.nodeSettings = serverSettings;
+            this.masterNode = masterNode;
         }
 
         /// <summary>

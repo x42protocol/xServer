@@ -30,7 +30,7 @@ namespace X42.Feature.Api
                 builder.AddApplicationPart(featureControllerType.ServiceType.GetTypeInfo().Assembly);
             }
 
-            builder.AddApplicationPart(typeof(Controllers.NodeController).Assembly);
+            builder.AddApplicationPart(typeof(MasterNodeContoller).Assembly);
             builder.AddControllersAsServices();
             return builder;
         }

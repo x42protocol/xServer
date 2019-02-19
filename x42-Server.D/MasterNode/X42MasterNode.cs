@@ -12,7 +12,7 @@ namespace X42.MasterNode
 
         public X42MasterNode()
         {
-            this.Name = "x42Server";
+            this.Name = "x42 MasterNode";
             this.DefaultPort = 4242;
             this.DefaultConfigFilename = x42DefaultConfigFilename;
 
