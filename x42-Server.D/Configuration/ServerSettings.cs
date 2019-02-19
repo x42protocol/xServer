@@ -83,6 +83,8 @@ namespace X42.Configuration
         /// <summary>The masternode which the server is configured to run on.</summary>
         public MasterNodeBase MasterNode { get; private set; }
 
+        public string ServerName = "x42Server";
+
         /// <summary>A string that is used to help identify the x42 server when it connects to other peers on a masternode.
         /// Defaults to "x42Server".
         /// </summary>
@@ -120,7 +122,7 @@ namespace X42.Configuration
 
             // Log arguments.
             this.Logger.LogDebug("Arguments: masternode='{0}', protocolVersion='{1}', agent='{2}', args='{3}'.",
-                this.MasterNode == null ? "(None)" : this.MasterNode.Name,
+                string.IsNullOrEmpty(this.ServerName) ? "(None)" : this.ServerName,
                 this.ProtocolVersion,
                 this.Agent,
                 args == null ? "(None)" : string.Join(" ", args));
@@ -155,12 +157,12 @@ namespace X42.Configuration
             if (this.DataDir == null)
             {
                 // Create the data directories if they don't exist.
-                this.DataDir = this.CreateDefaultDataDirectories(this.MasterNode.Name);
+                this.DataDir = this.CreateDefaultDataDirectories(this.ServerName);
             }
             else
             {
                 // Combine the data directory with the masternode's root folder and name.
-                string directoryPath = Path.Combine(this.DataDir, this.MasterNode.Name);
+                string directoryPath = Path.Combine(this.DataDir, this.ServerName);
                 this.DataDir = Directory.CreateDirectory(directoryPath).FullName;
                 this.Logger.LogDebug("Data directory initialized with path {0}.", this.DataDir);
             }
@@ -224,7 +226,17 @@ namespace X42.Configuration
                 this.Logger.LogDebug("Creating configuration file '{0}'.", this.ConfigurationFile);
 
                 var builder = new StringBuilder();
-                
+
+                foreach (IFeatureRegistration featureRegistration in features)
+                {
+                    MethodInfo getDefaultConfiguration = featureRegistration.FeatureType.GetMethod("BuildDefaultConfigurationFile", BindingFlags.Public | BindingFlags.Static);
+                    if (getDefaultConfiguration != null)
+                    {
+                        getDefaultConfiguration.Invoke(null, new object[] { builder, this.MasterNode });
+                        builder.AppendLine();
+                    }
+                }
+
                 File.WriteAllText(this.ConfigurationFile, builder.ToString());
                 this.ReadConfigurationFile();
                 this.LoadConfiguration();

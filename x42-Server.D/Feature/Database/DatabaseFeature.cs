@@ -99,6 +99,7 @@ namespace X42.Feature.Database
                     .FeatureServices(services =>
                     {
                         services.AddSingleton<DatabaseFeatures>();
+                        services.AddSingleton<DatabaseSettings>();
                     });
             });
 
