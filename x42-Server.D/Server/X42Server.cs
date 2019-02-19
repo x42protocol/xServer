@@ -11,7 +11,7 @@ using X42.MasterNode;
 namespace X42.Server
 {
     /// <summary>
-    /// Server providing all supported features of the blockchain and its network.
+    /// Server providing all supported features of the masternode and its network.
     /// </summary>
     public class X42Server : IX42Server
     {

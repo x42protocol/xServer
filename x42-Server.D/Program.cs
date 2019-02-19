@@ -13,7 +13,7 @@ namespace X42
         {
             try
             {
-                var serverSettings = new ServerSettings(new X42MasterNode(), protocolVersion: X42.Protocol.ProtocolVersion.PROTOCOL_VERSION, args: args) { };
+                var serverSettings = new ServerSettings(new X42MasterNode(), protocolVersion: Protocol.ProtocolVersion.PROTOCOL_VERSION, args: args) { };
 
                 IX42Server server = new ServerBuilder()
                     .UseServerSettings(serverSettings)

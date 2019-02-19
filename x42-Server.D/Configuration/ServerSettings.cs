@@ -320,8 +320,6 @@ namespace X42.Configuration
             builder.AppendLine($"-loglevel=<string>        Direct control over the logging level: '-loglevel=trace/debug/info/warn/error/fatal'.");
             
             defaults.Logger.LogInformation(builder.ToString());
-
-            ConnectionManagerSettings.PrintHelp(masterNode);
         }
 
         /// <summary>
@@ -333,8 +331,7 @@ namespace X42.Configuration
         {
             builder.AppendLine("####Server Settings####");
             builder.AppendLine();
-
-            ConnectionManagerSettings.BuildDefaultConfigurationFile(builder, masterNode);
+            
         }
 
         /// <inheritdoc />
