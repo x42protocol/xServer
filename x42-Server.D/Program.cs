@@ -4,6 +4,7 @@ using X42.Server;
 using X42.Utilities.Extensions;
 using X42.Configuration;
 using X42.MasterNode;
+using X42.Feature.Api;
 using X42.Feature.FullNode;
 using X42.Feature.Database;
 
@@ -21,7 +22,7 @@ namespace X42
                     .UseServerSettings(serverSettings)
                     .UseFullNode()
                     .UsePostgreSQL()
-                    // TODO: Add API .UseApi()
+                    .UseApi()
                     .Build();
 
                 if (server != null)

@@ -15,7 +15,7 @@ namespace X42.Feature.Database
         private readonly ILogger logger;
 
         /// <summary>
-        /// An address to use for the full node.
+        /// An address to use for the database.
         /// </summary>
         public string ConnectionString { get; set; }
 
@@ -35,7 +35,7 @@ namespace X42.Feature.Database
         }
 
         /// <summary>
-        /// Displays full node help information on the console.
+        /// Displays database help information on the console.
         /// </summary>
         /// <param name="masterNode">Not used.</param>
         public static void PrintHelp(MasterNodeBase masterNode)
@@ -43,7 +43,7 @@ namespace X42.Feature.Database
             ServerSettings defaults = ServerSettings.Default(masterNode);
             var builder = new StringBuilder();
 
-            builder.AppendLine("-connectionstring=<string>                     FullNode host.");
+            builder.AppendLine("-connectionstring=<string>                     Database host.");
 
             defaults.Logger.LogInformation(builder.ToString());
         }

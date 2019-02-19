@@ -86,13 +86,13 @@ namespace X42.Feature.Database
     {        /// <summary>
              /// Adds POW and POS miner components to the node, so that it can mine or stake.
              /// </summary>
-             /// <param name="fullNodeBuilder">The object used to build the current node.</param>
-             /// <returns>The full node builder, enriched with the new component.</returns>
-        public static IServerBuilder UsePostgreSQL(this IServerBuilder fullNodeBuilder)
+             /// <param name="serverBuilder">The object used to build the current node.</param>
+             /// <returns>The server builder, enriched with the new component.</returns>
+        public static IServerBuilder UsePostgreSQL(this IServerBuilder serverBuilder)
         {
             LoggingConfiguration.RegisterFeatureNamespace<DatabaseFeatures>("database");
 
-            fullNodeBuilder.ConfigureFeature(features =>
+            serverBuilder.ConfigureFeature(features =>
             {
                 features
                     .AddFeature<DatabaseFeatures>()
@@ -102,10 +102,10 @@ namespace X42.Feature.Database
                     });
             });
 
-            return fullNodeBuilder;
+            return serverBuilder;
         }
 
-        public static IServerBuilder UseMongoDB(this IServerBuilder fullNodeBuilder)
+        public static IServerBuilder UseMongoDB(this IServerBuilder serverBuilder)
         {
             throw new NotImplementedException("MongoDB is not yet supported");
         }
