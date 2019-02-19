@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using x42.Feature.API.Requirements;
 using X42.Server;
 
 namespace X42.Controllers
@@ -8,6 +10,7 @@ namespace X42.Controllers
     /// </summary>
     [Route("")]
     [Route("[controller]")]
+    [Authorize(Policy = Policy.PrivateAccess)]
     public class DashboardController : Controller
     {
         private readonly IX42Server x42Server;

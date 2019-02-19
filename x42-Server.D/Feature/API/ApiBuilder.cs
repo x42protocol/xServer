@@ -14,6 +14,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using X42.Utilities;
 using X42.Server;
+using x42.Feature.API.Requirements;
 
 namespace X42.Feature.Api
 {
@@ -34,7 +35,7 @@ namespace X42.Feature.Api
 
             this.Configuration = builder.Build();
         }
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -49,16 +50,28 @@ namespace X42.Feature.Api
 
                         builder =>
                         {
-                            var allowedDomains = new[] { "http://localhost", "http://localhost:4200" };
+                            string[] publicAddress = new[] { "http://*", "https://*" };
 
                             builder
-                            .WithOrigins(allowedDomains)
+                            .WithOrigins(publicAddress)
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials();
                         }
                     );
-                });
+                }
+            );
+
+            services.AddAuthorization(options =>
+            {
+                List<string> privateAddressList = new List<string>
+                {
+                    "127.0.0.1",
+                    "::1"
+                };
+
+                options.AddPolicy(Policy.PrivateAccess, policy => policy.Requirements.Add(new PrivateOnlyRequirement(privateAddressList)));
+            });
 
             // Add framework services.
             services.AddMvc(options =>
@@ -89,29 +102,32 @@ namespace X42.Feature.Api
                 {
                     setup.IncludeXmlComments(apiXmlPath);
                 }
-                
+
                 setup.DescribeAllEnumsAsStrings();
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApiSettings apiSettings)
         {
             logger = loggerFactory.CreateLogger(typeof(ApiBuilder).FullName);
-            
+
             app.UseCors("CorsPolicy");
 
             app.UseMvc();
 
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS etc.), specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
+            if (apiSettings.EnableSwagger)
             {
-                c.DefaultModelRendering(ModelRendering.Model);
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "X42.MasterNode.Api V1");
-            });
+                // Enable middleware to serve generated Swagger as a JSON endpoint.
+                app.UseSwagger();
+
+                // Enable middleware to serve swagger-ui (HTML, JS, CSS etc.), specifying the Swagger JSON endpoint.
+                app.UseSwaggerUI(c =>
+                {
+                    c.DefaultModelRendering(ModelRendering.Model);
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "X42.MasterNode.Api V1");
+                });
+            }
         }
 
         public static IWebHost Initialize(IEnumerable<ServiceDescriptor> services, X42Server x42Server,

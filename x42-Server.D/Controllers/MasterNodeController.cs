@@ -7,15 +7,18 @@ using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Config;
 using X42.Server;
+using x42.Feature.API;
 using X42.Configuration;
 using X42.Controllers.Models;
 using X42.Utilities;
 using X42.Utilities.JsonErrors;
 using X42.Utilities.ModelStateErrors;
 using X42.Utilities.Extensions;
+using x42.Feature.API.Requirements;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = NLog.LogLevel;
 using X42.MasterNode;
+using Microsoft.AspNetCore.Authorization;
 
 namespace X42.Controllers
 {
@@ -23,6 +26,7 @@ namespace X42.Controllers
     /// Provides methods that interact with the full node.
     /// </summary>
     [Route("api/[controller]")]
+    [Authorize(Policy = Policy.PrivateAccess)]
     public class MasterNodeContoller : Controller
     {
         /// <summary>x42 Server.</summary>
