@@ -6,7 +6,7 @@ using X42.Server;
 namespace X42.Controllers
 {
     /// <summary>
-    /// Controller providing HTML Dashboard
+    ///     Controller providing HTML Dashboard
     /// </summary>
     [Route("")]
     [Route("[controller]")]
@@ -21,7 +21,7 @@ namespace X42.Controllers
         }
 
         /// <summary>
-        /// Returns a web page to act as a dashboard
+        ///     Returns a web page to act as a dashboard
         /// </summary>
         /// <returns>text/html content</returns>
         [HttpGet]
@@ -29,8 +29,8 @@ namespace X42.Controllers
         [Route("Stats")]
         public IActionResult Stats()
         {
-            string content = (this.x42Server as X42Server).LastLogOutput;
-            return this.Content(content);
+            var content = (x42Server as X42Server).LastLogOutput;
+            return Content(content);
         }
     }
 }

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Converter used to convert a <see cref="uint256"/> to and from JSON.
+    ///     Converter used to convert a <see cref="uint256" /> to and from JSON.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class UInt256JsonConverter : JsonConverter
@@ -18,14 +18,15 @@ namespace X42.Utilities.JsonConverters
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
                 return null;
 
             try
             {
-                return uint256.Parse((string)reader.Value);
+                return uint256.Parse((string) reader.Value);
             }
             catch (EndOfStreamException)
             {

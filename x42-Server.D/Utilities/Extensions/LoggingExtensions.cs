@@ -1,18 +1,18 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using TracerAttributes;
-using X42.Utilities;
+using LogLevel = NLog.LogLevel;
 
 namespace X42.Utilities.Extensions
 {
     /// <summary>
-    /// Extension methods for classes and interfaces related to logging.
+    ///     Extension methods for classes and interfaces related to logging.
     /// </summary>
     [NoTrace]
     public static class LoggingExtensions
     {
         /// <summary>
-        /// Creates a new <see cref="ILogger"/> instance which prefixes every log with specified string.
+        ///     Creates a new <see cref="ILogger" /> instance which prefixes every log with specified string.
         /// </summary>
         /// <param name="loggerFactory">Logger factory interface being extended.</param>
         /// <param name="categoryName">Category name for messages produced by the logger.</param>
@@ -24,56 +24,68 @@ namespace X42.Utilities.Extensions
         }
 
         /// <summary>
-        /// Converts <see cref="Microsoft.Extensions.Logging.LogLevel"/> to <see cref="NLog.LogLevel"/>.
+        ///     Converts <see cref="Microsoft.Extensions.Logging.LogLevel" /> to <see cref="NLog.LogLevel" />.
         /// </summary>
         /// <param name="logLevel">Log level value to convert.</param>
         /// <returns>NLog value of the log level.</returns>
-        public static NLog.LogLevel ToNLogLevel(this LogLevel logLevel)
+        public static LogLevel ToNLogLevel(this Microsoft.Extensions.Logging.LogLevel logLevel)
         {
-            NLog.LogLevel res = NLog.LogLevel.Trace;
+            var res = LogLevel.Trace;
 
             switch (logLevel)
             {
-                case LogLevel.Trace: res = NLog.LogLevel.Trace; break;
-                case LogLevel.Debug: res = NLog.LogLevel.Debug; break;
-                case LogLevel.Information: res = NLog.LogLevel.Info; break;
-                case LogLevel.Warning: res = NLog.LogLevel.Warn; break;
-                case LogLevel.Error: res = NLog.LogLevel.Error; break;
-                case LogLevel.Critical: res = NLog.LogLevel.Fatal; break;
+                case Microsoft.Extensions.Logging.LogLevel.Trace:
+                    res = LogLevel.Trace;
+                    break;
+                case Microsoft.Extensions.Logging.LogLevel.Debug:
+                    res = LogLevel.Debug;
+                    break;
+                case Microsoft.Extensions.Logging.LogLevel.Information:
+                    res = LogLevel.Info;
+                    break;
+                case Microsoft.Extensions.Logging.LogLevel.Warning:
+                    res = LogLevel.Warn;
+                    break;
+                case Microsoft.Extensions.Logging.LogLevel.Error:
+                    res = LogLevel.Error;
+                    break;
+                case Microsoft.Extensions.Logging.LogLevel.Critical:
+                    res = LogLevel.Fatal;
+                    break;
             }
 
             return res;
         }
 
         /// <summary>
-        /// Converts a string to a <see cref="NLog.LogLevel"/>.
+        ///     Converts a string to a <see cref="NLog.LogLevel" />.
         /// </summary>
         /// <param name="logLevel">Log level value to convert.</param>
         /// <returns>NLog value of the log level.</returns>
-        public static NLog.LogLevel ToNLogLevel(this string logLevel)
+        public static LogLevel ToNLogLevel(this string logLevel)
         {
             logLevel = logLevel.ToLowerInvariant();
 
             switch (logLevel)
             {
                 case "trace":
-                    return NLog.LogLevel.Trace;
+                    return LogLevel.Trace;
                 case "debug":
-                    return NLog.LogLevel.Debug;
+                    return LogLevel.Debug;
                 case "info":
                 case "information":
-                    return NLog.LogLevel.Info;
+                    return LogLevel.Info;
                 case "warn":
                 case "warning":
-                    return NLog.LogLevel.Warn;
+                    return LogLevel.Warn;
                 case "error":
-                    return NLog.LogLevel.Error;
+                    return LogLevel.Error;
                 case "fatal":
                 case "critical":
                 case "crit":
-                    return NLog.LogLevel.Fatal;
+                    return LogLevel.Fatal;
                 case "off":
-                    return NLog.LogLevel.Off;
+                    return LogLevel.Off;
                 default:
                     throw new Exception($"Failed converting {logLevel} to a member of NLog.LogLevel.");
             }

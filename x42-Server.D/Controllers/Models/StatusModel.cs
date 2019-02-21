@@ -4,16 +4,16 @@ using System.Collections.Generic;
 namespace X42.Controllers.Models
 {
     /// <summary>
-    /// Class representing the status of the currently running node.
+    ///     Class representing the status of the currently running node.
     /// </summary>
     public class StatusModel
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StatusModel"/> class.
+        ///     Initializes a new instance of the <see cref="StatusModel" /> class.
         /// </summary>
         public StatusModel()
         {
-            this.EnabledFeatures = new List<string>();
+            EnabledFeatures = new List<string>();
         }
 
         /// <summary>The node's user agent that will be shared with peers in the version handshake.</summary>
@@ -30,7 +30,7 @@ namespace X42.Controllers.Models
 
         /// <summary>System identifier of the node's process.</summary>
         public int ProcessId { get; set; }
-        
+
         /// <summary>A collection of all the features enabled by this node.</summary>
         public List<string> EnabledFeatures { get; set; }
 
@@ -39,10 +39,10 @@ namespace X42.Controllers.Models
 
         /// <summary>Time this node has been running.</summary>
         public TimeSpan RunningTime { get; set; }
-        
+
         /// <summary>The node's protocol version</summary>
         public uint ProtocolVersion { get; set; }
-        
+
         /// <summary>Returns the status of the node.</summary>
         public string State { get; set; }
     }

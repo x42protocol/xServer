@@ -1,43 +1,43 @@
 ﻿using System;
-using X42.Utilities.Extensions;
 using TracerAttributes;
+using X42.Utilities.Extensions;
 
 namespace X42.Utilities
 {
     /// <summary>
-    /// Providing date time functionality.
+    ///     Providing date time functionality.
     /// </summary>
     public interface IDateTimeProvider
     {
         /// <summary>
-        /// Get the current time in Linux format.
+        ///     Get the current time in Linux format.
         /// </summary>
         long GetTime();
 
         /// <summary>
-        /// Get the current time offset in UTC.
+        ///     Get the current time offset in UTC.
         /// </summary>
         DateTimeOffset GetTimeOffset();
 
         /// <summary>
-        /// Get the current time in UTC.
+        ///     Get the current time in UTC.
         /// </summary>
         DateTime GetUtcNow();
 
         /// <summary>
-        /// Obtains adjusted time, which is time synced with network peers.
+        ///     Obtains adjusted time, which is time synced with network peers.
         /// </summary>
         /// <returns>Adjusted UTC timestamp.</returns>
         DateTime GetAdjustedTime();
 
         /// <summary>
-        /// Obtains adjusted time, which is time synced with network peers, as Unix timestamp with seconds precision.
+        ///     Obtains adjusted time, which is time synced with network peers, as Unix timestamp with seconds precision.
         /// </summary>
         /// <returns>Adjusted UTC timestamp as Unix timestamp with seconds precision.</returns>
         long GetAdjustedTimeAsUnixTimestamp();
 
         /// <summary>
-        /// Sets adjusted time offset, which is time difference from network peers.
+        ///     Sets adjusted time offset, which is time difference from network peers.
         /// </summary>
         /// <param name="adjustedTimeOffset">Offset to adjust time with.</param>
         void SetAdjustedTimeOffset(TimeSpan adjustedTimeOffset);
@@ -47,14 +47,11 @@ namespace X42.Utilities
     [NoTrace]
     public class DateTimeProvider : IDateTimeProvider
     {
-        /// <summary>Static instance of the object to prevent the need of creating new instance.</summary>
-        public static IDateTimeProvider Default { get; }
-
         /// <summary>UTC adjusted timestamp, or null if no adjusted time is set.</summary>
         protected TimeSpan adjustedTimeOffset;
 
         /// <summary>
-        /// Initializes a default instance of the object.
+        ///     Initializes a default instance of the object.
         /// </summary>
         static DateTimeProvider()
         {
@@ -62,12 +59,15 @@ namespace X42.Utilities
         }
 
         /// <summary>
-        /// Initializes instance of the object.
+        ///     Initializes instance of the object.
         /// </summary>
         public DateTimeProvider()
         {
-            this.adjustedTimeOffset = TimeSpan.Zero;
+            adjustedTimeOffset = TimeSpan.Zero;
         }
+
+        /// <summary>Static instance of the object to prevent the need of creating new instance.</summary>
+        public static IDateTimeProvider Default { get; }
 
         /// <inheritdoc />
         public virtual long GetTime()
@@ -90,13 +90,13 @@ namespace X42.Utilities
         /// <inheritdoc />
         public DateTime GetAdjustedTime()
         {
-            return this.GetUtcNow().Add(this.adjustedTimeOffset);
+            return GetUtcNow().Add(adjustedTimeOffset);
         }
 
         /// <inheritdoc />
         public long GetAdjustedTimeAsUnixTimestamp()
         {
-            return new DateTimeOffset(this.GetAdjustedTime()).ToUnixTimeSeconds();
+            return new DateTimeOffset(GetAdjustedTime()).ToUnixTimeSeconds();
         }
 
         /// <inheritdoc />

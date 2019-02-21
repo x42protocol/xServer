@@ -8,12 +8,12 @@ using X42.Server;
 namespace X42.Utilities.Extensions
 {
     /// <summary>
-    /// Extension methods for IX42Server interface.
+    ///     Extension methods for IX42Server interface.
     /// </summary>
     public static class X42ServerExtensions
     {
         /// <summary>
-        /// Installs handlers for graceful shutdown in the console, starts the x42 server and waits until it terminates.
+        ///     Installs handlers for graceful shutdown in the console, starts the x42 server and waits until it terminates.
         /// </summary>
         /// <param name="server">X42 Server to run.</param>
         public static async Task RunAsync(this IX42Server server)
@@ -39,7 +39,7 @@ namespace X42.Utilities.Extensions
                     done.Wait();
                 };
 
-                AssemblyLoadContext assemblyLoadContext = AssemblyLoadContext.GetLoadContext(typeof(X42Server).GetTypeInfo().Assembly);
+                var assemblyLoadContext = AssemblyLoadContext.GetLoadContext(typeof(X42Server).GetTypeInfo().Assembly);
                 assemblyLoadContext.Unloading += context => shutdown();
 
                 Console.CancelKeyPress += (sender, eventArgs) =>
@@ -51,7 +51,8 @@ namespace X42.Utilities.Extensions
 
                 try
                 {
-                    await server.RunAsync(cts.Token, "Application started. Press Ctrl+C to shut down.", "Application stopped.").ConfigureAwait(false);
+                    await server.RunAsync(cts.Token, "Application started. Press Ctrl+C to shut down.",
+                        "Application stopped.").ConfigureAwait(false);
                 }
                 finally
                 {
@@ -61,13 +62,14 @@ namespace X42.Utilities.Extensions
         }
 
         /// <summary>
-        /// Starts a x42 server, sets up cancellation tokens for its shutdown, and waits until it terminates.
+        ///     Starts a x42 server, sets up cancellation tokens for its shutdown, and waits until it terminates.
         /// </summary>
         /// <param name="server">x42 server to run.</param>
         /// <param name="cancellationToken">Cancellation token that triggers when the server should be shut down.</param>
         /// <param name="shutdownMessage">Message to display on the console to instruct the user on how to invoke the shutdown.</param>
         /// <param name="shutdownCompleteMessage">Message to display on the console when the shutdown is complete.</param>
-        public static async Task RunAsync(this IX42Server server, CancellationToken cancellationToken, string shutdownMessage, string shutdownCompleteMessage)
+        public static async Task RunAsync(this IX42Server server, CancellationToken cancellationToken,
+            string shutdownMessage, string shutdownCompleteMessage)
         {
             server.Start();
 
@@ -78,16 +80,13 @@ namespace X42.Utilities.Extensions
                 Console.WriteLine();
             }
 
-            cancellationToken.Register(state =>
-            {
-                ((IX42ServerLifetime)state).StopApplication();
-            },
-            server.X42ServerLifetime);
+            cancellationToken.Register(state => { ((IX42ServerLifetime) state).StopApplication(); },
+                server.X42ServerLifetime);
 
             var waitForStop = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             server.X42ServerLifetime.ApplicationStopping.Register(obj =>
             {
-                var tcs = (TaskCompletionSource<object>)obj;
+                var tcs = (TaskCompletionSource<object>) obj;
                 tcs.TrySetResult(null);
             }, waitForStop);
 

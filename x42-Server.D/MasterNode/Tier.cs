@@ -9,15 +9,14 @@
             Three = 3
         }
 
-        public TierLevel Level { get; set; }
-
-        public Collateral Collateral { get; set; }
-
         public Tier(TierLevel level, Collateral collateral)
         {
             Level = level;
             Collateral = collateral;
         }
 
+        public TierLevel Level { get; set; }
+
+        public Collateral Collateral { get; set; }
     }
 }

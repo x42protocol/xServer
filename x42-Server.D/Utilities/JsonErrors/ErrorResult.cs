@@ -6,7 +6,7 @@ namespace X42.Utilities.JsonErrors
     {
         public ErrorResult(int statusCode, ErrorResponse value) : base(value)
         {
-            this.StatusCode = statusCode;
+            StatusCode = statusCode;
         }
     }
 }

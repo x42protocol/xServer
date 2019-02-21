@@ -5,12 +5,12 @@ using X42.Feature.Setup;
 namespace X42.Server
 {
     /// <summary>
-    /// A class providing extension methods for <see cref="IServerBuilder"/>.
+    ///     A class providing extension methods for <see cref="IServerBuilder" />.
     /// </summary>
     public static class ServerSettingsExtension
     {
         /// <summary>
-        /// Makes the x42 server builder use specific server settings.
+        ///     Makes the x42 server builder use specific server settings.
         /// </summary>
         /// <param name="builder">x42 server builder to change server settings for.</param>
         /// <param name="serverSettings">Server settings to be used.</param>
@@ -31,7 +31,7 @@ namespace X42.Server
         }
 
         /// <summary>
-        /// Makes the x42 server builder use the default server settings.
+        ///     Makes the x42 server builder use the default server settings.
         /// </summary>
         /// <param name="builder">x42 server builder to change server settings for.</param>
         /// <returns>Interface to allow fluent code.</returns>

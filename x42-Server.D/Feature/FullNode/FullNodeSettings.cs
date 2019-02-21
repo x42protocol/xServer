@@ -1,13 +1,13 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Logging;
-using X42.Utilities;
 using X42.Configuration;
 using X42.MasterNode;
+using X42.Utilities;
 
 namespace X42.Feature.FullNode
 {
     /// <summary>
-    /// Configuration related to the miner interface.
+    ///     Configuration related to the miner interface.
     /// </summary>
     public class FullNodeSettings
     {
@@ -15,39 +15,39 @@ namespace X42.Feature.FullNode
         private readonly ILogger logger;
 
         /// <summary>
-        /// An address to use for the full node.
-        /// </summary>
-        public string FullNodeHost { get; set; }
-
-        /// <summary>
-        /// The fullnode port.
-        /// </summary>
-        public long FullNodeAPIPort { get; set; }
-
-        /// <summary>
-        /// Initializes an instance of the object from the node configuration.
+        ///     Initializes an instance of the object from the node configuration.
         /// </summary>
         /// <param name="serverSettings">The node configuration.</param>
         public FullNodeSettings(ServerSettings serverSettings)
         {
             Guard.NotNull(serverSettings, nameof(serverSettings));
 
-            this.logger = serverSettings.LoggerFactory.CreateLogger(typeof(FullNodeSettings).FullName);
+            logger = serverSettings.LoggerFactory.CreateLogger(typeof(FullNodeSettings).FullName);
 
-            TextFileConfiguration config = serverSettings.ConfigReader;
+            var config = serverSettings.ConfigReader;
 
-            this.FullNodeHost = config.GetOrDefault<string>("fullnodehost", "localhost", this.logger);
+            FullNodeHost = config.GetOrDefault("fullnodehost", "localhost", logger);
 
-            this.FullNodeAPIPort = config.GetOrDefault<long>("fullnodeapiport", 42220, this.logger);
+            FullNodeAPIPort = config.GetOrDefault<long>("fullnodeapiport", 42220, logger);
         }
 
         /// <summary>
-        /// Displays full node help information on the console.
+        ///     An address to use for the full node.
+        /// </summary>
+        public string FullNodeHost { get; set; }
+
+        /// <summary>
+        ///     The fullnode port.
+        /// </summary>
+        public long FullNodeAPIPort { get; set; }
+
+        /// <summary>
+        ///     Displays full node help information on the console.
         /// </summary>
         /// <param name="masterNode">Not used.</param>
         public static void PrintHelp(MasterNodeBase masterNode)
         {
-            ServerSettings defaults = ServerSettings.Default(masterNode);
+            var defaults = ServerSettings.Default(masterNode);
             var builder = new StringBuilder();
 
             builder.AppendLine("-fullnodehost=<string>                     FullNode host.");
@@ -57,7 +57,7 @@ namespace X42.Feature.FullNode
         }
 
         /// <summary>
-        /// Get the default configuration.
+        ///     Get the default configuration.
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>

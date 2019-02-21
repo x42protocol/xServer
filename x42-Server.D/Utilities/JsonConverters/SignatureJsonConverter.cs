@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Converter used to convert a <see cref="Script"/> or a <see cref="WitScript"/> to and from JSON.
+    ///     Converter used to convert a <see cref="Script" /> or a <see cref="WitScript" /> to and from JSON.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class SignatureJsonConverter : JsonConverter
@@ -19,17 +19,18 @@ namespace X42.Utilities.JsonConverters
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
                 return null;
             try
             {
                 if (objectType == typeof(ECDSASignature))
-                    return new ECDSASignature(Encoders.Hex.DecodeData((string)reader.Value));
+                    return new ECDSASignature(Encoders.Hex.DecodeData((string) reader.Value));
 
                 if (objectType == typeof(TransactionSignature))
-                    return new TransactionSignature(Encoders.Hex.DecodeData((string)reader.Value));
+                    return new TransactionSignature(Encoders.Hex.DecodeData((string) reader.Value));
             }
             catch
             {
@@ -44,9 +45,9 @@ namespace X42.Utilities.JsonConverters
             if (value != null)
             {
                 if (value is ECDSASignature)
-                    writer.WriteValue(Encoders.Hex.EncodeData(((ECDSASignature)value).ToDER()));
+                    writer.WriteValue(Encoders.Hex.EncodeData(((ECDSASignature) value).ToDER()));
                 if (value is TransactionSignature)
-                    writer.WriteValue(Encoders.Hex.EncodeData(((TransactionSignature)value).ToBytes()));
+                    writer.WriteValue(Encoders.Hex.EncodeData(((TransactionSignature) value).ToBytes()));
             }
         }
     }

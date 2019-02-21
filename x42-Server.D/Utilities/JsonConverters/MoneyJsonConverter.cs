@@ -6,8 +6,8 @@ using Newtonsoft.Json;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Converter used to convert a <see cref="Money"/> object to and from JSON.
-    /// Uses satoshis as unit for serialization.
+    ///     Converter used to convert a <see cref="Money" /> object to and from JSON.
+    ///     Uses satoshis as unit for serialization.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class MoneyJsonConverter : JsonConverter
@@ -19,11 +19,12 @@ namespace X42.Utilities.JsonConverters
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             try
             {
-                return reader.TokenType == JsonToken.Null ? null : new Money((long)reader.Value);
+                return reader.TokenType == JsonToken.Null ? null : new Money((long) reader.Value);
             }
             catch (InvalidCastException)
             {
@@ -34,13 +35,13 @@ namespace X42.Utilities.JsonConverters
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(((Money)value).Satoshi);
+            writer.WriteValue(((Money) value).Satoshi);
         }
     }
 
     /// <summary>
-    /// Converter used to convert a <see cref="Money"/> object to and from JSON.
-    /// Uses coins (BTC) as the unit for serialization.
+    ///     Converter used to convert a <see cref="Money" /> object to and from JSON.
+    ///     Uses coins (BTC) as the unit for serialization.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class MoneyInCoinsJsonConverter : JsonConverter
@@ -52,11 +53,12 @@ namespace X42.Utilities.JsonConverters
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             try
             {
-                return reader.TokenType == JsonToken.Null ? null : new Money((decimal)reader.Value, MoneyUnit.BTC);
+                return reader.TokenType == JsonToken.Null ? null : new Money((decimal) reader.Value, MoneyUnit.BTC);
             }
             catch (InvalidCastException)
             {
@@ -67,7 +69,7 @@ namespace X42.Utilities.JsonConverters
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(((Money)value).ToUnit(MoneyUnit.BTC));
+            writer.WriteValue(((Money) value).ToUnit(MoneyUnit.BTC));
         }
     }
 }

@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Converter used to convert <see cref="IPEndPoint"/> to and from JSON.
+    ///     Converter used to convert <see cref="IPEndPoint" /> to and from JSON.
     /// </summary>
     /// <seealso cref="JsonConverter" />
     public sealed class IPEndPointConverter : JsonConverter
@@ -18,13 +18,14 @@ namespace X42.Utilities.JsonConverters
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
-            string json = JToken.Load(reader).ToString();
+            var json = JToken.Load(reader).ToString();
             if (string.IsNullOrWhiteSpace(json))
                 return null;
 
-            string[] endPointComponents = json.Split('|');
+            var endPointComponents = json.Split('|');
             return new IPEndPoint(IPAddress.Parse(endPointComponents[0]), Convert.ToInt32(endPointComponents[1]));
         }
 
@@ -32,13 +33,11 @@ namespace X42.Utilities.JsonConverters
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value is IPEndPoint ipEndPoint)
-            {
                 if (ipEndPoint.Address != null || ipEndPoint.Port != 0)
                 {
                     JToken.FromObject($"{ipEndPoint.Address}|{ipEndPoint.Port}").WriteTo(writer);
                     return;
                 }
-            }
 
             writer.WriteNull();
         }

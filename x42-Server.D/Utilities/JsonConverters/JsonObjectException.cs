@@ -7,12 +7,12 @@ namespace X42.Utilities.JsonConverters
     {
         public JsonObjectException(Exception inner, JsonReader reader) : base(inner.Message, inner)
         {
-            this.Path = reader.Path;
+            Path = reader.Path;
         }
 
         public JsonObjectException(string message, JsonReader reader) : base(message)
         {
-            this.Path = reader.Path;
+            Path = reader.Path;
         }
 
         public string Path { get; }

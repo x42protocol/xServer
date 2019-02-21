@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using X42.Configuration;
-using X42.Utilities;
 using X42.Feature.Setup;
 using X42.MasterNode;
-using System.Linq;
+using X42.Utilities;
 
 namespace X42.Server
 {
     /// <summary>
-    /// Exception thrown by ServerBuilder.Build.
+    ///     Exception thrown by ServerBuilder.Build.
     /// </summary>
-    /// <seealso cref="ServerBuilder.Build"/>
+    /// <seealso cref="ServerBuilder.Build" />
     public class ServerBuilderException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the class with a specified error message.
+        ///     Initializes a new instance of the class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public ServerBuilderException(string message) : base(message)
@@ -27,7 +27,7 @@ namespace X42.Server
     }
 
     /// <summary>
-    /// x42 server builder allows constructing a x42 server using specific components.
+    ///     x42 server builder allows constructing a x42 server using specific components.
     /// </summary>
     public class ServerBuilder : IServerBuilder
     {
@@ -43,20 +43,8 @@ namespace X42.Server
         /// <summary>true if the Build method has been called already (whether it succeeded or not), false otherwise.</summary>
         private bool serverBuilt;
 
-        /// <summary>Collection of features available to and/or used by the server.</summary>
-        public IFeatureCollection Features { get; private set; }
-
-        /// <inheritdoc />
-        public ServerSettings ServerSettings { get; set; }
-
-        /// <inheritdoc />
-        public MasterNodeBase MasterNode { get; set; }
-
-        /// <summary>Collection of DI services.</summary>
-        public IServiceCollection Services { get; private set; }
-
         /// <summary>
-        /// Initializes a default instance of the object and registers required services.
+        ///     Initializes a default instance of the object and registers required services.
         /// </summary>
         public ServerBuilder() :
             this(new List<Action<IServiceCollection>>(),
@@ -67,7 +55,7 @@ namespace X42.Server
         }
 
         /// <summary>
-        /// Initializes an instance of the object using specific ServerSettings instance and registers required services.
+        ///     Initializes an instance of the object using specific ServerSettings instance and registers required services.
         /// </summary>
         /// <param name="serverSettings">User defined server settings.</param>
         public ServerBuilder(ServerSettings serverSettings)
@@ -79,39 +67,43 @@ namespace X42.Server
         }
 
         /// <summary>
-        /// Initializes an instance of the object using specific ServerSettings instance and configuration delegates and registers required services.
+        ///     Initializes an instance of the object using specific ServerSettings instance and configuration delegates and
+        ///     registers required services.
         /// </summary>
         /// <param name="serverSettings">User defined server settings.</param>
         /// <param name="configureServicesDelegates">List of delegates that add services to the builder.</param>
         /// <param name="configureDelegates">List of delegates that configure the service providers.</param>
         /// <param name="featuresRegistrationDelegates">List of delegates that add features to the collection.</param>
         /// <param name="features">Collection of features to be available to and/or used by the server.</param>
-        internal ServerBuilder(ServerSettings serverSettings, List<Action<IServiceCollection>> configureServicesDelegates, List<Action<IServiceProvider>> configureDelegates,
+        internal ServerBuilder(ServerSettings serverSettings,
+            List<Action<IServiceCollection>> configureServicesDelegates,
+            List<Action<IServiceProvider>> configureDelegates,
             List<Action<IFeatureCollection>> featuresRegistrationDelegates, IFeatureCollection features)
             : this(configureServicesDelegates, configureDelegates, featuresRegistrationDelegates, features)
         {
             Guard.NotNull(serverSettings, nameof(serverSettings));
 
-            this.ServerSettings = serverSettings;
-            this.MasterNode = this.ServerSettings.MasterNode;
+            ServerSettings = serverSettings;
+            MasterNode = ServerSettings.MasterNode;
 
-            this.ConfigureServices(service =>
+            ConfigureServices(service =>
             {
-                service.AddSingleton(this.ServerSettings);
-                service.AddSingleton(this.MasterNode);
+                service.AddSingleton(ServerSettings);
+                service.AddSingleton(MasterNode);
             });
 
             this.UseBaseFeature();
         }
 
         /// <summary>
-        /// Initializes an instance of the object using specific configuration delegates.
+        ///     Initializes an instance of the object using specific configuration delegates.
         /// </summary>
         /// <param name="configureServicesDelegates">List of delegates that add services to the builder.</param>
         /// <param name="configureDelegates">List of delegates that configure the service providers.</param>
         /// <param name="featuresRegistrationDelegates">List of delegates that add features to the collection.</param>
         /// <param name="features">Collection of features to be available to and/or used by the server.</param>
-        internal ServerBuilder(List<Action<IServiceCollection>> configureServicesDelegates, List<Action<IServiceProvider>> configureDelegates,
+        internal ServerBuilder(List<Action<IServiceCollection>> configureServicesDelegates,
+            List<Action<IServiceProvider>> configureDelegates,
             List<Action<IFeatureCollection>> featuresRegistrationDelegates, IFeatureCollection features)
         {
             Guard.NotNull(configureServicesDelegates, nameof(configureServicesDelegates));
@@ -122,15 +114,27 @@ namespace X42.Server
             this.configureServicesDelegates = configureServicesDelegates;
             this.configureDelegates = configureDelegates;
             this.featuresRegistrationDelegates = featuresRegistrationDelegates;
-            this.Features = features;
+            Features = features;
         }
+
+        /// <summary>Collection of features available to and/or used by the server.</summary>
+        public IFeatureCollection Features { get; }
+
+        /// <inheritdoc />
+        public ServerSettings ServerSettings { get; set; }
+
+        /// <inheritdoc />
+        public MasterNodeBase MasterNode { get; set; }
+
+        /// <summary>Collection of DI services.</summary>
+        public IServiceCollection Services { get; private set; }
 
         /// <inheritdoc />
         public IServerBuilder ConfigureFeature(Action<IFeatureCollection> configureFeatures)
         {
             Guard.NotNull(configureFeatures, nameof(configureFeatures));
 
-            this.featuresRegistrationDelegates.Add(configureFeatures);
+            featuresRegistrationDelegates.Add(configureFeatures);
             return this;
         }
 
@@ -139,7 +143,7 @@ namespace X42.Server
         {
             Guard.NotNull(configureServices, nameof(configureServices));
 
-            this.configureServicesDelegates.Add(configureServices);
+            configureServicesDelegates.Add(configureServices);
             return this;
         }
 
@@ -148,27 +152,29 @@ namespace X42.Server
         {
             Guard.NotNull(configure, nameof(configure));
 
-            this.configureDelegates.Add(configure);
+            configureDelegates.Add(configure);
             return this;
         }
 
         /// <inheritdoc />
         public IX42Server Build()
         {
-            if (this.serverBuilt)
+            if (serverBuilt)
                 throw new InvalidOperationException("x42 server already built");
-            this.serverBuilt = true;
+            serverBuilt = true;
 
-            this.Services = this.BuildServices();
+            Services = BuildServices();
 
             // Print command - line help
-            if (this.ServerSettings?.PrintHelpAndExit ?? false)
+            if (ServerSettings?.PrintHelpAndExit ?? false)
             {
-                foreach (IFeatureRegistration featureRegistration in this.Features.FeatureRegistrations)
+                foreach (var featureRegistration in Features.FeatureRegistrations)
                 {
-                    MethodInfo printHelp = featureRegistration.FeatureType.GetMethod("PrintHelp", BindingFlags.Public | BindingFlags.Static);
+                    var printHelp =
+                        featureRegistration.FeatureType.GetMethod("PrintHelp",
+                            BindingFlags.Public | BindingFlags.Static);
 
-                    printHelp?.Invoke(null, new object[] { this.ServerSettings.MasterNode });
+                    printHelp?.Invoke(null, new object[] {ServerSettings.MasterNode});
                 }
 
                 // Signal server not built
@@ -176,10 +182,10 @@ namespace X42.Server
             }
 
             // Create configuration file if required
-            this.ServerSettings?.CreateDefaultConfigurationFile(this.Features.FeatureRegistrations);
+            ServerSettings?.CreateDefaultConfigurationFile(Features.FeatureRegistrations);
 
-            ServiceProvider serverServiceProvider = this.Services.BuildServiceProvider();
-            this.ConfigureServices(serverServiceProvider);
+            var serverServiceProvider = Services.BuildServiceProvider();
+            ConfigureServices(serverServiceProvider);
 
             // Obtain the serverSettings from the service (it's set used ServerBuilder.UseServerSettings)
             var serverSettings = serverServiceProvider.GetService<ServerSettings>();
@@ -197,7 +203,7 @@ namespace X42.Server
             server.Initialize(
                 new ServerServiceProvider(
                     serverServiceProvider,
-                    this.Features.FeatureRegistrations.Select(s => s.FeatureType).ToList()
+                    Features.FeatureRegistrations.Select(s => s.FeatureType).ToList()
                 )
             );
 
@@ -205,50 +211,51 @@ namespace X42.Server
         }
 
         /// <summary>
-        /// Constructs and configures services ands features to be used by the server.
+        ///     Constructs and configures services ands features to be used by the server.
         /// </summary>
         /// <returns>Collection of registered services.</returns>
         private IServiceCollection BuildServices()
         {
-            this.Services = new ServiceCollection();
+            Services = new ServiceCollection();
 
             // register services before features
             // as some of the features may depend on independent services
-            foreach (Action<IServiceCollection> configureServices in this.configureServicesDelegates)
-                configureServices(this.Services);
+            foreach (var configureServices in configureServicesDelegates)
+                configureServices(Services);
 
             // configure features
-            foreach (Action<IFeatureCollection> configureFeature in this.featuresRegistrationDelegates)
-                configureFeature(this.Features);
+            foreach (var configureFeature in featuresRegistrationDelegates)
+                configureFeature(Features);
 
             // configure features startup
-            foreach (IFeatureRegistration featureRegistration in this.Features.FeatureRegistrations)
+            foreach (var featureRegistration in Features.FeatureRegistrations)
             {
                 try
                 {
-                    featureRegistration.EnsureDependencies(this.Features.FeatureRegistrations);
+                    featureRegistration.EnsureDependencies(Features.FeatureRegistrations);
                 }
                 catch (MissingDependencyException e)
                 {
-                    this.ServerSettings.Logger.LogCritical("Feature {0} cannot be configured because it depends on other features that were not registered",
+                    ServerSettings.Logger.LogCritical(
+                        "Feature {0} cannot be configured because it depends on other features that were not registered",
                         featureRegistration.FeatureType.Name);
 
                     throw e;
                 }
 
-                featureRegistration.BuildFeature(this.Services);
+                featureRegistration.BuildFeature(Services);
             }
 
-            return this.Services;
+            return Services;
         }
 
         /// <summary>
-        /// Configure registered services.
+        ///     Configure registered services.
         /// </summary>
         /// <param name="serviceProvider"></param>
         private void ConfigureServices(IServiceProvider serviceProvider)
         {
-            foreach (Action<IServiceProvider> configure in this.configureDelegates)
+            foreach (var configure in configureDelegates)
                 configure(serviceProvider);
         }
     }

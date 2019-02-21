@@ -6,7 +6,7 @@ using System.Linq;
 namespace X42.Feature.Setup
 {
     /// <summary>
-    /// Defines methods for collection of features of the Server.
+    ///     Defines methods for collection of features of the Server.
     /// </summary>
     public interface IFeatureCollection
     {
@@ -20,7 +20,7 @@ namespace X42.Feature.Setup
     }
 
     /// <summary>
-    /// Collection of features available to and/or used by the Server.
+    ///     Collection of features available to and/or used by the Server.
     /// </summary>
     public class FeatureCollection : IFeatureCollection
     {
@@ -30,26 +30,21 @@ namespace X42.Feature.Setup
         /// <summary>Initializes the object instance.</summary>
         public FeatureCollection()
         {
-            this.featureRegistrations = new List<IFeatureRegistration>();
+            featureRegistrations = new List<IFeatureRegistration>();
         }
 
         /// <inheritdoc />
-        public List<IFeatureRegistration> FeatureRegistrations
-        {
-            get
-            {
-                return this.featureRegistrations;
-            }
-        }
+        public List<IFeatureRegistration> FeatureRegistrations => featureRegistrations;
 
         /// <inheritdoc />
         public IFeatureRegistration AddFeature<TImplementation>() where TImplementation : class, IServerFeature
         {
-            if (this.featureRegistrations.Any(f => f.FeatureType == typeof(TImplementation)))
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Feature of type {0} has already been registered.", typeof(TImplementation).FullName));
+            if (featureRegistrations.Any(f => f.FeatureType == typeof(TImplementation)))
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
+                    "Feature of type {0} has already been registered.", typeof(TImplementation).FullName));
 
             var featureRegistration = new FeatureRegistration<TImplementation>();
-            this.featureRegistrations.Add(featureRegistration);
+            featureRegistrations.Add(featureRegistration);
 
             return featureRegistration;
         }

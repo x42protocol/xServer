@@ -3,12 +3,12 @@
 namespace X42.Utilities
 {
     /// <summary>
-    /// Extension methods for the <see cref="Timer"/> class.
+    ///     Extension methods for the <see cref="Timer" /> class.
     /// </summary>
     public static class TimerExtensions
     {
         /// <summary>
-        /// Reset a timer from the start.
+        ///     Reset a timer from the start.
         /// </summary>
         /// <param name="timer">The timer to reset.</param>
         public static void Reset(this Timer timer)

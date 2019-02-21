@@ -3,12 +3,12 @@
 namespace X42.Feature.Api
 {
     /// <summary>
-    /// An interface providing operations on certificate repositories.
+    ///     An interface providing operations on certificate repositories.
     /// </summary>
     public interface ICertificateStore
     {
         /// <summary>
-        /// Tries to retrieve a certificate from the file system.
+        ///     Tries to retrieve a certificate from the file system.
         /// </summary>
         /// <param name="filePath">The full path of the certificate file.</param>
         /// <param name="certificate">The certificate, if found.</param>

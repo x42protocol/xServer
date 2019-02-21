@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Converter used to convert a <see cref="Key"/> or a <see cref="PubKey"/> to and from JSON.
+    ///     Converter used to convert a <see cref="Key" /> or a <see cref="PubKey" /> to and from JSON.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class KeyJsonConverter : JsonConverter
@@ -19,18 +19,18 @@ namespace X42.Utilities.JsonConverters
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
                 return null;
 
             try
             {
-                byte[] bytes = Encoders.Hex.DecodeData((string)reader.Value);
+                var bytes = Encoders.Hex.DecodeData((string) reader.Value);
                 if (objectType == typeof(Key))
                     return new Key(bytes);
-                else
-                    return new PubKey(bytes);
+                return new PubKey(bytes);
             }
             catch (EndOfStreamException)
             {
@@ -47,7 +47,7 @@ namespace X42.Utilities.JsonConverters
         {
             if (value != null)
             {
-                byte[] bytes = ((IBitcoinSerializable)value).ToBytes();
+                var bytes = ((IBitcoinSerializable) value).ToBytes();
                 writer.WriteValue(Encoders.Hex.EncodeData(bytes));
             }
         }

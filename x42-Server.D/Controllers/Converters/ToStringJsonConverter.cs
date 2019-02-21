@@ -5,6 +5,8 @@ namespace X42.Controllers.Converters
 {
     public class ToStringJsonConverter : JsonConverter
     {
+        public override bool CanRead => false;
+
         public override bool CanConvert(Type objectType)
         {
             return true;
@@ -15,12 +17,8 @@ namespace X42.Controllers.Converters
             writer.WriteValue(value.ToString());
         }
 
-        public override bool CanRead
-        {
-            get { return false; }
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }

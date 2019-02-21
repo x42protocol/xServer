@@ -6,7 +6,7 @@ using X42.Utilities;
 namespace X42.Feature.Api
 {
     /// <summary>
-    /// An asynchronous action filter whose role is to reset the keepalive counter.
+    ///     An asynchronous action filter whose role is to reset the keepalive counter.
     /// </summary>
     /// <seealso cref="IAsyncActionFilter" />
     public class KeepaliveActionFilter : IAsyncActionFilter
@@ -15,24 +15,21 @@ namespace X42.Feature.Api
         private readonly Timer timer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="KeepaliveActionFilter"/> class.
+        ///     Initializes a new instance of the <see cref="KeepaliveActionFilter" /> class.
         /// </summary>
         /// <param name="apiSettings">The API settings.</param>
         public KeepaliveActionFilter(ApiSettings apiSettings)
         {
-            if (apiSettings == null)
-            {
-                return;
-            }
+            if (apiSettings == null) return;
 
-            this.timer = apiSettings.KeepaliveTimer;
+            timer = apiSettings.KeepaliveTimer;
         }
 
         /// <inheritdoc />
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             // If keepalive is used, reset the timer.
-            this.timer?.Reset();
+            timer?.Reset();
 
             await next();
         }

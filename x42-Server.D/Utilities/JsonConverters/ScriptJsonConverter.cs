@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Converter used to convert a <see cref="Script"/> or a <see cref="WitScript"/> to and from JSON.
+    ///     Converter used to convert a <see cref="Script" /> or a <see cref="WitScript" /> to and from JSON.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class ScriptJsonConverter : JsonConverter
@@ -15,20 +15,22 @@ namespace X42.Utilities.JsonConverters
         /// <inheritdoc />
         public override bool CanConvert(Type objectType)
         {
-            return typeof(Script).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo()) || typeof(WitScript).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+            return typeof(Script).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo()) ||
+                   typeof(WitScript).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
                 return null;
             try
             {
                 if (objectType == typeof(Script))
-                    return Script.FromBytesUnsafe(Encoders.Hex.DecodeData((string)reader.Value));
+                    return Script.FromBytesUnsafe(Encoders.Hex.DecodeData((string) reader.Value));
                 if (objectType == typeof(WitScript))
-                    return new WitScript((string)reader.Value);
+                    return new WitScript((string) reader.Value);
             }
             catch (FormatException)
             {
@@ -43,9 +45,9 @@ namespace X42.Utilities.JsonConverters
             if (value != null)
             {
                 if (value is Script)
-                    writer.WriteValue(Encoders.Hex.EncodeData(((Script)value).ToBytes(false)));
+                    writer.WriteValue(Encoders.Hex.EncodeData(((Script) value).ToBytes(false)));
                 if (value is WitScript)
-                    writer.WriteValue(((WitScript)value).ToString());
+                    writer.WriteValue(((WitScript) value).ToString());
             }
         }
     }

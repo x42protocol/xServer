@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Converter used to convert a <see cref="byte[]"/> to and from hex-encoded JSON.
+    ///     Converter used to convert a <see cref="byte[]" /> to and from hex-encoded JSON.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class HexJsonConverter : JsonConverter
@@ -17,11 +17,12 @@ namespace X42.Utilities.JsonConverters
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             try
             {
-                return reader.TokenType == JsonToken.Null ? null : Encoders.Hex.DecodeData((string)reader.Value);
+                return reader.TokenType == JsonToken.Null ? null : Encoders.Hex.DecodeData((string) reader.Value);
             }
             catch
             {
@@ -32,10 +33,7 @@ namespace X42.Utilities.JsonConverters
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if (value != null)
-            {
-                writer.WriteValue(Encoders.Hex.EncodeData((byte[])value));
-            }
+            if (value != null) writer.WriteValue(Encoders.Hex.EncodeData((byte[]) value));
         }
     }
 }

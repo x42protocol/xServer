@@ -4,12 +4,12 @@ using System.Linq;
 namespace X42.Feature.Setup
 {
     /// <summary>
-    /// Extensions to features collection.
+    ///     Extensions to features collection.
     /// </summary>
     public static class FeaturesExtensions
     {
         /// <summary>
-        /// Ensures a dependency feature type is present in the feature list.
+        ///     Ensures a dependency feature type is present in the feature list.
         /// </summary>
         /// <typeparam name="T">The dependency feature type.</typeparam>
         /// <param name="features">List of features.</param>
@@ -18,9 +18,7 @@ namespace X42.Feature.Setup
         public static IEnumerable<IServerFeature> EnsureFeature<T>(this IEnumerable<IServerFeature> features)
         {
             if (!features.OfType<T>().Any())
-            {
                 throw new MissingDependencyException($"Dependency feature {typeof(T)} cannot be found.");
-            }
 
             return features;
         }

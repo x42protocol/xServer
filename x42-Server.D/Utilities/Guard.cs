@@ -4,16 +4,16 @@ using TracerAttributes;
 namespace X42.Utilities
 {
     /// <summary>
-    /// Collection of guard methods.
-    /// <para>
-    /// Guards are typically used at the beginning of a method to protect the body of
-    /// the method being called with invalid set of parameters or object states.
-    /// </para>
+    ///     Collection of guard methods.
+    ///     <para>
+    ///         Guards are typically used at the beginning of a method to protect the body of
+    ///         the method being called with invalid set of parameters or object states.
+    ///     </para>
     /// </summary>
     public static class Guard
     {
         /// <summary>
-        /// Asserts that a condition is true.
+        ///     Asserts that a condition is true.
         /// </summary>
         /// <param name="condition">The condition to assert.</param>
         [NoTrace]
@@ -24,7 +24,7 @@ namespace X42.Utilities
         }
 
         /// <summary>
-        /// Checks an object is not null.
+        ///     Checks an object is not null.
         /// </summary>
         /// <typeparam name="T">The type of the object.</typeparam>
         /// <param name="value">The object.</param>
@@ -35,22 +35,16 @@ namespace X42.Utilities
         public static T NotNull<T>(T value, string parameterName)
         {
             // the parameterName should never be null or empty
-            if (string.IsNullOrWhiteSpace(parameterName))
-            {
-                throw new ArgumentNullException(parameterName);
-            }
+            if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentNullException(parameterName);
 
             // throw if the value is null
-            if (ReferenceEquals(value, null))
-            {
-                throw new ArgumentNullException(parameterName);
-            }
+            if (ReferenceEquals(value, null)) throw new ArgumentNullException(parameterName);
 
             return value;
         }
 
         /// <summary>
-        /// Checks a <see cref="string"/> is not null or empty.
+        ///     Checks a <see cref="string" /> is not null or empty.
         /// </summary>
         /// <param name="value">The string to check.</param>
         /// <param name="parameterName">The name of the string.</param>
@@ -61,9 +55,7 @@ namespace X42.Utilities
             NotNull(value, parameterName);
 
             if (value.Trim().Length == 0)
-            {
                 throw new ArgumentException($"The string parameter {parameterName} cannot be empty.");
-            }
 
             return value;
         }

@@ -3,7 +3,7 @@
 namespace X42.Utilities
 {
     /// <summary>
-    /// Commonly used time spans.
+    ///     Commonly used time spans.
     /// </summary>
     public static class TimeSpans
     {
@@ -23,8 +23,8 @@ namespace X42.Utilities
         public static TimeSpan Minute => TimeSpan.FromMinutes(1);
 
         /// <summary>
-        /// Special time span value used for repeat frequency values, for which it means that
-        /// the event should be only run once and not repeated.
+        ///     Special time span value used for repeat frequency values, for which it means that
+        ///     the event should be only run once and not repeated.
         /// </summary>
         public static TimeSpan RunOnce => TimeSpan.FromSeconds(-1);
     }

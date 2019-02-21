@@ -11,7 +11,7 @@ using X42.Server;
 namespace X42.Feature.Database
 {
     /// <summary>
-    /// Provides an ability to comminicate with diffrent database types.
+    ///     Provides an ability to comminicate with diffrent database types.
     /// </summary>
     public class DatabaseFeatures : ServerFeature
     {
@@ -20,11 +20,11 @@ namespace X42.Feature.Database
 
         public DatabaseFeatures(MasterNodeBase network, ILoggerFactory loggerFactory)
         {
-            this.logger = loggerFactory.CreateLogger(this.GetType().FullName);
+            logger = loggerFactory.CreateLogger(GetType().FullName);
         }
 
         /// <summary>
-        /// Prints command-line help.
+        ///     Prints command-line help.
         /// </summary>
         /// <param name="network">The network to extract values from.</param>
         public static void PrintHelp(MasterNodeBase masterNodeBase)
@@ -33,7 +33,7 @@ namespace X42.Feature.Database
         }
 
         /// <summary>
-        /// Get the default configuration.
+        ///     Get the default configuration.
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>
@@ -43,24 +43,24 @@ namespace X42.Feature.Database
         }
 
         /// <summary>
-        /// Connect to the database.
+        ///     Connect to the database.
         /// </summary>
         /// <param name="walletName">The name of the wallet.</param>
         /// <param name="walletPassword">The password of the wallet.</param>
         public void Connect()
         {
-            this.logger.LogInformation("Connected to database");
+            logger.LogInformation("Connected to database");
         }
 
         public void Disconnect()
         {
-            this.logger.LogInformation("Disconnected from database");
+            logger.LogInformation("Disconnected from database");
         }
 
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
-            this.logger.LogInformation("Database Feature Initialized");
+            logger.LogInformation("Database Feature Initialized");
 
             return Task.CompletedTask;
         }
@@ -68,7 +68,7 @@ namespace X42.Feature.Database
         /// <inheritdoc />
         public override void Dispose()
         {
-            this.Disconnect();
+            Disconnect();
         }
 
         /// <inheritdoc />
@@ -80,14 +80,15 @@ namespace X42.Feature.Database
     }
 
     /// <summary>
-    /// A class providing extension methods for <see cref="DatabaseFeatures"/>.
+    ///     A class providing extension methods for <see cref="DatabaseFeatures" />.
     /// </summary>
     public static class DatabaseBuilderExtension
-    {        /// <summary>
-             /// Adds POW and POS miner components to the node, so that it can mine or stake.
-             /// </summary>
-             /// <param name="serverBuilder">The object used to build the current node.</param>
-             /// <returns>The server builder, enriched with the new component.</returns>
+    {
+        /// <summary>
+        ///     Adds POW and POS miner components to the node, so that it can mine or stake.
+        /// </summary>
+        /// <param name="serverBuilder">The object used to build the current node.</param>
+        /// <returns>The server builder, enriched with the new component.</returns>
         public static IServerBuilder UsePostgreSQL(this IServerBuilder serverBuilder)
         {
             LoggingConfiguration.RegisterFeatureNamespace<DatabaseFeatures>("database");

@@ -3,13 +3,12 @@
 namespace X42.Feature.Setup
 {
     /// <summary>
-    /// Exception thrown when feature dependencies are missing.
+    ///     Exception thrown when feature dependencies are missing.
     /// </summary>
     public class MissingDependencyException : Exception
     {
         /// <inheritdoc />
         public MissingDependencyException()
-            : base()
         {
         }
 

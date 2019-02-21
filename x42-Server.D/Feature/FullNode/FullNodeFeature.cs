@@ -10,7 +10,7 @@ using X42.Server;
 namespace X42.Feature.FullNode
 {
     /// <summary>
-    /// Provides the Full Node layer.
+    ///     Provides the Full Node layer.
     /// </summary>
     public class FullNodeFeature : ServerFeature
     {
@@ -19,11 +19,11 @@ namespace X42.Feature.FullNode
 
         public FullNodeFeature(MasterNodeBase network, ILoggerFactory loggerFactory)
         {
-            this.logger = loggerFactory.CreateLogger(this.GetType().FullName);
+            logger = loggerFactory.CreateLogger(GetType().FullName);
         }
 
         /// <summary>
-        /// Prints command-line help.
+        ///     Prints command-line help.
         /// </summary>
         /// <param name="network">The network to extract values from.</param>
         public static void PrintHelp(MasterNodeBase masterNodeBase)
@@ -32,7 +32,7 @@ namespace X42.Feature.FullNode
         }
 
         /// <summary>
-        /// Get the default configuration.
+        ///     Get the default configuration.
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>
@@ -42,24 +42,24 @@ namespace X42.Feature.FullNode
         }
 
         /// <summary>
-        /// Connect to the full node.
+        ///     Connect to the full node.
         /// </summary>
         /// <param name="walletName">The name of the wallet.</param>
         /// <param name="walletPassword">The password of the wallet.</param>
         public void Connect()
         {
-            this.logger.LogInformation("Connected to full node");
+            logger.LogInformation("Connected to full node");
         }
 
         public void Disconnect()
         {
-            this.logger.LogInformation("Disconnected from full node");
+            logger.LogInformation("Disconnected from full node");
         }
 
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
-            this.logger.LogInformation("Full Node Feature Initialized");
+            logger.LogInformation("Full Node Feature Initialized");
 
             return Task.CompletedTask;
         }
@@ -67,7 +67,7 @@ namespace X42.Feature.FullNode
         /// <inheritdoc />
         public override void Dispose()
         {
-            this.Disconnect();
+            Disconnect();
         }
 
         /// <inheritdoc />
@@ -79,14 +79,15 @@ namespace X42.Feature.FullNode
     }
 
     /// <summary>
-    /// A class providing extension methods for <see cref="IFullNodeBuilder"/>.
+    ///     A class providing extension methods for <see cref="IFullNodeBuilder" />.
     /// </summary>
     public static class FullNodeBuilderExtension
-    {        /// <summary>
-             /// Adds POW and POS miner components to the node, so that it can mine or stake.
-             /// </summary>
-             /// <param name="fullNodeBuilder">The object used to build the current node.</param>
-             /// <returns>The full node builder, enriched with the new component.</returns>
+    {
+        /// <summary>
+        ///     Adds POW and POS miner components to the node, so that it can mine or stake.
+        /// </summary>
+        /// <param name="fullNodeBuilder">The object used to build the current node.</param>
+        /// <returns>The full node builder, enriched with the new component.</returns>
         public static IServerBuilder UseFullNode(this IServerBuilder fullNodeBuilder)
         {
             LoggingConfiguration.RegisterFeatureNamespace<FullNodeFeature>("fullnode");
@@ -95,10 +96,7 @@ namespace X42.Feature.FullNode
             {
                 features
                     .AddFeature<FullNodeFeature>()
-                    .FeatureServices(services =>
-                    {
-                        services.AddSingleton<FullNodeSettings>();
-                    });
+                    .FeatureServices(services => { services.AddSingleton<FullNodeSettings>(); });
             });
 
             return fullNodeBuilder;

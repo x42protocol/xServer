@@ -4,26 +4,26 @@ using System.Threading;
 namespace X42.Utilities
 {
     /// <summary>
-    /// Allows consumers to perform cleanup during a graceful shutdown.
+    ///     Allows consumers to perform cleanup during a graceful shutdown.
     /// </summary>
     public interface IX42ServerLifetime
     {
         /// <summary>
-        /// Triggered when the application host has fully started and is about to wait
-        /// for a graceful shutdown.
+        ///     Triggered when the application host has fully started and is about to wait
+        ///     for a graceful shutdown.
         /// </summary>
         CancellationToken ApplicationStarted { get; }
 
         /// <summary>
-        /// Triggered when the application host is performing a graceful shutdown.
-        /// Requests may still be in flight. Shutdown will block until this event completes.
+        ///     Triggered when the application host is performing a graceful shutdown.
+        ///     Requests may still be in flight. Shutdown will block until this event completes.
         /// </summary>
         CancellationToken ApplicationStopping { get; }
 
         /// <summary>
-        /// Triggered when the application host is performing a graceful shutdown.
-        /// All requests should be complete at this point. Shutdown will block
-        /// until this event completes.
+        ///     Triggered when the application host is performing a graceful shutdown.
+        ///     All requests should be complete at this point. Shutdown will block
+        ///     until this event completes.
         /// </summary>
         CancellationToken ApplicationStopped { get; }
 
@@ -32,64 +32,46 @@ namespace X42.Utilities
     }
 
     /// <summary>
-    /// Allows consumers to perform cleanup during a graceful shutdown.
-    /// Borrowed from asp.net core
+    ///     Allows consumers to perform cleanup during a graceful shutdown.
+    ///     Borrowed from asp.net core
     /// </summary>
     public class X42ServerLifetime : IX42ServerLifetime
     {
         private readonly CancellationTokenSource startedSource = new CancellationTokenSource();
 
-        private readonly CancellationTokenSource stoppingSource = new CancellationTokenSource();
-
         private readonly CancellationTokenSource stoppedSource = new CancellationTokenSource();
 
-        /// <summary>
-        /// Triggered when the application host has fully started and is about to wait
-        /// for a graceful shutdown.
-        /// </summary>
-        public CancellationToken ApplicationStarted
-        {
-            get
-            {
-                return this.startedSource.Token;
-            }
-        }
+        private readonly CancellationTokenSource stoppingSource = new CancellationTokenSource();
 
         /// <summary>
-        /// Triggered when the application host is performing a graceful shutdown.
-        /// Request may still be in flight. Shutdown will block until this event completes.
+        ///     Triggered when the application host has fully started and is about to wait
+        ///     for a graceful shutdown.
         /// </summary>
-        public CancellationToken ApplicationStopping
-        {
-            get
-            {
-                return this.stoppingSource.Token;
-            }
-        }
+        public CancellationToken ApplicationStarted => startedSource.Token;
 
         /// <summary>
-        /// Triggered when the application host is performing a graceful shutdown.
-        /// All requests should be complete at this point. Shutdown will block
-        /// until this event completes.
+        ///     Triggered when the application host is performing a graceful shutdown.
+        ///     Request may still be in flight. Shutdown will block until this event completes.
         /// </summary>
-        public CancellationToken ApplicationStopped
-        {
-            get
-            {
-                return this.stoppedSource.Token;
-            }
-        }
+        public CancellationToken ApplicationStopping => stoppingSource.Token;
 
         /// <summary>
-        /// Signals the ApplicationStopping event and blocks until it completes.
+        ///     Triggered when the application host is performing a graceful shutdown.
+        ///     All requests should be complete at this point. Shutdown will block
+        ///     until this event completes.
+        /// </summary>
+        public CancellationToken ApplicationStopped => stoppedSource.Token;
+
+        /// <summary>
+        ///     Signals the ApplicationStopping event and blocks until it completes.
         /// </summary>
         public void StopApplication()
         {
-            CancellationTokenSource stoppingSource = this.stoppingSource;
-            bool lockTaken = false;
+            var stoppingSource = this.stoppingSource;
+            var lockTaken = false;
             try
             {
-                Monitor.Enter((object)stoppingSource, ref lockTaken);
+                Monitor.Enter(stoppingSource, ref lockTaken);
                 try
                 {
                     this.stoppingSource.Cancel(false);
@@ -101,18 +83,18 @@ namespace X42.Utilities
             finally
             {
                 if (lockTaken)
-                    Monitor.Exit((object)stoppingSource);
+                    Monitor.Exit(stoppingSource);
             }
         }
 
         /// <summary>
-        /// Signals the ApplicationStarted event and blocks until it completes.
+        ///     Signals the ApplicationStarted event and blocks until it completes.
         /// </summary>
         public void NotifyStarted()
         {
             try
             {
-                this.startedSource.Cancel(false);
+                startedSource.Cancel(false);
             }
             catch (Exception)
             {
@@ -120,13 +102,13 @@ namespace X42.Utilities
         }
 
         /// <summary>
-        /// Signals the ApplicationStopped event and blocks until it completes.
+        ///     Signals the ApplicationStopped event and blocks until it completes.
         /// </summary>
         public void NotifyStopped()
         {
             try
             {
-                this.stoppedSource.Cancel(false);
+                stoppedSource.Cancel(false);
             }
             catch (Exception)
             {

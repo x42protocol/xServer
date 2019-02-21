@@ -4,15 +4,17 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
+using x42.Properties;
 using X42.Configuration;
-using X42.Utilities;
-using X42.MasterNode;
 using X42.Feature.Setup;
+using X42.MasterNode;
+using X42.Utilities;
 
 namespace X42.Server
 {
     /// <summary>
-    /// Server providing all supported features of the masternode and its network.
+    ///     Server providing all supported features of the masternode and its network.
     /// </summary>
     public class X42Server : IX42Server
     {
@@ -22,18 +24,23 @@ namespace X42.Server
         /// <summary>Factory for creating loggers.</summary>
         private ILoggerFactory loggerFactory;
 
+        private IAsyncLoop periodicLogLoop;
+
         /// <summary>Component responsible for starting and stopping all the node's features.</summary>
         private ServerFeatureExecutor serverFeatureExecutor;
 
+        /// <summary>Application life cycle control - triggers when application shuts down.</summary>
+        private X42ServerLifetime serverLifetime;
+
+        /// <summary>Creates new instance of the <see cref="X42Server" />.</summary>
+        public X42Server()
+        {
+            State = X42ServerState.Created;
+        }
+
         /// <summary>Server command line and configuration file settings.</summary>
         public ServerSettings Settings { get; private set; }
-        
-        /// <inheritdoc />
-        public X42ServerState State { get; private set; }
 
-        /// <inheritdoc />
-        public DateTime StartTime { get; set; }
-      
         /// <summary>Factory for creating and execution of asynchronous loops.</summary>
         public IAsyncLoopFactory AsyncLoopFactory { get; set; }
 
@@ -43,22 +50,25 @@ namespace X42.Server
         /// <summary>Contains path locations to folders and files on disk.</summary>
         public DataFolder DataFolder { get; set; }
 
+        /// <see cref="IServerStats" />
+        private IServerStats ServerStats { get; set; }
+
+        public string LastLogOutput { get; private set; }
+
+        /// <inheritdoc />
+        public X42ServerState State { get; private set; }
+
+        /// <inheritdoc />
+        public DateTime StartTime { get; set; }
+
         /// <summary>Provider of date time functionality.</summary>
         public IDateTimeProvider DateTimeProvider { get; set; }
 
-        /// <summary>Application life cycle control - triggers when application shuts down.</summary>
-        private X42ServerLifetime serverLifetime;
-
-        /// <see cref="IServerStats"/>
-        private IServerStats ServerStats { get; set; }
-
-        private IAsyncLoop periodicLogLoop;
-        
         /// <inheritdoc />
         public IX42ServerLifetime X42ServerLifetime
         {
-            get { return this.serverLifetime; }
-            private set { this.serverLifetime = (X42ServerLifetime)value; }
+            get => serverLifetime;
+            private set => serverLifetime = (X42ServerLifetime) value;
         }
 
 
@@ -67,32 +77,17 @@ namespace X42.Server
 
         public T ServerService<T>(bool failWithDefault = false)
         {
-            if (this.Services != null && this.Services.ServiceProvider != null)
+            if (Services != null && Services.ServiceProvider != null)
             {
-                var service = this.Services.ServiceProvider.GetService<T>();
+                var service = Services.ServiceProvider.GetService<T>();
                 if (service != null)
                     return service;
             }
 
             if (failWithDefault)
-                return default(T);
+                return default;
 
-            throw new InvalidOperationException($"The {typeof(T).ToString()} service is not supported");
-        }
-
-        public T ServerFeature<T>(bool failWithError = false)
-        {
-            if (this.Services != null)
-            {
-                T feature = this.Services.Features.OfType<T>().FirstOrDefault();
-                if (feature != null)
-                    return feature;
-            }
-
-            if (!failWithError)
-                return default(T);
-
-            throw new InvalidOperationException($"The {typeof(T).ToString()} feature is not supported");
+            throw new InvalidOperationException($"The {typeof(T)} service is not supported");
         }
 
 
@@ -101,11 +96,11 @@ namespace X42.Server
         {
             get
             {
-                string versionString = typeof(X42Server).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ??
-                    Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationVersion;
+                var versionString = typeof(X42Server).GetTypeInfo().Assembly
+                                        .GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ??
+                                    PlatformServices.Default.Application.ApplicationVersion;
 
                 if (!string.IsNullOrEmpty(versionString))
-                {
                     try
                     {
                         return new Version(versionString);
@@ -116,125 +111,131 @@ namespace X42.Server
                     catch (OverflowException)
                     {
                     }
-                }
 
                 return new Version(0, 0);
             }
         }
 
-        /// <summary>Creates new instance of the <see cref="X42Server"/>.</summary>
-        public X42Server()
+        /// <inheritdoc />
+        public void Start()
         {
-            this.State = X42ServerState.Created;
+            State = X42ServerState.Starting;
+
+            if (State == X42ServerState.Disposing || State == X42ServerState.Disposed)
+                throw new ObjectDisposedException(nameof(X42Server));
+
+            serverLifetime = Services.ServiceProvider.GetRequiredService<IX42ServerLifetime>() as X42ServerLifetime;
+            serverFeatureExecutor = Services.ServiceProvider.GetRequiredService<ServerFeatureExecutor>();
+
+            if (serverLifetime == null)
+                throw new InvalidOperationException($"{nameof(IX42ServerLifetime)} must be set.");
+
+            if (serverFeatureExecutor == null)
+                throw new InvalidOperationException($"{nameof(ServerFeatureExecutor)} must be set.");
+
+            logger.LogInformation("Starting server.");
+
+            // Initialize all registered features.
+            serverFeatureExecutor.Initialize();
+
+            // Fire IServerLifetime.Started.
+            serverLifetime.NotifyStarted();
+
+            StartPeriodicLog();
+
+            State = X42ServerState.Started;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            if (State == X42ServerState.Disposing || State == X42ServerState.Disposed)
+                return;
+
+            State = X42ServerState.Disposing;
+
+            logger.LogInformation("Closing server pending.");
+
+            // Fire IServerLifetime.Stopping.
+            serverLifetime.StopApplication();
+
+            logger.LogInformation("Disposing periodic logging loops.");
+            periodicLogLoop?.Dispose();
+
+            logger.LogInformation("Disposing settings.");
+            Settings.Dispose();
+
+            // Fire IServerLifetime.Stopped.
+            logger.LogInformation("Notify application has stopped.");
+            serverLifetime.NotifyStopped();
+
+            State = X42ServerState.Disposed;
+        }
+
+        public T ServerFeature<T>(bool failWithError = false)
+        {
+            if (Services != null)
+            {
+                var feature = Services.Features.OfType<T>().FirstOrDefault();
+                if (feature != null)
+                    return feature;
+            }
+
+            if (!failWithError)
+                return default;
+
+            throw new InvalidOperationException($"The {typeof(T)} feature is not supported");
         }
 
         /// <inheritdoc />
         public X42Server Initialize(ServerServiceProvider serviceProvider)
         {
-            this.State = X42ServerState.Initializing;
+            State = X42ServerState.Initializing;
 
             Guard.NotNull(serviceProvider, nameof(serviceProvider));
 
-            this.Services = serviceProvider;
+            Services = serviceProvider;
 
-            this.logger = this.Services.ServiceProvider.GetService<ILoggerFactory>().CreateLogger(this.GetType().FullName);
+            logger = Services.ServiceProvider.GetService<ILoggerFactory>().CreateLogger(GetType().FullName);
 
-            this.DataFolder = this.Services.ServiceProvider.GetService<DataFolder>();
-            this.DateTimeProvider = this.Services.ServiceProvider.GetService<IDateTimeProvider>();
-            this.MasterNode = this.Services.ServiceProvider.GetService<MasterNodeBase>();
-            this.Settings = this.Services.ServiceProvider.GetService<ServerSettings>();
-            this.ServerStats = this.Services.ServiceProvider.GetService<IServerStats>();
-            
-            this.loggerFactory = this.Services.ServiceProvider.GetService<ServerSettings>().LoggerFactory;
+            DataFolder = Services.ServiceProvider.GetService<DataFolder>();
+            DateTimeProvider = Services.ServiceProvider.GetService<IDateTimeProvider>();
+            MasterNode = Services.ServiceProvider.GetService<MasterNodeBase>();
+            Settings = Services.ServiceProvider.GetService<ServerSettings>();
+            ServerStats = Services.ServiceProvider.GetService<IServerStats>();
 
-            this.AsyncLoopFactory = this.Services.ServiceProvider.GetService<IAsyncLoopFactory>();
+            loggerFactory = Services.ServiceProvider.GetService<ServerSettings>().LoggerFactory;
 
-            this.logger.LogInformation(x42.Properties.Resources.AsciiLogo);
-            this.logger.LogInformation("x42-Server initialized {0}.", this.MasterNode.Name);
+            AsyncLoopFactory = Services.ServiceProvider.GetService<IAsyncLoopFactory>();
 
-            this.State = X42ServerState.Initialized;
-            this.StartTime = this.DateTimeProvider.GetUtcNow();
+            logger.LogInformation(Resources.AsciiLogo);
+            logger.LogInformation("x42-Server initialized {0}.", MasterNode.Name);
+
+            State = X42ServerState.Initialized;
+            StartTime = DateTimeProvider.GetUtcNow();
             return this;
         }
 
-        /// <inheritdoc />
-        public void Start()
-        {
-            this.State = X42ServerState.Starting;
-
-            if (this.State == X42ServerState.Disposing || this.State == X42ServerState.Disposed)
-                throw new ObjectDisposedException(nameof(X42Server));
-
-            this.serverLifetime = this.Services.ServiceProvider.GetRequiredService<IX42ServerLifetime>() as X42ServerLifetime;
-            this.serverFeatureExecutor = this.Services.ServiceProvider.GetRequiredService<ServerFeatureExecutor>();
-
-            if (this.serverLifetime == null)
-                throw new InvalidOperationException($"{nameof(IX42ServerLifetime)} must be set.");
-            
-            if (this.serverFeatureExecutor == null)
-                throw new InvalidOperationException($"{nameof(ServerFeatureExecutor)} must be set.");
-
-            this.logger.LogInformation("Starting server.");
-
-            // Initialize all registered features.
-            this.serverFeatureExecutor.Initialize();
-
-            // Fire IServerLifetime.Started.
-            this.serverLifetime.NotifyStarted();
-
-            this.StartPeriodicLog();
-
-            this.State = X42ServerState.Started;
-        }
-
         /// <summary>
-        /// Starts a loop to periodically log statistics about server's status very couple of seconds.
-        /// <para>
-        /// These logs are also displayed on the console.
-        /// </para>
+        ///     Starts a loop to periodically log statistics about server's status very couple of seconds.
+        ///     <para>
+        ///         These logs are also displayed on the console.
+        ///     </para>
         /// </summary>
         private void StartPeriodicLog()
         {
-            this.periodicLogLoop = this.AsyncLoopFactory.Run("PeriodicLog", (cancellation) =>
-            {
-                string stats = this.ServerStats.GetStats();
+            periodicLogLoop = AsyncLoopFactory.Run("PeriodicLog", cancellation =>
+                {
+                    var stats = ServerStats.GetStats();
 
-                this.logger.LogInformation(stats);
-                this.LastLogOutput = stats;
+                    logger.LogInformation(stats);
+                    LastLogOutput = stats;
 
-                return Task.CompletedTask;
-            },
-            this.serverLifetime.ApplicationStopping,
-            repeatEvery: TimeSpans.FiveSeconds,
-            startAfter: TimeSpans.FiveSeconds);
-        }
-
-        public string LastLogOutput { get; private set; }
-        
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            if (this.State == X42ServerState.Disposing || this.State == X42ServerState.Disposed)
-                return;
-
-            this.State = X42ServerState.Disposing;
-
-            this.logger.LogInformation("Closing server pending.");
-
-            // Fire IServerLifetime.Stopping.
-            this.serverLifetime.StopApplication();
-            
-            this.logger.LogInformation("Disposing periodic logging loops.");
-            this.periodicLogLoop?.Dispose();
-            
-            this.logger.LogInformation("Disposing settings.");
-            this.Settings.Dispose();
-
-            // Fire IServerLifetime.Stopped.
-            this.logger.LogInformation("Notify application has stopped.");
-            this.serverLifetime.NotifyStopped();
-
-            this.State = X42ServerState.Disposed;
+                    return Task.CompletedTask;
+                },
+                serverLifetime.ApplicationStopping,
+                TimeSpans.FiveSeconds,
+                TimeSpans.FiveSeconds);
         }
     }
 }

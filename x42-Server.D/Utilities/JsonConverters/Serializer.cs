@@ -5,7 +5,7 @@ using Newtonsoft.Json.Serialization;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Class providing method used to serialize/deserialize domain objects to and from JSON.
+    ///     Class providing method used to serialize/deserialize domain objects to and from JSON.
     /// </summary>
     public class Serializer
     {

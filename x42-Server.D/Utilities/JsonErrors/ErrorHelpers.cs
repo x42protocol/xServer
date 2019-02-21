@@ -20,7 +20,7 @@ namespace X42.Utilities.JsonErrors
                 }
             };
 
-            return new ErrorResult((int)statusCode, errorResponse);
+            return new ErrorResult((int) statusCode, errorResponse);
         }
     }
 }

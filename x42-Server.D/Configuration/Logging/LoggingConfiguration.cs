@@ -12,11 +12,12 @@ using NLog.Targets;
 using NLog.Targets.Wrappers;
 using X42.Configuration.Settings;
 using X42.Utilities;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace X42.Configuration.Logging
 {
     /// <summary>
-    /// An extension of the <see cref="LoggerFactory"/> that allows access to some internal components.
+    ///     An extension of the <see cref="LoggerFactory" /> that allows access to some internal components.
     /// </summary>
     public class ExtendedLoggerFactory : LoggerFactory
     {
@@ -28,20 +29,20 @@ namespace X42.Configuration.Logging
         /// <summary>Provider of console logger.</summary>
         public ConsoleLoggerProvider ConsoleLoggerProvider { get; set; }
 
-        /// <summary>Loads the NLog.config file from the <see cref="DataFolder"/>, if it exists.</summary>
+        /// <summary>Loads the NLog.config file from the <see cref="DataFolder" />, if it exists.</summary>
         public void LoadNLogConfiguration(DataFolder dataFolder)
         {
             if (dataFolder == null)
                 return;
 
-            string configPath = Path.Combine(dataFolder.RootPath, NLogConfigFileName);
+            var configPath = Path.Combine(dataFolder.RootPath, NLogConfigFileName);
             if (File.Exists(configPath))
                 this.ConfigureNLog(configPath);
         }
     }
 
     /// <summary>
-    /// Integration of NLog with Microsoft.Extensions.Logging interfaces.
+    ///     Integration of NLog with Microsoft.Extensions.Logging interfaces.
     /// </summary>
     public static class LoggingConfiguration
     {
@@ -55,30 +56,43 @@ namespace X42.Configuration.Logging
         private static DataFolder folder;
 
         /// <summary>Mappings of keys to class name spaces to be used when filtering log categories.</summary>
-        private static readonly Dictionary<string, string> KeyCategories = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            // { "addrman", "" },
-            // { "cmpctblock", "" }
-            // { "coindb", "" },
-            // { "http", "" },
-            // { "libevent", "" },
-            // { "lock", "" },
-            // { "mempoolrej", "" },
-            // { "net", $"{nameof(X42)}.{nameof(Server)}.{nameof(Connection)}.*" },
-            // { "proxy", "" },
-            // { "prune", "" },
-            // { "rand", "" },
-            // { "reindex", "" },
-            // { "qt", "" },
-            // { "selectcoins", "" },
-            // { "tor", "" },
-            // { "zmq", "" },
+        private static readonly Dictionary<string, string> KeyCategories =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                // { "addrman", "" },
+                // { "cmpctblock", "" }
+                // { "coindb", "" },
+                // { "http", "" },
+                // { "libevent", "" },
+                // { "lock", "" },
+                // { "mempoolrej", "" },
+                // { "net", $"{nameof(X42)}.{nameof(Server)}.{nameof(Connection)}.*" },
+                // { "proxy", "" },
+                // { "prune", "" },
+                // { "rand", "" },
+                // { "reindex", "" },
+                // { "qt", "" },
+                // { "selectcoins", "" },
+                // { "tor", "" },
+                // { "zmq", "" },
 
-            // Short Names
-            { "configuration", $"{nameof(X42)}.{nameof(Server)}.{nameof(Configuration)}.*" },
-            { "server", $"{nameof(X42)}.{nameof(Server)}.*" },
-            { "fullnode", $"{nameof(X42)}.{nameof(Feature)}.{nameof(Feature.FullNode)}.*" }
-        };
+                // Short Names
+                {"configuration", $"{nameof(X42)}.{nameof(Server)}.{nameof(Configuration)}.*"},
+                {"server", $"{nameof(X42)}.{nameof(Server)}.*"},
+                {"fullnode", $"{nameof(X42)}.{nameof(Feature)}.{nameof(Feature.FullNode)}.*"}
+            };
+
+        /// <summary>
+        ///     Initializes application logging.
+        /// </summary>
+        static LoggingConfiguration()
+        {
+            // If there is no NLog.config file, we need to initialize the configuration ourselves.
+            if (LogManager.Configuration == null) LogManager.Configuration = new NLog.Config.LoggingConfiguration();
+
+            // Installs handler to be called when NLog's configuration file is changed on disk.
+            LogManager.ConfigurationReloaded += NLogConfigurationReloaded;
+        }
 
         public static void RegisterFeatureNamespace<T>(string key)
         {
@@ -91,19 +105,7 @@ namespace X42.Configuration.Logging
         }
 
         /// <summary>
-        /// Initializes application logging.
-        /// </summary>
-        static LoggingConfiguration()
-        {
-            // If there is no NLog.config file, we need to initialize the configuration ourselves.
-            if (LogManager.Configuration == null) LogManager.Configuration = new NLog.Config.LoggingConfiguration();
-
-            // Installs handler to be called when NLog's configuration file is changed on disk.
-            LogManager.ConfigurationReloaded += NLogConfigurationReloaded;
-        }
-
-        /// <summary>
-        /// Event handler to be called when logging <see cref="NLog.LogManager.Configuration"/> gets reloaded.
+        ///     Event handler to be called when logging <see cref="NLog.LogManager.Configuration" /> gets reloaded.
         /// </summary>
         /// <param name="sender">Not used.</param>
         /// <param name="e">Not used.</param>
@@ -113,9 +115,12 @@ namespace X42.Configuration.Logging
         }
 
         /// <summary>
-        /// Extends the logging rules in the "NLog.config" with server log settings rules.
+        ///     Extends the logging rules in the "NLog.config" with server log settings rules.
         /// </summary>
-        /// <param name="settings">Server log settings to extend the rules from the configuration file, or null if no extension is required.</param>
+        /// <param name="settings">
+        ///     Server log settings to extend the rules from the configuration file, or null if no extension is
+        ///     required.
+        /// </param>
         /// <param name="dataFolder">Data folder to determine path to log files.</param>
         private static void AddFilters(LogSettings settings = null, DataFolder dataFolder = null)
         {
@@ -125,24 +130,25 @@ namespace X42.Configuration.Logging
             folder = dataFolder;
 
             // If we use "debug*" targets, which are defined in "NLog.config", make sure they log into the correct log folder in data directory.
-            List<Target> debugTargets = LogManager.Configuration.AllTargets.Where(t => (t.Name != null) && t.Name.StartsWith("debug")).ToList();
-            foreach (Target debugTarget in debugTargets)
+            var debugTargets = LogManager.Configuration.AllTargets
+                .Where(t => t.Name != null && t.Name.StartsWith("debug")).ToList();
+            foreach (var debugTarget in debugTargets)
             {
-                FileTarget debugFileTarget = debugTarget is AsyncTargetWrapper ? (FileTarget)((debugTarget as AsyncTargetWrapper).WrappedTarget) : (FileTarget)debugTarget;
-                string currentFile = debugFileTarget.FileName.Render(new LogEventInfo { TimeStamp = DateTime.UtcNow });
+                var debugFileTarget = debugTarget is AsyncTargetWrapper
+                    ? (FileTarget) (debugTarget as AsyncTargetWrapper).WrappedTarget
+                    : (FileTarget) debugTarget;
+                var currentFile = debugFileTarget.FileName.Render(new LogEventInfo {TimeStamp = DateTime.UtcNow});
                 debugFileTarget.FileName = Path.Combine(folder.LogPath, Path.GetFileName(currentFile));
             }
 
             // Remove rule that forbids logging before the logging is initialized.
             LoggingRule nullPreInitRule = null;
-            foreach (LoggingRule rule in LogManager.Configuration.LoggingRules)
-            {
-                if (rule.Final && rule.NameMatches("*") && (rule.Targets.Count > 0) && (rule.Targets[0].Name == "null"))
+            foreach (var rule in LogManager.Configuration.LoggingRules)
+                if (rule.Final && rule.NameMatches("*") && rule.Targets.Count > 0 && rule.Targets[0].Name == "null")
                 {
                     nullPreInitRule = rule;
                     break;
                 }
-            }
 
             LogManager.Configuration.LoggingRules.Remove(nullPreInitRule);
 
@@ -151,11 +157,13 @@ namespace X42.Configuration.Logging
             {
                 Name = "main",
                 FileName = Path.Combine(folder.LogPath, "server.txt"),
-                ArchiveFileName = Path.Combine(folder.LogPath, "server-${date:universalTime=true:format=yyyy-MM-dd}.txt"),
+                ArchiveFileName =
+                    Path.Combine(folder.LogPath, "server-${date:universalTime=true:format=yyyy-MM-dd}.txt"),
                 ArchiveNumbering = ArchiveNumberingMode.Sequence,
                 ArchiveEvery = FileArchivePeriod.Day,
                 MaxArchiveFiles = 7,
-                Layout = "[${longdate:universalTime=true} ${threadid}${mdlc:item=id}] ${level:uppercase=true}: ${callsite} ${message}",
+                Layout =
+                    "[${longdate:universalTime=true} ${threadid}${mdlc:item=id}] ${level:uppercase=true}: ${callsite} ${message}",
                 Encoding = Encoding.UTF8
             };
 
@@ -169,13 +177,9 @@ namespace X42.Configuration.Logging
                 var usedCategories = new HashSet<string>(StringComparer.Ordinal);
 
                 // Increase selected categories to Debug.
-                foreach (string key in settings.DebugArgs)
+                foreach (var key in settings.DebugArgs)
                 {
-                    if (!KeyCategories.TryGetValue(key.Trim(), out string category))
-                    {
-                        // Allow direct specification - e.g. "-debug=X42.Server.Builder".
-                        category = key.Trim();
-                    }
+                    if (!KeyCategories.TryGetValue(key.Trim(), out var category)) category = key.Trim();
 
                     if (!usedCategories.Contains(category))
                     {
@@ -193,10 +197,13 @@ namespace X42.Configuration.Logging
         }
 
         /// <summary>
-        /// Extends the logging rules in the "NLog.config" with server log settings rules.
+        ///     Extends the logging rules in the "NLog.config" with server log settings rules.
         /// </summary>
         /// <param name="loggerFactory">Not used.</param>
-        /// <param name="settings">Server log settings to extend the rules from the configuration file, or null if no extension is required.</param>
+        /// <param name="settings">
+        ///     Server log settings to extend the rules from the configuration file, or null if no extension is
+        ///     required.
+        /// </param>
         /// <param name="dataFolder">Data folder to determine path to log files.</param>
         public static void AddFilters(this ILoggerFactory loggerFactory, LogSettings settings, DataFolder dataFolder)
         {
@@ -204,7 +211,7 @@ namespace X42.Configuration.Logging
         }
 
         /// <summary>
-        /// Configure the console logger and set it to filter logs not related to the x42 server.
+        ///     Configure the console logger and set it to filter logs not related to the x42 server.
         /// </summary>
         /// <param name="loggerFactory">The logger factory to add the console logger.</param>
         public static void AddConsoleWithFilters(this ILoggerFactory loggerFactory)
@@ -213,10 +220,10 @@ namespace X42.Configuration.Logging
             {
                 Switches =
                 {
-                    {"Default", Microsoft.Extensions.Logging.LogLevel.Information},
-                    {"System", Microsoft.Extensions.Logging.LogLevel.Warning},
-                    {"Microsoft", Microsoft.Extensions.Logging.LogLevel.Warning},
-                    {"Microsoft.AspNetCore", Microsoft.Extensions.Logging.LogLevel.Error}
+                    {"Default", LogLevel.Information},
+                    {"System", LogLevel.Warning},
+                    {"Microsoft", LogLevel.Warning},
+                    {"Microsoft.AspNetCore", LogLevel.Error}
                 }
             };
 
@@ -230,50 +237,45 @@ namespace X42.Configuration.Logging
         }
 
         /// <summary>
-        /// Configure the console logger and set it to filter logs not related to the x42 server.
+        ///     Configure the console logger and set it to filter logs not related to the x42 server.
         /// </summary>
         /// <param name="loggerFactory">Not used.</param>
         /// <param name="consoleLoggerSettings">Console settings to filter.</param>
         /// <param name="settings">Settings that hold potential debug arguments, if null no debug arguments will be loaded."/></param>
-        public static void ConfigureConsoleFilters(this ILoggerFactory loggerFactory, ConsoleLoggerSettings consoleLoggerSettings, LogSettings settings)
+        public static void ConfigureConsoleFilters(this ILoggerFactory loggerFactory,
+            ConsoleLoggerSettings consoleLoggerSettings, LogSettings settings)
         {
             if (settings != null)
-            {
                 if (settings.DebugArgs.Any())
                 {
                     if (settings.DebugArgs[0] == "1")
                     {
                         // Increase all logging to Debug.
-                        consoleLoggerSettings.Switches.Add($"{nameof(X42)}.{nameof(Server)}", Microsoft.Extensions.Logging.LogLevel.Debug);
+                        consoleLoggerSettings.Switches.Add($"{nameof(X42)}.{nameof(Server)}", LogLevel.Debug);
                     }
                     else
                     {
                         var usedCategories = new HashSet<string>(StringComparer.Ordinal);
 
                         // Increase selected categories to Debug.
-                        foreach (string key in settings.DebugArgs)
+                        foreach (var key in settings.DebugArgs)
                         {
-                            if (!KeyCategories.TryGetValue(key.Trim(), out string category))
-                            {
-                                // Allow direct specification - e.g. "-debug=X42.Server.Builder".
-                                category = key.Trim();
-                            }
+                            if (!KeyCategories.TryGetValue(key.Trim(), out var category)) category = key.Trim();
 
                             if (!usedCategories.Contains(category))
                             {
                                 usedCategories.Add(category);
-                                consoleLoggerSettings.Switches.Add(category.TrimEnd('*').TrimEnd('.'), Microsoft.Extensions.Logging.LogLevel.Debug);
+                                consoleLoggerSettings.Switches.Add(category.TrimEnd('*').TrimEnd('.'), LogLevel.Debug);
                             }
                         }
                     }
                 }
-            }
 
             consoleLoggerSettings.Reload();
         }
 
         /// <summary>
-        /// Obtains configuration of the console logger.
+        ///     Obtains configuration of the console logger.
         /// </summary>
         /// <param name="loggerFactory">Logger factory interface being extended.</param>
         /// <returns>Console logger settings.</returns>
@@ -285,7 +287,7 @@ namespace X42.Configuration.Logging
         }
 
         /// <summary>
-        /// Obtains configuration of the console logger provider.
+        ///     Obtains configuration of the console logger provider.
         /// </summary>
         /// <param name="loggerFactory">Logger factory interface being extended.</param>
         /// <returns>Console logger provider.</returns>

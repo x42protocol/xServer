@@ -11,9 +11,9 @@ namespace X42.Feature.Api
 
         public CertificateStore(ILoggerFactory loggerFactory)
         {
-            this.logger = loggerFactory.CreateLogger(this.GetType().FullName);
+            logger = loggerFactory.CreateLogger(GetType().FullName);
         }
-        
+
         /// <inheritdoc />
         public bool TryGet(string filePath, out X509Certificate2 certificate)
         {
@@ -25,7 +25,7 @@ namespace X42.Feature.Api
             }
             catch (Exception e)
             {
-                this.logger.LogWarning("Failed to read certificate at {0} : {1}", filePath, e.Message);
+                logger.LogWarning("Failed to read certificate at {0} : {1}", filePath, e.Message);
                 certificate = null;
                 return false;
             }

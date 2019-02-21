@@ -23,34 +23,34 @@ namespace X42.Utilities
 
     public class ServerStats : IServerStats
     {
-        private List<StatsItem> stats;
+        private readonly IDateTimeProvider dateTimeProvider;
 
-        /// <summary>Protects access to <see cref="stats"/>.</summary>
+        /// <summary>Protects access to <see cref="stats" />.</summary>
         private readonly object locker;
 
-        private readonly IDateTimeProvider dateTimeProvider;
+        private List<StatsItem> stats;
 
         public ServerStats(IDateTimeProvider dateTimeProvider)
         {
-            this.locker = new object();
+            locker = new object();
             this.dateTimeProvider = dateTimeProvider;
 
-            this.stats = new List<StatsItem>();
+            stats = new List<StatsItem>();
         }
 
         /// <inheritdoc />
         public void RegisterStats(Action<StringBuilder> appendStatsAction, StatsType statsType, int priority = 0)
         {
-            lock (this.locker)
+            lock (locker)
             {
-                this.stats.Add(new StatsItem()
+                stats.Add(new StatsItem
                 {
                     AppendStatsAction = appendStatsAction,
                     StatsType = statsType,
                     Priority = priority
                 });
 
-                this.stats = this.stats.OrderByDescending(x => x.Priority).ToList();
+                stats = stats.OrderByDescending(x => x.Priority).ToList();
             }
         }
 
@@ -59,15 +59,15 @@ namespace X42.Utilities
         {
             var statsBuilder = new StringBuilder();
 
-            lock (this.locker)
+            lock (locker)
             {
-                string date = this.dateTimeProvider.GetUtcNow().ToString(CultureInfo.InvariantCulture);
+                var date = dateTimeProvider.GetUtcNow().ToString(CultureInfo.InvariantCulture);
                 statsBuilder.AppendLine($"====== x42 Master Node Stats ====== {date}");
 
-                foreach (StatsItem actionPriority in this.stats.Where(x => x.StatsType == StatsType.Inline))
+                foreach (var actionPriority in stats.Where(x => x.StatsType == StatsType.Inline))
                     actionPriority.AppendStatsAction(statsBuilder);
 
-                foreach (StatsItem actionPriority in this.stats.Where(x => x.StatsType == StatsType.Component))
+                foreach (var actionPriority in stats.Where(x => x.StatsType == StatsType.Component))
                     actionPriority.AppendStatsAction(statsBuilder);
             }
 
@@ -79,9 +79,9 @@ namespace X42.Utilities
         {
             var statsBuilder = new StringBuilder();
 
-            lock (this.locker)
+            lock (locker)
             {
-                foreach (StatsItem actionPriority in this.stats.Where(x => x.StatsType == StatsType.Benchmark))
+                foreach (var actionPriority in stats.Where(x => x.StatsType == StatsType.Benchmark))
                     actionPriority.AppendStatsAction(statsBuilder);
             }
 
@@ -101,18 +101,18 @@ namespace X42.Utilities
     public enum StatsType
     {
         /// <summary>
-        /// Inline stats are usually single line stats that should
-        /// display most important information about the server.
+        ///     Inline stats are usually single line stats that should
+        ///     display most important information about the server.
         /// </summary>
         Inline,
 
         /// <summary>
-        /// Component-related stats are usually blocks of component specific stats.
+        ///     Component-related stats are usually blocks of component specific stats.
         /// </summary>
         Component,
 
         /// <summary>
-        /// Benchmarking stats that display performance related information.
+        ///     Benchmarking stats that display performance related information.
         /// </summary>
         Benchmark
     }

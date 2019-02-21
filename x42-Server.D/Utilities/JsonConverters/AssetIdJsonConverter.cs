@@ -7,19 +7,19 @@ using Newtonsoft.Json;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Converter used to convert an <see cref="AssetId"/> to and from JSON.
+    ///     Converter used to convert an <see cref="AssetId" /> to and from JSON.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class AssetIdJsonConverter : JsonConverter
     {
-        public Network Network { get; }
-
         public AssetIdJsonConverter(Network network)
         {
             Guard.NotNull(network, nameof(network));
 
-            this.Network = network;
+            Network = network;
         }
+
+        public Network Network { get; }
 
         /// <inheritdoc />
         public override bool CanConvert(Type objectType)
@@ -28,7 +28,8 @@ namespace X42.Utilities.JsonConverters
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
                 return null;
@@ -36,7 +37,7 @@ namespace X42.Utilities.JsonConverters
             try
             {
                 var value = reader.Value.ToString();
-                return new BitcoinAssetId(value, this.Network).AssetId;
+                return new BitcoinAssetId(value, Network).AssetId;
             }
             catch (FormatException)
             {
@@ -48,10 +49,7 @@ namespace X42.Utilities.JsonConverters
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var assetId = value as AssetId;
-            if (assetId != null)
-            {
-                writer.WriteValue(assetId.ToString(this.Network));
-            }
+            if (assetId != null) writer.WriteValue(assetId.ToString(Network));
         }
     }
 }

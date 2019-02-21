@@ -2,39 +2,40 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using System.Security.Cryptography.X509Certificates;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using X42.Utilities;
-using X42.Server;
 using x42.Feature.API.Requirements;
+using X42.Server;
+using X42.Utilities;
+using X42.Utilities.JsonConverters;
 
 namespace X42.Feature.Api
 {
     public class ApiBuilder
     {
-        public IConfigurationRoot Configuration { get; }
-
         /// <summary>Instance logger.</summary>
         private ILogger logger;
 
         public ApiBuilder(IHostingEnvironment env)
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
 
-            this.Configuration = builder.Build();
+            Configuration = builder.Build();
         }
+
+        public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -47,16 +48,15 @@ namespace X42.Feature.Api
                     options.AddPolicy
                     (
                         "CorsPolicy",
-
                         builder =>
                         {
-                            string[] publicAddress = new[] { "http://*", "https://*" };
+                            string[] publicAddress = {"http://*", "https://*"};
 
                             builder
-                            .WithOrigins(publicAddress)
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .AllowCredentials();
+                                .WithOrigins(publicAddress)
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .AllowCredentials();
                         }
                     );
                 }
@@ -64,13 +64,14 @@ namespace X42.Feature.Api
 
             services.AddAuthorization(options =>
             {
-                List<string> privateAddressList = new List<string>
+                var privateAddressList = new List<string>
                 {
                     "127.0.0.1",
                     "::1"
                 };
 
-                options.AddPolicy(Policy.PrivateAccess, policy => policy.Requirements.Add(new PrivateOnlyRequirement(privateAddressList)));
+                options.AddPolicy(Policy.PrivateAccess,
+                    policy => policy.Requirements.Add(new PrivateOnlyRequirement(privateAddressList)));
             });
 
             // Add framework services.
@@ -78,37 +79,32 @@ namespace X42.Feature.Api
                 {
                     options.Filters.Add(typeof(LoggingActionFilter));
 
-                    ServiceProvider serviceProvider = services.BuildServiceProvider();
-                    var apiSettings = (ApiSettings)serviceProvider.GetRequiredService(typeof(ApiSettings));
-                    if (apiSettings.KeepaliveTimer != null)
-                    {
-                        options.Filters.Add(typeof(KeepaliveActionFilter));
-                    }
+                    var serviceProvider = services.BuildServiceProvider();
+                    var apiSettings = (ApiSettings) serviceProvider.GetRequiredService(typeof(ApiSettings));
+                    if (apiSettings.KeepaliveTimer != null) options.Filters.Add(typeof(KeepaliveActionFilter));
                 })
                 // add serializers for NBitcoin objects
-                .AddJsonOptions(options => Utilities.JsonConverters.Serializer.RegisterFrontConverters(options.SerializerSettings))
+                .AddJsonOptions(options => Serializer.RegisterFrontConverters(options.SerializerSettings))
                 .AddControllers(services);
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(setup =>
             {
-                setup.SwaggerDoc("v1", new Info { Title = "X42.MasterNode.Api", Version = "v1" });
+                setup.SwaggerDoc("v1", new Info {Title = "X42.MasterNode.Api", Version = "v1"});
 
                 //Set the comments path for the swagger json and ui.
-                string basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                string apiXmlPath = Path.Combine(basePath, "X42.MasterNode..xml");
+                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                var apiXmlPath = Path.Combine(basePath, "X42.MasterNode..xml");
 
-                if (File.Exists(apiXmlPath))
-                {
-                    setup.IncludeXmlComments(apiXmlPath);
-                }
+                if (File.Exists(apiXmlPath)) setup.IncludeXmlComments(apiXmlPath);
 
                 setup.DescribeAllEnumsAsStrings();
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApiSettings apiSettings)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            ApiSettings apiSettings)
         {
             logger = loggerFactory.CreateLogger(typeof(ApiBuilder).FullName);
 
@@ -136,9 +132,9 @@ namespace X42.Feature.Api
             Guard.NotNull(x42Server, nameof(x42Server));
             Guard.NotNull(webHostBuilder, nameof(webHostBuilder));
 
-            Uri apiUri = apiSettings.ApiUri;
+            var apiUri = apiSettings.ApiUri;
 
-            X509Certificate2 certificate = apiSettings.UseHttps
+            var certificate = apiSettings.UseHttps
                 ? GetHttpsCertificate(apiSettings.HttpsCertificateFilePath, store)
                 : null;
 
@@ -151,38 +147,30 @@ namespace X42.Feature.Api
                     Action<ListenOptions> configureListener = listenOptions => { listenOptions.UseHttps(certificate); };
                     var ipAddresses = Dns.GetHostAddresses(apiSettings.ApiUri.DnsSafeHost);
                     foreach (var ipAddress in ipAddresses)
-                    {
                         options.Listen(ipAddress, apiSettings.ApiPort, configureListener);
-                    }
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseUrls(apiUri.ToString())
                 .ConfigureServices(collection =>
                 {
-                    if (services == null)
-                    {
-                        return;
-                    }
+                    if (services == null) return;
 
                     // copies all the services defined for the x42 server to the Api.
                     // also copies over singleton instances already defined
-                    foreach (ServiceDescriptor service in services)
+                    foreach (var service in services)
                     {
-                        object obj = x42Server.Services.ServiceProvider.GetService(service.ServiceType);
-                        if (obj != null && service.Lifetime == ServiceLifetime.Singleton && service.ImplementationInstance == null)
-                        {
+                        var obj = x42Server.Services.ServiceProvider.GetService(service.ServiceType);
+                        if (obj != null && service.Lifetime == ServiceLifetime.Singleton &&
+                            service.ImplementationInstance == null)
                             collection.AddSingleton(service.ServiceType, obj);
-                        }
                         else
-                        {
                             collection.Add(service);
-                        }
                     }
                 })
                 .UseStartup<ApiBuilder>();
 
-            IWebHost host = webHostBuilder.Build();
+            var host = webHostBuilder.Build();
 
             host.Start();
 

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace X42.Utilities.JsonConverters
 {
     /// <summary>
-    /// Converter used to convert <see cref="DateTimeOffset"/> to and from Unix time represented in JSON.
+    ///     Converter used to convert <see cref="DateTimeOffset" /> to and from Unix time represented in JSON.
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class DateTimeOffsetConverter : JsonConverter
@@ -16,15 +16,16 @@ namespace X42.Utilities.JsonConverters
         }
 
         /// <inheritdoc />
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
-            return DateTimeOffset.FromUnixTimeSeconds(long.Parse((string)reader.Value));
+            return DateTimeOffset.FromUnixTimeSeconds(long.Parse((string) reader.Value));
         }
 
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(((DateTimeOffset)value).ToUnixTimeSeconds().ToString());
+            writer.WriteValue(((DateTimeOffset) value).ToUnixTimeSeconds().ToString());
         }
     }
 }

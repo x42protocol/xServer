@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NBitcoin;
+﻿using NBitcoin;
 
 namespace X42.MasterNode
 {

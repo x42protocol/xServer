@@ -12,36 +12,36 @@ namespace X42.MasterNode
 
         public X42MasterNode()
         {
-            this.Name = "x42 MasterNode";
-            this.DefaultPort = 4242;
-            this.DefaultConfigFilename = x42DefaultConfigFilename;
+            Name = "x42 MasterNode";
+            DefaultPort = 4242;
+            DefaultConfigFilename = x42DefaultConfigFilename;
 
-            List<Tier> Tiers = new List<Tier>
+            var Tiers = new List<Tier>
             {
                 new Tier(
                     Tier.TierLevel.One,
-                    new Collateral() { Amount = Money.Coins(1000) }
+                    new Collateral {Amount = Money.Coins(1000)}
                 ),
                 new Tier(
                     Tier.TierLevel.Two,
-                    new Collateral() { Amount = Money.Coins(20000) }
+                    new Collateral {Amount = Money.Coins(20000)}
                 ),
                 new Tier(
                     Tier.TierLevel.Three,
-                    new Collateral() { Amount = Money.Coins(100000) }
+                    new Collateral {Amount = Money.Coins(100000)}
                 )
             };
             this.Tiers = Tiers;
 
-            this.DNSSeeds = new List<DNSSeedData>
+            DNSSeeds = new List<DNSSeedData>
             {
                 new DNSSeedData("masternode1.x42seed.host", "masternode1.x42seed.host"),
                 new DNSSeedData("masternodeserver1.x42seed.host", "masternodeserver1.x42seed.host"),
-                new DNSSeedData("rnode.x42.cloud", "rnode.x42.cloud"),
+                new DNSSeedData("rnode.x42.cloud", "rnode.x42.cloud")
             };
 
-            string[] seedServers = { "63.32.82.169" };
-            this.SeedServers = ConvertToNetworkAddresses(seedServers, this.DefaultPort).ToList();
+            string[] seedServers = {"63.32.82.169"};
+            SeedServers = ConvertToNetworkAddresses(seedServers, DefaultPort).ToList();
         }
     }
 }

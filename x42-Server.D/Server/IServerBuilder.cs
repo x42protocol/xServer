@@ -7,7 +7,7 @@ using X42.MasterNode;
 namespace X42.Server
 {
     /// <summary>
-    /// x42 server builder allows constructing a x42 server using specific components.
+    ///     x42 server builder allows constructing a x42 server using specific components.
     /// </summary>
     public interface IServerBuilder
     {
@@ -21,27 +21,27 @@ namespace X42.Server
         IServiceCollection Services { get; }
 
         /// <summary>
-        /// Constructs the x42 server with the required features, services, and settings.
+        ///     Constructs the x42 server with the required features, services, and settings.
         /// </summary>
         /// <returns>Initialized x42 server.</returns>
         IX42Server Build();
 
         /// <summary>
-        /// Adds features to the builder.
+        ///     Adds features to the builder.
         /// </summary>
         /// <param name="configureFeatures">A method that adds features to the collection.</param>
         /// <returns>Interface to allow fluent code.</returns>
         IServerBuilder ConfigureFeature(Action<IFeatureCollection> configureFeatures);
 
         /// <summary>
-        /// Adds services to the builder.
+        ///     Adds services to the builder.
         /// </summary>
         /// <param name="configureServices">A method that adds services to the builder.</param>
         /// <returns>Interface to allow fluent code.</returns>
         IServerBuilder ConfigureServices(Action<IServiceCollection> configureServices);
 
         /// <summary>
-        /// Add configurations for the service provider.
+        ///     Add configurations for the service provider.
         /// </summary>
         /// <param name="configure">A method that configures the service provider.</param>
         /// <returns>Interface to allow fluent code.</returns>
