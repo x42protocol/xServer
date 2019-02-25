@@ -170,7 +170,8 @@ namespace X42.Configuration.Logging
             LogManager.Configuration.AddTarget(mainTarget);
 
             // Default logging level is Info for all components.
-            LoggingRule defaultRule = new LoggingRule($"{nameof(X42)}.{nameof(Server)}.*", settings.LogLevel, mainTarget);
+            LoggingRule defaultRule =
+                new LoggingRule($"{nameof(X42)}.{nameof(Server)}.*", settings.LogLevel, mainTarget);
 
             if (settings.DebugArgs.Any() && settings.DebugArgs[0] != "1")
             {

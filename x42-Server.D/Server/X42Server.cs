@@ -97,8 +97,8 @@ namespace X42.Server
             get
             {
                 string versionString = typeof(X42Server).GetTypeInfo().Assembly
-                                        .GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ??
-                                    PlatformServices.Default.Application.ApplicationVersion;
+                                           .GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ??
+                                       PlatformServices.Default.Application.ApplicationVersion;
 
                 if (!string.IsNullOrEmpty(versionString))
                     try

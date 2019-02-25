@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using NBitcoin;
 using X42.Configuration;
 using X42.MasterNode;
 using X42.Server;

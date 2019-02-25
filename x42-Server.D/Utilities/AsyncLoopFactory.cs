@@ -120,7 +120,8 @@ namespace X42.Utilities
         public IAsyncLoop RunUntil(string name, CancellationToken serverCancellationToken, Func<bool> condition,
             Action action, Action<Exception> onException, TimeSpan repeatEvery)
         {
-            CancellationTokenSource linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(serverCancellationToken);
+            CancellationTokenSource linkedTokenSource =
+                CancellationTokenSource.CreateLinkedTokenSource(serverCancellationToken);
             return Run(name, token =>
                 {
                     try

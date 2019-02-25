@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +19,8 @@ namespace X42.Feature.Api
         public static IMvcBuilder AddControllers(this IMvcBuilder builder, IServiceCollection services)
         {
             // Adds Controllers with API endpoints
-            IEnumerable<ServiceDescriptor> controllerTypes = services.Where(s => s.ServiceType.GetTypeInfo().BaseType == typeof(Controller));
+            IEnumerable<ServiceDescriptor> controllerTypes =
+                services.Where(s => s.ServiceType.GetTypeInfo().BaseType == typeof(Controller));
             foreach (ServiceDescriptor controllerType in controllerTypes)
                 builder.AddApplicationPart(controllerType.ServiceType.GetTypeInfo().Assembly);
 

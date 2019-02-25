@@ -64,7 +64,7 @@ namespace X42.Configuration
             args = new Dictionary<string, List<string>>();
             int lineNumber = 0;
             // Process all lines, even if empty.
-            foreach (string l in data.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
+            foreach (string l in data.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None))
             {
                 // Track line numbers, also for empty lines.
                 lineNumber++;
@@ -115,8 +115,8 @@ namespace X42.Configuration
         public void MergeInto(TextFileConfiguration destination)
         {
             foreach (KeyValuePair<string, List<string>> kv in args)
-                foreach (string v in kv.Value)
-                    destination.Add(kv.Key, v);
+            foreach (string v in kv.Value)
+                destination.Add(kv.Key, v);
         }
 
         /// <summary>
@@ -181,32 +181,32 @@ namespace X42.Configuration
         {
             if (typeof(T) == typeof(bool))
             {
-                string[] trueValues = new[] { "1", "true" };
-                string[] falseValues = new[] { "0", "false" };
+                string[] trueValues = {"1", "true"};
+                string[] falseValues = {"0", "false"};
 
                 if (trueValues.Contains(str, StringComparer.OrdinalIgnoreCase))
-                    return (T)(object)true;
+                    return (T) (object) true;
 
                 if (falseValues.Contains(str, StringComparer.OrdinalIgnoreCase))
-                    return (T)(object)false;
+                    return (T) (object) false;
 
                 throw new FormatException();
             }
 
-            if (typeof(T) == typeof(string)) return (T)(object)str;
+            if (typeof(T) == typeof(string)) return (T) (object) str;
 
-            if (typeof(T) == typeof(int)) return (T)(object)int.Parse(str, CultureInfo.InvariantCulture);
+            if (typeof(T) == typeof(int)) return (T) (object) int.Parse(str, CultureInfo.InvariantCulture);
 
-            if (typeof(T) == typeof(ulong)) return (T)(object)ulong.Parse(str, CultureInfo.InvariantCulture);
+            if (typeof(T) == typeof(ulong)) return (T) (object) ulong.Parse(str, CultureInfo.InvariantCulture);
 
-            if (typeof(T) == typeof(Uri)) return (T)(object)new Uri(str);
+            if (typeof(T) == typeof(Uri)) return (T) (object) new Uri(str);
 
             if (typeof(T) == typeof(uint256))
             {
                 uint256 value = null;
                 if (str != "0" && !uint256.TryParse(str, out value))
                     throw new FormatException($"Cannot parse uint256 from {str}.");
-                return (T)(object)value;
+                return (T) (object) value;
             }
 
             throw new NotSupportedException("Configuration value does not support type " + typeof(T).Name);
