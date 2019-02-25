@@ -7,7 +7,7 @@ using X42.Utilities;
 namespace X42.Feature.Database
 {
     /// <summary>
-    ///     Configuration related to the miner interface.
+    ///     Configuration related to the database interface.
     /// </summary>
     public class DatabaseSettings
     {

@@ -11,18 +11,7 @@ namespace X42.Feature.Setup
     /// <summary>
     ///     Base server services, these are the services a server has to have.
     ///     The ConnectionManager feature is also part of the base but may go in a feature of its own.
-    ///     The base features are the minimal components required to connect to peers and maintain the best chain.
-    ///     <para>
-    ///         The base server services for a server are:
-    ///         <list type="bullet">
-    ///             <item>the ConcurrentChain to keep track of the best chain,</item>
-    ///             <item>the ConnectionManager to connect with the network,</item>
-    ///             <item>DatetimeProvider and Cancellation,</item>
-    ///             <item>CancellationProvider and Cancellation,</item>
-    ///             <item>DataFolder,</item>
-    ///             <item>ChainState.</item>
-    ///         </list>
-    ///     </para>
+    ///     The base features are the minimal components required for the master nodes system.
     /// </summary>
     public sealed class BaseFeature : ServerFeature
     {

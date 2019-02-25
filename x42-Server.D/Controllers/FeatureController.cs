@@ -35,7 +35,5 @@ namespace X42.Controllers
         protected ServerSettings Settings { get; set; }
 
         protected MasterNodeBase Network { get; set; }
-
-        protected ChainBase Chain { get; set; }
     }
 }

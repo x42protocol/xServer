@@ -84,7 +84,7 @@ namespace X42.Feature.FullNode
     public static class FullNodeBuilderExtension
     {
         /// <summary>
-        ///     Adds POW and POS miner components to the node, so that it can mine or stake.
+        ///     Adds full node component for x42server, so that it can run master nodes.
         /// </summary>
         /// <param name="fullNodeBuilder">The object used to build the current node.</param>
         /// <returns>The full node builder, enriched with the new component.</returns>

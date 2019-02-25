@@ -7,7 +7,7 @@ using X42.Utilities;
 namespace X42.Feature.FullNode
 {
     /// <summary>
-    ///     Configuration related to the miner interface.
+    ///     Configuration related to the full node interface.
     /// </summary>
     public class FullNodeSettings
     {
