@@ -142,8 +142,8 @@ namespace X42.Utilities
             // Set the context, so that Dispose called from callback will recognize it.
             asyncContext.Value = new AsyncContext();
 
-            var callDispose = false;
-            var cancellationToken = cancellationTokenSource.Token;
+            bool callDispose = false;
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
             while (!callDispose && !cancellationToken.IsCancellationRequested)
                 try
                 {
@@ -201,7 +201,7 @@ namespace X42.Utilities
                     return item;
 
                 // If the queue is empty, we need to wait until there is an item available.
-                using (var cancellationSource =
+                using (CancellationTokenSource cancellationSource =
                     CancellationTokenSource.CreateLinkedTokenSource(cancellation, cancellationTokenSource.Token))
                 {
                     while (true)

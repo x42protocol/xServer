@@ -18,8 +18,8 @@ namespace X42.Utilities.Extensions
         /// <param name="server">X42 Server to run.</param>
         public static async Task RunAsync(this IX42Server server)
         {
-            var done = new ManualResetEventSlim(false);
-            using (var cts = new CancellationTokenSource())
+            ManualResetEventSlim done = new ManualResetEventSlim(false);
+            using (CancellationTokenSource cts = new CancellationTokenSource())
             {
                 Action shutdown = () =>
                 {
@@ -39,7 +39,7 @@ namespace X42.Utilities.Extensions
                     done.Wait();
                 };
 
-                var assemblyLoadContext = AssemblyLoadContext.GetLoadContext(typeof(X42Server).GetTypeInfo().Assembly);
+                AssemblyLoadContext assemblyLoadContext = AssemblyLoadContext.GetLoadContext(typeof(X42Server).GetTypeInfo().Assembly);
                 assemblyLoadContext.Unloading += context => shutdown();
 
                 Console.CancelKeyPress += (sender, eventArgs) =>
@@ -83,10 +83,10 @@ namespace X42.Utilities.Extensions
             cancellationToken.Register(state => { ((IX42ServerLifetime) state).StopApplication(); },
                 server.X42ServerLifetime);
 
-            var waitForStop = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+            TaskCompletionSource<object> waitForStop = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             server.X42ServerLifetime.ApplicationStopping.Register(obj =>
             {
-                var tcs = (TaskCompletionSource<object>) obj;
+                TaskCompletionSource<object> tcs = (TaskCompletionSource<object>) obj;
                 tcs.TrySetResult(null);
             }, waitForStop);
 

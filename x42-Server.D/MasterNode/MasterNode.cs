@@ -40,10 +40,10 @@ namespace X42.MasterNode
 
         protected IEnumerable<NetworkAddress> ConvertToNetworkAddresses(string[] seeds, int defaultPort)
         {
-            var rand = new Random();
-            var oneWeek = TimeSpan.FromDays(7);
+            Random rand = new Random();
+            TimeSpan oneWeek = TimeSpan.FromDays(7);
 
-            foreach (var seed in seeds)
+            foreach (string seed in seeds)
                 // It'll only connect to one or two seed servers because once it connects,
                 // it'll get a pile of addresses with newer timestamps.
                 // Seed servers are given a random 'last seen time' of between one and two weeks ago.

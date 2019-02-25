@@ -79,7 +79,7 @@ namespace X42.Server
         {
             if (Services != null && Services.ServiceProvider != null)
             {
-                var service = Services.ServiceProvider.GetService<T>();
+                T service = Services.ServiceProvider.GetService<T>();
                 if (service != null)
                     return service;
             }
@@ -96,7 +96,7 @@ namespace X42.Server
         {
             get
             {
-                var versionString = typeof(X42Server).GetTypeInfo().Assembly
+                string versionString = typeof(X42Server).GetTypeInfo().Assembly
                                         .GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ??
                                     PlatformServices.Default.Application.ApplicationVersion;
 
@@ -176,7 +176,7 @@ namespace X42.Server
         {
             if (Services != null)
             {
-                var feature = Services.Features.OfType<T>().FirstOrDefault();
+                T feature = Services.Features.OfType<T>().FirstOrDefault();
                 if (feature != null)
                     return feature;
             }
@@ -226,7 +226,7 @@ namespace X42.Server
         {
             periodicLogLoop = AsyncLoopFactory.Run("PeriodicLog", cancellation =>
                 {
-                    var stats = ServerStats.GetStats();
+                    string stats = ServerStats.GetStats();
 
                     logger.LogInformation(stats);
                     LastLogOutput = stats;

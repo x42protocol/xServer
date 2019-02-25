@@ -20,7 +20,7 @@ namespace x42.Feature.API.Requirements
         {
             if (context.Resource is AuthorizationFilterContext mvcContext)
             {
-                var remoteIpList = mvcContext.HttpContext.Connection.RemoteIpAddress.ToString();
+                string remoteIpList = mvcContext.HttpContext.Connection.RemoteIpAddress.ToString();
 
                 if (PrivateAddressList.Contains(remoteIpList))
                 {

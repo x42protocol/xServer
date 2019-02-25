@@ -7,7 +7,7 @@ namespace X42.Utilities.JsonErrors
     {
         public static ErrorResult BuildErrorResponse(HttpStatusCode statusCode, string message, string description)
         {
-            var errorResponse = new ErrorResponse
+            ErrorResponse errorResponse = new ErrorResponse
             {
                 Errors = new List<ErrorModel>
                 {

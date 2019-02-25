@@ -17,8 +17,8 @@ namespace X42.Utilities.Extensions
             if (endPointv4.Address.IsIPv4MappedToIPv6)
                 return endPointv4;
 
-            var mapped = new IPAddress(endPointv4.Address.GetAddressBytes()).MapToIPv6();
-            var mappedIPEndPoint = new IPEndPoint(mapped, endPointv4.Port);
+            IPAddress mapped = new IPAddress(endPointv4.Address.GetAddressBytes()).MapToIPv6();
+            IPEndPoint mappedIPEndPoint = new IPEndPoint(mapped, endPointv4.Port);
             return mappedIPEndPoint;
         }
 
@@ -78,9 +78,9 @@ namespace X42.Utilities.Extensions
         public static bool CanBeMappedTo(this IPEndPoint whiteBindEndpoint, List<IPEndPoint> networkEndpoints,
             out IPEndPoint localEndpoint)
         {
-            var localEndpoints = networkEndpoints.Where(x => x.Address.IsLocal());
+            IEnumerable<IPEndPoint> localEndpoints = networkEndpoints.Where(x => x.Address.IsLocal());
 
-            foreach (var ipEndPoint in localEndpoints)
+            foreach (IPEndPoint ipEndPoint in localEndpoints)
                 if (ipEndPoint.Port == whiteBindEndpoint.Port)
                 {
                     localEndpoint = ipEndPoint;

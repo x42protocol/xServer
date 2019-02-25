@@ -24,7 +24,7 @@ namespace X42.Feature.FullNode
 
             logger = serverSettings.LoggerFactory.CreateLogger(typeof(FullNodeSettings).FullName);
 
-            var config = serverSettings.ConfigReader;
+            TextFileConfiguration config = serverSettings.ConfigReader;
 
             FullNodeHost = config.GetOrDefault("fullnodehost", "localhost", logger);
 
@@ -47,8 +47,8 @@ namespace X42.Feature.FullNode
         /// <param name="masterNode">Not used.</param>
         public static void PrintHelp(MasterNodeBase masterNode)
         {
-            var defaults = ServerSettings.Default(masterNode);
-            var builder = new StringBuilder();
+            ServerSettings defaults = ServerSettings.Default(masterNode);
+            StringBuilder builder = new StringBuilder();
 
             builder.AppendLine("-fullnodehost=<string>                     FullNode host.");
             builder.AppendLine("-fullnodeapiport=<string>                  FullNode API port.");

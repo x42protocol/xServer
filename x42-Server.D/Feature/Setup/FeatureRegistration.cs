@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using X42.Utilities;
 
@@ -94,7 +95,7 @@ namespace X42.Feature.Setup
                 .AddSingleton(FeatureType)
                 .AddSingleton(typeof(IServerFeature), provider => provider.GetService(FeatureType));
 
-            foreach (var configureServicesDelegate in ConfigureServicesDelegates)
+            foreach (Action<IServiceCollection> configureServicesDelegate in ConfigureServicesDelegates)
                 configureServicesDelegate(serviceCollection);
 
             if (FeatureStartupType != null)
@@ -130,7 +131,7 @@ namespace X42.Feature.Setup
         /// <inheritdoc />
         public void EnsureDependencies(List<IFeatureRegistration> featureRegistrations)
         {
-            foreach (var dependency in dependencies)
+            foreach (Type dependency in dependencies)
                 if (featureRegistrations.All(x => !dependency.IsAssignableFrom(x.FeatureType)))
                     throw new MissingDependencyException($"Dependency feature {dependency.Name} cannot be found.");
         }
@@ -150,8 +151,8 @@ namespace X42.Feature.Setup
         /// </param>
         private void FeatureStartup(IServiceCollection serviceCollection, Type startupType)
         {
-            var method = startupType.GetMethod("ConfigureServices");
-            var parameters = method?.GetParameters();
+            MethodInfo method = startupType.GetMethod("ConfigureServices");
+            ParameterInfo[] parameters = method?.GetParameters();
             if (method != null && method.IsStatic && parameters?.Length == 1 &&
                 parameters.First().ParameterType == typeof(IServiceCollection))
                 method.Invoke(null, new object[] {serviceCollection});

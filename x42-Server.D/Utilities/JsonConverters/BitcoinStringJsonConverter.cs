@@ -36,7 +36,7 @@ namespace X42.Utilities.JsonConverters
 
             try
             {
-                var result = Network.Parse(reader.Value.ToString(), null);
+                IBitcoinString result = Network.Parse(reader.Value.ToString(), null);
                 if (result == null) throw new JsonObjectException("Invalid BitcoinString data", reader);
 
                 if (Network != null)
@@ -63,7 +63,7 @@ namespace X42.Utilities.JsonConverters
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var base58 = value as IBitcoinString;
+            IBitcoinString base58 = value as IBitcoinString;
             if (base58 != null) writer.WriteValue(value.ToString());
         }
     }

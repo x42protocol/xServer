@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ namespace X42.Utilities.ModelStateErrors
         /// <returns>A result containing the errors.</returns>
         public static IActionResult BuildErrorResponse(ModelStateDictionary modelState)
         {
-            var errors = modelState.Values.SelectMany(e => e.Errors).ToList();
+            List<ModelError> errors = modelState.Values.SelectMany(e => e.Errors).ToList();
             return ErrorHelpers.BuildErrorResponse(
                 HttpStatusCode.BadRequest,
                 string.Join(Environment.NewLine, errors.Select(m => m.ErrorMessage)),

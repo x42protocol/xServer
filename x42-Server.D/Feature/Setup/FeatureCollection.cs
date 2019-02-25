@@ -43,7 +43,7 @@ namespace X42.Feature.Setup
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture,
                     "Feature of type {0} has already been registered.", typeof(TImplementation).FullName));
 
-            var featureRegistration = new FeatureRegistration<TImplementation>();
+            FeatureRegistration<TImplementation> featureRegistration = new FeatureRegistration<TImplementation>();
             featureRegistrations.Add(featureRegistration);
 
             return featureRegistration;

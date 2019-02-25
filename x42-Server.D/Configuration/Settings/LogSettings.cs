@@ -37,7 +37,7 @@ namespace X42.Configuration.Settings
             // Get the minimum log level. The default is either Information or Debug depending on the DebugArgs.
             LogLevel = DebugArgs.Any() ? LogLevel.Debug : LogLevel.Info;
 
-            var logLevelArg = config.GetOrDefault("loglevel", string.Empty);
+            string logLevelArg = config.GetOrDefault("loglevel", string.Empty);
             if (!string.IsNullOrEmpty(logLevelArg))
                 LogLevel = LogLevel.FromString(logLevelArg);
         }

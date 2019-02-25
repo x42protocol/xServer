@@ -19,7 +19,7 @@ namespace X42.Feature.Api
         {
             try
             {
-                var fileInBytes = File.ReadAllBytes(filePath);
+                byte[] fileInBytes = File.ReadAllBytes(filePath);
                 certificate = new X509Certificate2(fileInBytes);
                 return true;
             }

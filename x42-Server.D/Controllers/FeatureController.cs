@@ -20,7 +20,7 @@ namespace X42.Controllers
 
     public abstract class FeatureController : Controller
     {
-        public FeatureController(
+        private FeatureController(
             IX42Server x42Server = null,
             ServerSettings nodeSettings = null,
             MasterNodeBase network = null)

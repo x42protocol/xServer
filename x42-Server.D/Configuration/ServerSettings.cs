@@ -64,7 +64,7 @@ namespace X42.Configuration
         {
             MasterNode = masterNode;
             // Create the default logger factory and logger.
-            var loggerFactory = new ExtendedLoggerFactory();
+            ExtendedLoggerFactory loggerFactory = new ExtendedLoggerFactory();
             LoggerFactory = loggerFactory;
             LoggerFactory.AddConsoleWithFilters();
             LoggerFactory.AddNLog();
@@ -90,7 +90,7 @@ namespace X42.Configuration
             // If the configuration file is relative then assume it is relative to the data folder and combine the paths.
             if (DataDir != null && ConfigurationFile != null)
             {
-                var isRelativePath = Path.GetFullPath(ConfigurationFile).Length > ConfigurationFile.Length;
+                bool isRelativePath = Path.GetFullPath(ConfigurationFile).Length > ConfigurationFile.Length;
                 if (isRelativePath)
                     ConfigurationFile = Path.Combine(DataDir, ConfigurationFile);
             }
@@ -116,7 +116,7 @@ namespace X42.Configuration
             else
             {
                 // Combine the data directory with the masternode's root folder and name.
-                var directoryPath = Path.Combine(DataDir, ServerName);
+                string directoryPath = Path.Combine(DataDir, ServerName);
                 DataDir = Directory.CreateDirectory(directoryPath).FullName;
                 Logger.LogDebug("Data directory initialized with path {0}.", DataDir);
             }
@@ -238,11 +238,11 @@ namespace X42.Configuration
             {
                 Logger.LogDebug("Creating configuration file '{0}'.", ConfigurationFile);
 
-                var builder = new StringBuilder();
+                StringBuilder builder = new StringBuilder();
 
-                foreach (var featureRegistration in features)
+                foreach (IFeatureRegistration featureRegistration in features)
                 {
-                    var getDefaultConfiguration =
+                    MethodInfo getDefaultConfiguration =
                         featureRegistration.FeatureType.GetMethod("BuildDefaultConfigurationFile",
                             BindingFlags.Public | BindingFlags.Static);
                     if (getDefaultConfiguration != null)
@@ -266,7 +266,7 @@ namespace X42.Configuration
             Logger.LogDebug("Reading configuration file '{0}'.", ConfigurationFile);
 
             // Add the file configuration to the command-line configuration.
-            var fileConfig = new TextFileConfiguration(File.ReadAllText(ConfigurationFile));
+            TextFileConfiguration fileConfig = new TextFileConfiguration(File.ReadAllText(ConfigurationFile));
             fileConfig.MergeInto(ConfigReader);
         }
 
@@ -275,14 +275,13 @@ namespace X42.Configuration
         /// </summary>
         private void LoadConfiguration()
         {
-            var config = ConfigReader;
+            TextFileConfiguration config = ConfigReader;
         }
 
         /// <summary>
         ///     Creates default data directories respecting different operating system specifics.
         /// </summary>
         /// <param name="appName">Name of the server, which will be reflected in the name of the data directory.</param>
-        /// <param name="masterNode">Specification of the masternode the server runs on - regtest/testnet/mainnet.</param>
         /// <returns>The top-level data directory path.</returns>
         private string CreateDefaultDataDirectories(string appName)
         {
@@ -291,7 +290,7 @@ namespace X42.Configuration
             // Directory paths are different between Windows or Linux/OSX systems.
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                var home = Environment.GetEnvironmentVariable("HOME");
+                string home = Environment.GetEnvironmentVariable("HOME");
                 if (!string.IsNullOrEmpty(home))
                 {
                     Logger.LogDebug("Using HOME environment variable for initializing application data.");
@@ -304,7 +303,7 @@ namespace X42.Configuration
             }
             else
             {
-                var localAppData = Environment.GetEnvironmentVariable("APPDATA");
+                string localAppData = Environment.GetEnvironmentVariable("APPDATA");
                 if (!string.IsNullOrEmpty(localAppData))
                 {
                     Logger.LogDebug("Using APPDATA environment variable for initializing application data.");
@@ -331,10 +330,10 @@ namespace X42.Configuration
         {
             Guard.NotNull(masterNode, nameof(masterNode));
 
-            var defaults = Default(masterNode);
-            var daemonName = Path.GetFileName(Assembly.GetEntryAssembly().Location);
+            ServerSettings defaults = Default(masterNode);
+            string daemonName = Path.GetFileName(Assembly.GetEntryAssembly().Location);
 
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.AppendLine("Usage:");
             builder.AppendLine($" dotnet run {daemonName} [arguments]");
             builder.AppendLine();

@@ -16,7 +16,7 @@ namespace X42.MasterNode
             DefaultPort = 4242;
             DefaultConfigFilename = x42DefaultConfigFilename;
 
-            var Tiers = new List<Tier>
+            List<Tier> Tiers = new List<Tier>
             {
                 new Tier(
                     Tier.TierLevel.One,

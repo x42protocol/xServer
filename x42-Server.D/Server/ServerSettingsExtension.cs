@@ -17,7 +17,7 @@ namespace X42.Server
         /// <returns>Interface to allow fluent code.</returns>
         public static IServerBuilder UseServerSettings(this IServerBuilder builder, ServerSettings serverSettings)
         {
-            var serverBuilder = builder as ServerBuilder;
+            ServerBuilder serverBuilder = builder as ServerBuilder;
             serverBuilder.ServerSettings = serverSettings;
             serverBuilder.MasterNode = serverSettings.MasterNode;
 

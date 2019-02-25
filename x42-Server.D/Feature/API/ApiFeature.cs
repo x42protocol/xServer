@@ -129,7 +129,7 @@ namespace X42.Feature.Api
             Action<ApiFeatureOptions> optionsAction = null)
         {
             // TODO: move the options in to the feature builder
-            var options = new ApiFeatureOptions();
+            ApiFeatureOptions options = new ApiFeatureOptions();
             optionsAction?.Invoke(options);
 
             serverBuilder.ConfigureFeature(features =>

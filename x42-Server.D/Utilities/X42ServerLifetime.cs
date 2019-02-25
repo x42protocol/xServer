@@ -67,8 +67,8 @@ namespace X42.Utilities
         /// </summary>
         public void StopApplication()
         {
-            var stoppingSource = this.stoppingSource;
-            var lockTaken = false;
+            CancellationTokenSource stoppingSource = this.stoppingSource;
+            bool lockTaken = false;
             try
             {
                 Monitor.Enter(stoppingSource, ref lockTaken);

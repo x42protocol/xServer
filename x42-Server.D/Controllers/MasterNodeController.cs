@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NLog;
+using NLog.Config;
 using x42.Feature.API.Requirements;
 using X42.Configuration;
 using X42.Controllers.Models;
@@ -69,7 +70,7 @@ namespace X42.Controllers
         public IActionResult Status()
         {
             // Output has been merged with RPC's GetInfo() since they provided similar functionality.
-            var model = new StatusModel
+            StatusModel model = new StatusModel
             {
                 Version = x42Server.Version?.ToString() ?? "0",
                 ProtocolVersion = (uint) nodeSettings.ProtocolVersion,
@@ -126,17 +127,17 @@ namespace X42.Controllers
 
             try
             {
-                foreach (var logRuleRequest in request.LogRules)
+                foreach (LogRuleRequest logRuleRequest in request.LogRules)
                 {
-                    var nLogLevel = logRuleRequest.LogLevel.ToNLogLevel();
-                    var rule = LogManager.Configuration.LoggingRules.SingleOrDefault(r =>
+                    LogLevel nLogLevel = logRuleRequest.LogLevel.ToNLogLevel();
+                    LoggingRule rule = LogManager.Configuration.LoggingRules.SingleOrDefault(r =>
                         r.LoggerNamePattern == logRuleRequest.RuleName);
 
                     if (rule == null) throw new Exception($"Logger name `{logRuleRequest.RuleName}` doesn't exist.");
 
                     // Log level ordinals go from 1 to 6 (trace to fatal).
                     // When we set a log level, we enable every log level above and disable all the ones below.
-                    foreach (var level in LogLevel.AllLoggingLevels)
+                    foreach (LogLevel level in LogLevel.AllLoggingLevels)
                         if (level.Ordinal >= nLogLevel.Ordinal)
                             rule.EnableLoggingForLevel(level);
                         else

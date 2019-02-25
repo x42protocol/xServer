@@ -34,7 +34,7 @@ namespace X42.Utilities.JsonConverters
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var keyPath = value as KeyPath;
+            KeyPath keyPath = value as KeyPath;
             if (keyPath != null)
                 writer.WriteValue(keyPath.ToString());
         }

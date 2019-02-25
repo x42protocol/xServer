@@ -26,7 +26,7 @@ namespace X42.Feature.Api
 
         public ApiBuilder(IHostingEnvironment env)
         {
-            var builder = new ConfigurationBuilder()
+            IConfigurationBuilder builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
@@ -64,7 +64,7 @@ namespace X42.Feature.Api
 
             services.AddAuthorization(options =>
             {
-                var privateAddressList = new List<string>
+                List<string> privateAddressList = new List<string>
                 {
                     "127.0.0.1",
                     "::1"
@@ -79,8 +79,8 @@ namespace X42.Feature.Api
                 {
                     options.Filters.Add(typeof(LoggingActionFilter));
 
-                    var serviceProvider = services.BuildServiceProvider();
-                    var apiSettings = (ApiSettings) serviceProvider.GetRequiredService(typeof(ApiSettings));
+                    ServiceProvider serviceProvider = services.BuildServiceProvider();
+                    ApiSettings apiSettings = (ApiSettings) serviceProvider.GetRequiredService(typeof(ApiSettings));
                     if (apiSettings.KeepaliveTimer != null) options.Filters.Add(typeof(KeepaliveActionFilter));
                 })
                 // add serializers for NBitcoin objects
@@ -93,8 +93,8 @@ namespace X42.Feature.Api
                 setup.SwaggerDoc("v1", new Info {Title = "X42.MasterNode.Api", Version = "v1"});
 
                 //Set the comments path for the swagger json and ui.
-                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                var apiXmlPath = Path.Combine(basePath, "X42.MasterNode..xml");
+                string basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                string apiXmlPath = Path.Combine(basePath, "X42.MasterNode..xml");
 
                 if (File.Exists(apiXmlPath)) setup.IncludeXmlComments(apiXmlPath);
 
@@ -132,9 +132,9 @@ namespace X42.Feature.Api
             Guard.NotNull(x42Server, nameof(x42Server));
             Guard.NotNull(webHostBuilder, nameof(webHostBuilder));
 
-            var apiUri = apiSettings.ApiUri;
+            Uri apiUri = apiSettings.ApiUri;
 
-            var certificate = apiSettings.UseHttps
+            X509Certificate2 certificate = apiSettings.UseHttps
                 ? GetHttpsCertificate(apiSettings.HttpsCertificateFilePath, store)
                 : null;
 
@@ -145,8 +145,8 @@ namespace X42.Feature.Api
                         return;
 
                     Action<ListenOptions> configureListener = listenOptions => { listenOptions.UseHttps(certificate); };
-                    var ipAddresses = Dns.GetHostAddresses(apiSettings.ApiUri.DnsSafeHost);
-                    foreach (var ipAddress in ipAddresses)
+                    IPAddress[] ipAddresses = Dns.GetHostAddresses(apiSettings.ApiUri.DnsSafeHost);
+                    foreach (IPAddress ipAddress in ipAddresses)
                         options.Listen(ipAddress, apiSettings.ApiPort, configureListener);
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())
@@ -158,9 +158,9 @@ namespace X42.Feature.Api
 
                     // copies all the services defined for the x42 server to the Api.
                     // also copies over singleton instances already defined
-                    foreach (var service in services)
+                    foreach (ServiceDescriptor service in services)
                     {
-                        var obj = x42Server.Services.ServiceProvider.GetService(service.ServiceType);
+                        object obj = x42Server.Services.ServiceProvider.GetService(service.ServiceType);
                         if (obj != null && service.Lifetime == ServiceLifetime.Singleton &&
                             service.ImplementationInstance == null)
                             collection.AddSingleton(service.ServiceType, obj);
@@ -170,7 +170,7 @@ namespace X42.Feature.Api
                 })
                 .UseStartup<ApiBuilder>();
 
-            var host = webHostBuilder.Build();
+            IWebHost host = webHostBuilder.Build();
 
             host.Start();
 
@@ -179,7 +179,7 @@ namespace X42.Feature.Api
 
         private static X509Certificate2 GetHttpsCertificate(string certificateFilePath, ICertificateStore store)
         {
-            if (store.TryGet(certificateFilePath, out var certificate))
+            if (store.TryGet(certificateFilePath, out X509Certificate2 certificate))
                 return certificate;
 
             throw new FileLoadException($"Failed to load certificate from path {certificateFilePath}");

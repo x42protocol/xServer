@@ -29,7 +29,7 @@ namespace X42.Feature.Api
 
             logger = nodeSettings.LoggerFactory.CreateLogger(typeof(ApiSettings).FullName);
 
-            var config = nodeSettings.ConfigReader;
+            TextFileConfiguration config = nodeSettings.ConfigReader;
 
             UseHttps = config.GetOrDefault("usehttps", false);
             HttpsCertificateFilePath = config.GetOrDefault("certificatefilepath", (string) null);
@@ -38,15 +38,15 @@ namespace X42.Feature.Api
                 throw new ConfigurationException(
                     "The path to a certificate needs to be provided when using https. Please use the argument 'certificatefilepath' to provide it.");
 
-            var defaultApiHost = UseHttps
+            string defaultApiHost = UseHttps
                 ? DefaultApiHost.Replace(@"http://", @"https://")
                 : DefaultApiHost;
 
-            var apiHost = config.GetOrDefault("apiuri", defaultApiHost, logger);
-            var apiUri = new Uri(apiHost);
+            string apiHost = config.GetOrDefault("apiuri", defaultApiHost, logger);
+            Uri apiUri = new Uri(apiHost);
 
             // Find out which port should be used for the API.
-            var apiPort = config.GetOrDefault("apiport", GetDefaultPort(nodeSettings.MasterNode), logger);
+            int apiPort = config.GetOrDefault("apiport", GetDefaultPort(nodeSettings.MasterNode), logger);
 
             // If no port is set in the API URI.
             if (apiUri.IsDefaultPort)
@@ -62,7 +62,7 @@ namespace X42.Feature.Api
             }
 
             // Set the keepalive interval (set in seconds).
-            var keepAlive = config.GetOrDefault("keepalive", 0, logger);
+            int keepAlive = config.GetOrDefault("keepalive", 0, logger);
             if (keepAlive > 0)
                 KeepaliveTimer = new Timer
                 {
@@ -115,7 +115,7 @@ namespace X42.Feature.Api
         /// <param name="network">The network to use.</param>
         public static void PrintHelp(MasterNodeBase network)
         {
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
 
             builder.AppendLine(
                 $"-apiuri=<string>                  URI to node's API interface. Defaults to '{DefaultApiHost}'.");

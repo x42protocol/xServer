@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -22,11 +24,11 @@ namespace X42.Feature.Api
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var request = context.HttpContext.Request;
+            HttpRequest request = context.HttpContext.Request;
 
             // get the body
-            var body = string.Empty;
-            var arguments = context.ActionArguments;
+            string body = string.Empty;
+            IDictionary<string, object> arguments = context.ActionArguments;
             if (request.ContentLength != null && arguments != null && arguments.Any())
                 body = string.Join(Environment.NewLine, arguments.Values);
 

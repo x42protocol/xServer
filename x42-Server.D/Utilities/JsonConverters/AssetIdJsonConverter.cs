@@ -36,7 +36,7 @@ namespace X42.Utilities.JsonConverters
 
             try
             {
-                var value = reader.Value.ToString();
+                string value = reader.Value.ToString();
                 return new BitcoinAssetId(value, Network).AssetId;
             }
             catch (FormatException)
@@ -48,7 +48,7 @@ namespace X42.Utilities.JsonConverters
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var assetId = value as AssetId;
+            AssetId assetId = value as AssetId;
             if (assetId != null) writer.WriteValue(assetId.ToString(Network));
         }
     }

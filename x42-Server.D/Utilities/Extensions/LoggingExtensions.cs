@@ -30,7 +30,7 @@ namespace X42.Utilities.Extensions
         /// <returns>NLog value of the log level.</returns>
         public static LogLevel ToNLogLevel(this Microsoft.Extensions.Logging.LogLevel logLevel)
         {
-            var res = LogLevel.Trace;
+            LogLevel res = LogLevel.Trace;
 
             switch (logLevel)
             {

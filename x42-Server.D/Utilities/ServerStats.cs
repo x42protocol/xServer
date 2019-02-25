@@ -57,17 +57,17 @@ namespace X42.Utilities
         /// <inheritdoc />
         public string GetStats()
         {
-            var statsBuilder = new StringBuilder();
+            StringBuilder statsBuilder = new StringBuilder();
 
             lock (locker)
             {
-                var date = dateTimeProvider.GetUtcNow().ToString(CultureInfo.InvariantCulture);
+                string date = dateTimeProvider.GetUtcNow().ToString(CultureInfo.InvariantCulture);
                 statsBuilder.AppendLine($"====== x42 Master Node Stats ====== {date}");
 
-                foreach (var actionPriority in stats.Where(x => x.StatsType == StatsType.Inline))
+                foreach (StatsItem actionPriority in stats.Where(x => x.StatsType == StatsType.Inline))
                     actionPriority.AppendStatsAction(statsBuilder);
 
-                foreach (var actionPriority in stats.Where(x => x.StatsType == StatsType.Component))
+                foreach (StatsItem actionPriority in stats.Where(x => x.StatsType == StatsType.Component))
                     actionPriority.AppendStatsAction(statsBuilder);
             }
 
@@ -77,11 +77,11 @@ namespace X42.Utilities
         /// <inheritdoc />
         public string GetBenchmark()
         {
-            var statsBuilder = new StringBuilder();
+            StringBuilder statsBuilder = new StringBuilder();
 
             lock (locker)
             {
-                foreach (var actionPriority in stats.Where(x => x.StatsType == StatsType.Benchmark))
+                foreach (StatsItem actionPriority in stats.Where(x => x.StatsType == StatsType.Benchmark))
                     actionPriority.AppendStatsAction(statsBuilder);
             }
 

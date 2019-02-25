@@ -24,7 +24,7 @@ namespace X42.Feature.Database
 
             logger = serverSettings.LoggerFactory.CreateLogger(typeof(DatabaseSettings).FullName);
 
-            var config = serverSettings.ConfigReader;
+            TextFileConfiguration config = serverSettings.ConfigReader;
 
             ConnectionString = config.GetOrDefault("connectionstring",
                 "User ID=root;Password=myPassword;Host=localhost;Port=5432;Database=myDataBase;", logger);
@@ -41,8 +41,8 @@ namespace X42.Feature.Database
         /// <param name="masterNode">Not used.</param>
         public static void PrintHelp(MasterNodeBase masterNode)
         {
-            var defaults = ServerSettings.Default(masterNode);
-            var builder = new StringBuilder();
+            ServerSettings defaults = ServerSettings.Default(masterNode);
+            StringBuilder builder = new StringBuilder();
 
             builder.AppendLine("-connectionstring=<string>                     Database host.");
 

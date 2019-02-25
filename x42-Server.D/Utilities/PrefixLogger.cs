@@ -72,16 +72,16 @@ namespace X42.Utilities
                 consoleLogger.Log(logLevel, eventId, state, exception, (s, e) => { return prefix + formatter(s, e); });
 
             // The rest of the method cares about logging via NLog to files.
-            var nLogLevel = logLevel.ToNLogLevel();
+            NLog.LogLevel nLogLevel = logLevel.ToNLogLevel();
             if (!IsEnabled(nLogLevel))
                 return;
 
             if (formatter == null)
                 throw new ArgumentNullException(nameof(formatter));
 
-            var message = prefix + formatter(state, exception);
+            string message = prefix + formatter(state, exception);
 
-            var eventInfo = LogEventInfo.Create(nLogLevel, logger.Name, message);
+            LogEventInfo eventInfo = LogEventInfo.Create(nLogLevel, logger.Name, message);
             eventInfo.Exception = exception;
             logger.Log(wrapperType, eventInfo);
         }

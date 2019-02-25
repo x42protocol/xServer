@@ -63,7 +63,7 @@ namespace X42.Server
             {
                 // features are enumerated in the same order
                 // they where registered with the provider
-                foreach (var featureDescriptor in featureTypes)
+                foreach (Type featureDescriptor in featureTypes)
                     yield return ServiceProvider.GetService(featureDescriptor) as IServerFeature;
             }
         }

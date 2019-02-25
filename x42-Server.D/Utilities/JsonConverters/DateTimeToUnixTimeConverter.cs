@@ -25,7 +25,7 @@ namespace X42.Utilities.JsonConverters
         {
             if (reader.Value == null)
                 return null;
-            var result = Utils.UnixTimeToDateTime((ulong) (long) reader.Value);
+            DateTimeOffset result = Utils.UnixTimeToDateTime((ulong) (long) reader.Value);
             if (objectType == typeof(DateTime))
                 return result.UtcDateTime;
             return result;

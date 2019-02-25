@@ -55,14 +55,12 @@ namespace X42.Utilities.JsonConverters
 
             if (coin is Coin) Value = ((Coin) coin).Amount;
 
-            if (coin is ColoredCoin)
+            if (coin is ColoredCoin cc)
             {
-                var cc = (ColoredCoin) coin;
                 AssetId = cc.AssetId.GetWif(network);
                 Quantity = cc.Amount.Quantity;
                 Value = cc.Bearer.Amount;
-                var scc = cc.Bearer as ScriptCoin;
-                if (scc != null) RedeemScript = scc.Redeem;
+                if (cc.Bearer is ScriptCoin scc) RedeemScript = scc.Redeem;
             }
         }
 
@@ -84,7 +82,7 @@ namespace X42.Utilities.JsonConverters
 
         public ICoin ToCoin()
         {
-            var coin = RedeemScript == null
+            Coin coin = RedeemScript == null
                 ? new Coin(new OutPoint(TransactionId, Index), new TxOut(Value, ScriptPubKey))
                 : new ScriptCoin(new OutPoint(TransactionId, Index), new TxOut(Value, ScriptPubKey), RedeemScript);
             if (AssetId != null)

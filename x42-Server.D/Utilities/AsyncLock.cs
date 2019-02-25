@@ -74,7 +74,7 @@ namespace X42.Utilities
         /// </exception>
         public Task<IDisposable> LockAsync(CancellationToken cancel = default)
         {
-            var wait = semaphore.WaitAsync(cancel);
+            Task wait = semaphore.WaitAsync(cancel);
 
             // If the lock is available, quickly return.
             if (wait.IsCompleted)

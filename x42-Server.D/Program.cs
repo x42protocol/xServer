@@ -17,13 +17,13 @@ namespace X42
         {
             try
             {
-                var serverSettings =
+                ServerSettings serverSettings =
                     new ServerSettings(new X42MasterNode(), ProtocolVersion.PROTOCOL_VERSION, args: args);
 
-                var server = new ServerBuilder()
+                IX42Server server = new ServerBuilder()
                     .UseServerSettings(serverSettings)
                     .UseFullNode()
-                    .UsePostgreSQL()
+                    .UsePostgreSql()
                     .UseApi()
                     .Build();
 

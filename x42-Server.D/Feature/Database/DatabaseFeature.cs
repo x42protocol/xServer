@@ -74,8 +74,8 @@ namespace X42.Feature.Database
         /// <inheritdoc />
         public override void ValidateDependencies(IServerServiceProvider services)
         {
-            // TODO: Check settings and verify features here, then throw exteption if not valid
-            // Example: throw new ConfigurationException("Somethign went wrong.");
+            // TODO: Check settings and verify features here, then throw exception if not valid
+            // Example: throw new ConfigurationException("Something went wrong.");
         }
     }
 
@@ -85,11 +85,11 @@ namespace X42.Feature.Database
     public static class DatabaseBuilderExtension
     {
         /// <summary>
-        ///     Adds POW and POS miner components to the node, so that it can mine or stake.
+        ///     Adds PostgreSQL components to the server.
         /// </summary>
         /// <param name="serverBuilder">The object used to build the current node.</param>
         /// <returns>The server builder, enriched with the new component.</returns>
-        public static IServerBuilder UsePostgreSQL(this IServerBuilder serverBuilder)
+        public static IServerBuilder UsePostgreSql(this IServerBuilder serverBuilder)
         {
             LoggingConfiguration.RegisterFeatureNamespace<DatabaseFeatures>("database");
 
@@ -107,7 +107,7 @@ namespace X42.Feature.Database
             return serverBuilder;
         }
 
-        public static IServerBuilder UseMongoDB(this IServerBuilder serverBuilder)
+        public static IServerBuilder UseMongoDb(this IServerBuilder serverBuilder)
         {
             throw new NotImplementedException("MongoDB is not yet supported");
         }

@@ -21,8 +21,8 @@ namespace X42.Controllers.Converters
         /// <param name="serializer">A <see cref="JsonSerializer" /> instance.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var btcDecimal = (decimal) value;
-            var result = btcDecimal.ToString(CultureInfo.InvariantCulture);
+            decimal btcDecimal = (decimal) value;
+            string result = btcDecimal.ToString(CultureInfo.InvariantCulture);
             if (!result.Contains('.') || result.Split('.')[1].Length < MinDecimals)
                 result = btcDecimal.ToString("0." + new string('0', MinDecimals), CultureInfo.InvariantCulture);
 

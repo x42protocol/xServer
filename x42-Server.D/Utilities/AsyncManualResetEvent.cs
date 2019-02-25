@@ -101,7 +101,7 @@ namespace X42.Utilities
         /// </param>
         public async Task WaitAsync(CancellationToken cancellationToken)
         {
-            var waitTask = WaitAsync();
+            Task waitTask = WaitAsync();
             if (waitTask.IsCompleted)
                 return;
 
@@ -113,7 +113,7 @@ namespace X42.Utilities
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var tcs = new TaskCompletionSource<object>();
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
             using (cancellationToken.Register(() => tcs.TrySetCanceled(cancellationToken), false))
             {
                 await await Task.WhenAny(waitTask, tcs.Task).ConfigureAwait(false);

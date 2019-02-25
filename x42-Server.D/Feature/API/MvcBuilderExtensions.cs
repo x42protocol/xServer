@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,14 +20,14 @@ namespace X42.Feature.Api
         public static IMvcBuilder AddControllers(this IMvcBuilder builder, IServiceCollection services)
         {
             // Adds Controllers with API endpoints
-            var controllerTypes = services.Where(s => s.ServiceType.GetTypeInfo().BaseType == typeof(Controller));
-            foreach (var controllerType in controllerTypes)
+            IEnumerable<ServiceDescriptor> controllerTypes = services.Where(s => s.ServiceType.GetTypeInfo().BaseType == typeof(Controller));
+            foreach (ServiceDescriptor controllerType in controllerTypes)
                 builder.AddApplicationPart(controllerType.ServiceType.GetTypeInfo().Assembly);
 
             // Adds FeatureControllers with API endpoints.
-            var featureControllerTypes =
+            IEnumerable<ServiceDescriptor> featureControllerTypes =
                 services.Where(s => s.ServiceType.GetTypeInfo().BaseType == typeof(FeatureController));
-            foreach (var featureControllerType in featureControllerTypes)
+            foreach (ServiceDescriptor featureControllerType in featureControllerTypes)
                 builder.AddApplicationPart(featureControllerType.ServiceType.GetTypeInfo().Assembly);
 
             builder.AddApplicationPart(typeof(MasterNodeContoller).Assembly);

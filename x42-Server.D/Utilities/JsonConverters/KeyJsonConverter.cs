@@ -27,7 +27,7 @@ namespace X42.Utilities.JsonConverters
 
             try
             {
-                var bytes = Encoders.Hex.DecodeData((string) reader.Value);
+                byte[] bytes = Encoders.Hex.DecodeData((string) reader.Value);
                 if (objectType == typeof(Key))
                     return new Key(bytes);
                 return new PubKey(bytes);
@@ -47,7 +47,7 @@ namespace X42.Utilities.JsonConverters
         {
             if (value != null)
             {
-                var bytes = ((IBitcoinSerializable) value).ToBytes();
+                byte[] bytes = ((IBitcoinSerializable) value).ToBytes();
                 writer.WriteValue(Encoders.Hex.EncodeData(bytes));
             }
         }

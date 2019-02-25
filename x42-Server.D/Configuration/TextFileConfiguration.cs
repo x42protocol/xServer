@@ -39,12 +39,12 @@ namespace X42.Configuration
         public TextFileConfiguration(string[] args)
         {
             this.args = new Dictionary<string, List<string>>();
-            foreach (var arg in args)
+            foreach (string arg in args)
             {
                 // Split on the FIRST "=".
                 // This will allow mime-encoded - data strings end in one or more "=" to be parsed.
-                var splitted = arg.Split('=');
-                var key = splitted[0];
+                string[] splitted = arg.Split('=');
+                string key = splitted[0];
                 if (!key.StartsWith("-"))
                     key = "-" + key;
 
@@ -62,13 +62,13 @@ namespace X42.Configuration
         public TextFileConfiguration(string data)
         {
             args = new Dictionary<string, List<string>>();
-            var lineNumber = 0;
+            int lineNumber = 0;
             // Process all lines, even if empty.
-            foreach (var l in data.Split(new[] {"\r\n", "\n"}, StringSplitOptions.None))
+            foreach (string l in data.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
             {
                 // Track line numbers, also for empty lines.
                 lineNumber++;
-                var line = l.Trim();
+                string line = l.Trim();
 
                 // From here onwards don't process empty or commented lines.
                 if (string.IsNullOrEmpty(line) || line.StartsWith("#"))
@@ -76,12 +76,12 @@ namespace X42.Configuration
 
                 // Split on the FIRST "=".
                 // This will allow mime-encoded - data strings end in one or more "=" to be parsed.
-                var split = line.Split('=');
+                string[] split = line.Split('=');
                 if (split.Length == 1)
                     throw new FormatException("Line " + lineNumber + $": \"{l}\" : No value is set");
 
                 // Add to dictionary. Trim spaces around keys and values.
-                var key = split[0].Trim();
+                string key = split[0].Trim();
                 if (!key.StartsWith("-"))
                     key = "-" + key;
 
@@ -99,7 +99,7 @@ namespace X42.Configuration
         {
             key = key.ToLowerInvariant();
 
-            if (!args.TryGetValue(key, out var list))
+            if (!args.TryGetValue(key, out List<string> list))
             {
                 list = new List<string>();
                 args.Add(key, list);
@@ -114,9 +114,9 @@ namespace X42.Configuration
         /// <param name="destination">Target instance to merge current instance into.</param>
         public void MergeInto(TextFileConfiguration destination)
         {
-            foreach (var kv in args)
-            foreach (var v in kv.Value)
-                destination.Add(kv.Key, v);
+            foreach (KeyValuePair<string, List<string>> kv in args)
+                foreach (string v in kv.Value)
+                    destination.Add(kv.Key, v);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace X42.Configuration
             key = key.ToLowerInvariant();
 
             // Get the values with the - prefix.
-            if (!args.TryGetValue($"-{key}", out var values))
+            if (!args.TryGetValue($"-{key}", out List<string> values))
                 values = new List<string>();
 
             logger?.LogDebug("{0} entries were returned for the key '{1}': {2}",
@@ -151,7 +151,7 @@ namespace X42.Configuration
         {
             key = key.ToLowerInvariant();
 
-            if (!args.TryGetValue($"-{key}", out var values))
+            if (!args.TryGetValue($"-{key}", out List<string> values))
             {
                 logger?.LogDebug("Default value '{0}' was selected for the key '{1}'.", defaultValue, key);
                 return defaultValue;
@@ -159,7 +159,7 @@ namespace X42.Configuration
 
             try
             {
-                var value = ConvertValue<T>(values[0]);
+                T value = ConvertValue<T>(values[0]);
                 logger?.LogDebug("Value '{0}' was loaded for the key '{1}'.", value, key);
                 return value;
             }
@@ -181,32 +181,32 @@ namespace X42.Configuration
         {
             if (typeof(T) == typeof(bool))
             {
-                var trueValues = new[] {"1", "true"};
-                var falseValues = new[] {"0", "false"};
+                string[] trueValues = new[] { "1", "true" };
+                string[] falseValues = new[] { "0", "false" };
 
                 if (trueValues.Contains(str, StringComparer.OrdinalIgnoreCase))
-                    return (T) (object) true;
+                    return (T)(object)true;
 
                 if (falseValues.Contains(str, StringComparer.OrdinalIgnoreCase))
-                    return (T) (object) false;
+                    return (T)(object)false;
 
                 throw new FormatException();
             }
 
-            if (typeof(T) == typeof(string)) return (T) (object) str;
+            if (typeof(T) == typeof(string)) return (T)(object)str;
 
-            if (typeof(T) == typeof(int)) return (T) (object) int.Parse(str, CultureInfo.InvariantCulture);
+            if (typeof(T) == typeof(int)) return (T)(object)int.Parse(str, CultureInfo.InvariantCulture);
 
-            if (typeof(T) == typeof(ulong)) return (T) (object) ulong.Parse(str, CultureInfo.InvariantCulture);
+            if (typeof(T) == typeof(ulong)) return (T)(object)ulong.Parse(str, CultureInfo.InvariantCulture);
 
-            if (typeof(T) == typeof(Uri)) return (T) (object) new Uri(str);
+            if (typeof(T) == typeof(Uri)) return (T)(object)new Uri(str);
 
             if (typeof(T) == typeof(uint256))
             {
                 uint256 value = null;
                 if (str != "0" && !uint256.TryParse(str, out value))
                     throw new FormatException($"Cannot parse uint256 from {str}.");
-                return (T) (object) value;
+                return (T)(object)value;
             }
 
             throw new NotSupportedException("Configuration value does not support type " + typeof(T).Name);

@@ -168,9 +168,9 @@ namespace X42.Server
             // Print command - line help
             if (ServerSettings?.PrintHelpAndExit ?? false)
             {
-                foreach (var featureRegistration in Features.FeatureRegistrations)
+                foreach (IFeatureRegistration featureRegistration in Features.FeatureRegistrations)
                 {
-                    var printHelp =
+                    MethodInfo printHelp =
                         featureRegistration.FeatureType.GetMethod("PrintHelp",
                             BindingFlags.Public | BindingFlags.Static);
 
@@ -184,19 +184,19 @@ namespace X42.Server
             // Create configuration file if required
             ServerSettings?.CreateDefaultConfigurationFile(Features.FeatureRegistrations);
 
-            var serverServiceProvider = Services.BuildServiceProvider();
+            ServiceProvider serverServiceProvider = Services.BuildServiceProvider();
             ConfigureServices(serverServiceProvider);
 
             // Obtain the serverSettings from the service (it's set used ServerBuilder.UseServerSettings)
-            var serverSettings = serverServiceProvider.GetService<ServerSettings>();
+            ServerSettings serverSettings = serverServiceProvider.GetService<ServerSettings>();
             if (serverSettings == null)
                 throw new ServerBuilderException("ServerSettings not specified");
 
-            var masterNode = serverServiceProvider.GetService<MasterNodeBase>();
+            MasterNodeBase masterNode = serverServiceProvider.GetService<MasterNodeBase>();
             if (masterNode == null)
                 throw new ServerBuilderException("MasterNode not specified");
 
-            var server = serverServiceProvider.GetService<X42Server>();
+            X42Server server = serverServiceProvider.GetService<X42Server>();
             if (server == null)
                 throw new InvalidOperationException("X42Server not registered with provider");
 
@@ -220,15 +220,15 @@ namespace X42.Server
 
             // register services before features
             // as some of the features may depend on independent services
-            foreach (var configureServices in configureServicesDelegates)
+            foreach (Action<IServiceCollection> configureServices in configureServicesDelegates)
                 configureServices(Services);
 
             // configure features
-            foreach (var configureFeature in featuresRegistrationDelegates)
+            foreach (Action<IFeatureCollection> configureFeature in featuresRegistrationDelegates)
                 configureFeature(Features);
 
             // configure features startup
-            foreach (var featureRegistration in Features.FeatureRegistrations)
+            foreach (IFeatureRegistration featureRegistration in Features.FeatureRegistrations)
             {
                 try
                 {
@@ -255,7 +255,7 @@ namespace X42.Server
         /// <param name="serviceProvider"></param>
         private void ConfigureServices(IServiceProvider serviceProvider)
         {
-            foreach (var configure in configureDelegates)
+            foreach (Action<IServiceProvider> configure in configureDelegates)
                 configure(serviceProvider);
         }
     }

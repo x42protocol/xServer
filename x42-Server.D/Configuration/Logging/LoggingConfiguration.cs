@@ -35,7 +35,7 @@ namespace X42.Configuration.Logging
             if (dataFolder == null)
                 return;
 
-            var configPath = Path.Combine(dataFolder.RootPath, NLogConfigFileName);
+            string configPath = Path.Combine(dataFolder.RootPath, NLogConfigFileName);
             if (File.Exists(configPath))
                 this.ConfigureNLog(configPath);
         }
@@ -130,20 +130,20 @@ namespace X42.Configuration.Logging
             folder = dataFolder;
 
             // If we use "debug*" targets, which are defined in "NLog.config", make sure they log into the correct log folder in data directory.
-            var debugTargets = LogManager.Configuration.AllTargets
+            List<Target> debugTargets = LogManager.Configuration.AllTargets
                 .Where(t => t.Name != null && t.Name.StartsWith("debug")).ToList();
-            foreach (var debugTarget in debugTargets)
+            foreach (Target debugTarget in debugTargets)
             {
-                var debugFileTarget = debugTarget is AsyncTargetWrapper
+                FileTarget debugFileTarget = debugTarget is AsyncTargetWrapper
                     ? (FileTarget) (debugTarget as AsyncTargetWrapper).WrappedTarget
                     : (FileTarget) debugTarget;
-                var currentFile = debugFileTarget.FileName.Render(new LogEventInfo {TimeStamp = DateTime.UtcNow});
-                debugFileTarget.FileName = Path.Combine(folder.LogPath, Path.GetFileName(currentFile));
+                string currentFile = debugFileTarget.FileName.Render(new LogEventInfo {TimeStamp = DateTime.UtcNow});
+                debugFileTarget.FileName = Path.Combine(folder?.LogPath, Path.GetFileName(currentFile));
             }
 
             // Remove rule that forbids logging before the logging is initialized.
             LoggingRule nullPreInitRule = null;
-            foreach (var rule in LogManager.Configuration.LoggingRules)
+            foreach (LoggingRule rule in LogManager.Configuration.LoggingRules)
                 if (rule.Final && rule.NameMatches("*") && rule.Targets.Count > 0 && rule.Targets[0].Name == "null")
                 {
                     nullPreInitRule = rule;
@@ -153,12 +153,12 @@ namespace X42.Configuration.Logging
             LogManager.Configuration.LoggingRules.Remove(nullPreInitRule);
 
             // Configure main file target, configured using command line or server configuration file settings.
-            var mainTarget = new FileTarget
+            FileTarget mainTarget = new FileTarget
             {
                 Name = "main",
-                FileName = Path.Combine(folder.LogPath, "server.txt"),
+                FileName = Path.Combine(folder?.LogPath, "server.txt"),
                 ArchiveFileName =
-                    Path.Combine(folder.LogPath, "server-${date:universalTime=true:format=yyyy-MM-dd}.txt"),
+                    Path.Combine(folder?.LogPath, "server-${date:universalTime=true:format=yyyy-MM-dd}.txt"),
                 ArchiveNumbering = ArchiveNumberingMode.Sequence,
                 ArchiveEvery = FileArchivePeriod.Day,
                 MaxArchiveFiles = 7,
@@ -170,21 +170,21 @@ namespace X42.Configuration.Logging
             LogManager.Configuration.AddTarget(mainTarget);
 
             // Default logging level is Info for all components.
-            var defaultRule = new LoggingRule($"{nameof(X42)}.{nameof(Server)}.*", settings.LogLevel, mainTarget);
+            LoggingRule defaultRule = new LoggingRule($"{nameof(X42)}.{nameof(Server)}.*", settings.LogLevel, mainTarget);
 
             if (settings.DebugArgs.Any() && settings.DebugArgs[0] != "1")
             {
-                var usedCategories = new HashSet<string>(StringComparer.Ordinal);
+                HashSet<string> usedCategories = new HashSet<string>(StringComparer.Ordinal);
 
                 // Increase selected categories to Debug.
-                foreach (var key in settings.DebugArgs)
+                foreach (string key in settings.DebugArgs)
                 {
-                    if (!KeyCategories.TryGetValue(key.Trim(), out var category)) category = key.Trim();
+                    if (!KeyCategories.TryGetValue(key.Trim(), out string category)) category = key.Trim();
 
                     if (!usedCategories.Contains(category))
                     {
                         usedCategories.Add(category);
-                        var rule = new LoggingRule(category, settings.LogLevel, mainTarget);
+                        LoggingRule rule = new LoggingRule(category, settings.LogLevel, mainTarget);
                         LogManager.Configuration.LoggingRules.Add(rule);
                     }
                 }
@@ -216,7 +216,7 @@ namespace X42.Configuration.Logging
         /// <param name="loggerFactory">The logger factory to add the console logger.</param>
         public static void AddConsoleWithFilters(this ILoggerFactory loggerFactory)
         {
-            var consoleLoggerSettings = new ConsoleLoggerSettings
+            ConsoleLoggerSettings consoleLoggerSettings = new ConsoleLoggerSettings
             {
                 Switches =
                 {
@@ -227,10 +227,10 @@ namespace X42.Configuration.Logging
                 }
             };
 
-            var consoleLoggerProvider = new ConsoleLoggerProvider(consoleLoggerSettings);
+            ConsoleLoggerProvider consoleLoggerProvider = new ConsoleLoggerProvider(consoleLoggerSettings);
             loggerFactory.AddProvider(consoleLoggerProvider);
 
-            var extendedLoggerFactory = loggerFactory as ExtendedLoggerFactory;
+            ExtendedLoggerFactory extendedLoggerFactory = loggerFactory as ExtendedLoggerFactory;
             Guard.NotNull(extendedLoggerFactory, nameof(extendedLoggerFactory));
             extendedLoggerFactory.ConsoleLoggerProvider = consoleLoggerProvider;
             extendedLoggerFactory.ConsoleSettings = consoleLoggerSettings;
@@ -255,12 +255,12 @@ namespace X42.Configuration.Logging
                     }
                     else
                     {
-                        var usedCategories = new HashSet<string>(StringComparer.Ordinal);
+                        HashSet<string> usedCategories = new HashSet<string>(StringComparer.Ordinal);
 
                         // Increase selected categories to Debug.
-                        foreach (var key in settings.DebugArgs)
+                        foreach (string key in settings.DebugArgs)
                         {
-                            if (!KeyCategories.TryGetValue(key.Trim(), out var category)) category = key.Trim();
+                            if (!KeyCategories.TryGetValue(key.Trim(), out string category)) category = key.Trim();
 
                             if (!usedCategories.Contains(category))
                             {
@@ -281,7 +281,7 @@ namespace X42.Configuration.Logging
         /// <returns>Console logger settings.</returns>
         public static ConsoleLoggerSettings GetConsoleSettings(this ILoggerFactory loggerFactory)
         {
-            var extendedLoggerFactory = loggerFactory as ExtendedLoggerFactory;
+            ExtendedLoggerFactory extendedLoggerFactory = loggerFactory as ExtendedLoggerFactory;
             Guard.NotNull(extendedLoggerFactory, nameof(extendedLoggerFactory));
             return extendedLoggerFactory.ConsoleSettings;
         }
@@ -293,7 +293,7 @@ namespace X42.Configuration.Logging
         /// <returns>Console logger provider.</returns>
         public static ConsoleLoggerProvider GetConsoleLoggerProvider(this ILoggerFactory loggerFactory)
         {
-            var extendedLoggerFactory = loggerFactory as ExtendedLoggerFactory;
+            ExtendedLoggerFactory extendedLoggerFactory = loggerFactory as ExtendedLoggerFactory;
             Guard.NotNull(extendedLoggerFactory, nameof(extendedLoggerFactory));
             return extendedLoggerFactory.ConsoleLoggerProvider;
         }

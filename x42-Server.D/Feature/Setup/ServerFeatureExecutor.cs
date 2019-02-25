@@ -91,7 +91,7 @@ namespace X42.Feature.Setup
             List<Exception> exceptions = null;
 
             if (disposing)
-                foreach (var feature in server.Services.Features.Reverse())
+                foreach (IServerFeature feature in server.Services.Features.Reverse())
                     try
                     {
                         callback(feature);
@@ -107,7 +107,7 @@ namespace X42.Feature.Setup
                 try
                 {
                     // Initialize features that are flagged to start before the base feature.
-                    foreach (var feature in server.Services.Features.OrderByDescending(f => f.InitializeBeforeBase))
+                    foreach (IServerFeature feature in server.Services.Features.OrderByDescending(f => f.InitializeBeforeBase))
                         callback(feature);
                 }
                 catch (Exception exception)

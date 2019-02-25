@@ -30,7 +30,7 @@ namespace X42.Utilities.JsonConverters
 
         public static T ToObject<T>(string data, Network network = null)
         {
-            var settings = new JsonSerializerSettings
+            JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented
             };
@@ -40,7 +40,7 @@ namespace X42.Utilities.JsonConverters
 
         public static string ToString<T>(T response, Network network = null)
         {
-            var settings = new JsonSerializerSettings
+            JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented
             };
