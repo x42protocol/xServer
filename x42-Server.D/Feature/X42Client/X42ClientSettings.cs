@@ -92,7 +92,7 @@ namespace X42.Feature.X42Client
             ServerSettings defaults = ServerSettings.Default(masterNode);
             StringBuilder builder = new StringBuilder();
 
-            builder.AppendLine("-name=<string>                      Node name.");
+            builder.AppendLine("-address=127.0.0.1                  Node address.");
             builder.AppendLine("-port=42221                         Node port.");
 
             defaults.Logger.LogInformation(builder.ToString());
@@ -110,7 +110,7 @@ namespace X42.Feature.X42Client
             builder.AppendLine("#address=127.0.0.1");
             builder.AppendLine("#Node Port");
             builder.AppendLine("#port=42220");
-
+            builder.AppendLine("");
             builder.AppendLine("####SSH Settings####");
             builder.AppendLine("#SSH Server Address");
             builder.AppendLine("#sshserveraddress=127.0.0.1");
