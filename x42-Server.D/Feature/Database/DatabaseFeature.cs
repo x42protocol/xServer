@@ -107,7 +107,7 @@ namespace X42.Feature.Database
             return serverBuilder;
         }
 
-        public static IServerBuilder UseMongoDb(this IServerBuilder serverBuilder)
+        public static IServerBuilder UseNoql(this IServerBuilder serverBuilder)
         {
             throw new NotImplementedException("MongoDB is not yet supported");
         }
