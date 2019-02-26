@@ -23,7 +23,7 @@ namespace X42
                 IX42Server server = new ServerBuilder()
                     .UseServerSettings(serverSettings)
                     .UseFullNode()
-                    .UsePostgreSql()
+                    .UseSql()
                     .UseApi()
                     .Build();
 

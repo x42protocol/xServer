@@ -89,7 +89,7 @@ namespace X42.Feature.Database
         /// </summary>
         /// <param name="serverBuilder">The object used to build the current node.</param>
         /// <returns>The server builder, enriched with the new component.</returns>
-        public static IServerBuilder UsePostgreSql(this IServerBuilder serverBuilder)
+        public static IServerBuilder UseSql(this IServerBuilder serverBuilder)
         {
             LoggingConfiguration.RegisterFeatureNamespace<DatabaseFeatures>("database");
 
