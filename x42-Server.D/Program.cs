@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using X42.Configuration;
 using X42.Feature.Api;
 using X42.Feature.Database;
-using X42.Feature.FullNode;
+using X42.Feature.X42Client;
 using X42.MasterNode;
 using X42.Protocol;
 using X42.Server;
@@ -22,7 +22,7 @@ namespace X42
 
                 IX42Server server = new ServerBuilder()
                     .UseServerSettings(serverSettings)
-                    .UseFullNode()
+                    .UseX42Client()
                     .UseSql()
                     .UseApi()
                     .Build();

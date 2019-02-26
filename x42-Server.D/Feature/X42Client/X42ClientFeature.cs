@@ -8,18 +8,18 @@ using X42.Feature.Setup;
 using X42.MasterNode;
 using X42.Server;
 
-namespace X42.Feature.Database
+namespace X42.Feature.X42Client
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Provides an ability to communicate with different database types.
+    ///     Provides an ability to communicate with the X42 Node directly.
     /// </summary>
-    public class DatabaseFeatures : ServerFeature
+    public class X42ClientFeature : ServerFeature
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
 
-        public DatabaseFeatures(MasterNodeBase network, ILoggerFactory loggerFactory)
+        public X42ClientFeature(MasterNodeBase network, ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger(GetType().FullName);
         }
@@ -44,22 +44,22 @@ namespace X42.Feature.Database
         }
 
         /// <summary>
-        ///     Connect to the database.
+        ///     Connect to the X42 Node.
         /// </summary>
         public void Connect()
         {
-            logger.LogInformation("Connected to database");
+            logger.LogInformation("Connected to X42 Node");
         }
 
         public void Disconnect()
         {
-            logger.LogInformation("Disconnected from database");
+            logger.LogInformation("Disconnected X42 Node");
         }
 
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
-            logger.LogInformation("Database Feature Initialized");
+            logger.LogInformation("X42 Client Feature Initialized");
 
             return Task.CompletedTask;
         }
@@ -81,34 +81,29 @@ namespace X42.Feature.Database
     /// <summary>
     ///     A class providing extension methods for <see cref="DatabaseFeatures" />.
     /// </summary>
-    public static class DatabaseBuilderExtension
+    public static class X42ClientExtension
     {
         /// <summary>
         ///     Adds SQL components to the server.
         /// </summary>
         /// <param name="serverBuilder">The object used to build the current node.</param>
         /// <returns>The server builder, enriched with the new component.</returns>
-        public static IServerBuilder UseSql(this IServerBuilder serverBuilder)
+        public static IServerBuilder UseX42Client(this IServerBuilder serverBuilder)
         {
-            LoggingConfiguration.RegisterFeatureNamespace<DatabaseFeatures>("database");
+            LoggingConfiguration.RegisterFeatureNamespace<X42ClientFeature>("x42client");
 
             serverBuilder.ConfigureFeature(features =>
             {
                 features
-                    .AddFeature<DatabaseFeatures>()
+                    .AddFeature<X42ClientFeature>()
                     .FeatureServices(services =>
                     {
-                        services.AddSingleton<DatabaseFeatures>();
+                        services.AddSingleton<X42ClientFeature>();
                         services.AddSingleton<X42ClientSettings>();
                     });
             });
 
             return serverBuilder;
-        }
-
-        public static IServerBuilder UseNoql(this IServerBuilder serverBuilder)
-        {
-            throw new NotImplementedException("NoSQL is not yet supported");
         }
     }
 }
