@@ -10,8 +10,9 @@ using X42.Server;
 
 namespace X42.Feature.Database
 {
+    /// <inheritdoc />
     /// <summary>
-    ///     Provides an ability to comminicate with diffrent database types.
+    ///     Provides an ability to communicate with different database types.
     /// </summary>
     public class DatabaseFeatures : ServerFeature
     {
@@ -26,7 +27,7 @@ namespace X42.Feature.Database
         /// <summary>
         ///     Prints command-line help.
         /// </summary>
-        /// <param name="network">The network to extract values from.</param>
+        /// <param name="masterNodeBase">The masternode to extract values from.</param>
         public static void PrintHelp(MasterNodeBase masterNodeBase)
         {
             DatabaseSettings.PrintHelp(masterNodeBase);
@@ -45,8 +46,6 @@ namespace X42.Feature.Database
         /// <summary>
         ///     Connect to the database.
         /// </summary>
-        /// <param name="walletName">The name of the wallet.</param>
-        /// <param name="walletPassword">The password of the wallet.</param>
         public void Connect()
         {
             logger.LogInformation("Connected to database");
@@ -85,7 +84,7 @@ namespace X42.Feature.Database
     public static class DatabaseBuilderExtension
     {
         /// <summary>
-        ///     Adds PostgreSQL components to the server.
+        ///     Adds SQL components to the server.
         /// </summary>
         /// <param name="serverBuilder">The object used to build the current node.</param>
         /// <returns>The server builder, enriched with the new component.</returns>
@@ -109,7 +108,7 @@ namespace X42.Feature.Database
 
         public static IServerBuilder UseNoql(this IServerBuilder serverBuilder)
         {
-            throw new NotImplementedException("MongoDB is not yet supported");
+            throw new NotImplementedException("NoSQL is not yet supported");
         }
     }
 }
