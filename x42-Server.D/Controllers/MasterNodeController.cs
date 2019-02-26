@@ -10,6 +10,9 @@ using NLog.Config;
 using x42.Feature.API.Requirements;
 using X42.Configuration;
 using X42.Controllers.Models;
+using X42.Controllers.Requests;
+using X42.Controllers.Results;
+using X42.Feature.Setup;
 using X42.MasterNode;
 using X42.Server;
 using X42.Utilities;
@@ -21,6 +24,7 @@ using LogLevel = NLog.LogLevel;
 
 namespace X42.Controllers
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Provides methods that interact with the full node.
     /// </summary>
@@ -62,15 +66,30 @@ namespace X42.Controllers
         }
 
         /// <summary>
+        ///     Registers masternode to the network.
+        /// </summary>
+        /// <returns>A <see cref="RegisterResult" /> with registration result.</returns>
+        [HttpGet]
+        [Route("register")]
+        public IActionResult Register()
+        {
+            RegisterResult model = new RegisterResult
+            {
+                Success = true
+            };
+            
+            return Json(model);
+        }
+
+        /// <summary>
         ///     Returns some general information about the status of the underlying node.
         /// </summary>
-        /// <returns>A <see cref="StatusModel" /> with information about the node.</returns>
+        /// <returns>A <see cref="StatusResult" /> with information about the node.</returns>
         [HttpGet]
         [Route("status")]
         public IActionResult Status()
         {
-            // Output has been merged with RPC's GetInfo() since they provided similar functionality.
-            StatusModel model = new StatusModel
+            StatusResult model = new StatusResult
             {
                 Version = x42Server.Version?.ToString() ?? "0",
                 ProtocolVersion = (uint) nodeSettings.ProtocolVersion,
@@ -81,7 +100,7 @@ namespace X42.Controllers
             };
 
             // Add the list of features that are enabled.
-            foreach (IX42Server feature in x42Server.Services.Features)
+            foreach (IServerFeature feature in x42Server.Services.Features)
                 model.EnabledFeatures.Add(feature.GetType().ToString());
 
             return Json(model);

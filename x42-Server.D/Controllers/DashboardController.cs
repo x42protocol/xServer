@@ -5,6 +5,7 @@ using X42.Server;
 
 namespace X42.Controllers
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Controller providing HTML Dashboard
     /// </summary>

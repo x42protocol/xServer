@@ -6,17 +6,6 @@ using X42.Server;
 
 namespace X42.Controllers
 {
-    [AttributeUsage(AttributeTargets.Method)]
-    public class ActionDescription : Attribute
-    {
-        public ActionDescription(string description)
-        {
-            Description = description;
-        }
-
-        public string Description { get; }
-    }
-
     public abstract class FeatureController : Controller
     {
         private FeatureController(

@@ -6,28 +6,19 @@ namespace X42.Controllers.Models
     /// <summary>
     ///     Class representing the status of the currently running node.
     /// </summary>
-    public class StatusModel
+    public class StatusResult
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="StatusModel" /> class.
+        ///     Initializes a new instance of the <see cref="StatusResult" /> class.
         /// </summary>
-        public StatusModel()
+        public StatusResult()
         {
             EnabledFeatures = new List<string>();
         }
-
-        /// <summary>The node's user agent that will be shared with peers in the version handshake.</summary>
-        public string Agent { get; set; }
-
+        
         /// <summary>The node's version.</summary>
         public string Version { get; set; }
-
-        /// <summary>The network the current node is running on.</summary>
-        public string MasterNode { get; set; }
-
-        /// <summary>The coin ticker to use with external applications.</summary>
-        public string CoinTicker { get; set; }
-
+        
         /// <summary>System identifier of the node's process.</summary>
         public int ProcessId { get; set; }
 
