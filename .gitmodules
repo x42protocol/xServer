@@ -1,0 +1,3 @@
+[submodule "X42-FullNode"]
+	path = X42-FullNode
+	url = https://github.com/x42protocol/X42-FullNode
