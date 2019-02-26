@@ -15,10 +15,10 @@ namespace X42.Controllers.Models
         {
             EnabledFeatures = new List<string>();
         }
-        
+
         /// <summary>The node's version.</summary>
         public string Version { get; set; }
-        
+
         /// <summary>System identifier of the node's process.</summary>
         public int ProcessId { get; set; }
 

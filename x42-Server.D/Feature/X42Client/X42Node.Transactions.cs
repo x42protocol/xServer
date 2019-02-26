@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using X42.Feature.X42Client.Utils.Extensions;
 using X42.Feature.X42Client.Enums;
 using X42.Feature.X42Client.Models;
 using X42.Feature.X42Client.RestClient.Responses;
+using X42.Feature.X42Client.Utils.Extensions;
 using X42.Utilities;
 
 namespace X42.Feature.X42Client
@@ -36,7 +36,8 @@ namespace X42.Feature.X42Client
                         }
                         else
                         {
-                            logger.LogInformation($"An Error Occured Getting Account '{account}' TX History For Wallet '{wallet}', API Response Was NULL!");
+                            logger.LogInformation(
+                                $"An Error Occured Getting Account '{account}' TX History For Wallet '{wallet}', API Response Was NULL!");
                         } //end of if-else if(accountHistory != null)
                     } //end of foreach(string account in WalletAccounts[wallet])
                 } //end of foreach(string wallet in WalletAccounts.Keys)
@@ -114,7 +115,8 @@ namespace X42.Feature.X42Client
         public async Task<Tuple<decimal, decimal>> GetWalletBalance(string walletName, string accountName = null)
         {
             GetWalletBalenceResponse walletBalance = await _RestClient.GetWalletBalance(walletName, accountName);
-            Guard.Null(walletBalance, nameof(walletBalance), $"Node '{Name}' ({Address}:{Port}) An Error Occured When Trying To Get The Wallet Balance of Wallet '{walletName}' and Account '{accountName}'");
+            Guard.Null(walletBalance, nameof(walletBalance),
+                $"Node '{Name}' ({Address}:{Port}) An Error Occured When Trying To Get The Wallet Balance of Wallet '{walletName}' and Account '{accountName}'");
 
             decimal confirmedBalance = 0;
             decimal unConfirmedBalance = 0;

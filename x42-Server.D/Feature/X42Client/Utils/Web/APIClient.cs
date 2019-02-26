@@ -18,6 +18,7 @@ namespace X42.Feature.X42Client.Utils.Web
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
+
         private bool _Disposed;
         public HttpClient httpClient;
 

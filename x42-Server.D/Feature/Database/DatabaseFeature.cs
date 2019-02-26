@@ -30,7 +30,7 @@ namespace X42.Feature.Database
         /// <param name="masterNodeBase">The masternode to extract values from.</param>
         public static void PrintHelp(MasterNodeBase masterNodeBase)
         {
-            X42ClientSettings.PrintHelp(masterNodeBase);
+            DatabaseSettings.PrintHelp(masterNodeBase);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace X42.Feature.Database
         /// <param name="network">The network to base the defaults off.</param>
         public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase network)
         {
-            X42ClientSettings.BuildDefaultConfigurationFile(builder, network);
+            DatabaseSettings.BuildDefaultConfigurationFile(builder, network);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace X42.Feature.Database
                     .FeatureServices(services =>
                     {
                         services.AddSingleton<DatabaseFeatures>();
-                        services.AddSingleton<X42ClientSettings>();
+                        services.AddSingleton<DatabaseSettings>();
                     });
             });
 

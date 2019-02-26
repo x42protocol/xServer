@@ -2,8 +2,8 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Renci.SshNet;
-using X42.Feature.X42Client.Utils.Extensions;
 using X42.Feature.X42Client.Enums;
+using X42.Feature.X42Client.Utils.Extensions;
 using X42.Utilities;
 
 namespace X42.Feature.X42Client
@@ -68,13 +68,15 @@ namespace X42.Feature.X42Client
 
                 _SSHForwardPort.Start();
 
-                SetupNodeConnection(name, localBoundIP, (ushort)localBoundPort);
+                SetupNodeConnection(name, localBoundIP, (ushort) localBoundPort);
 
                 OnConnected(sshAddress, sshPort, ConnectionType.SSH);
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Node '{Name}' ({Address}:{Port}) An Error Occured When Connecting To The Remote Node Via SSH '{username}'@'{sshServerAddress}':'{sshPort}'", ex);
+                logger.LogInformation(
+                    $"Node '{Name}' ({Address}:{Port}) An Error Occured When Connecting To The Remote Node Via SSH '{username}'@'{sshServerAddress}':'{sshPort}'",
+                    ex);
                 throw;
             } //end of try-catch
         } //end of public X42Node(string name, string sshServerAddress, int port = 22, string nodeIPAddress = "127.0.0.1", int nodePort = 422220)

@@ -64,7 +64,9 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting a List of Spendable TX's for Wallet '{walletName}'/'{account}'", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting a List of Spendable TX's for Wallet '{walletName}'/'{account}'",
+                    ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<List<GetSpendableTXResponse>> GetSpendableTransactions(string walletName, string account, int minConfirms = 50)
@@ -111,7 +113,8 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Creating a Mnemonic With The Paramiters Language '{language}', Word Count '{wordCount}'",
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Creating a Mnemonic With The Paramiters Language '{language}', Word Count '{wordCount}'",
                     ex);
                 throw;
             } //end of try-catch
@@ -212,7 +215,9 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting General Wallet Info, For Wallet '{walletName.Trim()}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting General Wallet Info, For Wallet '{walletName.Trim()}'!",
+                    ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<WalletGeneralInfoResponse> GetWalletGeneralInfo()
@@ -246,7 +251,9 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Creating Wallet Account Info, For Wallet '{walletName.Trim()}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Creating Wallet Account Info, For Wallet '{walletName.Trim()}'!",
+                    ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<string> CreateAccount(string walletName, string password)
@@ -295,7 +302,9 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Wallet Account Info, For Wallet '{walletName.Trim()}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting Wallet Account Info, For Wallet '{walletName.Trim()}'!",
+                    ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<List<string>> GetWalletAccounts(string walletName)
@@ -330,7 +339,9 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Unused Addresses, For Wallet '{walletName.Trim()}' and Account '{account.Trim()}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting Unused Addresses, For Wallet '{walletName.Trim()}' and Account '{account.Trim()}'!",
+                    ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<List<string>> GenerateUnusedAddresses(string walletName, string account, int count)
@@ -361,7 +372,9 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Addresses, For Wallet '{walletName.Trim()}' and Account '{account.Trim()}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting Addresses, For Wallet '{walletName.Trim()}' and Account '{account.Trim()}'!",
+                    ex);
                 throw;
             } //end of try-catch
         }
@@ -388,7 +401,8 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Addresses Balence, Address'{address.Trim()}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting Addresses Balence, Address'{address.Trim()}'!", ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<GetRecievedAddressInfoResponse> GetRecievedAddressBalence(string address)
@@ -421,7 +435,8 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Ballence For Wallet '{walletName.Trim()}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting Ballence For Wallet '{walletName.Trim()}'!", ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<string> GetWalletBalence(string walletName, string accountName = null)
@@ -470,7 +485,8 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting History For Wallet '{walletName.Trim()}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting History For Wallet '{walletName.Trim()}'!", ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<GetWalletHistoryResponse> GetWalletHistory(string walletName, string account = null, int skip = -1, int take = -1, string searchQuery = null)
@@ -526,7 +542,9 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Building A TX! [Wallet: '{walletName.Trim()}', Account: '{account.Trim()}', To: '{destinationAddress.Trim()}', Amount: '{amount}'", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Building A TX! [Wallet: '{walletName.Trim()}', Account: '{account.Trim()}', To: '{destinationAddress.Trim()}', Amount: '{amount}'",
+                    ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<BuildTXResponse> BuildTransaction(string walletName, string account, string destinationAddress, decimal amount, bool allowUnconfirmed = false, bool shuffleCoins = true)

@@ -9,7 +9,7 @@ namespace X42.Feature.Database
     /// <summary>
     ///     Configuration related to the database interface.
     /// </summary>
-    public class X42ClientSettings
+    public class DatabaseSettings
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
@@ -18,11 +18,11 @@ namespace X42.Feature.Database
         ///     Initializes an instance of the object from the node configuration.
         /// </summary>
         /// <param name="serverSettings">The node configuration.</param>
-        public X42ClientSettings(ServerSettings serverSettings)
+        public DatabaseSettings(ServerSettings serverSettings)
         {
             Guard.NotNull(serverSettings, nameof(serverSettings));
 
-            logger = serverSettings.LoggerFactory.CreateLogger(typeof(X42ClientSettings).FullName);
+            logger = serverSettings.LoggerFactory.CreateLogger(typeof(DatabaseSettings).FullName);
 
             TextFileConfiguration config = serverSettings.ConfigReader;
 

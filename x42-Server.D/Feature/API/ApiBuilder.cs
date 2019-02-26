@@ -79,7 +79,7 @@ namespace X42.Feature.Api
                     options.Filters.Add(typeof(LoggingActionFilter));
 
                     ServiceProvider serviceProvider = services.BuildServiceProvider();
-                    ApiSettings apiSettings = (ApiSettings)serviceProvider.GetRequiredService(typeof(ApiSettings));
+                    ApiSettings apiSettings = (ApiSettings) serviceProvider.GetRequiredService(typeof(ApiSettings));
                     if (apiSettings.KeepaliveTimer != null) options.Filters.Add(typeof(KeepaliveActionFilter));
                 })
                 // add serializers for NBitcoin objects
@@ -89,7 +89,7 @@ namespace X42.Feature.Api
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(setup =>
             {
-                setup.SwaggerDoc("v1", new Info { Title = "X42.MasterNode.Api", Version = "v1" });
+                setup.SwaggerDoc("v1", new Info {Title = "X42.MasterNode.Api", Version = "v1"});
 
                 //Set the comments path for the swagger json and ui.
                 string basePath = PlatformServices.Default.Application.ApplicationBasePath;

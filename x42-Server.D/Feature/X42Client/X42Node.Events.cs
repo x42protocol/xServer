@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Net;
-using X42.Feature.X42Client.Utils.Extensions;
 using X42.Feature.X42Client.Enums;
 using X42.Feature.X42Client.Models;
 using X42.Feature.X42Client.Models.Event;
 using X42.Feature.X42Client.RestClient.Responses;
+using X42.Feature.X42Client.Utils.Extensions;
 using X42.Utilities;
 
 namespace X42.Feature.X42Client

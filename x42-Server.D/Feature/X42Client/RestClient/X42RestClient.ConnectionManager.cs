@@ -54,7 +54,8 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Block Headers For Hash '{blockHash}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting Block Headers For Hash '{blockHash}'!", ex);
 
                 throw;
             } //end of try-catch
@@ -81,7 +82,8 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Block Headers For Height '{height}'!", ex);
+                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Block Headers For Height '{height}'!",
+                    ex);
 
                 throw;
             } //end of try-catch

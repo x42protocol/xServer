@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
-using X42.Feature.X42Client.Utils.Extensions;
 using X42.Feature.X42Client.Enums;
 using X42.Feature.X42Client.RestClient;
 using X42.Feature.X42Client.RestClient.Responses;
+using X42.Feature.X42Client.Utils.Extensions;
 
 namespace X42.Feature.X42Client
 {
@@ -45,7 +45,8 @@ namespace X42.Feature.X42Client
                 //are we connected??
                 if (ConnectionMethod == ConnectionType.Disconnected)
                 {
-                    logger.LogInformation($"Node '{Name}' ({Address}:{Port}), Aborting 'Status' Update.  Internal State Is Disconnected!");
+                    logger.LogInformation(
+                        $"Node '{Name}' ({Address}:{Port}), Aborting 'Status' Update.  Internal State Is Disconnected!");
                     return;
                 } //end of if(ConnectionMethod == ConnectionType.Disconnected)
 
@@ -78,7 +79,8 @@ namespace X42.Feature.X42Client
                 List<GetPeerInfoResponse> peersResponse = await _RestClient.GetPeerInfo();
                 if (peersResponse == null)
                 {
-                    logger.LogInformation($"Node '{Name}' ({Address}:{Port}) An Error Occured Getting The Node Peer List!");
+                    logger.LogInformation(
+                        $"Node '{Name}' ({Address}:{Port}) An Error Occured Getting The Node Peer List!");
                 }
                 else
                 {
@@ -95,7 +97,8 @@ namespace X42.Feature.X42Client
             catch (HttpRequestException ex) //API is not accessible or responding
             {
                 OnDisconnected(Address, Port);
-                logger.LogInformation($"Node '{Name}' ({Address}:{Port}) Something Happened & The Node API Is Not Accessible", ex);
+                logger.LogInformation(
+                    $"Node '{Name}' ({Address}:{Port}) Something Happened & The Node API Is Not Accessible", ex);
             }
             catch (Exception ex)
             {
@@ -110,7 +113,8 @@ namespace X42.Feature.X42Client
             //are we connected??
             if (ConnectionMethod == ConnectionType.Disconnected)
             {
-                logger.LogInformation($"Node '{Name}' ({Address}:{Port}), Aborting 'Static Data' Update.  Internal State Is Disconnected!");
+                logger.LogInformation(
+                    $"Node '{Name}' ({Address}:{Port}), Aborting 'Static Data' Update.  Internal State Is Disconnected!");
                 return;
             } //end of if(ConnectionMethod == ConnectionType.Disconnected)
 
@@ -120,7 +124,8 @@ namespace X42.Feature.X42Client
                 if (filesData == null)
                 {
                     _Error_FS_Info = true; //an error occured, this data is relied upon in the "RefreshNodeData" Method
-                    logger.LogInformation($"Node '{Name}' ({Address}:{Port}), An Error Occured When Getting Node File Information!");
+                    logger.LogInformation(
+                        $"Node '{Name}' ({Address}:{Port}), An Error Occured When Getting Node File Information!");
                 }
                 else
                 {
@@ -137,7 +142,8 @@ namespace X42.Feature.X42Client
 
                         if (walletAccounts == null)
                         {
-                            logger.LogInformation($"An Error Occured When Trying To Get Wallet Accounts For Wallet '{walletName}'");
+                            logger.LogInformation(
+                                $"An Error Occured When Trying To Get Wallet Accounts For Wallet '{walletName}'");
                         }
 
                         if (walletAccounts.Count > 0)
@@ -160,11 +166,13 @@ namespace X42.Feature.X42Client
             catch (HttpRequestException ex) //API is not accessible or responding
             {
                 OnDisconnected(Address, Port);
-                logger.LogInformation($"Node '{Name}' ({Address}:{Port}) Something Happened & The Node API Is Not Accessible", ex);
+                logger.LogInformation(
+                    $"Node '{Name}' ({Address}:{Port}) Something Happened & The Node API Is Not Accessible", ex);
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"Node '{Name}' ({Address}:{Port}) An Error Occured When Polling For Static Data!", ex);
+                logger.LogInformation(
+                    $"Node '{Name}' ({Address}:{Port}) An Error Occured When Polling For Static Data!", ex);
             } //end of try-catch
         } //end of private async void GetStaticData()
 

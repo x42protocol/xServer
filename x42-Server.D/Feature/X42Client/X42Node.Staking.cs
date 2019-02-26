@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using X42.Feature.X42Client.Utils.Extensions;
 using X42.Feature.X42Client.RestClient.Responses;
+using X42.Feature.X42Client.Utils.Extensions;
 
 namespace X42.Feature.X42Client
 {
@@ -14,7 +14,8 @@ namespace X42.Feature.X42Client
             GetStakingInfoResponse stakingInfo = await _RestClient.GetStakingInfo();
             if (stakingInfo == null)
             {
-                logger.LogInformation($"Node '{Name}' ({Address}:{Port}), An Error Occured When Getting Staking Information!");
+                logger.LogInformation(
+                    $"Node '{Name}' ({Address}:{Port}), An Error Occured When Getting Staking Information!");
             }
             else
             {
@@ -25,6 +26,5 @@ namespace X42.Feature.X42Client
                 ExpectedStakingTimeMins = stakingInfo.expectedTime / 60; //time is in seconds
             } //end of if (stakingInfo == null)
         } //end of public async void UpdateStakingInformation()
-        
     } //end of X42Node.Staking
 }

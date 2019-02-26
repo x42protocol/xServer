@@ -33,7 +33,8 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Block Information For Hash '{blockHash}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting Block Information For Hash '{blockHash}'!", ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<GetStakingInfoResponse> GetStakingInfo()
@@ -59,7 +60,8 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Block Information At Height '{blockHeight}'!", ex);
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Getting Block Information At Height '{blockHeight}'!", ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<GetBlockResponse> GetBlock(ulong blockHeight, bool showTX = true)

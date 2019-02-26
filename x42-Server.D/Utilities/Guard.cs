@@ -12,19 +12,20 @@ namespace X42.Utilities
     /// </summary>
     public static class Guard
     {
-
         /// <summary>
-        /// Throws an ArgumentNullException if input is null.
+        ///     Throws an ArgumentNullException if input is null.
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         public static void Null<T>(T input, string parameterName)
         {
-            if (input == null) { throw new ArgumentNullException(parameterName); }
-
+            if (input == null)
+            {
+                throw new ArgumentNullException(parameterName);
+            }
         }
 
         /// <summary>
-        /// Throws an ArgumentNullException if input is null.
+        ///     Throws an ArgumentNullException if input is null.
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         public static void Null<T>(T input, string parameterName, string errorMsg)
@@ -32,12 +33,14 @@ namespace X42.Utilities
             // We don't have to error we can use the call without an error msg
             if (string.IsNullOrWhiteSpace(errorMsg))
             {
-                Guard.Null(input, parameterName);
+                Null(input, parameterName);
                 return;
             }
 
-            if (input == null) { throw new ArgumentNullException(parameterName, errorMsg); }
-
+            if (input == null)
+            {
+                throw new ArgumentNullException(parameterName, errorMsg);
+            }
         }
 
         /// <summary>
@@ -78,88 +81,106 @@ namespace X42.Utilities
         }
 
         /// <summary>
-        /// Throws an Exception if the condition is not true
-        /// </summary>   
-        /// <exception cref="Exception"></exception>     
+        ///     Throws an Exception if the condition is not true
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public static void AssertTrue(bool condition)
         {
-            if (!condition) { throw new Exception("Assertion Failed! Expected 'true'"); }
+            if (!condition)
+            {
+                throw new Exception("Assertion Failed! Expected 'true'");
+            }
         }
 
 
         /// <summary>
-        /// Throws an Exception if the condition is not true
-        /// </summary>   
-        /// <exception cref="Exception"></exception>        
+        ///     Throws an Exception if the condition is not true
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public static void AssertTrue(bool condition, string errorMsg)
         {
             // We don't have to error we can use the call without an error msg
             if (string.IsNullOrWhiteSpace(errorMsg))
             {
-                Guard.AssertTrue(condition);
+                AssertTrue(condition);
                 return;
             }
 
-            if (!condition) { throw new Exception(errorMsg); }
+            if (!condition)
+            {
+                throw new Exception(errorMsg);
+            }
         }
 
         /// <summary>
-        /// Throws an Exception if the condition is not false
-        /// </summary>        
+        ///     Throws an Exception if the condition is not false
+        /// </summary>
         public static void AssertFalse(bool condition)
         {
-            if (!condition) { throw new Exception("Assertion Failed! Expected 'false'"); }
+            if (!condition)
+            {
+                throw new Exception("Assertion Failed! Expected 'false'");
+            }
         }
-        
+
         /// <summary>
-        /// Throws an Exception if the condition is not false
+        ///     Throws an Exception if the condition is not false
         /// </summary>
-        /// <exception cref="Exception"></exception>           
+        /// <exception cref="Exception"></exception>
         public static void AssertFalse(bool condition, string errorMsg)
         {
             // We don't have to error we can use the call without an error msg
             if (string.IsNullOrWhiteSpace(errorMsg))
             {
-                Guard.AssertFalse(condition);
+                AssertFalse(condition);
                 return;
             }
 
-            if (!condition) { throw new Exception(errorMsg); }
+            if (!condition)
+            {
+                throw new Exception(errorMsg);
+            }
         }
 
 
         /// <summary>
-        /// Throws an ArgumentNullException if input is null.
-        /// Throws an ArgumentException if input is an empty string.
+        ///     Throws an ArgumentNullException if input is null.
+        ///     Throws an ArgumentException if input is an empty string.
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         public static void NullOrEmpty(string input, string parameterName)
         {
-            Guard.Null(input, parameterName);
+            Null(input, parameterName);
 
-            if (input == string.Empty) { throw new ArgumentException($"Required input {parameterName} was empty.", parameterName); }
+            if (input == string.Empty)
+            {
+                throw new ArgumentException($"Required input {parameterName} was empty.", parameterName);
+            }
         }
 
 
         /// <summary>
-        /// Throws an ArgumentNullException if input is null.
-        /// Throws an ArgumentException if input is an empty string.
+        ///     Throws an ArgumentNullException if input is null.
+        ///     Throws an ArgumentException if input is an empty string.
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         public static void NullOrEmpty(string input, string parameterName, string errorMsg)
         {
-            Guard.Null(input, parameterName);
+            Null(input, parameterName);
 
             // We don't have to error we can use the call without an error msg
             if (string.IsNullOrWhiteSpace(errorMsg))
             {
-                Guard.NullOrEmpty(input, parameterName);
+                NullOrEmpty(input, parameterName);
                 return;
             }
 
-            if (input == string.Empty) { throw new ArgumentException(errorMsg, parameterName); }
+            if (input == string.Empty)
+            {
+                throw new ArgumentException(errorMsg, parameterName);
+            }
         }
     }
 }
