@@ -44,7 +44,7 @@ namespace X42.Server
         /// <summary>Factory for creating and execution of asynchronous loops.</summary>
         public IAsyncLoopFactory AsyncLoopFactory { get; set; }
 
-        /// <summary>Specification of the network the server runs on - regtest/testnet/mainnet.</summary>
+        /// <summary>Specification of the master node the server runs on.</summary>
         public MasterNodeBase MasterNode { get; internal set; }
 
         /// <summary>Contains path locations to folders and files on disk.</summary>

@@ -218,7 +218,7 @@ namespace X42.Configuration
         /// <summary>
         ///     Initializes default configuration.
         /// </summary>
-        /// <param name="masterNode">Specification of the masternode the server runs on - regtest/testnet/mainnet.</param>
+        /// <param name="masterNode">Specification of the master node the server runs on</param>
         /// <param name="protocolVersion">Supported protocol version for which to create the configuration.</param>
         /// <returns>Default server configuration.</returns>
         public static ServerSettings Default(MasterNodeBase masterNode,

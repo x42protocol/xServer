@@ -14,7 +14,7 @@ namespace X42.Server
         /// <summary>User defined server settings.</summary>
         ServerSettings ServerSettings { get; }
 
-        /// <summary>Specification of the network the server runs on - regtest/testnet/mainnet.</summary>
+        /// <summary>Specification of the master node the server runs on.</summary>
         MasterNodeBase MasterNode { get; }
 
         /// <summary>Collection of DI services.</summary>

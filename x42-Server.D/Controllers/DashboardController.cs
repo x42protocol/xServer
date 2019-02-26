@@ -29,7 +29,7 @@ namespace X42.Controllers
         [Route("Stats")]
         public IActionResult Stats()
         {
-            string content = (x42Server as X42Server).LastLogOutput;
+            string content = new X42Server().LastLogOutput;
             return Content(content);
         }
     }
