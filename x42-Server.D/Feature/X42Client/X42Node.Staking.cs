@@ -11,7 +11,7 @@ namespace X42.Feature.X42Client
         /// </summary>
         public async void UpdateStakingInformation()
         {
-            GetStakingInfoResponse stakingInfo = await _RestClient.GetStakingInfo();
+            GetStakingInfoResponse stakingInfo = await restClient.GetStakingInfo();
             if (stakingInfo == null)
             {
                 logger.LogInformation(
@@ -22,7 +22,7 @@ namespace X42.Feature.X42Client
                 NetworkDifficulty = stakingInfo.difficulty;
                 IsStaking = stakingInfo.staking;
                 NetworkStakingWeight = stakingInfo.netStakeWeight;
-                NodeStakingWeight = stakingInfo.weight.ParseAPIAmount();
+                NodeStakingWeight = stakingInfo.weight.ParseApiAmount();
                 ExpectedStakingTimeMins = stakingInfo.expectedTime / 60; //time is in seconds
             } //end of if (stakingInfo == null)
         } //end of public async void UpdateStakingInformation()

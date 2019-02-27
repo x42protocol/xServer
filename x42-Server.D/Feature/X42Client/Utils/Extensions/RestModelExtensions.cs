@@ -12,31 +12,34 @@ namespace X42.Feature.X42Client.Utils.Extensions
         /// </summary>
         /// <param name="amount"></param>
         /// <returns></returns>
-        public static decimal ParseAPIAmount(this long amount)
+        public static decimal ParseApiAmount(this long amount)
         {
             decimal returnValue = 0;
-            string amountStr = $"{amount}";
-
-            //are we dealing with non-whole numbers (e.g 0.10000000)
-            if ($"{amount}".Length == 8)
+            if (amount > 0)
             {
-                if (!decimal.TryParse($"0.{amount}", out returnValue))
+                string amountStr = $"{amount}";
+
+                //are we dealing with non-whole numbers (e.g 0.10000000)
+                if ($"{amount}".Length == 8)
+                {
+                    if (!decimal.TryParse($"0.{amount}", out returnValue))
+                    {
+                        return -1;
+                    }
+
+                    return returnValue;
+                } //end of if($"{amount}".Length == 8)
+
+
+                //2000000000
+
+                string newAmountWhole = amountStr.Substring(0, amountStr.Length - 8);
+                string newAmountRemainder = amountStr.Substring(amountStr.Length - 8);
+
+                if (!decimal.TryParse($"{newAmountWhole}.{newAmountRemainder}", out returnValue))
                 {
                     return -1;
                 }
-
-                return returnValue;
-            } //end of if($"{amount}".Length == 8)
-
-
-            //2000000000
-
-            string newAmountWhole = amountStr.Substring(0, amountStr.Length - 8);
-            string newAmountRemainder = amountStr.Substring(amountStr.Length - 8);
-
-            if (!decimal.TryParse($"{newAmountWhole}.{newAmountRemainder}", out returnValue))
-            {
-                return -1;
             }
 
             return returnValue;

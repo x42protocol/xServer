@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using X42.Feature.X42Client.Enums;
 using X42.Feature.X42Client.RestClient;
 using X42.Feature.X42Client.RestClient.Responses;
 using X42.Feature.X42Client.Utils.Extensions;
+using X42.Utilities;
 
 namespace X42.Feature.X42Client
 {
@@ -15,96 +18,142 @@ namespace X42.Feature.X42Client
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
 
-        public X42Node(string name, IPAddress address, ushort port, ILogger mainLogger)
+        /// <summary>
+        /// A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IX42ServerLifetime.ApplicationStopping"/>.
+        /// </summary>
+        private CancellationTokenSource nodeCancellationTokenSource;
+
+        /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
+        private readonly IX42ServerLifetime serverLifetime;
+
+        /// <summary>Loop in which the node attempts to maintain a connection with the x42 node.</summary>
+        private IAsyncLoop nodeMonitorLoop;
+
+        /// <summary>Factory for creating background async loop tasks.</summary>
+        private readonly IAsyncLoopFactory asyncLoopFactory;
+
+        /// <summary>Time in milliseconds between attempts to connect to x42 node.</summary>
+        private readonly int monitorSleep;
+
+        public X42Node(string name, IPAddress address, uint port, ILogger mainLogger, IX42ServerLifetime serverLifetime, IAsyncLoopFactory asyncLoopFactory)
         {
             logger = mainLogger;
+            this.serverLifetime = serverLifetime;
+            this.asyncLoopFactory = asyncLoopFactory;
+
+            monitorSleep = 1000;
 
             SetupNodeConnection(name, address, port);
 
-            OnConnected(address, port, ConnectionType.DirectAPI);
+            OnConnected(address, port, ConnectionType.DirectApi);
         }
 
         /// <summary>
         ///     Sets Up The API Connection To The x42 Node
         /// </summary>
-        private void SetupNodeConnection(string name, IPAddress address, ushort port)
+        private void SetupNodeConnection(string name, IPAddress address, uint port)
         {
-            _RestClient = new X42RestClient($"http://{address}:{port}/", logger);
-            // _RefreshTimer = new Timer(UpdateNodeData, null, 0, _RefreshTime);
+            restClient = new X42RestClient($"http://{address}:{port}/", logger);
+        }
 
-            Name = name;
+        public void StartNodeMonitor()
+        {
+            this.nodeCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { this.serverLifetime.ApplicationStopping });
 
-            UpdateStaticData();
+            this.nodeMonitorLoop = this.asyncLoopFactory.Run("X42Node.StartNodeMonitor", async token =>
+            {
+                try
+                {
+                    await this.UpdateNodeData(this.nodeCancellationTokenSource.Token).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Exception: {0}", ex);
+                    this.logger.LogTrace("(-)[UNHANDLED_EXCEPTION]");
+                    throw;
+                }
+            },
+            this.nodeCancellationTokenSource.Token,
+            repeatEvery: TimeSpan.FromMilliseconds(this.monitorSleep),
+            startAfter: TimeSpans.Second);
         }
 
         //The Workhorse which refreshes all Node Data
-        public async void UpdateNodeData(object timerState = null)
+        public async Task UpdateNodeData(CancellationToken cancellationToken)
         {
-            try
+            while (!cancellationToken.IsCancellationRequested)
             {
-                //are we connected??
-                if (ConnectionMethod == ConnectionType.Disconnected)
+                try
                 {
-                    logger.LogInformation(
-                        $"Node '{Name}' ({Address}:{Port}), Aborting 'Status' Update.  Internal State Is Disconnected!");
-                    return;
-                } //end of if(ConnectionMethod == ConnectionType.Disconnected)
-
-                //############  Status Data #################
-                NodeStatusResponse statusData = await _RestClient.GetNodeStatus();
-                if (statusData == null)
-                {
-                    logger.LogInformation($"Node '{Name}' ({Address}:{Port}) An Error Occured Getting Node Status!");
-                }
-                else
-                {
-                    //we have a new block, so fire off an event
-                    if (statusData.consensusHeight > BlockTIP)
+                    //are we connected??
+                    if (ConnectionMethod == ConnectionType.Disconnected)
                     {
-                        OnNewBlock(statusData.consensusHeight);
+                        logger.LogDebug(
+                            $"Node '{Name}' ({Address}:{Port}), Aborting 'Status' Update.  Internal State Is Disconnected!");
+                        return;
                     }
 
-                    //update current height (use consensus because they have been fully validated)
-                    BlockTIP = statusData.consensusHeight;
+                    //############  Status Data #################
+                    NodeStatusResponse statusData = await restClient.GetNodeStatus();
+                    if (statusData == null)
+                    {
+                        logger.LogInformation(
+                            $"Node '{Name}' ({Address}:{Port}) An Error Occured Getting Node Status!");
+                    }
+                    else
+                    {
+                        //we have a new block, so fire off an event
+                        if (statusData.consensusHeight > BlockTIP)
+                        {
+                            OnNewBlock(statusData.consensusHeight);
+                        }
 
-                    DataDirectory = statusData.dataDirectoryPath;
+                        //update current height (use consensus because they have been fully validated)
+                        BlockTIP = statusData.consensusHeight;
 
-                    NodeVersion = statusData.version;
-                    ProtocolVersion = $"{statusData.protocolVersion}";
-                    IsTestNet = statusData.testnet;
-                } //end of if(statusData == null)
+                        DataDirectory = statusData.dataDirectoryPath;
+
+                        NodeVersion = statusData.version;
+                        ProtocolVersion = $"{statusData.protocolVersion}";
+                        IsTestNet = statusData.testnet;
+
+                        Status = ConnectionStatus.Online;
+                    }
+
+                    //############  Update Peers #################
+                    List<GetPeerInfoResponse> peersResponse = await restClient.GetPeerInfo();
+                    if (peersResponse == null)
+                    {
+                        logger.LogInformation(
+                            $"Node '{Name}' ({Address}:{Port}) An Error Occured Getting The Node Peer List!");
+                    }
+                    else
+                    {
+                        Peers = peersResponse.ToPeersList();
+                    } //end of if-else (_Peers == null)
 
 
-                //############  Update Peers #################
-                List<GetPeerInfoResponse> peersResponse = await _RestClient.GetPeerInfo();
-                if (peersResponse == null)
-                {
-                    logger.LogInformation(
-                        $"Node '{Name}' ({Address}:{Port}) An Error Occured Getting The Node Peer List!");
+                    //############  TX History Processing #################
+                    UpdateWalletTXs();
+
+                    //############  Staking Info #################
+                    UpdateStakingInformation();
                 }
-                else
+                catch (HttpRequestException ex) //API is not accessible or responding
                 {
-                    Peers = peersResponse.ToPeersList();
-                } //end of if-else (_Peers == null)
-
-
-                //############  TX History Processing #################
-                UpdateWalletTXs();
-
-                //############  Staking Info #################
-                UpdateStakingInformation();
+                    OnDisconnected(Address, Port);
+                    logger.LogDebug(
+                        $"Node '{Name}' ({Address}:{Port}) Something Happened & The Node API Is Not Accessible", ex);
+                    Status = ConnectionStatus.Offline;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogDebug($"Node '{Name}' ({Address}:{Port}) An Error Occured When Polling For Data!",
+                        ex);
+                    Status = ConnectionStatus.Offline;
+                }
             }
-            catch (HttpRequestException ex) //API is not accessible or responding
-            {
-                OnDisconnected(Address, Port);
-                logger.LogInformation(
-                    $"Node '{Name}' ({Address}:{Port}) Something Happened & The Node API Is Not Accessible", ex);
-            }
-            catch (Exception ex)
-            {
-                logger.LogInformation($"Node '{Name}' ({Address}:{Port}) An Error Occured When Polling For Data!", ex);
-            }
-        } //end of private async void RefreshNodeData(object timerState)
+        }
 
 
         //Obtains Data that is NOT likely to change!
@@ -120,10 +169,10 @@ namespace X42.Feature.X42Client
 
             try
             {
-                GetWalletFilesResponse filesData = await _RestClient.GetWalletFiles();
+                GetWalletFilesResponse filesData = await restClient.GetWalletFiles();
                 if (filesData == null)
                 {
-                    _Error_FS_Info = true; //an error occured, this data is relied upon in the "RefreshNodeData" Method
+                    errorFsInfo = true; //an error occured, this data is relied upon in the "RefreshNodeData" Method
                     logger.LogInformation(
                         $"Node '{Name}' ({Address}:{Port}), An Error Occured When Getting Node File Information!");
                 }
@@ -138,7 +187,7 @@ namespace X42.Feature.X42Client
                         string walletName = wallet.Substring(0, wallet.IndexOf("."));
 
                         //Get a list of accounts
-                        List<string> walletAccounts = await _RestClient.GetWalletAccounts(walletName);
+                        List<string> walletAccounts = await restClient.GetWalletAccounts(walletName);
 
                         if (walletAccounts == null)
                         {
@@ -160,7 +209,7 @@ namespace X42.Feature.X42Client
                         } //end of if(walletAccounts.Count > 0)
                     } //end of foreach
 
-                    _Error_FS_Info = false;
+                    errorFsInfo = false;
                 } //end of if-else if (filesData == null)
             }
             catch (HttpRequestException ex) //API is not accessible or responding
@@ -190,12 +239,15 @@ namespace X42.Feature.X42Client
         {
             if (_Disposed || !disposing) return;
 
-
             try
             {
-                if (_RestClient != null)
+
+                this.nodeMonitorLoop?.Dispose();
+                this.nodeMonitorLoop = null;
+
+                if (restClient != null)
                 {
-                    _RestClient.Dispose();
+                    restClient.Dispose();
                 }
 
                 if (_SSHForwardPort != null)

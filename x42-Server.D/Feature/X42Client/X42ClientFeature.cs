@@ -4,8 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using X42.Configuration.Logging;
 using X42.Feature.Setup;
+using X42.Feature.X42Client.Enums;
 using X42.MasterNode;
 using X42.Server;
+using X42.Utilities;
 
 namespace X42.Feature.X42Client
 {
@@ -17,10 +19,38 @@ namespace X42.Feature.X42Client
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
+        private readonly X42ClientSettings x42ClientSettings;
 
-        public X42ClientFeature(MasterNodeBase network, ILoggerFactory loggerFactory)
+        /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
+        private readonly IX42ServerLifetime serverLifetime;
+
+        /// <summary>Factory for creating background async loop tasks.</summary>
+        private readonly IAsyncLoopFactory asyncLoopFactory;
+
+        private X42Node x42Client;
+
+        public ConnectionStatus Status => x42Client.Status;
+
+        public X42ClientFeature(
+            MasterNodeBase network,
+            ILoggerFactory loggerFactory,
+            X42ClientSettings x42ClientSettings,
+            IServerStats nodeStats,
+            IX42ServerLifetime serverLifetime,
+            IAsyncLoopFactory asyncLoopFactory)
         {
+            this.serverLifetime = serverLifetime;
+            this.asyncLoopFactory = asyncLoopFactory;
+            this.x42ClientSettings = x42ClientSettings;
             logger = loggerFactory.CreateLogger(GetType().FullName);
+
+            nodeStats.RegisterStats(this.AddComponentStats, StatsType.Component, 1000);
+        }
+
+        private void AddComponentStats(StringBuilder builder)
+        {
+            builder.AppendLine();
+            builder.AppendLine($"X42 Node Status: {x42Client.Status}");
         }
 
         /// <summary>
@@ -42,14 +72,6 @@ namespace X42.Feature.X42Client
             X42ClientSettings.BuildDefaultConfigurationFile(builder, network);
         }
 
-        /// <summary>
-        ///     Connect to the X42 Node.
-        /// </summary>
-        public void Connect()
-        {
-            logger.LogInformation("Connected to X42 Node");
-        }
-
         public void Disconnect()
         {
             logger.LogInformation("Disconnected X42 Node");
@@ -58,7 +80,11 @@ namespace X42.Feature.X42Client
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
+            x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory);
             logger.LogInformation("X42 Client Feature Initialized");
+
+            x42Client.StartNodeMonitor();
+            logger.LogInformation("X42 Node monitor has started");
 
             return Task.CompletedTask;
         }
@@ -67,6 +93,7 @@ namespace X42.Feature.X42Client
         public override void Dispose()
         {
             Disconnect();
+            x42Client.Dispose();
         }
 
         /// <inheritdoc />
@@ -78,7 +105,7 @@ namespace X42.Feature.X42Client
     }
 
     /// <summary>
-    ///     A class providing extension methods for <see cref="DatabaseFeatures" />.
+    ///     A class providing extension methods for <see cref="X42ClientExtension" />.
     /// </summary>
     public static class X42ClientExtension
     {

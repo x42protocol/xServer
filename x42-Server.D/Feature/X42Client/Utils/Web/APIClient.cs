@@ -11,29 +11,29 @@ using X42.Utilities;
 
 namespace X42.Feature.X42Client.Utils.Web
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Used For Making REST API Requests & Parsing Responses
     /// </summary>
-    public class APIClient : IDisposable
+    public class ApiClient : IDisposable
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
-
-        private bool _Disposed;
-        public HttpClient httpClient;
+        private bool disposed;
+        private HttpClient httpClient;
 
         /// <summary>
         ///     Base Address For Requests
         /// </summary>
         /// <param name="serviceAddress">e.g. "http://moocow.com/api"</param>
         /// <param name="mainLogger"> for use with main logging in application</param>
-        public APIClient(string serviceAddress, ILogger mainLogger)
+        public ApiClient(string serviceAddress, ILogger mainLogger)
         {
             logger = mainLogger;
             InitClient(serviceAddress);
         }
 
-        public APIClient(string serviceAddress, string username, string password, ILogger mainLogger)
+        public ApiClient(string serviceAddress, string username, string password, ILogger mainLogger)
         {
             logger = mainLogger;
             InitClient(serviceAddress, username, password);
@@ -293,7 +293,7 @@ namespace X42.Feature.X42Client.Utils.Web
 
         private void Dispose(bool disposing)
         {
-            if (_Disposed || !disposing) return;
+            if (disposed || !disposing) return;
 
 
             if (httpClient != null)
@@ -303,7 +303,7 @@ namespace X42.Feature.X42Client.Utils.Web
                 hc.Dispose();
             }
 
-            _Disposed = true;
+            disposed = true;
         } //end of private void Dispose(bool disposing)
     } //end of public class APIClient : IDisposable
 }

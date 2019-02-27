@@ -5,12 +5,12 @@
         /// <summary>
         ///     Connected Directly To The API
         /// </summary>
-        DirectAPI,
+        DirectApi,
 
         /// <summary>
         ///     Connected Via SSH & Port Tunneling
         /// </summary>
-        SSH,
+        Ssh,
 
         /// <summary>
         ///     Connection Is Down

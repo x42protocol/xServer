@@ -12,33 +12,14 @@ namespace X42.Feature.X42Client
         /// <summary>
         ///     Was There An Error Getting The FS Information
         /// </summary>
-        private bool _Error_FS_Info;
+        private bool errorFsInfo;
 
-        private Timer _RefreshTimer;
-
-        private X42RestClient _RestClient;
-
+        private X42RestClient restClient;
 
         /// <summary>
         ///     Current Block Height of The Node
         /// </summary>
         public ulong BlockTIP { private set; get; }
-
-        /// <summary>
-        ///     Refresh Information Every X Seconds
-        /// </summary>
-        public int RefreshTime
-        {
-            get => _RefreshTime;
-            set
-            {
-                _RefreshTime = value;
-                _RefreshTimer.Dispose();
-                _RefreshTimer = new Timer(UpdateNodeData, null, 0, _RefreshTime);
-            }
-        } //end of public int RefreshTime {
-
-        private int _RefreshTime { get; set; } = 30;
 
         /// <summary>
         ///     Peers The Node Is Connected To
@@ -63,7 +44,7 @@ namespace X42.Feature.X42Client
         /// <summary>
         ///     Node Port
         /// </summary>
-        public ushort Port { private set; get; }
+        public uint Port { private set; get; }
 
         /// <summary>
         ///     Data Directory of The Node
@@ -134,5 +115,10 @@ namespace X42.Feature.X42Client
         ///     How Is The SDK Connected To The x42 Node
         /// </summary>
         public ConnectionType ConnectionMethod { private set; get; } = ConnectionType.Disconnected;
-    } //end of public partial class X42Node.Variables
+
+        /// <summary>
+        ///     Connection status to the x42 node
+        /// </summary>
+        public ConnectionStatus Status { private set; get; } = ConnectionStatus.Offline;
+    }
 }

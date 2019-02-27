@@ -12,9 +12,6 @@ namespace X42.Feature.X42Client
     /// </summary>
     public class X42ClientSettings
     {
-        /// <summary>Instance logger.</summary>
-        private readonly ILogger logger;
-
         /// <summary>
         ///     Initializes an instance of the object from the node configuration.
         /// </summary>
@@ -23,13 +20,13 @@ namespace X42.Feature.X42Client
         {
             Guard.NotNull(serverSettings, nameof(serverSettings));
 
-            logger = serverSettings.LoggerFactory.CreateLogger(typeof(X42ClientSettings).FullName);
+            ILogger logger = serverSettings.LoggerFactory.CreateLogger(typeof(X42ClientSettings).FullName);
 
             TextFileConfiguration config = serverSettings.ConfigReader;
 
             Name = config.GetOrDefault("name", "X42Node", logger);
             Address = config.GetOrDefault("address", IPAddress.Parse("127.0.0.1"), logger);
-            Port = config.GetOrDefault("port", 42221, logger);
+            Port = config.GetOrDefault("port", (uint)42221, logger);
             SshUserName = config.GetOrDefault("sshusername", "username", logger);
             SshPassword = config.GetOrDefault("sshpassword", "password", logger);
             SshServerAddress = config.GetOrDefault("sshserveraddress", "127.0.0.1", logger);
@@ -51,7 +48,7 @@ namespace X42.Feature.X42Client
         /// <summary>
         ///     Port for X42 Node.
         /// </summary>
-        public long Port { get; }
+        public uint Port { get; }
 
         /// <summary>
         ///     SSH Login user name

@@ -7,10 +7,10 @@ namespace X42.Feature.X42Client.Models.Event
     {
         public readonly IPAddress Address;
         public readonly bool IsConnected;
-        public readonly ushort Port;
+        public readonly uint Port;
 
 
-        public ConnectDisconnectEvent(bool isConnected, IPAddress address, ushort port)
+        public ConnectDisconnectEvent(bool isConnected, IPAddress address, uint port)
         {
             IsConnected = isConnected;
             Address = address;

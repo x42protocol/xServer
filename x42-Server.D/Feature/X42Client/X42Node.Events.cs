@@ -45,7 +45,7 @@ namespace X42.Feature.X42Client
         /// </summary>
         /// <param name="address"></param>
         /// <param name="port"></param>
-        public void OnConnected(IPAddress address, ushort port, ConnectionType method)
+        public void OnConnected(IPAddress address, uint port, ConnectionType method)
         {
             Guard.Null(address, nameof(address), "Cannot Fire 'OnConnected' Event, Supplied IP Address Is NULL!");
             Guard.AssertTrue(port.IsValidPortRange(),
@@ -63,7 +63,7 @@ namespace X42.Feature.X42Client
         /// </summary>
         /// <param name="address"></param>
         /// <param name="port"></param>
-        public void OnDisconnected(IPAddress address, ushort port)
+        public void OnDisconnected(IPAddress address, uint port)
         {
             Guard.Null(address, nameof(address), "Cannot Fire 'OnConnected' Event, Supplied IP Address Is NULL!");
             Guard.AssertTrue(port.IsValidPortRange(),
@@ -97,7 +97,7 @@ namespace X42.Feature.X42Client
         /// <param name="blockNumber">Block #</param>
         public async void OnNewBlock(ulong blockNumber)
         {
-            GetBlockResponse blockData = await _RestClient.GetBlock(blockNumber);
+            GetBlockResponse blockData = await restClient.GetBlock(blockNumber);
 
             Guard.Null(blockData, nameof(blockData),
                 $"Node '{Name}' ({Address}:{Port}) Detected A New Block @ Height '{blockNumber}' But GetBlock Returned NULL!");

@@ -7,12 +7,12 @@ using X42.Utilities;
 
 namespace X42.Feature.X42Client.RestClient
 {
-    public partial class X42RestClient : APIClient
+    public partial class X42RestClient : ApiClient
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
 
-        public X42RestClient(string baseURL, ILogger mainLogger) : base(baseURL, mainLogger)
+        public X42RestClient(string baseUrl, ILogger mainLogger) : base(baseUrl, mainLogger)
         {
             logger = mainLogger;
         }

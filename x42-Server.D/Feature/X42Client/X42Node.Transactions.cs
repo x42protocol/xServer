@@ -19,7 +19,7 @@ namespace X42.Feature.X42Client
         public async void UpdateWalletTXs()
         {
             //this is called by a different method, if it errored then all the code below would mess up.
-            if (!_Error_FS_Info)
+            if (!errorFsInfo)
             {
                 //loop through all loaded wallets
                 foreach (string wallet in WalletAccounts.Keys)
@@ -28,7 +28,7 @@ namespace X42.Feature.X42Client
                     foreach (string account in WalletAccounts[wallet])
                     {
                         //Get Account history
-                        GetWalletHistoryResponse accountHistory = await _RestClient.GetWalletHistory(wallet, account);
+                        GetWalletHistoryResponse accountHistory = await restClient.GetWalletHistory(wallet, account);
                         if (accountHistory != null)
                         {
                             //there is only one entry for "history"
@@ -77,7 +77,7 @@ namespace X42.Feature.X42Client
                 accountTXs.Add(new Transaction
                 {
                     Address = tx.toAddress,
-                    Amount = tx.amount.ParseAPIAmount(),
+                    Amount = tx.amount.ParseApiAmount(),
                     BlockID = tx.confirmedInBlock,
                     TXID = tx.id,
                     Timestamp = tx.timestamp,
@@ -114,7 +114,7 @@ namespace X42.Feature.X42Client
         /// <returns>2 Balences, First Is Confirmed, Second Is Unconfirmed</returns>
         public async Task<Tuple<decimal, decimal>> GetWalletBalance(string walletName, string accountName = null)
         {
-            GetWalletBalenceResponse walletBalance = await _RestClient.GetWalletBalance(walletName, accountName);
+            GetWalletBalenceResponse walletBalance = await restClient.GetWalletBalance(walletName, accountName);
             Guard.Null(walletBalance, nameof(walletBalance),
                 $"Node '{Name}' ({Address}:{Port}) An Error Occured When Trying To Get The Wallet Balance of Wallet '{walletName}' and Account '{accountName}'");
 
@@ -123,8 +123,8 @@ namespace X42.Feature.X42Client
 
             foreach (AccountBalance accountBalence in walletBalance.balances)
             {
-                confirmedBalance += accountBalence.amountConfirmed.ParseAPIAmount();
-                unConfirmedBalance += accountBalence.amountUnconfirmed.ParseAPIAmount();
+                confirmedBalance += accountBalence.amountConfirmed.ParseApiAmount();
+                unConfirmedBalance += accountBalence.amountUnconfirmed.ParseApiAmount();
             } //end of foreach (AccountBalance accountBalence in walletBalence.balances)
 
             return new Tuple<decimal, decimal>(confirmedBalance, unConfirmedBalance);
