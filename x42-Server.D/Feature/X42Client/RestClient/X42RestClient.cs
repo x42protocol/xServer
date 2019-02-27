@@ -35,9 +35,9 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting The Node Status!", ex);
+                logger.LogDebug($"An Error '{ex.Message}' Occured When Getting The Node Status!", ex);
 
-                throw; //pass it back up the stack? .. this seems memory intensive to me
+                return null;
             } //end of try-catch
         } //end of public async Task<NodeStatusResponse> GetNodeStatus()
     } //end of public class X42RestClient:APIClient

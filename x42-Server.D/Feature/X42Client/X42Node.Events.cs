@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using X42.Feature.X42Client.Enums;
 using X42.Feature.X42Client.Models;
 using X42.Feature.X42Client.Models.Event;
@@ -97,12 +99,19 @@ namespace X42.Feature.X42Client
         /// <param name="blockNumber">Block #</param>
         public async void OnNewBlock(ulong blockNumber)
         {
-            GetBlockResponse blockData = await restClient.GetBlock(blockNumber);
+            try
+            {
+                GetBlockResponse blockData = await restClient.GetBlock(blockNumber);
 
-            Guard.Null(blockData, nameof(blockData),
-                $"Node '{Name}' ({Address}:{Port}) Detected A New Block @ Height '{blockNumber}' But GetBlock Returned NULL!");
+                Guard.Null(blockData, nameof(blockData),
+                    $"Node '{Name}' ({Address}:{Port}) Detected A New Block @ Height '{blockNumber}' But GetBlock Returned NULL!");
 
-            NewBlockEvent?.Invoke(this, new NewBlockEvent(blockData.ToBlockHeader()));
+                NewBlockEvent?.Invoke(this, new NewBlockEvent(blockData.ToBlockHeader()));
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug("Failed to call OnNewBlock()", ex);
+            }
         } //end of public virtual void OnNewBlock(ulong blockNumber)
     } //end of public partial class X42Node.Events
 }

@@ -24,7 +24,7 @@ namespace X42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Staking Info!", ex);
+                logger.LogDebug($"An Error '{ex.Message}' Occured When Getting Staking Info!", ex);
                 return null;
             } //end of try-catch
         } //end of public async Task<GetStakingInfoResponse> GetStakingInfo()

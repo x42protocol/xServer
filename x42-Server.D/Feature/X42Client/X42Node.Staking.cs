@@ -14,7 +14,7 @@ namespace X42.Feature.X42Client
             GetStakingInfoResponse stakingInfo = await restClient.GetStakingInfo();
             if (stakingInfo == null)
             {
-                logger.LogInformation(
+                logger.LogDebug(
                     $"Node '{Name}' ({Address}:{Port}), An Error Occured When Getting Staking Information!");
             }
             else

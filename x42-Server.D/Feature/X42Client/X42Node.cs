@@ -90,15 +90,15 @@ namespace X42.Feature.X42Client
                     {
                         logger.LogDebug(
                             $"Node '{Name}' ({Address}:{Port}), Aborting 'Status' Update.  Internal State Is Disconnected!");
-                        return;
                     }
 
                     //############  Status Data #################
                     NodeStatusResponse statusData = await restClient.GetNodeStatus();
                     if (statusData == null)
                     {
-                        logger.LogInformation(
+                        logger.LogDebug(
                             $"Node '{Name}' ({Address}:{Port}) An Error Occured Getting Node Status!");
+                        Status = ConnectionStatus.Offline;
                     }
                     else
                     {
@@ -124,7 +124,7 @@ namespace X42.Feature.X42Client
                     List<GetPeerInfoResponse> peersResponse = await restClient.GetPeerInfo();
                     if (peersResponse == null)
                     {
-                        logger.LogInformation(
+                        logger.LogDebug(
                             $"Node '{Name}' ({Address}:{Port}) An Error Occured Getting The Node Peer List!");
                     }
                     else

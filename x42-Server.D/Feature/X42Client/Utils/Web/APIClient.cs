@@ -98,14 +98,14 @@ namespace X42.Feature.X42Client.Utils.Web
                 HttpResponseMessage _Result = await httpClient.PostAsync(apiURL, new FormUrlEncodedContent(PostData));
                 if (_Result == null)
                 {
-                    logger.LogError($"Post Response From '{apiURL}' Is NULL!");
+                    logger.LogDebug($"Post Response From '{apiURL}' Is NULL!");
                     throw new Exception("Result Object From Web Request Is NULL!!");
                 } //end of if (_Result == null)
 
 
                 if (!_Result.IsSuccessStatusCode)
                 {
-                    logger.LogError($"Post Response From '{apiURL}' Is HTTP 500 (Server Error)");
+                    logger.LogDebug($"Post Response From '{apiURL}' Is HTTP 500 (Server Error)");
                     throw new Exception($"Error Response Returned - HTTP Code {_Result.StatusCode}");
                 } //end of if (!_Result.IsSuccessStatusCode)
 
@@ -114,7 +114,7 @@ namespace X42.Feature.X42Client.Utils.Web
                 string _ObjectData = await _Result.Content.ReadAsStringAsync();
                 if (string.IsNullOrWhiteSpace(_ObjectData))
                 {
-                    logger.LogError($"Response Data From '{apiURL}' Is NULL/Empty");
+                    logger.LogDebug($"Response Data From '{apiURL}' Is NULL/Empty");
                     throw new Exception("Result Object From Web Request Is NULL!!");
                 } //end of if (string.IsNullOrWhiteSpace(_ObjectData))
 
@@ -124,7 +124,7 @@ namespace X42.Feature.X42Client.Utils.Web
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"Exception When Sending POST Request To '{apiURL}'\n Data:\n{PostData}", ex);
+                logger.LogDebug($"Exception When Sending POST Request To '{apiURL}'\n Data:\n{PostData}", ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<T> SendPost<T>(string apiURL, Dictionary<string, string> PostData)
@@ -151,14 +151,14 @@ namespace X42.Feature.X42Client.Utils.Web
                     await httpClient.PostAsync(apiURL, new StringContent(JsonConvert.SerializeObject(PostData)));
                 if (_Result == null)
                 {
-                    logger.LogError($"Post Response From '{apiURL}' Is NULL!");
+                    logger.LogDebug($"Post Response From '{apiURL}' Is NULL!");
                     throw new Exception("Result Object From Web Request Is NULL!!");
                 } //end of if (_Result == null)
 
 
                 if (!_Result.IsSuccessStatusCode)
                 {
-                    logger.LogError($"Post Response From '{apiURL}' Is HTTP 500 (Server Error)");
+                    logger.LogDebug($"Post Response From '{apiURL}' Is HTTP 500 (Server Error)");
                     throw new Exception($"Error Response Returned - HTTP Code {_Result.StatusCode}");
                 } //end of if (!_Result.IsSuccessStatusCode)
 
@@ -167,7 +167,7 @@ namespace X42.Feature.X42Client.Utils.Web
                 string _ObjectData = await _Result.Content.ReadAsStringAsync();
                 if (string.IsNullOrWhiteSpace(_ObjectData))
                 {
-                    logger.LogError($"Response Data From '{apiURL}' Is NULL/Empty");
+                    logger.LogDebug($"Response Data From '{apiURL}' Is NULL/Empty");
                     throw new Exception("Result Object From Web Request Is NULL!!");
                 } //end of if (string.IsNullOrWhiteSpace(_ObjectData))
 
@@ -177,7 +177,7 @@ namespace X42.Feature.X42Client.Utils.Web
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"Exception When Sending POST Request To '{apiURL}'\n Data:\n{PostData}", ex);
+                logger.LogDebug($"Exception When Sending POST Request To '{apiURL}'\n Data:\n{PostData}", ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<T> SendPost<T>(string apiURL, Dictionary<string, string> PostData)
@@ -197,7 +197,7 @@ namespace X42.Feature.X42Client.Utils.Web
                     new StringContent(JsonConvert.SerializeObject(PostData), Encoding.UTF8, "application/json"));
                 if (_Result == null)
                 {
-                    logger.LogError($"Post Response From '{apiURL}' Is NULL!");
+                    logger.LogDebug($"Post Response From '{apiURL}' Is NULL!");
                     throw new Exception("Result Object From Web Request Is NULL!!");
                 }
 
@@ -207,7 +207,7 @@ namespace X42.Feature.X42Client.Utils.Web
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"Exception When Sending POST Request To '{apiURL}'\n Data:\n{PostData}", ex);
+                logger.LogDebug($"Exception When Sending POST Request To '{apiURL}'\n Data:\n{PostData}", ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<bool> SendPostBool(string apiURL, object PostData)
@@ -230,13 +230,13 @@ namespace X42.Feature.X42Client.Utils.Web
                 HttpResponseMessage _Result = await httpClient.GetAsync(apiURL);
                 if (_Result == null)
                 {
-                    logger.LogError($"Get Response From '{apiURL}' Is NULL!");
+                    logger.LogDebug($"Get Response From '{apiURL}' Is NULL!");
                     throw new Exception("Result Object From Web Request Is NULL!!");
                 } //end of if (_Result == null)
 
                 if (!_Result.IsSuccessStatusCode)
                 {
-                    logger.LogError($"Get Response From '{apiURL}' Is HTTP 500 (Server Error)");
+                    logger.LogDebug($"Get Response From '{apiURL}' Is HTTP 500 (Server Error)");
                     throw new Exception($"Error Response Returned - HTTP Code {_Result.StatusCode}");
                 } //end of if (!_Result.IsSuccessStatusCode)
 
@@ -245,7 +245,7 @@ namespace X42.Feature.X42Client.Utils.Web
 
                 if (string.IsNullOrWhiteSpace(_ObjectData))
                 {
-                    logger.LogError($"Get Response Data From '{apiURL}' Is NULL/Empty");
+                    logger.LogDebug($"Get Response Data From '{apiURL}' Is NULL/Empty");
                     throw new Exception($"Error Response Returned - HTTP Code {_Result.StatusCode}");
                 } //end of if (string.IsNullOrWhiteSpace(_ObjectData))
 
@@ -255,7 +255,7 @@ namespace X42.Feature.X42Client.Utils.Web
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"Error Sending GET To '{apiURL}'", ex);
+                logger.LogDebug($"Error Sending GET To '{apiURL}'", ex);
                 throw;
             } //end of try-catch
         } //end of public async Task<T> SendGet<T>(string apiURL)
@@ -286,7 +286,7 @@ namespace X42.Feature.X42Client.Utils.Web
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"Exception When Sending GET Request To '{apiURL}'", ex);
+                logger.LogDebug($"Exception When Sending GET Request To '{apiURL}'", ex);
                 throw;
             } //end of try-catch
         } //end of  public async Task<bool> SendGetBool(string apiURL)
