@@ -4,6 +4,7 @@ using X42.Configuration;
 using X42.Feature.Api;
 using X42.Feature.Database;
 using X42.Feature.X42Client;
+using X42.Feature.Network;
 using X42.MasterNode;
 using X42.Protocol;
 using X42.Server;
@@ -25,6 +26,7 @@ namespace X42
                     .UseX42Client()
                     .UseSql()
                     .UseApi()
+                    .UseNetwork()
                     .Build();
 
                 if (server != null) await server.RunAsync();

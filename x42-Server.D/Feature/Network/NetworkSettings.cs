@@ -4,12 +4,12 @@ using X42.Configuration;
 using X42.MasterNode;
 using X42.Utilities;
 
-namespace X42.Feature.Database
+namespace X42.Feature.Network
 {
     /// <summary>
-    ///     Configuration related to the database interface.
+    ///     Configuration related to the network interface.
     /// </summary>
-    public class DatabaseSettings
+    public class NetworkSettings
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
@@ -18,25 +18,22 @@ namespace X42.Feature.Database
         ///     Initializes an instance of the object from the node configuration.
         /// </summary>
         /// <param name="serverSettings">The node configuration.</param>
-        public DatabaseSettings(ServerSettings serverSettings)
+        public NetworkSettings(ServerSettings serverSettings)
         {
             Guard.NotNull(serverSettings, nameof(serverSettings));
 
-            logger = serverSettings.LoggerFactory.CreateLogger(typeof(DatabaseSettings).FullName);
+            logger = serverSettings.LoggerFactory.CreateLogger(typeof(NetworkSettings).FullName);
 
             TextFileConfiguration config = serverSettings.ConfigReader;
-
-            ConnectionString = config.GetOrDefault("connectionstring",
-                "User ID=root;Password=myPassword;Host=localhost;Port=5432;Database=myDataBase;", logger);
         }
 
         /// <summary>
-        ///     An address to use for the database.
+        ///     An address to use for the network.
         /// </summary>
         public string ConnectionString { get; set; }
 
         /// <summary>
-        ///     Displays database help information on the console.
+        ///     Displays network help information on the console.
         /// </summary>
         /// <param name="masterNode">Not used.</param>
         public static void PrintHelp(MasterNodeBase masterNode)
@@ -44,7 +41,7 @@ namespace X42.Feature.Database
             ServerSettings defaults = ServerSettings.Default(masterNode);
             StringBuilder builder = new StringBuilder();
 
-            builder.AppendLine("-connectionstring=<string>                     Database host.");
+            builder.AppendLine("-connect=<string>                     masternode host.");
 
             defaults.Logger.LogInformation(builder.ToString());
         }
@@ -56,9 +53,9 @@ namespace X42.Feature.Database
         /// <param name="network">The network to base the defaults off.</param>
         public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase masterNodeBase)
         {
-            builder.AppendLine("####Database Settings####");
-            builder.AppendLine("#Connection string for database.");
-            builder.AppendLine("#connectionstring=<string>");
+            builder.AppendLine("####Network Settings####");
+            builder.AppendLine("#Manually connect to masternode.");
+            builder.AppendLine("#connect=<string>");
         }
     }
 }
