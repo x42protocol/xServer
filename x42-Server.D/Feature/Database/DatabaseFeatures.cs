@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using x42.Feature.Database;
+using X42.Configuration;
 using X42.Configuration.Logging;
 using X42.Feature.Setup;
 using X42.MasterNode;
@@ -19,9 +22,22 @@ namespace X42.Feature.Database
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
 
-        public DatabaseFeatures(MasterNodeBase network, ILoggerFactory loggerFactory)
+        /// <summary>Instance logger.</summary>
+        private readonly DatabaseSettings databaseSettings;
+
+        /// <summary>Instance logger.</summary>
+        private readonly X42DbContext x42DbContext;
+
+        public bool DatabaseConnected { get; set; } = false;
+
+        public DatabaseFeatures(
+            MasterNodeBase network,
+            ILoggerFactory loggerFactory,
+            DatabaseSettings databaseSettings
+            )
         {
             logger = loggerFactory.CreateLogger(GetType().FullName);
+            this.databaseSettings = databaseSettings;
         }
 
         /// <summary>
@@ -59,7 +75,25 @@ namespace X42.Feature.Database
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
-            logger.LogInformation("Database Feature Initialized");
+            try
+            {
+                using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                {
+                    logger.LogInformation("Connecting to database");
+                    
+                    dbContext.Database.Migrate();
+
+                    DatabaseConnected = true;
+
+                    logger.LogInformation("Database Feature Initialized");
+                }
+            }
+            catch
+            {
+                logger.LogCritical("Database failed to Initialize.");
+                logger.LogTrace("(-)[INITIALIZE_EXCEPTION]");
+                throw;
+            }
 
             return Task.CompletedTask;
         }
@@ -73,8 +107,10 @@ namespace X42.Feature.Database
         /// <inheritdoc />
         public override void ValidateDependencies(IServerServiceProvider services)
         {
-            // TODO: Check settings and verify features here, then throw exception if not valid
-            // Example: throw new ConfigurationException("Something went wrong.");
+            if (string.IsNullOrEmpty(databaseSettings.ConnectionString))
+            {
+                throw new ConfigurationException("Connection string is required.");
+            }
         }
     }
 
@@ -100,6 +136,7 @@ namespace X42.Feature.Database
                     {
                         services.AddSingleton<DatabaseFeatures>();
                         services.AddSingleton<DatabaseSettings>();
+
                     });
             });
 

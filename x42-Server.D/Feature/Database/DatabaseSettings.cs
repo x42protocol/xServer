@@ -27,7 +27,7 @@ namespace X42.Feature.Database
             TextFileConfiguration config = serverSettings.ConfigReader;
 
             ConnectionString = config.GetOrDefault("connectionstring",
-                "User ID=root;Password=myPassword;Host=localhost;Port=5432;Database=myDataBase;", logger);
+                "User ID=postgres;Password=password;Host=localhost;Port=5432;Database=x42;", logger);
         }
 
         /// <summary>
