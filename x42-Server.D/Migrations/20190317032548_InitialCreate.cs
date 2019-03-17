@@ -8,7 +8,7 @@ namespace x42.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "masternodes",
+                name: "masternode",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -21,14 +21,14 @@ namespace x42.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_masternodes", x => x.Id);
+                    table.PrimaryKey("PK_masternode", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "masternodes");
+                name: "masternode");
         }
     }
 }

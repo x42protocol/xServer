@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using x42.Feature.Database;
+using x42.Feature.Database.Context;
 
 namespace x42.Migrations
 {
@@ -38,7 +38,7 @@ namespace x42.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("masternodes");
+                    b.ToTable("masternode");
                 });
 #pragma warning restore 612, 618
         }

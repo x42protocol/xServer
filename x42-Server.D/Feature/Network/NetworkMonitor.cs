@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 using x42.Feature.Database.Context;
 using X42.Feature.Database;
 using X42.Utilities;
@@ -15,23 +14,22 @@ namespace x42.Feature.Network
         private readonly ILogger logger;
 
         /// <summary>
-        /// A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IX42ServerLifetime.ApplicationStopping"/>.
+        ///     A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IX42ServerLifetime.ApplicationStopping"/>.
         /// </summary>
-        private CancellationTokenSource nodeCancellationTokenSource;
+        private CancellationTokenSource networkCancellationTokenSource;
 
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
         private readonly IX42ServerLifetime serverLifetime;
 
-        /// <summary>Loop in which the node attempts to maintain a connection with the x42 node.</summary>
-        private IAsyncLoop nodeMonitorLoop;
+        /// <summary>Loop in which the node attempts to maintain a connection with the x42 network.</summary>
+        private IAsyncLoop networkMonitorLoop;
 
         /// <summary>Factory for creating background async loop tasks.</summary>
         private readonly IAsyncLoopFactory asyncLoopFactory;
 
-        /// <summary>Time in milliseconds between attempts to connect to x42 node.</summary>
-        private readonly int monitorSleep = 1000;
-
-
+        /// <summary>Time in milliseconds between attempts run the network health monitor</summary>
+        private readonly int monitorSleep = 10000;
+        
         private readonly DatabaseSettings databaseSettings;
 
         public NetworkMonitor(
@@ -49,13 +47,13 @@ namespace x42.Feature.Network
 
         public void NetworkWorker()
         {
-            this.nodeCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { serverLifetime.ApplicationStopping });
+            this.networkCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { serverLifetime.ApplicationStopping });
 
-            this.nodeMonitorLoop = asyncLoopFactory.Run("NetworkManager.NetworkWorker", async token =>
+            this.networkMonitorLoop = asyncLoopFactory.Run("NetworkManager.NetworkWorker", async token =>
             {
                 try
                 {
-                    await UpdateNetworkHealth(nodeCancellationTokenSource.Token).ConfigureAwait(false);
+                    await UpdateNetworkHealth(networkCancellationTokenSource.Token).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -64,7 +62,7 @@ namespace x42.Feature.Network
                     throw;
                 }
             },
-            this.nodeCancellationTokenSource.Token,
+            this.networkCancellationTokenSource.Token,
             repeatEvery: TimeSpan.FromMilliseconds(this.monitorSleep),
             startAfter: TimeSpans.Second);
         }
@@ -75,7 +73,7 @@ namespace x42.Feature.Network
             {
                 try
                 {
-                    await CheckStakeAsync().ConfigureAwait(false);
+                    await CheckActiveServers().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -85,12 +83,11 @@ namespace x42.Feature.Network
         }
 
         /// <summary>
-        /// Once a new block is staked, this method is used to verify that it
-        /// is a valid block and if so, it will add it to the chain.
+        ///     Once a new block is staked, this method is used to verify that it
         /// </summary>
         /// <param name="block">The new block.</param>
         /// <param name="chainTip">Block that was considered as a chain tip when the block staking started.</param>
-        private Task CheckStakeAsync()
+        private Task CheckActiveServers()
         {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
