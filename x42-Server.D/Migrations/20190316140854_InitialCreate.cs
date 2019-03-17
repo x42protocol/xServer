@@ -15,6 +15,7 @@ namespace x42.Migrations
                     Ip = table.Column<string>(nullable: true),
                     Port = table.Column<string>(nullable: true),
                     Address = table.Column<string>(nullable: true),
+                    Signature = table.Column<string>(nullable: true),
                     DateAdded = table.Column<DateTime>(nullable: false),
                     LastSeen = table.Column<DateTime>(nullable: false)
                 },

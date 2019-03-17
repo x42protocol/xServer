@@ -34,6 +34,8 @@ namespace x42.Migrations
 
                     b.Property<string>("Port");
 
+                    b.Property<string>("Signature");
+
                     b.HasKey("Id");
 
                     b.ToTable("masternodes");
