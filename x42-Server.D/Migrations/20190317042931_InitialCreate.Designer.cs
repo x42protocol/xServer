@@ -10,7 +10,7 @@ using x42.Feature.Database.Context;
 namespace x42.Migrations
 {
     [DbContext(typeof(X42DbContext))]
-    [Migration("20190317032830_InitialCreate")]
+    [Migration("20190317042931_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,6 +26,8 @@ namespace x42.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("Active");
+
                     b.Property<string>("Address");
 
                     b.Property<DateTime>("DateAdded");
@@ -35,6 +37,8 @@ namespace x42.Migrations
                     b.Property<DateTime>("LastSeen");
 
                     b.Property<string>("Port");
+
+                    b.Property<long>("Priority");
 
                     b.Property<string>("Signature");
 

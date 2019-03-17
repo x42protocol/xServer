@@ -25,9 +25,6 @@ namespace X42.Feature.Database
         /// <summary>Instance logger.</summary>
         private readonly DatabaseSettings databaseSettings;
 
-        /// <summary>Instance logger.</summary>
-        private readonly X42DbContext x42DbContext;
-
         public bool DatabaseConnected { get; set; } = false;
 
         public DatabaseFeatures(

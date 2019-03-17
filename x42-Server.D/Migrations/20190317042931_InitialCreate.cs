@@ -17,7 +17,9 @@ namespace x42.Migrations
                     Address = table.Column<string>(nullable: true),
                     Signature = table.Column<string>(nullable: true),
                     DateAdded = table.Column<DateTime>(nullable: false),
-                    LastSeen = table.Column<DateTime>(nullable: false)
+                    LastSeen = table.Column<DateTime>(nullable: false),
+                    Priority = table.Column<long>(nullable: false),
+                    Active = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

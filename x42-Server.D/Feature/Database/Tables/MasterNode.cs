@@ -16,5 +16,7 @@ namespace x42.Feature.Database.Tables
         public string Signature { get; set; }
         public DateTime DateAdded { get; set; }
         public DateTime LastSeen { get; set; }
+        public long Priority { get; set; }
+        public bool Active { get; set; }
     }
 }

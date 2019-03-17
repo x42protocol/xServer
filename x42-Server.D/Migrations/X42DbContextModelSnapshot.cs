@@ -24,6 +24,8 @@ namespace x42.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("Active");
+
                     b.Property<string>("Address");
 
                     b.Property<DateTime>("DateAdded");
@@ -33,6 +35,8 @@ namespace x42.Migrations
                     b.Property<DateTime>("LastSeen");
 
                     b.Property<string>("Port");
+
+                    b.Property<long>("Priority");
 
                     b.Property<string>("Signature");
 
