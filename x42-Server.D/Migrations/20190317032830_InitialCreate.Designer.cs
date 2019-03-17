@@ -10,7 +10,7 @@ using x42.Feature.Database.Context;
 namespace x42.Migrations
 {
     [DbContext(typeof(X42DbContext))]
-    [Migration("20190317032548_InitialCreate")]
+    [Migration("20190317032830_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,6 +41,26 @@ namespace x42.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("masternode");
+                });
+
+            modelBuilder.Entity("x42.Feature.Database.Tables.Server", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<DateTime>("DateAdded");
+
+                    b.Property<string>("Ip");
+
+                    b.Property<string>("Port");
+
+                    b.Property<string>("Signature");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("server");
                 });
 #pragma warning restore 612, 618
         }

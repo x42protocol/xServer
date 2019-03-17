@@ -6,6 +6,7 @@ namespace x42.Feature.Database.Context
     class X42DbContext : DbContext
     {
         public virtual DbSet<MasterNode> MasterNodes { get; set; }
+        public virtual DbSet<Server> Server { get; set; }
 
         #region Initilize
         private readonly string _connectionString = "Server=127.0.0.1;Port=5432;Database=myDataBase;Integrated Security=true;";

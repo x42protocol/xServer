@@ -40,6 +40,26 @@ namespace x42.Migrations
 
                     b.ToTable("masternode");
                 });
+
+            modelBuilder.Entity("x42.Feature.Database.Tables.Server", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<DateTime>("DateAdded");
+
+                    b.Property<string>("Ip");
+
+                    b.Property<string>("Port");
+
+                    b.Property<string>("Signature");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("server");
+                });
 #pragma warning restore 612, 618
         }
     }
