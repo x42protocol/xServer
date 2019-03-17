@@ -8,7 +8,7 @@ namespace X42.Feature.X42Client
         /// Verify the signature of a message.
         /// </summary>
         /// <returns>If verification was successful it will return true.</returns>
-        public async Task<bool> VerifyMessage(string externalAddress, string message, string signature)
+        public async Task<bool> VerifyMessageAsync(string externalAddress, string message, string signature)
         {
             bool response = await restClient.VerifySignedMessage(externalAddress, message, signature);
 

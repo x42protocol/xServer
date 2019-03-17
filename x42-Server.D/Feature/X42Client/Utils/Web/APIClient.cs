@@ -142,13 +142,12 @@ namespace X42.Feature.X42Client.Utils.Web
             try
             {
                 Guard.Null(apiURL, nameof(apiURL));
-                Guard.Null(PostData, nameof(PostData),
-                    $"PostData For Request '{httpClient.BaseAddress}/{apiURL}' Cannot Be Empty/Null!");
+                Guard.Null(PostData, nameof(PostData), $"PostData For Request '{httpClient.BaseAddress}/{apiURL}' Cannot Be Empty/Null!");
 
                 logger.LogDebug($"Sending Post Request To '{apiURL}' With Data:\n {PostData}");
 
-                HttpResponseMessage _Result =
-                    await httpClient.PostAsync(apiURL, new StringContent(JsonConvert.SerializeObject(PostData)));
+                HttpContent content = new StringContent(JsonConvert.SerializeObject(PostData), Encoding.Unicode, "application/json");
+                HttpResponseMessage _Result = await httpClient.PostAsync(apiURL, content);
                 if (_Result == null)
                 {
                     logger.LogDebug($"Post Response From '{apiURL}' Is NULL!");

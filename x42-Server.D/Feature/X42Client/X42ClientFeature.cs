@@ -85,7 +85,7 @@ namespace X42.Feature.X42Client
 
             x42Client.StartNodeMonitor();
             logger.LogInformation("X42 Node monitor has started");
-
+            
             return Task.CompletedTask;
         }
 
