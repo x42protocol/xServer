@@ -12,6 +12,8 @@ using X42.Utilities;
 namespace X42.Feature.X42Client.RestClient
 {
     /*
+     /api/Wallet/signmessage
+     [DONE] /api/Wallet/verifysignature
      [DONE] /api/Wallet/mnemonic
      [DONE] /api/Wallet/create
      /api/Wallet/load
@@ -41,6 +43,38 @@ namespace X42.Feature.X42Client.RestClient
      */
     public partial class X42RestClient
     {
+        /// <summary>
+        /// Verify the signature of a message.
+        /// </summary>
+        /// <returns>If verification was successful it will return true.</returns>
+        public async Task<bool> VerifySignedMessage(string externalAddress, string message, string signature)
+        {
+            try
+            {
+                Guard.Null(externalAddress, nameof(externalAddress), "External Address Cannot Be NULL/Empty!");
+                Guard.Null(message, nameof(message), "Message Cannot Be NULL/Empty!");
+                Guard.Null(signature, nameof(signature), "Signature Cannot Be NULL/Empty!");
+
+                VerifyRequest request = new VerifyRequest
+                {
+                    externalAddress = externalAddress,
+                    message = message,
+                    signature = signature
+                };
+
+                bool response = await base.SendPostJSON<bool>("api/Wallet/verifysignature", request);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical(
+                    $"An Error '{ex.Message}' Occured When Verifying a Signed Message: 'Addy: {externalAddress}', Msg: '{message}', Sig: '{signature}'",
+                    ex);
+                throw;
+            }
+        }
+
         /// <summary>
         ///     Gets a List of Spendable TX's
         /// </summary>
