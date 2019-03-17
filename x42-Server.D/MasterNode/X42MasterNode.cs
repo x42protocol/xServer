@@ -33,6 +33,8 @@ namespace X42.MasterNode
             };
             this.Tiers = Tiers;
 
+            GracePeriod = 90;
+
             DNSSeeds = new List<DNSSeedData>
             {
                 new DNSSeedData("masternode1.x42seed.host", "masternode1.x42seed.host"),

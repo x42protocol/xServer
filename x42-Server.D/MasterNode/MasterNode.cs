@@ -34,6 +34,11 @@ namespace X42.MasterNode
         public List<NetworkAddress> SeedServers { get; protected set; }
 
         /// <summary>
+        ///     The Grade period (In Minutes) when for how long a node is offline before inactive.
+        /// </summary>
+        public long GracePeriod { get; protected set; }
+
+        /// <summary>
         ///     The list of DNS seeds from which to get IP addresses when bootstrapping a server.
         /// </summary>
         public List<DNSSeedData> DNSSeeds { get; protected set; }

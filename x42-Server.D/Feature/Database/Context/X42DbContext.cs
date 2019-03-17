@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using x42.Feature.Database.Tables;
 
-namespace x42.Feature.Database
+namespace x42.Feature.Database.Context
 {
     class X42DbContext : DbContext
     {

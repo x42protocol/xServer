@@ -1,9 +1,9 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using X42.Configuration.Logging;
+using X42.Feature.Database;
 using X42.Feature.Setup;
 using X42.MasterNode;
 using X42.Server;
@@ -18,9 +18,11 @@ namespace X42.Feature.Network
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
+        private readonly MasterNodeBase network;
 
         public NetworkFeatures(MasterNodeBase network, ILoggerFactory loggerFactory)
         {
+            this.network = network;
             logger = loggerFactory.CreateLogger(GetType().FullName);
         }
 
@@ -96,6 +98,7 @@ namespace X42.Feature.Network
             {
                 features
                     .AddFeature<NetworkFeatures>()
+                    .DependOn<DatabaseFeatures>()
                     .FeatureServices(services =>
                     {
                         services.AddSingleton<NetworkFeatures>();
