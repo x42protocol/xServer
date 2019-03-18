@@ -19,7 +19,6 @@ namespace X42.Feature.X42Client
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
-        private readonly X42ClientSettings x42ClientSettings;
 
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
         private readonly IX42ServerLifetime serverLifetime;
@@ -28,6 +27,8 @@ namespace X42.Feature.X42Client
         private readonly IAsyncLoopFactory asyncLoopFactory;
 
         private X42Node x42Client;
+
+        private readonly X42ClientSettings x42ClientSettings;
 
         public ConnectionStatus Status => x42Client.Status;
 

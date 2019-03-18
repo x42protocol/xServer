@@ -2,10 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace x42.Feature.Database.Tables
+namespace X42.Feature.Database.Tables
 {
-    [Table("masternode")]
-    class MasterNode
+    [Table("server")]
+    class ServerData
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
@@ -15,8 +15,5 @@ namespace x42.Feature.Database.Tables
         public string Address { get; set; }
         public string Signature { get; set; }
         public DateTime DateAdded { get; set; }
-        public DateTime LastSeen { get; set; }
-        public long Priority { get; set; }
-        public bool Active { get; set; }
     }
 }

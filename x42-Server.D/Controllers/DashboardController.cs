@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using x42.Feature.API.Requirements;
+using X42.Feature.API.Requirements;
 using X42.Server;
 
 namespace X42.Controllers

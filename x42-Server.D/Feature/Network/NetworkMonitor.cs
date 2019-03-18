@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using x42.Feature.Database.Context;
+using X42.Feature.Database.Context;
 using X42.Feature.Database;
+using X42.Feature.X42Client;
 using X42.Utilities;
+using X42.Feature.Database.Tables;
 
-namespace x42.Feature.Network
+namespace X42.Feature.Network
 {
     public sealed partial class NetworkMonitor : IDisposable
     {
@@ -29,23 +32,31 @@ namespace x42.Feature.Network
 
         /// <summary>Time in milliseconds between attempts run the network health monitor</summary>
         private readonly int monitorSleep = 10000;
-        
+
         private readonly DatabaseSettings databaseSettings;
 
+        private X42Node x42Client;
+
+        private readonly X42ClientSettings x42ClientSettings;
+
         public NetworkMonitor(
-            ILogger mainLogger, 
-            IX42ServerLifetime serverLifetime, 
+            ILogger mainLogger,
+            IX42ServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory,
-            DatabaseSettings databaseSettings
+            DatabaseSettings databaseSettings,
+            X42ClientSettings x42ClientSettings
             )
         {
             logger = mainLogger;
             this.serverLifetime = serverLifetime;
             this.asyncLoopFactory = asyncLoopFactory;
             this.databaseSettings = databaseSettings;
+            this.x42ClientSettings = x42ClientSettings;
+
+            x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
         }
 
-        public void NetworkWorker()
+        public void Start()
         {
             this.networkCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { serverLifetime.ApplicationStopping });
 
@@ -73,7 +84,7 @@ namespace x42.Feature.Network
             {
                 try
                 {
-                    await CheckActiveServers().ConfigureAwait(false);
+                    await CheckActiveServersAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -87,13 +98,30 @@ namespace x42.Feature.Network
         /// </summary>
         /// <param name="block">The new block.</param>
         /// <param name="chainTip">Block that was considered as a chain tip when the block staking started.</param>
-        private Task CheckActiveServers()
+        private async Task CheckActiveServersAsync()
         {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                
+                IQueryable<MasterNodeData> masterNodes = dbContext.MasterNodes.Where(s => s.Active);
+                foreach (MasterNodeData masterNode in masterNodes)
+                {
+                    if (await ValidateServer(masterNode))
+                    {
+                        // TODO: Test server.
+                    }
+                }
             }
-            return Task.CompletedTask;
+        }
+
+        private async Task<bool> ValidateServer(MasterNodeData masternode)
+        {
+            bool result = false;
+
+            string serverKey = $"{masternode.Id}{masternode.Ip}{masternode.Port}";
+
+            result = await x42Client.VerifyMessageAsync(masternode.Address, serverKey, masternode.Signature);
+
+            return result;
         }
 
         public void Dispose()

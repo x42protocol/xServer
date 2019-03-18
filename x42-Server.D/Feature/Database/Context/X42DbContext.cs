@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using x42.Feature.Database.Tables;
+using X42.Feature.Database.Tables;
 
-namespace x42.Feature.Database.Context
+namespace X42.Feature.Database.Context
 {
     class X42DbContext : DbContext
     {
-        public virtual DbSet<MasterNode> MasterNodes { get; set; }
-        public virtual DbSet<Server> Server { get; set; }
+        public virtual DbSet<MasterNodeData> MasterNodes { get; set; }
+        public virtual DbSet<ServerData> Servers { get; set; }
 
         #region Initilize
         private readonly string _connectionString = "Server=127.0.0.1;Port=5432;Database=myDataBase;Integrated Security=true;";

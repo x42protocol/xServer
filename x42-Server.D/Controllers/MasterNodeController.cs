@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Config;
-using x42.Feature.API.Requirements;
+using X42.Feature.API.Requirements;
 using X42.Configuration;
 using X42.Controllers.Models;
 using X42.Controllers.Requests;

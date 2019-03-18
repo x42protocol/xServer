@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace x42.Properties {
+namespace X42.Properties {
     using System;
     
     

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using x42.Feature.Database.Context;
+using X42.Feature.Database.Context;
 using X42.Configuration;
 using X42.Configuration.Logging;
 using X42.Feature.Setup;

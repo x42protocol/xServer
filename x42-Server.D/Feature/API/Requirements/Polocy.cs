@@ -1,4 +1,4 @@
-﻿namespace x42.Feature.API.Requirements
+﻿namespace X42.Feature.API.Requirements
 {
     public static class Policy
     {

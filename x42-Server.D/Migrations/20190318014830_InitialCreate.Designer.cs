@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using x42.Feature.Database.Context;
+using X42.Feature.Database.Context;
 
 namespace x42.Migrations
 {
     [DbContext(typeof(X42DbContext))]
-    [Migration("20190317042931_InitialCreate")]
+    [Migration("20190318014830_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,7 @@ namespace x42.Migrations
                 .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("x42.Feature.Database.Tables.MasterNode", b =>
+            modelBuilder.Entity("X42.Feature.Database.Tables.MasterNodeData", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -47,7 +47,7 @@ namespace x42.Migrations
                     b.ToTable("masternode");
                 });
 
-            modelBuilder.Entity("x42.Feature.Database.Tables.Server", b =>
+            modelBuilder.Entity("X42.Feature.Database.Tables.ServerData", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using x42.Feature.API.Requirements;
+using X42.Feature.API.Requirements;
 using X42.Server;
 using X42.Utilities;
 using X42.Utilities.JsonConverters;

@@ -35,7 +35,7 @@ namespace X42.Feature.X42Client
         /// <summary>Time in milliseconds between attempts to connect to x42 node.</summary>
         private readonly int monitorSleep;
 
-        public X42Node(string name, IPAddress address, uint port, ILogger mainLogger, IX42ServerLifetime serverLifetime, IAsyncLoopFactory asyncLoopFactory)
+        public X42Node(string name, IPAddress address, uint port, ILogger mainLogger, IX42ServerLifetime serverLifetime, IAsyncLoopFactory asyncLoopFactory, bool eventsEnabled = true)
         {
             logger = mainLogger;
             this.serverLifetime = serverLifetime;
@@ -45,7 +45,10 @@ namespace X42.Feature.X42Client
 
             SetupNodeConnection(name, address, port);
 
-            OnConnected(address, port, ConnectionType.DirectApi);
+            if (eventsEnabled)
+            {
+                OnConnected(address, port, ConnectionType.DirectApi);
+            }
         }
 
         /// <summary>

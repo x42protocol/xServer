@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using x42.Properties;
+using X42.Properties;
 using X42.Configuration;
 using X42.Feature.Setup;
 using X42.MasterNode;

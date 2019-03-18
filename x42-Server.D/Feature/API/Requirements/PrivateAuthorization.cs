@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace x42.Feature.API.Requirements
+namespace X42.Feature.API.Requirements
 {
     public class PrivateOnlyRequirement : AuthorizationHandler<PrivateOnlyRequirement>, IAuthorizationRequirement
     {

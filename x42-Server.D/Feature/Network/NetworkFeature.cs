@@ -5,8 +5,10 @@ using Microsoft.Extensions.Logging;
 using X42.Configuration.Logging;
 using X42.Feature.Database;
 using X42.Feature.Setup;
+using X42.Feature.X42Client;
 using X42.MasterNode;
 using X42.Server;
+using X42.Utilities;
 
 namespace X42.Feature.Network
 {
@@ -18,12 +20,33 @@ namespace X42.Feature.Network
     {
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
-        private readonly MasterNodeBase network;
 
-        public NetworkFeatures(MasterNodeBase network, ILoggerFactory loggerFactory)
+        /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
+        private readonly IX42ServerLifetime serverLifetime;
+
+        /// <summary>Factory for creating background async loop tasks.</summary>
+        private readonly IAsyncLoopFactory asyncLoopFactory;
+
+        private readonly MasterNodeBase network;
+        private readonly NetworkMonitor networkMonitor;
+        private readonly DatabaseSettings databaseSettings;
+        private readonly X42ClientSettings x42ClientSettings;
+
+        public NetworkFeatures(
+            MasterNodeBase network,
+            ILoggerFactory loggerFactory,
+            DatabaseSettings databaseSettings,
+            X42ClientSettings x42ClientSettings,
+            IX42ServerLifetime serverLifetime,
+            IAsyncLoopFactory asyncLoopFactory
+            )
         {
             this.network = network;
             logger = loggerFactory.CreateLogger(GetType().FullName);
+            this.databaseSettings = databaseSettings;
+            this.x42ClientSettings = x42ClientSettings;
+            this.serverLifetime = serverLifetime;
+            this.asyncLoopFactory = asyncLoopFactory;
         }
 
         /// <summary>
@@ -61,6 +84,10 @@ namespace X42.Feature.Network
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
+            NetworkMonitor networkMonitor = new NetworkMonitor(logger, serverLifetime, asyncLoopFactory, databaseSettings, x42ClientSettings);
+
+            networkMonitor.Start();
+
             logger.LogInformation("Network Initialized");
 
             return Task.CompletedTask;
