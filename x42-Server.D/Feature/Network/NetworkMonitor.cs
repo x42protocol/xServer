@@ -117,9 +117,9 @@ namespace X42.Feature.Network
         {
             bool result = false;
 
-            string serverKey = $"{masternode.Id}{masternode.Ip}{masternode.Port}";
+            string serverKey = $"{masternode.Id}{masternode.Ip}{masternode.Port}{masternode.HAddress}";
 
-            result = await x42Client.VerifyMessageAsync(masternode.Address, serverKey, masternode.Signature);
+            result = await x42Client.VerifyMessageAsync(masternode.CAddress, serverKey, masternode.Signature);
 
             return result;
         }
