@@ -52,9 +52,11 @@ namespace x42.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Address");
+                    b.Property<string>("CAddress");
 
                     b.Property<DateTime>("DateAdded");
+
+                    b.Property<string>("HAddress");
 
                     b.Property<string>("Ip");
 
