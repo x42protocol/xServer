@@ -93,14 +93,14 @@ namespace X42.Feature.Api
 
                 //Set the comments path for the swagger json and ui.
                 string basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                string apiXmlPath = Path.Combine(basePath, "X42.MasterNode..xml");
+                string apiXmlPath = Path.Combine(basePath, "X42.MasterNode.xml");
 
                 if (File.Exists(apiXmlPath)) setup.IncludeXmlComments(apiXmlPath);
 
                 setup.DescribeAllEnumsAsStrings();
             });
 
-            services.AddSingleton<IAuthorizationHandler, PrivateOnlyRequirement>();
+            //services.AddSingleton<IAuthorizationHandler, PrivateOnlyRequirement>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

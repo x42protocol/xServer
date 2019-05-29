@@ -21,6 +21,7 @@ using X42.Utilities.JsonErrors;
 using X42.Utilities.ModelStateErrors;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = NLog.LogLevel;
+using X42.Feature.Database;
 
 namespace X42.Controllers
 {
@@ -47,22 +48,28 @@ namespace X42.Controllers
         /// <summary>x42 Server.</summary>
         private readonly IX42Server x42Server;
 
+        /// <summary>Database details.</summary>
+        private readonly DatabaseFeatures databaseFeatures;
+
         public MasterNodeContoller(IX42Server x42Server, ILoggerFactory loggerFactory,
             IDateTimeProvider dateTimeProvider,
             ServerSettings serverSettings,
-            MasterNodeBase masterNode)
+            MasterNodeBase masterNode,
+            DatabaseFeatures databaseFeatures)
         {
             Guard.NotNull(x42Server, nameof(x42Server));
             Guard.NotNull(masterNode, nameof(masterNode));
             Guard.NotNull(loggerFactory, nameof(loggerFactory));
             Guard.NotNull(serverSettings, nameof(serverSettings));
             Guard.NotNull(dateTimeProvider, nameof(dateTimeProvider));
+            Guard.NotNull(databaseFeatures, nameof(databaseFeatures));
 
             this.x42Server = x42Server;
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.dateTimeProvider = dateTimeProvider;
             nodeSettings = serverSettings;
             this.masterNode = masterNode;
+            this.databaseFeatures = databaseFeatures;
         }
 
         /// <summary>
@@ -92,11 +99,12 @@ namespace X42.Controllers
             StatusResult model = new StatusResult
             {
                 Version = x42Server.Version?.ToString() ?? "0",
-                ProtocolVersion = (uint) nodeSettings.ProtocolVersion,
+                ProtocolVersion = (uint)nodeSettings.ProtocolVersion,
                 ProcessId = Process.GetCurrentProcess().Id,
                 DataDirectoryPath = nodeSettings.DataDir,
                 RunningTime = dateTimeProvider.GetUtcNow() - x42Server.StartTime,
-                State = x42Server.State.ToString()
+                State = x42Server.State.ToString(),
+                DatabaseConnected = databaseFeatures.DatabaseConnected
             };
 
             // Add the list of features that are enabled.

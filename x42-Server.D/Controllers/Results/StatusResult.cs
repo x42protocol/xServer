@@ -36,5 +36,8 @@ namespace X42.Controllers.Models
 
         /// <summary>Returns the status of the node.</summary>
         public string State { get; set; }
+
+        /// <summary>Returns the status of the database.</summary>
+        public bool DatabaseConnected { get; set; }
     }
 }
