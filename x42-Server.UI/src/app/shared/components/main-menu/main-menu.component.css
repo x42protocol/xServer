@@ -1,0 +1,34 @@
+:host
+::ng-deep .ui-menubar-root-list {
+  padding-left: 75px;
+}
+
+.setupmenu {
+  float: left;
+  width: 190px;
+}
+
+.setupcontent {
+}
+
+.logo {
+  width: 85px;
+  margin-left: 50px;
+  text-align: center;
+  font-size: large;
+}
+
+  .logo img {
+    width: 85px;
+  }
+
+
+.container {
+  display: grid;
+}
+
+img#logo {
+  position: absolute;
+  left: 0;
+  margin-left: 10px;
+}

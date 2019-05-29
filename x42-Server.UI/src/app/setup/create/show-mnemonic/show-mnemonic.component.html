@@ -1,0 +1,26 @@
+<section id="GUI" style="width: 99%">
+  <div class="row">
+    <!-- /col -->
+    <div class="d-flex align-content-center">
+      <div class="mx-auto d-flex align-content-center flex-wrap">
+        <div class="col-12 mnemonics">
+          <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Warning!</h4>
+            <p>Please write down your secret words and password.
+            You will need <strong>both</strong> to recover your wallet in the future.</p>
+          </div>
+          <div class="row d-flex justify-content-center my-4">
+            <ul class="list-inline list-unstyled col">
+              <li *ngFor="let word of mnemonicArray; let i=index" class="list-inline-item">
+                <span class="badge-info badge">{{ i + 1 }}. {{ word }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /col-8 -->
+  </div>
+  <!-- /row -->
+</section>
+<!-- /GUI-->

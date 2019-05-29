@@ -1,0 +1,20 @@
+<div class="p-4">
+  <p-panel header="Rescan Wallet">
+    <div style="min-height:200px;">
+      <div class="alert alert-info" role="alert">
+        Rescanning your wallet will temporarily clear the transactions in your wallet and rescan the blockchain.
+        Select a date from where you wish to rescan and click the button below.
+      </div>
+      <form [formGroup]="rescanWalletForm">
+        <div class="form-group col-12">
+          <label class="text-left" style="margin-right: 5px;">Rescan from:</label>
+          <p-calendar formControlName="walletDate" [minDate]="minDate" [maxDate]="maxDate" [showIcon]="true"></p-calendar>
+          <div *ngIf="formErrors.walletDate" class="text-danger mt-2">{{ formErrors.walletDate }}</div>
+        </div>
+      </form>
+      <div style="margin-top: 20px;">
+        <button type="button" [disabled]="isSyncing || !rescanWalletForm.valid" class="btn-block" (click)="onResyncClicked()" pButton label="Rescan"></button>
+      </div>
+    </div>
+  </p-panel>
+</div>

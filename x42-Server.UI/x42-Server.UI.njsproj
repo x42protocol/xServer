@@ -1,0 +1,479 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>x42-Server.UI</Name>
+    <RootNamespace>x42-Server.UI</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>509ceab5-9ea5-4ce5-851b-86a438d95dcc</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>
+    </StartupFile>
+    <StartWebBrowser>False</StartWebBrowser>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
+    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
+    <EnableTypeScript>true</EnableTypeScript>
+    <StartWebBrowser>false</StartWebBrowser>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include=".editorconfig" />
+    <Content Include="angular.json" />
+    <Content Include="e2e\tsconfig.e2e.json" />
+    <Content Include="electron-builder.json" />
+    <Content Include="package.json" />
+    <Content Include="src\app\app.component.css" />
+    <Content Include="src\app\app.component.html" />
+    <Content Include="src\app\login\login.component.css" />
+    <Content Include="src\app\login\login.component.html" />
+    <Content Include="src\app\setup\create\confirm-mnemonic\confirm-mnemonic.component.css" />
+    <Content Include="src\app\setup\create\confirm-mnemonic\confirm-mnemonic.component.html" />
+    <Content Include="src\app\setup\create\create.component.css" />
+    <Content Include="src\app\setup\create\create.component.html" />
+    <Content Include="src\app\shared\components\main-menu\main-menu.component.css" />
+    <Content Include="src\app\shared\components\main-menu\main-menu.component.html" />
+    <Content Include="src\app\wallet\collateral-setup\collateral-setup.component.css" />
+    <Content Include="src\app\wallet\collateral-setup\collateral-setup.component.html" />
+    <Content Include="src\app\setup\finalize-setup\finalize-setup.component.css" />
+    <Content Include="src\app\setup\finalize-setup\finalize-setup.component.html" />
+    <Content Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.css" />
+    <Content Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.html" />
+    <Content Include="src\app\setup\recover\recover.component.css" />
+    <Content Include="src\app\setup\recover\recover.component.html" />
+    <Content Include="src\app\setup\setup.component.css" />
+    <Content Include="src\app\setup\setup.component.html" />
+    <Content Include="src\app\shared\components\generic-modal\generic-modal.component.css" />
+    <Content Include="src\app\shared\components\generic-modal\generic-modal.component.html" />
+    <Content Include="src\app\shared\components\wizard\wizard.component.css" />
+    <Content Include="src\app\wallet\address-book\address-book.component.css" />
+    <Content Include="src\app\wallet\address-book\address-book.component.html" />
+    <Content Include="src\app\wallet\address-book\modals\add-new-address\add-new-address.component.css" />
+    <Content Include="src\app\wallet\address-book\modals\add-new-address\add-new-address.component.html" />
+    <Content Include="src\app\wallet\advanced\advanced.component.css" />
+    <Content Include="src\app\wallet\advanced\advanced.component.html" />
+    <Content Include="src\app\wallet\advanced\components\about\about.component.css" />
+    <Content Include="src\app\wallet\advanced\components\about\about.component.html" />
+    <Content Include="src\app\wallet\advanced\components\ext-pubkey\ext-pubkey.component.css" />
+    <Content Include="src\app\wallet\advanced\components\ext-pubkey\ext-pubkey.component.html" />
+    <Content Include="src\app\wallet\advanced\components\generate-addresses\generate-addresses.component.css" />
+    <Content Include="src\app\wallet\advanced\components\generate-addresses\generate-addresses.component.html" />
+    <Content Include="src\app\wallet\advanced\components\resync\resync.component.css" />
+    <Content Include="src\app\wallet\advanced\components\resync\resync.component.html" />
+    <Content Include="src\app\wallet\cold-staking\components\modals\create-address\create-address.component.css" />
+    <Content Include="src\app\wallet\cold-staking\components\modals\create-address\create-address.component.html" />
+    <Content Include="src\app\wallet\cold-staking\components\modals\create-success\create-success.component.css" />
+    <Content Include="src\app\wallet\cold-staking\components\modals\create-success\create-success.component.html" />
+    <Content Include="src\app\wallet\cold-staking\components\modals\create\create.component.css" />
+    <Content Include="src\app\wallet\cold-staking\components\modals\create\create.component.html" />
+    <Content Include="src\app\wallet\cold-staking\components\modals\withdraw\withdraw.component.css" />
+    <Content Include="src\app\wallet\cold-staking\components\modals\withdraw\withdraw.component.html" />
+    <Content Include="src\app\wallet\cold-staking\components\overview\history\history.component.css" />
+    <Content Include="src\app\wallet\cold-staking\components\overview\history\history.component.html" />
+    <Content Include="src\app\wallet\cold-staking\components\overview\overview.component.css" />
+    <Content Include="src\app\wallet\cold-staking\components\overview\overview.component.html" />
+    <Content Include="src\app\wallet\cold-staking\components\overview\wallet\wallet.component.css" />
+    <Content Include="src\app\wallet\cold-staking\components\overview\wallet\wallet.component.html" />
+    <Content Include="src\app\wallet\dashboard\dashboard.component.css" />
+    <Content Include="src\app\wallet\dashboard\dashboard.component.html" />
+    <Content Include="src\app\wallet\history\history.component.css" />
+    <Content Include="src\app\wallet\history\history.component.html" />
+    <Content Include="src\app\wallet\logout-confirmation\logout-confirmation.component.css" />
+    <Content Include="src\app\wallet\logout-confirmation\logout-confirmation.component.html" />
+    <Content Include="src\app\wallet\menu\menu.component.css" />
+    <Content Include="src\app\wallet\menu\menu.component.html" />
+    <Content Include="src\app\wallet\receive\receive.component.css" />
+    <Content Include="src\app\wallet\receive\receive.component.html" />
+    <Content Include="src\app\wallet\send\send-confirmation\send-confirmation.component.css" />
+    <Content Include="src\app\wallet\send\send-confirmation\send-confirmation.component.html" />
+    <Content Include="src\app\wallet\send\send.component.css" />
+    <Content Include="src\app\wallet\send\send.component.html" />
+    <Content Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.css" />
+    <Content Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.html" />
+    <Content Include="src\app\wallet\smart-contracts\components\smart-contracts.component.css" />
+    <Content Include="src\app\wallet\smart-contracts\components\smart-contracts.component.html" />
+    <Content Include="src\app\wallet\status-bar\status-bar.component.css" />
+    <Content Include="src\app\wallet\status-bar\status-bar.component.html" />
+    <Content Include="src\app\wallet\transaction-details\transaction-details.component.css" />
+    <Content Include="src\app\wallet\transaction-details\transaction-details.component.html" />
+    <Content Include="src\app\wallet\wallet.component.css" />
+    <Content Include="src\app\wallet\wallet.component.html" />
+    <Content Include="src\assets\.gitkeep" />
+    <Content Include="src\assets\fonts\Linearicons-Free.eot" />
+    <Content Include="src\assets\fonts\Linearicons-Free.svg" />
+    <Content Include="src\assets\fonts\Linearicons-Free.ttf" />
+    <Content Include="src\assets\fonts\Linearicons-Free.woff" />
+    <Content Include="src\assets\fonts\Linearicons-Free.woff2" />
+    <Content Include="src\assets\images\anim.svg" />
+    <Content Include="src\assets\images\icon-512x512.png" />
+    <Content Include="src\assets\images\icon-tray.ico" />
+    <Content Include="src\assets\images\icon-tray.png" />
+    <Content Include="src\assets\images\icon.icns" />
+    <Content Include="src\assets\images\icon.ico" />
+    <Content Include="src\assets\images\icon.png" />
+    <Content Include="src\assets\images\icon.svg" />
+    <Content Include="src\assets\images\if_Error_16.png" />
+    <Content Include="src\assets\images\license_en.txt" />
+    <Content Include="src\assets\images\logo.svg" />
+    <Content Include="src\assets\images\logo_white.svg" />
+    <Content Include="src\assets\images\notransactions.svg" />
+    <Content Include="src\assets\images\Tick_Mark-16.png" />
+    <Content Include="src\index.html" />
+    <Content Include="src\scss\bootstrap-grid.scss" />
+    <Content Include="src\scss\bootstrap-reboot.scss" />
+    <Content Include="src\scss\bootstrap.scss" />
+    <Content Include="src\scss\mixins\_alert.scss" />
+    <Content Include="src\scss\mixins\_background-variant.scss" />
+    <Content Include="src\scss\mixins\_badge.scss" />
+    <Content Include="src\scss\mixins\_border-radius.scss" />
+    <Content Include="src\scss\mixins\_box-shadow.scss" />
+    <Content Include="src\scss\mixins\_breakpoints.scss" />
+    <Content Include="src\scss\mixins\_buttons.scss" />
+    <Content Include="src\scss\mixins\_caret.scss" />
+    <Content Include="src\scss\mixins\_clearfix.scss" />
+    <Content Include="src\scss\mixins\_float.scss" />
+    <Content Include="src\scss\mixins\_forms.scss" />
+    <Content Include="src\scss\mixins\_gradients.scss" />
+    <Content Include="src\scss\mixins\_grid-framework.scss" />
+    <Content Include="src\scss\mixins\_grid.scss" />
+    <Content Include="src\scss\mixins\_hover.scss" />
+    <Content Include="src\scss\mixins\_image.scss" />
+    <Content Include="src\scss\mixins\_list-group.scss" />
+    <Content Include="src\scss\mixins\_lists.scss" />
+    <Content Include="src\scss\mixins\_nav-divider.scss" />
+    <Content Include="src\scss\mixins\_navbar-align.scss" />
+    <Content Include="src\scss\mixins\_pagination.scss" />
+    <Content Include="src\scss\mixins\_reset-text.scss" />
+    <Content Include="src\scss\mixins\_resize.scss" />
+    <Content Include="src\scss\mixins\_screen-reader.scss" />
+    <Content Include="src\scss\mixins\_size.scss" />
+    <Content Include="src\scss\mixins\_table-row.scss" />
+    <Content Include="src\scss\mixins\_text-emphasis.scss" />
+    <Content Include="src\scss\mixins\_text-hide.scss" />
+    <Content Include="src\scss\mixins\_text-truncate.scss" />
+    <Content Include="src\scss\mixins\_transition.scss" />
+    <Content Include="src\scss\mixins\_visibility.scss" />
+    <Content Include="src\scss\themes\_dark.scss" />
+    <Content Include="src\scss\themes\_light.scss" />
+    <Content Include="src\scss\utilities\_align.scss" />
+    <Content Include="src\scss\utilities\_background.scss" />
+    <Content Include="src\scss\utilities\_borders.scss" />
+    <Content Include="src\scss\utilities\_clearfix.scss" />
+    <Content Include="src\scss\utilities\_display.scss" />
+    <Content Include="src\scss\utilities\_embed.scss" />
+    <Content Include="src\scss\utilities\_flex.scss" />
+    <Content Include="src\scss\utilities\_float.scss" />
+    <Content Include="src\scss\utilities\_position.scss" />
+    <Content Include="src\scss\utilities\_screenreaders.scss" />
+    <Content Include="src\scss\utilities\_sizing.scss" />
+    <Content Include="src\scss\utilities\_spacing.scss" />
+    <Content Include="src\scss\utilities\_text.scss" />
+    <Content Include="src\scss\utilities\_visibility.scss" />
+    <Content Include="src\scss\_alert.scss" />
+    <Content Include="src\scss\_badge.scss" />
+    <Content Include="src\scss\_breadcrumb.scss" />
+    <Content Include="src\scss\_button-group.scss" />
+    <Content Include="src\scss\_buttons.scss" />
+    <Content Include="src\scss\_card.scss" />
+    <Content Include="src\scss\_carousel.scss" />
+    <Content Include="src\scss\_close.scss" />
+    <Content Include="src\scss\_code.scss" />
+    <Content Include="src\scss\_custom-forms.scss" />
+    <Content Include="src\scss\_custom.scss" />
+    <Content Include="src\scss\_dropdown.scss" />
+    <Content Include="src\scss\_fonts.scss" />
+    <Content Include="src\scss\_forms.scss" />
+    <Content Include="src\scss\_functions.scss" />
+    <Content Include="src\scss\_grid.scss" />
+    <Content Include="src\scss\_images.scss" />
+    <Content Include="src\scss\_input-group.scss" />
+    <Content Include="src\scss\_jumbotron.scss" />
+    <Content Include="src\scss\_list-group.scss" />
+    <Content Include="src\scss\_media.scss" />
+    <Content Include="src\scss\_mixins.scss" />
+    <Content Include="src\scss\_modal.scss" />
+    <Content Include="src\scss\_nav.scss" />
+    <Content Include="src\scss\_navbar.scss" />
+    <Content Include="src\scss\_pagination.scss" />
+    <Content Include="src\scss\_popover.scss" />
+    <Content Include="src\scss\_print.scss" />
+    <Content Include="src\scss\_progress.scss" />
+    <Content Include="src\scss\_reboot.scss" />
+    <Content Include="src\scss\_root.scss" />
+    <Content Include="src\scss\_tables.scss" />
+    <Content Include="src\scss\_tooltip.scss" />
+    <Content Include="src\scss\_transitions.scss" />
+    <Content Include="src\scss\_type.scss" />
+    <Content Include="src\scss\_utilities.scss" />
+    <Content Include="src\scss\_variables.scss" />
+    <Content Include="src\styles.css" />
+    <Content Include="src\styles.css.map" />
+    <Content Include="src\tsconfig.app.json" />
+    <Content Include="src\tsconfig.spec.json" />
+    <Content Include="tsconfig-serve.json" />
+    <Content Include="tsconfig.json" />
+    <Content Include="tslint.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="e2e\app.e2e-spec.ts" />
+    <TypeScriptCompile Include="e2e\app.po.ts" />
+    <TypeScriptCompile Include="main.ts" />
+    <TypeScriptCompile Include="src\app\app-routing.module.ts" />
+    <TypeScriptCompile Include="src\app\app.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\app.component.ts" />
+    <TypeScriptCompile Include="src\app\app.module.ts" />
+    <TypeScriptCompile Include="src\app\login\login.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\login\login.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\create\confirm-mnemonic\confirm-mnemonic.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\setup\create\confirm-mnemonic\confirm-mnemonic.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\create\confirm-mnemonic\secret-word-index-generator.ts" />
+    <TypeScriptCompile Include="src\app\setup\create\create.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\setup\create\create.component.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\main-menu\main-menu.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\main-menu\main-menu.component.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\server-status.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\wallet-rescan.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\app\shared\services\server.api.service.ts" />
+    <TypeScriptCompile Include="src\app\wallet\collateral-setup\collateral-setup.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\collateral-setup\collateral-setup.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\finalize-setup\finalize-setup.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\setup\finalize-setup\finalize-setup.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\recover\recover.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\setup\recover\recover.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\setup-routing.module.ts" />
+    <TypeScriptCompile Include="src\app\setup\setup.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\setup.module.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\generic-modal\generic-modal.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\generic-modal\generic-modal.component.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\wizard\step.component.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\wizard\steps.component.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\wizard\wizard.module.ts" />
+    <TypeScriptCompile Include="src\app\shared\directives\auto-focus.directive.spec.ts" />
+    <TypeScriptCompile Include="src\app\shared\directives\auto-focus.directive.ts" />
+    <TypeScriptCompile Include="src\app\shared\directives\password-validation.directive.spec.ts" />
+    <TypeScriptCompile Include="src\app\shared\directives\password-validation.directive.ts" />
+    <TypeScriptCompile Include="src\app\shared\http-interceptors\api-interceptor.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\address-label.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\error-response.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\fee-estimation.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\mnemonic.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\node-status.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\sidechain-fee-estimation.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\transaction-building.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\transaction-info.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\transaction-sending.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\wallet-creation.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\wallet-info.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\wallet-load.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\wallet-recovery.ts" />
+    <TypeScriptCompile Include="src\app\shared\pipes\coin-notation.pipe.spec.ts" />
+    <TypeScriptCompile Include="src\app\shared\pipes\coin-notation.pipe.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\fullnode.api.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\global.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\modal.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\theme.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\shared.module.ts" />
+    <TypeScriptCompile Include="src\app\shared\theme.ts" />
+    <TypeScriptCompile Include="src\app\shared\themes.ts" />
+    <TypeScriptCompile Include="src\app\wallet\address-book\address-book.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\address-book\address-book.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\address-book\modals\add-new-address\add-new-address.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\address-book\modals\add-new-address\add-new-address.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\advanced.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\advanced.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\components\about\about.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\components\about\about.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\components\ext-pubkey\ext-pubkey.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\components\ext-pubkey\ext-pubkey.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\components\generate-addresses\generate-addresses.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\components\generate-addresses\generate-addresses.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\components\resync\resync.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\advanced\components\resync\resync.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\cold-staking.module.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\cold-staking.service.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\cold-staking.service.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\modals\create-address\create-address.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\modals\create-address\create-address.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\modals\create-success\create-success.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\modals\create-success\create-success.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\modals\create\create.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\modals\create\create.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\modals\withdraw\withdraw.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\modals\withdraw\withdraw.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\overview\history\history.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\overview\history\history.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\overview\overview.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\overview\overview.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\overview\wallet\wallet.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\cold-staking\components\overview\wallet\wallet.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\dashboard\dashboard.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\dashboard\dashboard.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\history\history.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\history\history.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\logout-confirmation\logout-confirmation.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\logout-confirmation\logout-confirmation.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\menu\menu.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\menu\menu.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\receive\receive.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\receive\receive.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\send\send-confirmation\send-confirmation.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\send\send-confirmation\send-confirmation.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\send\send.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\send\send.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\balance\balance.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\contract-type.pipe.ts" />
+    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\smart-contracts.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\smart-contracts.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\smart-contracts\smart-contracts.module.ts" />
+    <TypeScriptCompile Include="src\app\wallet\smart-contracts\smart-contracts.service.ts" />
+    <TypeScriptCompile Include="src\app\wallet\status-bar\status-bar.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\status-bar\status-bar.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\transaction-details\transaction-details.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\transaction-details\transaction-details.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\wallet-routing.module.ts" />
+    <TypeScriptCompile Include="src\app\wallet\wallet.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\wallet.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\wallet.module.ts" />
+    <TypeScriptCompile Include="src\environments\environment.dev.ts" />
+    <TypeScriptCompile Include="src\environments\environment.prod.ts" />
+    <TypeScriptCompile Include="src\environments\environment.ts" />
+    <TypeScriptCompile Include="src\main.ts" />
+    <TypeScriptCompile Include="src\polyfills-test.ts" />
+    <TypeScriptCompile Include="src\polyfills.ts" />
+    <TypeScriptCompile Include="src\test.ts" />
+    <TypeScriptCompile Include="src\typings.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="postcss.config.js" />
+    <Compile Include="postinstall-web.js" />
+    <Compile Include="postinstall.js" />
+    <Compile Include="src\karma.conf.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="e2e\" />
+    <Folder Include="src\" />
+    <Folder Include="src\app\" />
+    <Folder Include="src\app\login\" />
+    <Folder Include="src\app\setup\" />
+    <Folder Include="src\app\setup\create\" />
+    <Folder Include="src\app\setup\create\confirm-mnemonic\" />
+    <Folder Include="src\app\shared\components\main-menu\" />
+    <Folder Include="src\app\wallet\collateral-setup\" />
+    <Folder Include="src\app\setup\finalize-setup\" />
+    <Folder Include="src\app\setup\create\show-mnemonic\" />
+    <Folder Include="src\app\setup\recover\" />
+    <Folder Include="src\app\shared\" />
+    <Folder Include="src\app\shared\components\" />
+    <Folder Include="src\app\shared\components\generic-modal\" />
+    <Folder Include="src\app\shared\components\wizard\" />
+    <Folder Include="src\app\shared\directives\" />
+    <Folder Include="src\app\shared\http-interceptors\" />
+    <Folder Include="src\app\shared\models\" />
+    <Folder Include="src\app\shared\pipes\" />
+    <Folder Include="src\app\shared\services\" />
+    <Folder Include="src\app\wallet\" />
+    <Folder Include="src\app\wallet\address-book\" />
+    <Folder Include="src\app\wallet\address-book\modals\" />
+    <Folder Include="src\app\wallet\address-book\modals\add-new-address\" />
+    <Folder Include="src\app\wallet\advanced\" />
+    <Folder Include="src\app\wallet\advanced\components\" />
+    <Folder Include="src\app\wallet\advanced\components\about\" />
+    <Folder Include="src\app\wallet\advanced\components\ext-pubkey\" />
+    <Folder Include="src\app\wallet\advanced\components\generate-addresses\" />
+    <Folder Include="src\app\wallet\advanced\components\resync\" />
+    <Folder Include="src\app\wallet\cold-staking\" />
+    <Folder Include="src\app\wallet\cold-staking\components\" />
+    <Folder Include="src\app\wallet\cold-staking\components\modals\" />
+    <Folder Include="src\app\wallet\cold-staking\components\modals\create-address\" />
+    <Folder Include="src\app\wallet\cold-staking\components\modals\create-success\" />
+    <Folder Include="src\app\wallet\cold-staking\components\modals\create\" />
+    <Folder Include="src\app\wallet\cold-staking\components\modals\withdraw\" />
+    <Folder Include="src\app\wallet\cold-staking\components\overview\" />
+    <Folder Include="src\app\wallet\cold-staking\components\overview\history\" />
+    <Folder Include="src\app\wallet\cold-staking\components\overview\wallet\" />
+    <Folder Include="src\app\wallet\dashboard\" />
+    <Folder Include="src\app\wallet\history\" />
+    <Folder Include="src\app\wallet\logout-confirmation\" />
+    <Folder Include="src\app\wallet\menu\" />
+    <Folder Include="src\app\wallet\receive\" />
+    <Folder Include="src\app\wallet\send\" />
+    <Folder Include="src\app\wallet\send\send-confirmation\" />
+    <Folder Include="src\app\wallet\smart-contracts\" />
+    <Folder Include="src\app\wallet\smart-contracts\components\" />
+    <Folder Include="src\app\wallet\smart-contracts\components\balance\" />
+    <Folder Include="src\app\wallet\smart-contracts\components\modals\" />
+    <Folder Include="src\app\wallet\smart-contracts\components\modals\transaction\" />
+    <Folder Include="src\app\wallet\status-bar\" />
+    <Folder Include="src\app\wallet\transaction-details\" />
+    <Folder Include="src\assets\" />
+    <Folder Include="src\assets\fonts\" />
+    <Folder Include="src\assets\images\" />
+    <Folder Include="src\environments\" />
+    <Folder Include="src\scss\" />
+    <Folder Include="src\scss\mixins\" />
+    <Folder Include="src\scss\themes\" />
+    <Folder Include="src\scss\utilities\" />
+  </ItemGroup>
+  <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -1,0 +1,36 @@
+
+<section id="content" class="light col-10 mx-auto">
+  <div class="text-right">
+    <button type="button" pButton (click)="addNewAddressClicked()" label="Add New Address" class="mb-2 pr-0" icon="pi pi-plus"></button>
+  </div>
+  <section class="col-12">
+    <div class="row">
+      <ng-template #noAddresses>
+        <div class="col-12 text-center">
+          <p class="text-muted" style="font-weight: bold; font-size: 14px;">Looks like you have no addresses in your address book yet.</p>
+        </div>
+      </ng-template>
+    </div>
+    <div *ngIf="addresses; else noAddresses">
+      <div class="row" *ngFor="let addressRow of addresses">
+        <div class="Addresses col-12 my-1">
+          <div>
+            <dl class="d-flex align-items-center mb-0">
+              <dt class="col-3 mb-0">{{addressRow.label}}</dt>
+              <dd class="col-6 mb-0">
+                <div class="myAddress d-inline">
+                  <code class="d-inline-block">{{addressRow.address}}</code>
+                  <p-selectButton [options]="copyType" ngxClipboard icon="pi pi-copy" (click)="copyToClipboardClicked(addressRow)"></p-selectButton>
+                </div>
+              </dd>
+              <dd class="col-3 mb-0 text-right">
+                <button type="button" pButton (click)="sendClicked(addressRow)" label="Send"></button>
+                <button type="button" pButton (click)="removeClicked(addressRow)" icon="pi pi-trash" style="margin-left: 5px;"></button>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>

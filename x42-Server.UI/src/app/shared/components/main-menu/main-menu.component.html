@@ -1,0 +1,38 @@
+<p-menubar [model]="menuItems">
+  <img id="logo" src="../../../../assets/images/{{logoFileName}}" style="height:32px;" />
+  <button pButton icon="pi pi-cog" type="button" (click)="settingsMenu = true"></button>
+</p-menubar>
+
+<p-sidebar [(visible)]="settingsMenu" position="right" [baseZIndex]="10000">
+  <h1 style="font-weight:normal">Server Settings</h1>
+  <br /><br />
+
+
+  <h3 style="font-weight:normal">Connection Info</h3>
+  Node Connections: {{ connectedNodes }}
+  <br />
+
+  <div *ngIf="isChainSynced" class="text-success">Block: {{ lastBlockSyncedHeight }}</div>
+  <div *ngIf="!isChainSynced" class="text-success">
+    Block: {{ lastBlockSyncedHeight }}
+  </div>
+  <br />
+  <div *ngIf="stakingEnabled" class="lnr lnr-lock text-success">Staking</div>
+  <div *ngIf="!stakingEnabled" class="lnr lnr-lock text-danger">Not staking</div>
+
+  <br />
+  Server Connections: 3
+  <br />
+
+
+  <br /><br />
+  <h3 style="font-weight:normal">Look and feel</h3>
+  <p-dropdown [options]="groupedThemes" [(ngModel)]="selectedTheme" placeholder="Select a Theme" [group]="true" (onChange)="onThemeChange($event)">
+    <ng-template let-group pTemplate="group">
+      <i class="{{group.value}}" aria-hidden="true" style="width:20px;vertical-align:middle"></i>
+      <span style="margin-left:.25em">{{group.label}}</span>
+    </ng-template>
+  </p-dropdown>
+  <br /><br />
+  <button pButton type="button" class="btn-block" label="Advanced" (click)="openAdvanced()"></button>
+</p-sidebar>

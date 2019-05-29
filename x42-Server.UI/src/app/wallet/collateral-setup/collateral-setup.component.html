@@ -1,0 +1,23 @@
+<p-panel #createWallet header="Collateral">
+  <form class="mx-auto d-flex align-content-center flex-wrap" [formGroup]="createWalletForm">
+    <!-- /form-group -->
+    <div class="form-group col-12">
+      <span class="ui-float-label">
+        <input type="password" class="form-control form-control-success" [class.is-invalid]="formErrors.walletPassword" [class.is-valid]="!formErrors.walletPassword && createWalletForm.get('walletPassword').valid" formControlName="walletPassword" id="walletPassword" placement="bottom" ngbTooltip="Your password will be used to encrypt your wallet and will be required for several actions across the wallet." triggers="click:blur" pInputText>
+        <label for="float-input">Enter a password to encrypt your wallet file.</label>
+      </span>
+      <div *ngIf="formErrors.walletPassword" class="invalid-feedback">{{ formErrors.walletPassword }}</div>
+    </div>
+    <!-- /form-group -->
+    <div class="form-group col-12">
+      <span class="ui-float-label">
+        <input type="password" class="form-control" [class.is-invalid]="formErrors.walletPasswordConfirmation" [class.is-valid]="!formErrors.walletPasswordConfirmation && createWalletForm.get('walletPassword').valid && createWalletForm.get('walletPasswordConfirmation').valid" formControlName="walletPasswordConfirmation" id="walletPasswordConfirmation" pInputText>
+        <label for="walletPasswordConfirmation">Re-enter the password to encrypt your wallet file.</label>
+      </span>
+      <div *ngIf="formErrors.walletPasswordConfirmation" class="invalid-feedback">{{ formErrors.walletPasswordConfirmation }}</div>
+    </div>
+    <div class="modal-footer col-12">
+      <button pButton type="button" class="btn-block" label="Create {{name}} wallet" [disabled]="!createWalletForm.valid" (click)="onContinueClicked()"></button>
+    </div>
+  </form>
+</p-panel>

@@ -1,0 +1,6 @@
+.checkmark {
+  stroke: #28a745 !important;
+  stroke-dashoffset: 745.74853515625;
+  stroke-dasharray: 745.74853515625;
+  animation: dash 4s ease-out forwards;
+}

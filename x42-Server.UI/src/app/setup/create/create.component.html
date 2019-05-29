@@ -1,0 +1,70 @@
+<p-blockUI [target]="createWallet" [blocked]="walletLocked">
+  <i class="fa fa-lock fa-5x" style="position:absolute;top:25%;left:50%"></i>
+</p-blockUI>
+<div class="formrow" >
+  <!-- /col -->
+  <div class="col-12">
+    <p-messages [value]="resultMessage"></p-messages>
+  </div>
+  <p-panel #createWallet header="{{name}} wallet">
+    <form class="mx-auto d-flex align-content-center flex-wrap" [formGroup]="createWalletForm">
+      <!-- /form-group -->
+      <div class="form-group col-12">
+        <span class="ui-float-label">
+          <input type="password" class="form-control form-control-success" [class.is-invalid]="formErrors.walletPassword" [class.is-valid]="!formErrors.walletPassword && createWalletForm.get('walletPassword').valid" formControlName="walletPassword" id="walletPassword" placement="bottom" ngbTooltip="Your password will be used to encrypt your wallet and will be required for several actions across the wallet." triggers="click:blur" pInputText>
+          <label for="float-input">Enter a password to encrypt your wallet file.</label>
+        </span>
+        <div *ngIf="formErrors.walletPassword" class="invalid-feedback">{{ formErrors.walletPassword }}</div>
+      </div>
+      <!-- /form-group -->
+      <div class="form-group col-12">
+        <span class="ui-float-label">
+          <input type="password" class="form-control" [class.is-invalid]="formErrors.walletPasswordConfirmation" [class.is-valid]="!formErrors.walletPasswordConfirmation && createWalletForm.get('walletPassword').valid && createWalletForm.get('walletPasswordConfirmation').valid" formControlName="walletPasswordConfirmation" id="walletPasswordConfirmation" pInputText>
+          <label for="walletPasswordConfirmation">Re-enter the password to encrypt your wallet file.</label>
+        </span>
+        <div *ngIf="formErrors.walletPasswordConfirmation" class="invalid-feedback">{{ formErrors.walletPasswordConfirmation }}</div>
+      </div>
+      <!-- /form-group -->
+      <div class="form-group col-12">
+        <span class="ui-float-label">
+          <input type="text" class="form-control form-control-success" formControlName="walletPassphrase" id="walletPassphrase" placement="bottom" ngbTooltip="The passphrase will be combined with your secret words to generate the private seed and will be required to restore your wallet in the future if necessary." triggers="click:blur" pInputText>
+          <label for="walletPassphrase">Enter an optional passphrase.</label>
+        </span>
+        <em class="text-muted ml-auto float-left">(optional)</em>
+        <div *ngIf="formErrors.walletPassphrase" class="invalid-feedback">{{ formErrors.walletPassphrase }}</div>
+      </div>
+      <div class="col-12">
+        <div class="alert alert-danger text-center" style="padding-top: 20px;" role="alert">
+          Your passphrase will be required to recover your wallet in the future. <br><strong>Keep it safe if you choose to have one</strong>.
+        </div>
+      </div>
+      <div class="modal-footer col-12">
+        <button pButton type="button" class="btn-block" label="Create {{name}} wallet" [disabled]="!createWalletForm.valid" (click)="onContinueClicked()"></button>
+      </div>
+    </form>
+    <!-- /form -->
+  </p-panel>
+  <!-- /col-8 -->
+</div>
+<!-- /row -->
+<!-- Confirmation Modal -->
+<p-dialog header="Secret Words" [(visible)]="displayMnemonic" [modal]="true" [responsive]="true" [style]="{width: '600px', minWidth: '450px'}" [minY]="70" [maximizable]="false" [baseZIndex]="10000">
+  <span>
+    <app-show-mnemonic *ngIf="displayMnemonic" [queryParams]="queryParams"></app-show-mnemonic>
+  </span>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="continueMnemonic()" label="Continue"></button>
+    <button type="button" pButton icon="fa fa-close" (click)="displayMnemonic=false" label="Cancel" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+
+<!-- Confirmation Modal -->
+<p-dialog header="Confirm Secret Words" [(visible)]="displayMnemonicConfirm" [modal]="true" [responsive]="true" [style]="{width: '600px', minWidth: '450px'}" [minY]="70" [maximizable]="false" [baseZIndex]="10000">
+  <span>
+    <app-confirm-mnemonic *ngIf="displayMnemonicConfirm" [queryParams]="queryParams" (success)="walletCreateResult($event)"></app-confirm-mnemonic>
+  </span>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-step-backward" (click)="goBackToWords(true)" label="Back" style="float: left;"></button>
+    <button type="button" pButton icon="fa fa-close" (click)="displayMnemonicConfirm=false" label="Cancel" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>

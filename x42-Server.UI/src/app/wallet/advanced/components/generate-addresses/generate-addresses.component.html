@@ -1,0 +1,30 @@
+<div class="p-4">
+  <p-panel header="Generate Addresses">
+    <div style="min-height:200px;">
+      <div>
+        <form [formGroup]="generateAddressesForm">
+          <div class="form-group mt-3">
+            <label for="generateAddresses">Amount of generated addresses:</label>
+            <input type="text" class="form-control" id="generateAddresses" [class.is-invalid]="formErrors.generateAddresses" [class.is-valid]="!formErrors.generateAddresses && generateAddressesForm.get('generateAddresses').valid" formControlName="generateAddresses" placeholder="Enter the amount of addresses you want to generate." pInputText>
+            <div *ngIf="formErrors.generateAddresses" class="invalid-feedback">{{ formErrors.generateAddresses }}</div>
+          </div>
+        </form>
+        <div>
+          <button type="submit" class="btn-block" [disabled]="!generateAddressesForm.valid" (click)="onGenerateClicked()" pButton label="Generate"></button>
+        </div>
+      </div>
+      <div class="mt-4" *ngIf="addresses?.length > 0">
+        <p-table [value]="addresses" [paginator]="true" [rows]="5">
+          <ng-template pTemplate="body" let-address>
+            <tr>
+              <td>
+                <code class="d-inline-block">{{ address }}</code>
+                <p-selectButton [options]="copyType" ngxClipboard [cbContent]="address" icon="pi pi-copy"></p-selectButton>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </p-panel>
+</div>
