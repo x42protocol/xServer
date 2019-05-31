@@ -38,7 +38,7 @@ export class FullNodeApiService {
 
   getNodeStatus(silent?: boolean): Observable<NodeStatus> {
     return this.http.get<NodeStatus>(this.x42ApiUrl + '/node/status').pipe(
-      catchError(err => this.handleHttpError(err))
+      catchError(err => this.handleHttpError(err, silent))
     );
   }
 
@@ -170,7 +170,7 @@ export class FullNodeApiService {
     return this.pollingInterval.pipe(
       startWith(0),
       switchMap(() => this.http.get(this.x42ApiUrl + '/wallet/general-info', { params })),
-      catchError(err => this.handleHttpError(err))
+      catchError(err => this.handleHttpError(err, silent))
     )
   }
 
@@ -427,10 +427,10 @@ export class FullNodeApiService {
     );
   }
 
-  private handleHttpError(error: HttpErrorResponse) {
+  private handleHttpError(error: HttpErrorResponse, silent?: boolean) {
     console.log(error);
     if (error.status >= 400) {
-      if (error.error.errors[0].message) {
+      if (error.error.errors[0].message && !silent) {
         this.modalService.openModal(null, error.error.errors[0].message);
       }
     }
