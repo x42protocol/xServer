@@ -55,7 +55,10 @@ function createWindow() {
     frame: true,
     minWidth: 1150,
     minHeight: 800,
-    title: "x42 Server"
+    title: "x42 Server",
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   if (serve) {
