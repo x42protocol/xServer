@@ -4,11 +4,7 @@
 		<div class="col-12 text-center">
 			<h3 class="display-4 mb-4">x42 Server<br /><i class="pi pi-lock" style="font-size: 3em"></i></h3>
 		</div>
-		<form *ngIf="hasWallet" class="form-group col-12" [formGroup]="openWalletForm">
-			<select class="custom-select col-12" formControlName="selectWallet">
-				<option value="" disabled selected>Choose a wallet</option>
-				<option *ngFor="let wallet of wallets" [value]="wallet">{{ wallet }}</option>
-			</select>
+		<form class="form-group col-12" [formGroup]="openWalletForm">
 			<div class="form-group mt-3">
 				<input type="password" class="form-control" id="Password" [class.is-invalid]="formErrors.password" [class.is-valid]="!formErrors.password && openWalletForm.get('password').valid" id="Password" formControlName="password" formControlName="password" placeholder="Enter your password." (keyup.enter)="onEnter()" pInputText>
 				<div *ngIf="formErrors.password" class="invalid-feedback">{{ formErrors.password }}</div>
@@ -16,10 +12,7 @@
 		</form>
 		<div class="col-12">
 			<div *ngIf="hasWallet">
-				<button type="submit" class="btn-block" [disabled]="!openWalletForm.valid || isDecrypting" (click)="onDecryptClicked()" label="Unlock" pButton></button>
-			</div>
-			<div class="row d-flex justify-content-center mt-3">
-					<button [disabled]="isDecrypting" type="button" class="btn-block" (click)="onCreateClicked()" label="Create or restore a wallet" pButton></button>
+				<button type="submit" class="btn-block" [disabled]="isDecrypting" (click)="onDecryptClicked()" label="Unlock" pButton></button>
 			</div>
 			<!-- SVG -->
 			<div *ngIf="isDecrypting" [className]="isDarkTheme ? 'LoadingWhite' : 'Loading'" style="padding: 30px;">

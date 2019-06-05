@@ -99,9 +99,9 @@ export class LoginComponent implements OnInit {
 
   public onDecryptClicked() {
     this.isDecrypting = true;
-    this.globalService.setWalletName(this.openWalletForm.get("selectWallet").value);
+    this.globalService.setWalletName("x42ServerMain");
     let walletLoad = new WalletLoad(
-      this.openWalletForm.get("selectWallet").value,
+      "x42ServerMain",
       this.openWalletForm.get("password").value
     );
     this.loadWallet(walletLoad);
