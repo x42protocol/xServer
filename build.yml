@@ -84,14 +84,10 @@ phases:
       #parallel: false # Optional
       #parallelCount: # Optional
 
-  - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
-    displayName: github release
-    condition: and(succeeded(), eq(variables['build.sourcebranch'], 'refs/heads/master'))
-    inputs:
-      githubEndpoint: github
-      githubRepository: 'x42protocol/x42-Server'
-      githubReleaseTitle: 'x42-Server (Release $(Build.BuildNumber))'
-      githubReleasePrerelease: true
-      githubReleaseAsset: '$(Build.ArtifactStagingDirectory)/x42*.*'
-      manifestJson: package.json
-      githubEditRelease: true
+  – task: GitHubRelease@0
+    displayName: GitHub Release
+    inputs: gitHubConnection: x42protocol
+    repositoryName: x42protocol/x42-Server
+    action: edit
+    tag: $(Build.BuildNumber)
+    assets: '$(Build.ArtifactStagingDirectory)/x42*.*'
