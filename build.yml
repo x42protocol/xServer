@@ -86,8 +86,9 @@ phases:
 
   - task: GitHubRelease@0
     displayName: GitHub Release
-    inputs: gitHubConnection: x42protocol
-    repositoryName: x42protocol/x42-Server
-    action: edit
-    tag: $(Build.BuildNumber)
-    assets: '$(Build.ArtifactStagingDirectory)/x42*.*'
+    inputs: 
+      gitHubConnection: x42protocol
+      repositoryName: x42protocol/x42-Server
+      action: edit
+      tag: $(Build.BuildNumber)
+      assets: '$(Build.ArtifactStagingDirectory)/x42*.*'
