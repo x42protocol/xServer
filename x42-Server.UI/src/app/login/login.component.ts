@@ -92,9 +92,7 @@ export class LoginComponent implements OnInit {
   }
 
   public onEnter() {
-    if (this.openWalletForm.valid) {
-      this.onDecryptClicked();
-    }
+    this.onDecryptClicked();
   }
 
   public onDecryptClicked() {
