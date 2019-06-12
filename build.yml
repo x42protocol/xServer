@@ -1,4 +1,4 @@
-# x42 Server - Continuous Integration Setup for Azure DevOps
+# x42-Server - Continuous Integration Setup for Azure DevOps
 
 parameters:
   name: ''
@@ -10,7 +10,7 @@ parameters:
 
 phases:
 - phase: ${{ parameters.name }}
-  displayName: ${{ format('x42 Server ({0}-{1})', parameters.platform, parameters.arch) }}
+  displayName: ${{ format('x42-Server ({0}-{1})', parameters.platform, parameters.arch) }}
   queue: ${{ parameters.queue }}
   steps:
 
@@ -26,6 +26,17 @@ phases:
       Write-Host "SYSTEM_PULLREQUEST_SOURCEBRANCH: $Env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
     displayName: version number
 
+  - task: DotNetCoreCLI@2
+    displayName: dotnet publish
+    inputs:
+      command: publish
+      projects: '**/src/x42.x42D/x42.x42D.csproj.csproj'
+      workingDirectory: 'X42-FullNode'
+      publishWebProjects: false
+      zipAfterPublish: false
+      modifyOutputPath: false
+      arguments: ${{ format('-c {0} -r {1}-{2} -v m', parameters.configuration, parameters.platform, parameters.arch) }}
+      
   - task: DotNetCoreCLI@2
     displayName: dotnet publish
     inputs:
@@ -47,7 +58,7 @@ phases:
       ${{ if eq(parameters.reason, 'Schedule') }}:
         projects: '**/*.Tests.csproj'
       ${{ if ne(parameters.reason, 'Schedule') }}:
-        projects: '**/City.*.Tests.csproj'
+        projects: '**/x42.*.Tests.csproj'
       arguments: ${{ format('-c {0} -v m', parameters.configuration) }}
 
   - task: ArchiveFiles@2
@@ -57,10 +68,10 @@ phases:
       includeRootFolder: false
 
       ${{ if eq(parameters.platform, 'linux') }}:
-        archiveFile: ${{ format('$(Build.ArtifactStagingDirectory)/x42-$(App.BuildNumber)-{0}-{1}.tar.gz', parameters.platform, parameters.arch) }}
+        archiveFile: ${{ format('$(Build.ArtifactStagingDirectory)/x42-Server-$(App.BuildNumber)-{0}-{1}.tar.gz', parameters.platform, parameters.arch) }}
         archiveType: tar
       ${{ if ne(parameters.platform, 'linux') }}:
-        archiveFile: ${{ format('$(Build.ArtifactStagingDirectory)/x42-$(App.BuildNumber)-{0}-{1}.zip', parameters.platform, parameters.arch) }}  
+        archiveFile: ${{ format('$(Build.ArtifactStagingDirectory)/x42-Server-$(App.BuildNumber)-{0}-{1}.zip', parameters.platform, parameters.arch) }}  
 
   # Publish Build Artifacts
   # Publish build artifacts to Azure Pipelines/TFS or a file share
@@ -79,7 +90,7 @@ phases:
     inputs:
       githubEndpoint: github
       githubRepository: 'x42protocol/x42-Server'
-      githubReleaseTitle: 'x42 (Release $(Build.BuildNumber))'
+      githubReleaseTitle: 'x42-Server (Release $(Build.BuildNumber))'
       githubReleasePrerelease: true
       githubReleaseAsset: '$(Build.ArtifactStagingDirectory)/x42*.*'
       manifestJson: package.json
