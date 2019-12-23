@@ -37,7 +37,7 @@ namespace X42.Configuration.Logging
 
             string configPath = Path.Combine(dataFolder.RootPath, NLogConfigFileName);
             if (File.Exists(configPath))
-                this.ConfigureNLog(configPath);
+                this.LoadNLogConfiguration(new DataFolder(configPath));
         }
     }
 

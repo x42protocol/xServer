@@ -62,6 +62,10 @@ namespace X42.Feature.Setup
         /// <inheritdoc />
         public override async Task InitializeAsync()
         {
+            await Task.Run(() =>
+            {
+                // TODO: Run
+            });
         }
 
         /// <inheritdoc />
