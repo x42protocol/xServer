@@ -89,11 +89,11 @@ namespace X42.Feature.Api
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(setup =>
             {
-                setup.SwaggerDoc("v1", new Info {Title = "X42.MasterNode.Api", Version = "v1"});
+                setup.SwaggerDoc("v1", new Info {Title = "X42.ServerNode.Api", Version = "v1"});
 
                 //Set the comments path for the swagger json and ui.
                 string basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                string apiXmlPath = Path.Combine(basePath, "X42.MasterNode.xml");
+                string apiXmlPath = Path.Combine(basePath, "X42.ServerNode.xml");
 
                 if (File.Exists(apiXmlPath)) setup.IncludeXmlComments(apiXmlPath);
 
@@ -122,7 +122,7 @@ namespace X42.Feature.Api
                 app.UseSwaggerUI(c =>
                 {
                     c.DefaultModelRendering(ModelRendering.Model);
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "X42.MasterNode.Api V1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "X42.ServerNode.Api V1");
                 });
             }
         }

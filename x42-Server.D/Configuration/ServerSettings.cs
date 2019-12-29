@@ -9,7 +9,7 @@ using NLog.Extensions.Logging;
 using X42.Configuration.Logging;
 using X42.Configuration.Settings;
 using X42.Feature.Setup;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Protocol;
 using X42.Utilities;
 
@@ -30,7 +30,7 @@ namespace X42.Configuration
     /// <summary>
     ///     Сontains the configuration settings for a x42 server. These settings are taken from both the application
     ///     command line arguments and the configuration file.
-    ///     Unlike the settings held by <see cref="MasterNode" />, these settings are individualized for each x42 server.
+    ///     Unlike the settings held by <see cref="X42.ServerNode" />, these settings are individualized for each x42 server.
     /// </summary>
     public class ServerSettings : IDisposable
     {
@@ -42,7 +42,7 @@ namespace X42.Configuration
         /// <summary>
         ///     Initializes a new instance of the object.
         /// </summary>
-        /// <param name="masterNode">The masternode the server runs on</param>
+        /// <param name="serverNode">The servernode the server runs on</param>
         /// <param name="protocolVersion">Supported protocol version for which to create the configuration.</param>
         /// <param name="agent">The servers user agent that will be shared with peers.</param>
         /// <param name="args">The command-line arguments.</param>
@@ -55,14 +55,14 @@ namespace X42.Configuration
         ///     There are two main scenarios here:
         ///     - The configuration file is passed via the command line. In this case we need
         ///     to read it earlier so that it can provide defaults for "testnet" and "regtest".
-        ///     - Alternatively, if the file name is not supplied then a masternode-specific file
-        ///     name would be determined. In this case we first need to determine the masternode.
+        ///     - Alternatively, if the file name is not supplied then a servernode-specific file
+        ///     name would be determined. In this case we first need to determine the servernode.
         /// </remarks>
-        public ServerSettings(MasterNodeBase masterNode,
+        public ServerSettings(ServerNodeBase serverNode,
             ProtocolVersion protocolVersion = ProtocolVersion.PROTOCOL_VERSION, string agent = "x42",
             string[] args = null)
         {
-            MasterNode = masterNode;
+            ServerNode = serverNode;
             // Create the default logger factory and logger.
             ExtendedLoggerFactory loggerFactory = new ExtendedLoggerFactory();
             LoggerFactory = loggerFactory;
@@ -75,13 +75,13 @@ namespace X42.Configuration
             ConfigReader = new TextFileConfiguration(args ?? new string[] { });
 
             // Log arguments.
-            Logger.LogDebug("Arguments: masternode='{0}', protocolVersion='{1}', agent='{2}', args='{3}'.",
+            Logger.LogDebug("Arguments: servernode='{0}', protocolVersion='{1}', agent='{2}', args='{3}'.",
                 string.IsNullOrEmpty(ServerName) ? "(None)" : ServerName,
                 ProtocolVersion,
                 Agent,
                 args == null ? "(None)" : string.Join(" ", args));
 
-            // By default, we look for a file named '<masternode>.conf' in the masternode's data directory,
+            // By default, we look for a file named '<servernode>.conf' in the servernode's data directory,
             // but both the data directory and the configuration file path may be changed using the -datadir and -conf command-line arguments.
             ConfigurationFile = ConfigReader.GetOrDefault<string>("conf", null, Logger)?.NormalizeDirectorySeparator();
             DataDir = ConfigReader.GetOrDefault<string>("datadir", null, Logger)?.NormalizeDirectorySeparator();
@@ -115,7 +115,7 @@ namespace X42.Configuration
             }
             else
             {
-                // Combine the data directory with the masternode's root folder and name.
+                // Combine the data directory with the servernode's root folder and name.
                 string directoryPath = Path.Combine(DataDir, ServerName);
                 DataDir = Directory.CreateDirectory(directoryPath).FullName;
                 Logger.LogDebug("Data directory initialized with path {0}.", DataDir);
@@ -127,10 +127,10 @@ namespace X42.Configuration
             // Attempt to load NLog configuration from the DataFolder.
             loggerFactory.LoadNLogConfiguration(DataFolder);
 
-            // Get the configuration file name for the masternode if it was not specified on the command line.
+            // Get the configuration file name for the servernode if it was not specified on the command line.
             if (ConfigurationFile == null)
             {
-                ConfigurationFile = Path.Combine(DataDir, MasterNode.DefaultConfigFilename);
+                ConfigurationFile = Path.Combine(DataDir, ServerNode.DefaultConfigFilename);
                 Logger.LogDebug("Configuration file set to '{0}'.", ConfigurationFile);
 
                 if (File.Exists(ConfigurationFile))
@@ -195,11 +195,11 @@ namespace X42.Configuration
         /// <summary>The lowest version of the protocol which the x42 server supports.</summary>
         public ProtocolVersion? MinProtocolVersion { get; set; }
 
-        /// <summary>The masternode which the server is configured to run on.</summary>
-        public MasterNodeBase MasterNode { get; }
+        /// <summary>The servernode which the server is configured to run on.</summary>
+        public ServerNodeBase ServerNode { get; }
 
         /// <summary>
-        ///     A string that is used to help identify the x42 server when it connects to other peers on a masternode.
+        ///     A string that is used to help identify the x42 server when it connects to other peers on a servernode.
         ///     Defaults to "x42Server".
         /// </summary>
         public string Agent { get; }
@@ -218,13 +218,13 @@ namespace X42.Configuration
         /// <summary>
         ///     Initializes default configuration.
         /// </summary>
-        /// <param name="masterNode">Specification of the master node the server runs on</param>
+        /// <param name="serverNode">Specification of the master node the server runs on</param>
         /// <param name="protocolVersion">Supported protocol version for which to create the configuration.</param>
         /// <returns>Default server configuration.</returns>
-        public static ServerSettings Default(MasterNodeBase masterNode,
+        public static ServerSettings Default(ServerNodeBase serverNode,
             ProtocolVersion protocolVersion = SupportedProtocolVersion)
         {
-            return new ServerSettings(masterNode, protocolVersion);
+            return new ServerSettings(serverNode, protocolVersion);
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace X42.Configuration
                             BindingFlags.Public | BindingFlags.Static);
                     if (getDefaultConfiguration != null)
                     {
-                        getDefaultConfiguration.Invoke(null, new object[] {builder, MasterNode});
+                        getDefaultConfiguration.Invoke(null, new object[] {builder, ServerNode});
                         builder.AppendLine();
                     }
                 }
@@ -325,12 +325,12 @@ namespace X42.Configuration
         /// <summary>
         ///     Displays command-line help.
         /// </summary>
-        /// <param name="masterNode">The masternode to extract values from.</param>
-        public static void PrintHelp(MasterNodeBase masterNode)
+        /// <param name="serverNode">The servernode to extract values from.</param>
+        public static void PrintHelp(ServerNodeBase serverNode)
         {
-            Guard.NotNull(masterNode, nameof(masterNode));
+            Guard.NotNull(serverNode, nameof(serverNode));
 
-            ServerSettings defaults = Default(masterNode);
+            ServerSettings defaults = Default(serverNode);
             string daemonName = Path.GetFileName(Assembly.GetEntryAssembly().Location);
 
             StringBuilder builder = new StringBuilder();
@@ -356,8 +356,8 @@ namespace X42.Configuration
         ///     Get the default configuration.
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
-        /// <param name="masterNode">The masternode to base the defaults off.</param>
-        public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase masterNode)
+        /// <param name="serverNode">The servernode to base the defaults off.</param>
+        public static void BuildDefaultConfigurationFile(StringBuilder builder, ServerNodeBase serverNode)
         {
             builder.AppendLine("####Server Settings####");
             builder.AppendLine();

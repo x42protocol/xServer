@@ -5,7 +5,7 @@ namespace X42.Feature.Database.Context
 {
     class X42DbContext : DbContext
     {
-        public virtual DbSet<MasterNodeData> MasterNodes { get; set; }
+        public virtual DbSet<ServerNodeData> ServerNodes { get; set; }
         public virtual DbSet<ServerData> Servers { get; set; }
 
         #region Initilize

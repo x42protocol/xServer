@@ -4,32 +4,32 @@ using NBitcoin;
 using NBitcoin.Protocol;
 using DNSSeedData = X42.Utilities.DNSSeedData;
 
-namespace X42.MasterNode
+namespace X42.ServerNode
 {
-    public abstract class MasterNodeBase
+    public abstract class ServerNodeBase
     {
         /// <summary>
-        ///     The default port on which servers of this masternode communicate with external clients.
+        ///     The default port on which servers of this servernode communicate with external clients.
         /// </summary>
         public int DefaultPort { get; protected set; }
 
         /// <summary>
-        ///     The name of the masternode.
+        ///     The name of the servernode.
         /// </summary>
         public string Name { get; protected set; }
 
         /// <summary>
-        ///     The default name used for the masternode configuration file.
+        ///     The default name used for the servernode configuration file.
         /// </summary>
         public string DefaultConfigFilename { get; protected set; }
 
         /// <summary>
-        ///     The list of tiers available for the masternode.
+        ///     The list of tiers available for the servernode.
         /// </summary>
         public List<Tier> Tiers { get; protected set; }
 
         /// <summary>
-        ///     The list of servers on the masternode that our current server tries to connect to.
+        ///     The list of servers on the servernode that our current server tries to connect to.
         /// </summary>
         public List<NetworkAddress> SeedServers { get; protected set; }
 

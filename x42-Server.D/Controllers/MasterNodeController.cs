@@ -13,7 +13,7 @@ using X42.Controllers.Models;
 using X42.Controllers.Requests;
 using X42.Controllers.Results;
 using X42.Feature.Setup;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Server;
 using X42.Utilities;
 using X42.Utilities.Extensions;
@@ -31,7 +31,7 @@ namespace X42.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [Authorize(Policy = Policy.PrivateAccess)]
-    public class MasterNodeContoller : Controller
+    public class ServerNodeContoller : Controller
     {
         /// <summary>Provider of date and time functions.</summary>
         private readonly IDateTimeProvider dateTimeProvider;
@@ -39,8 +39,8 @@ namespace X42.Controllers
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
 
-        /// <summary>Masternode.</summary>
-        private readonly MasterNodeBase masterNode;
+        /// <summary>ServerNode.</summary>
+        private readonly ServerNodeBase serverNode;
 
         /// <summary>The settings for the node.</summary>
         private readonly ServerSettings nodeSettings;
@@ -51,14 +51,14 @@ namespace X42.Controllers
         /// <summary>Database details.</summary>
         private readonly DatabaseFeatures databaseFeatures;
 
-        public MasterNodeContoller(IX42Server x42Server, ILoggerFactory loggerFactory,
+        public ServerNodeContoller(IX42Server x42Server, ILoggerFactory loggerFactory,
             IDateTimeProvider dateTimeProvider,
             ServerSettings serverSettings,
-            MasterNodeBase masterNode,
+            ServerNodeBase serverNode,
             DatabaseFeatures databaseFeatures)
         {
             Guard.NotNull(x42Server, nameof(x42Server));
-            Guard.NotNull(masterNode, nameof(masterNode));
+            Guard.NotNull(serverNode, nameof(serverNode));
             Guard.NotNull(loggerFactory, nameof(loggerFactory));
             Guard.NotNull(serverSettings, nameof(serverSettings));
             Guard.NotNull(dateTimeProvider, nameof(dateTimeProvider));
@@ -68,12 +68,12 @@ namespace X42.Controllers
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.dateTimeProvider = dateTimeProvider;
             nodeSettings = serverSettings;
-            this.masterNode = masterNode;
+            this.serverNode = serverNode;
             this.databaseFeatures = databaseFeatures;
         }
 
         /// <summary>
-        ///     Registers masternode to the network.
+        ///     Registers servernode to the network.
         /// </summary>
         /// <returns>A <see cref="RegisterResult" /> with registration result.</returns>
         [HttpGet]

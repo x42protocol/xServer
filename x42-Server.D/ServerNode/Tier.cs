@@ -1,4 +1,4 @@
-﻿namespace X42.MasterNode
+﻿namespace X42.ServerNode
 {
     public class Tier
     {

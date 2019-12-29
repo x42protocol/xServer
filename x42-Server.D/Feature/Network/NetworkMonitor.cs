@@ -102,10 +102,10 @@ namespace X42.Feature.Network
         {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                IQueryable<MasterNodeData> masterNodes = dbContext.MasterNodes.Where(s => s.Active);
-                foreach (MasterNodeData masterNode in masterNodes)
+                IQueryable<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.Active);
+                foreach (ServerNodeData serverNode in serverNodes)
                 {
-                    if (await ValidateServer(masterNode))
+                    if (await ValidateServer(serverNode))
                     {
                         // TODO: Test server.
                     }
@@ -113,13 +113,13 @@ namespace X42.Feature.Network
             }
         }
 
-        private async Task<bool> ValidateServer(MasterNodeData masternode)
+        private async Task<bool> ValidateServer(ServerNodeData servernode)
         {
             bool result = false;
 
-            string serverKey = $"{masternode.Id}{masternode.Ip}{masternode.Port}{masternode.HAddress}";
+            string serverKey = $"{servernode.Id}{servernode.Ip}{servernode.Port}{servernode.HAddress}";
 
-            result = await x42Client.VerifyMessageAsync(masternode.CAddress, serverKey, masternode.Signature);
+            result = await x42Client.VerifyMessageAsync(servernode.CAddress, serverKey, servernode.Signature);
 
             return result;
         }

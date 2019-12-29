@@ -5,7 +5,7 @@ using X42.Feature.Api;
 using X42.Feature.Database;
 using X42.Feature.X42Client;
 using X42.Feature.Network;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Protocol;
 using X42.Server;
 using X42.Utilities.Extensions;
@@ -19,7 +19,7 @@ namespace X42
             try
             {
                 ServerSettings serverSettings =
-                    new ServerSettings(new X42MasterNode(), ProtocolVersion.PROTOCOL_VERSION, args: args);
+                    new ServerSettings(new X42ServerNode(), ProtocolVersion.PROTOCOL_VERSION, args: args);
 
                 IX42Server server = new ServerBuilder()
                     .UseServerSettings(serverSettings)

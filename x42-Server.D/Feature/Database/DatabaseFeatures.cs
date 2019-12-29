@@ -8,7 +8,7 @@ using X42.Feature.Database.Context;
 using X42.Configuration;
 using X42.Configuration.Logging;
 using X42.Feature.Setup;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Server;
 
 namespace X42.Feature.Database
@@ -28,7 +28,7 @@ namespace X42.Feature.Database
         public bool DatabaseConnected { get; set; } = false;
 
         public DatabaseFeatures(
-            MasterNodeBase network,
+            ServerNodeBase network,
             ILoggerFactory loggerFactory,
             DatabaseSettings databaseSettings
             )
@@ -40,10 +40,10 @@ namespace X42.Feature.Database
         /// <summary>
         ///     Prints command-line help.
         /// </summary>
-        /// <param name="masterNodeBase">The masternode to extract values from.</param>
-        public static void PrintHelp(MasterNodeBase masterNodeBase)
+        /// <param name="serverNodeBase">The servernode to extract values from.</param>
+        public static void PrintHelp(ServerNodeBase serverNodeBase)
         {
-            DatabaseSettings.PrintHelp(masterNodeBase);
+            DatabaseSettings.PrintHelp(serverNodeBase);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace X42.Feature.Database
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>
-        public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase network)
+        public static void BuildDefaultConfigurationFile(StringBuilder builder, ServerNodeBase network)
         {
             DatabaseSettings.BuildDefaultConfigurationFile(builder, network);
         }

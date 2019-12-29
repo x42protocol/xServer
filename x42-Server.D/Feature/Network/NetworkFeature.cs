@@ -6,7 +6,7 @@ using X42.Configuration.Logging;
 using X42.Feature.Database;
 using X42.Feature.Setup;
 using X42.Feature.X42Client;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Server;
 using X42.Utilities;
 
@@ -27,13 +27,13 @@ namespace X42.Feature.Network
         /// <summary>Factory for creating background async loop tasks.</summary>
         private readonly IAsyncLoopFactory asyncLoopFactory;
 
-        private readonly MasterNodeBase network;
+        private readonly ServerNodeBase network;
         private readonly NetworkMonitor networkMonitor;
         private readonly DatabaseSettings databaseSettings;
         private readonly X42ClientSettings x42ClientSettings;
 
         public NetworkFeatures(
-            MasterNodeBase network,
+            ServerNodeBase network,
             ILoggerFactory loggerFactory,
             DatabaseSettings databaseSettings,
             X42ClientSettings x42ClientSettings,
@@ -52,10 +52,10 @@ namespace X42.Feature.Network
         /// <summary>
         ///     Prints command-line help.
         /// </summary>
-        /// <param name="masterNodeBase">The masternode to extract values from.</param>
-        public static void PrintHelp(MasterNodeBase masterNodeBase)
+        /// <param name="serverNodeBase">The servernode to extract values from.</param>
+        public static void PrintHelp(ServerNodeBase serverNodeBase)
         {
-            NetworkSettings.PrintHelp(masterNodeBase);
+            NetworkSettings.PrintHelp(serverNodeBase);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace X42.Feature.Network
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>
-        public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase network)
+        public static void BuildDefaultConfigurationFile(StringBuilder builder, ServerNodeBase network)
         {
             NetworkSettings.BuildDefaultConfigurationFile(builder, network);
         }

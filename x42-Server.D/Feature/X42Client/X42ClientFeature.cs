@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using X42.Configuration.Logging;
 using X42.Feature.Setup;
 using X42.Feature.X42Client.Enums;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Server;
 using X42.Utilities;
 
@@ -33,7 +33,7 @@ namespace X42.Feature.X42Client
         public ConnectionStatus Status => x42Client.Status;
 
         public X42ClientFeature(
-            MasterNodeBase network,
+            ServerNodeBase network,
             ILoggerFactory loggerFactory,
             X42ClientSettings x42ClientSettings,
             IServerStats nodeStats,
@@ -57,10 +57,10 @@ namespace X42.Feature.X42Client
         /// <summary>
         ///     Prints command-line help.
         /// </summary>
-        /// <param name="masterNodeBase">The masternode to extract values from.</param>
-        public static void PrintHelp(MasterNodeBase masterNodeBase)
+        /// <param name="serverNodeBase">The servernode to extract values from.</param>
+        public static void PrintHelp(ServerNodeBase serverNodeBase)
         {
-            X42ClientSettings.PrintHelp(masterNodeBase);
+            X42ClientSettings.PrintHelp(serverNodeBase);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace X42.Feature.X42Client
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>
-        public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase network)
+        public static void BuildDefaultConfigurationFile(StringBuilder builder, ServerNodeBase network)
         {
             X42ClientSettings.BuildDefaultConfigurationFile(builder, network);
         }

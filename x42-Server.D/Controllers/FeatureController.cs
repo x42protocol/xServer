@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using X42.Configuration;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Server;
 
 namespace X42.Controllers
@@ -10,7 +10,7 @@ namespace X42.Controllers
         private FeatureController(
             IX42Server x42Server = null,
             ServerSettings nodeSettings = null,
-            MasterNodeBase network = null)
+            ServerNodeBase network = null)
         {
             X42Server = x42Server;
             Settings = nodeSettings;
@@ -21,6 +21,6 @@ namespace X42.Controllers
 
         protected ServerSettings Settings { get; set; }
 
-        protected MasterNodeBase Network { get; set; }
+        protected ServerNodeBase Network { get; set; }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using NBitcoin;
 
-namespace X42.MasterNode
+namespace X42.ServerNode
 {
     public class Collateral
     {
-        /// <summary> The amount needed for masternode collateral </summary>
+        /// <summary> The amount needed for servernode collateral </summary>
         public Money Amount { get; set; }
     }
 }

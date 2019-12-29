@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using X42.Configuration;
 using X42.Feature.Setup;
-using X42.MasterNode;
+using X42.ServerNode;
 
 namespace X42.Server
 {
@@ -15,7 +15,7 @@ namespace X42.Server
         ServerSettings ServerSettings { get; }
 
         /// <summary>Specification of the master node the server runs on.</summary>
-        MasterNodeBase MasterNode { get; }
+        ServerNodeBase ServerNode { get; }
 
         /// <summary>Collection of DI services.</summary>
         IServiceCollection Services { get; }

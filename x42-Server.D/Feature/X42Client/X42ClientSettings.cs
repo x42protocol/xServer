@@ -2,7 +2,7 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using X42.Configuration;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Utilities;
 
 namespace X42.Feature.X42Client
@@ -83,10 +83,10 @@ namespace X42.Feature.X42Client
         /// <summary>
         ///     Displays database help information on the console.
         /// </summary>
-        /// <param name="masterNode">Not used.</param>
-        public static void PrintHelp(MasterNodeBase masterNode)
+        /// <param name="serverNode">Not used.</param>
+        public static void PrintHelp(ServerNodeBase serverNode)
         {
-            ServerSettings defaults = ServerSettings.Default(masterNode);
+            ServerSettings defaults = ServerSettings.Default(serverNode);
             StringBuilder builder = new StringBuilder();
 
             builder.AppendLine("-address=127.0.0.1                  Node address.");
@@ -100,7 +100,7 @@ namespace X42.Feature.X42Client
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>
-        public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase network)
+        public static void BuildDefaultConfigurationFile(StringBuilder builder, ServerNodeBase network)
         {
             builder.AppendLine("####X42 Node Settings####");
             builder.AppendLine("#Node Address");

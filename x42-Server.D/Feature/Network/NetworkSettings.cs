@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Logging;
 using X42.Configuration;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Utilities;
 
 namespace X42.Feature.Network
@@ -35,13 +35,13 @@ namespace X42.Feature.Network
         /// <summary>
         ///     Displays network help information on the console.
         /// </summary>
-        /// <param name="masterNode">Not used.</param>
-        public static void PrintHelp(MasterNodeBase masterNode)
+        /// <param name="serverNode">Not used.</param>
+        public static void PrintHelp(ServerNodeBase serverNode)
         {
-            ServerSettings defaults = ServerSettings.Default(masterNode);
+            ServerSettings defaults = ServerSettings.Default(serverNode);
             StringBuilder builder = new StringBuilder();
 
-            builder.AppendLine("-connect=<string>                     masternode host.");
+            builder.AppendLine("-connect=<string>                     servernode host.");
 
             defaults.Logger.LogInformation(builder.ToString());
         }
@@ -51,10 +51,10 @@ namespace X42.Feature.Network
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>
-        public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase masterNodeBase)
+        public static void BuildDefaultConfigurationFile(StringBuilder builder, ServerNodeBase serverNodeBase)
         {
             builder.AppendLine("####Network Settings####");
-            builder.AppendLine("#Manually connect to masternode.");
+            builder.AppendLine("#Manually connect to servernode.");
             builder.AppendLine("#connect=<string>");
         }
     }

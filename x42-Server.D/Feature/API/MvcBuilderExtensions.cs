@@ -30,7 +30,7 @@ namespace X42.Feature.Api
             foreach (ServiceDescriptor featureControllerType in featureControllerTypes)
                 builder.AddApplicationPart(featureControllerType.ServiceType.GetTypeInfo().Assembly);
 
-            builder.AddApplicationPart(typeof(MasterNodeContoller).Assembly);
+            builder.AddApplicationPart(typeof(ServerNodeContoller).Assembly);
             builder.AddControllersAsServices();
             return builder;
         }

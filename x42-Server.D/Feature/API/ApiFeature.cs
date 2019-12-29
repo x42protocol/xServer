@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using X42.Feature.Setup;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Server;
 
 namespace X42.Feature.Api
@@ -80,7 +80,7 @@ namespace X42.Feature.Api
         ///     Prints command-line help.
         /// </summary>
         /// <param name="network">The network to extract values from.</param>
-        public static void PrintHelp(MasterNodeBase network)
+        public static void PrintHelp(ServerNodeBase network)
         {
             ApiSettings.PrintHelp(network);
         }
@@ -90,7 +90,7 @@ namespace X42.Feature.Api
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>
-        public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase network)
+        public static void BuildDefaultConfigurationFile(StringBuilder builder, ServerNodeBase network)
         {
             ApiSettings.BuildDefaultConfigurationFile(builder, network);
         }

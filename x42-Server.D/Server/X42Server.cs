@@ -8,13 +8,13 @@ using Microsoft.Extensions.PlatformAbstractions;
 using X42.Properties;
 using X42.Configuration;
 using X42.Feature.Setup;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Utilities;
 
 namespace X42.Server
 {
     /// <summary>
-    ///     Server providing all supported features of the masternode and its network.
+    ///     Server providing all supported features of the servernode and its network.
     /// </summary>
     public class X42Server : IX42Server
     {
@@ -45,7 +45,7 @@ namespace X42.Server
         public IAsyncLoopFactory AsyncLoopFactory { get; set; }
 
         /// <summary>Specification of the master node the server runs on.</summary>
-        public MasterNodeBase MasterNode { get; internal set; }
+        public ServerNodeBase ServerNode { get; internal set; }
 
         /// <summary>Contains path locations to folders and files on disk.</summary>
         public DataFolder DataFolder { get; set; }
@@ -200,7 +200,7 @@ namespace X42.Server
 
             DataFolder = Services.ServiceProvider.GetService<DataFolder>();
             DateTimeProvider = Services.ServiceProvider.GetService<IDateTimeProvider>();
-            MasterNode = Services.ServiceProvider.GetService<MasterNodeBase>();
+            ServerNode = Services.ServiceProvider.GetService<ServerNodeBase>();
             Settings = Services.ServiceProvider.GetService<ServerSettings>();
             ServerStats = Services.ServiceProvider.GetService<IServerStats>();
 
@@ -209,7 +209,7 @@ namespace X42.Server
             AsyncLoopFactory = Services.ServiceProvider.GetService<IAsyncLoopFactory>();
 
             logger.LogInformation(Resources.AsciiLogo);
-            logger.LogInformation("x42-Server initialized {0}.", MasterNode.Name);
+            logger.LogInformation("x42-Server initialized {0}.", ServerNode.Name);
 
             State = X42ServerState.Initialized;
             StartTime = DateTimeProvider.GetUtcNow();

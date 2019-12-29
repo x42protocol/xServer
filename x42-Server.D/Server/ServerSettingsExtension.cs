@@ -19,12 +19,12 @@ namespace X42.Server
         {
             ServerBuilder serverBuilder = builder as ServerBuilder;
             serverBuilder.ServerSettings = serverSettings;
-            serverBuilder.MasterNode = serverSettings.MasterNode;
+            serverBuilder.ServerNode = serverSettings.ServerNode;
 
             builder.ConfigureServices(service =>
             {
                 service.AddSingleton(serverBuilder.ServerSettings);
-                service.AddSingleton(serverBuilder.MasterNode);
+                service.AddSingleton(serverBuilder.ServerNode);
             });
 
             return builder.UseBaseFeature();
@@ -37,7 +37,7 @@ namespace X42.Server
         /// <returns>Interface to allow fluent code.</returns>
         public static IServerBuilder UseDefaultServerSettings(this IServerBuilder builder)
         {
-            return builder.UseServerSettings(ServerSettings.Default(builder.MasterNode));
+            return builder.UseServerSettings(ServerSettings.Default(builder.ServerNode));
         }
     }
 }

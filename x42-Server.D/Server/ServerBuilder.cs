@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using X42.Configuration;
 using X42.Feature.Setup;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Utilities;
 
 namespace X42.Server
@@ -84,12 +84,12 @@ namespace X42.Server
             Guard.NotNull(serverSettings, nameof(serverSettings));
 
             ServerSettings = serverSettings;
-            MasterNode = ServerSettings.MasterNode;
+            ServerNode = ServerSettings.ServerNode;
 
             ConfigureServices(service =>
             {
                 service.AddSingleton(ServerSettings);
-                service.AddSingleton(MasterNode);
+                service.AddSingleton(ServerNode);
             });
 
             this.UseBaseFeature();
@@ -124,7 +124,7 @@ namespace X42.Server
         public ServerSettings ServerSettings { get; set; }
 
         /// <inheritdoc />
-        public MasterNodeBase MasterNode { get; set; }
+        public ServerNodeBase ServerNode { get; set; }
 
         /// <summary>Collection of DI services.</summary>
         public IServiceCollection Services { get; private set; }
@@ -174,7 +174,7 @@ namespace X42.Server
                         featureRegistration.FeatureType.GetMethod("PrintHelp",
                             BindingFlags.Public | BindingFlags.Static);
 
-                    printHelp?.Invoke(null, new object[] {ServerSettings.MasterNode});
+                    printHelp?.Invoke(null, new object[] {ServerSettings.ServerNode});
                 }
 
                 // Signal server not built
@@ -192,9 +192,9 @@ namespace X42.Server
             if (serverSettings == null)
                 throw new ServerBuilderException("ServerSettings not specified");
 
-            MasterNodeBase masterNode = serverServiceProvider.GetService<MasterNodeBase>();
-            if (masterNode == null)
-                throw new ServerBuilderException("MasterNode not specified");
+            ServerNodeBase serverNode = serverServiceProvider.GetService<ServerNodeBase>();
+            if (serverNode == null)
+                throw new ServerBuilderException("ServerNode not specified");
 
             X42Server server = serverServiceProvider.GetService<X42Server>();
             if (server == null)

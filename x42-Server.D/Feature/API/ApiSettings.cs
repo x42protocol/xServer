@@ -3,7 +3,7 @@ using System.Text;
 using System.Timers;
 using Microsoft.Extensions.Logging;
 using X42.Configuration;
-using X42.MasterNode;
+using X42.ServerNode;
 using X42.Utilities;
 
 namespace X42.Feature.Api
@@ -46,7 +46,7 @@ namespace X42.Feature.Api
             Uri apiUri = new Uri(apiHost);
 
             // Find out which port should be used for the API.
-            int apiPort = config.GetOrDefault("apiport", GetDefaultPort(nodeSettings.MasterNode), logger);
+            int apiPort = config.GetOrDefault("apiport", GetDefaultPort(nodeSettings.ServerNode), logger);
 
             // If no port is set in the API URI.
             if (apiUri.IsDefaultPort)
@@ -106,14 +106,14 @@ namespace X42.Feature.Api
         /// </summary>
         /// <param name="network">The network to use.</param>
         /// <returns>The default API port.</returns>
-        private static int GetDefaultPort(MasterNodeBase network)
+        private static int GetDefaultPort(ServerNodeBase network)
         {
             return network.DefaultPort;
         }
 
         /// <summary>Prints the help information on how to configure the API settings to the logger.</summary>
         /// <param name="network">The network to use.</param>
-        public static void PrintHelp(MasterNodeBase network)
+        public static void PrintHelp(ServerNodeBase network)
         {
             StringBuilder builder = new StringBuilder();
 
@@ -136,7 +136,7 @@ namespace X42.Feature.Api
         /// </summary>
         /// <param name="builder">The string builder to add the settings to.</param>
         /// <param name="network">The network to base the defaults off.</param>
-        public static void BuildDefaultConfigurationFile(StringBuilder builder, MasterNodeBase network)
+        public static void BuildDefaultConfigurationFile(StringBuilder builder, ServerNodeBase network)
         {
             builder.AppendLine("####API Settings####");
             builder.AppendLine($"#URI to node's API interface. Defaults to '{DefaultApiHost}'.");

@@ -3,16 +3,16 @@ using System.Linq;
 using NBitcoin;
 using DNSSeedData = X42.Utilities.DNSSeedData;
 
-namespace X42.MasterNode
+namespace X42.ServerNode
 {
-    public class X42MasterNode : MasterNodeBase
+    public class X42ServerNode : ServerNodeBase
     {
         /// <summary> The default name used for the x42 server configuration file. </summary>
         public const string x42DefaultConfigFilename = "x42Server.conf";
 
-        public X42MasterNode()
+        public X42ServerNode()
         {
-            Name = "x42 MasterNode";
+            Name = "x42 ServerNode";
             DefaultPort = 4242;
             DefaultConfigFilename = x42DefaultConfigFilename;
 
@@ -37,8 +37,8 @@ namespace X42.MasterNode
 
             DNSSeeds = new List<DNSSeedData>
             {
-                new DNSSeedData("masternode1.x42seed.host", "masternode1.x42seed.host"),
-                new DNSSeedData("masternodeserver1.x42seed.host", "masternodeserver1.x42seed.host"),
+                new DNSSeedData("servernode1.x42seed.host", "servernode1.x42seed.host"),
+                new DNSSeedData("servernodeserver1.x42seed.host", "servernodeserver1.x42seed.host"),
                 new DNSSeedData("rnode.x42.cloud", "rnode.x42.cloud")
             };
 

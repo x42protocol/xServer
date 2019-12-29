@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace X42.Feature.Database.Tables
 {
-    [Table("masternode")]
-    class MasterNodeData
+    [Table("servernode")]
+    class ServerNodeData
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
