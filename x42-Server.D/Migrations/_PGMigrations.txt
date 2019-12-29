@@ -1,0 +1,7 @@
+﻿For migrations with visual studio, open package manager (It has powershell)
+
+- Inital migration
+	Add-Migration InitialCreate
+
+- Add a new migration
+	Add-Migration DescriptionOfChange

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NBitcoin;
-using DNSSeedData = X42.Utilities.DNSSeedData;
+using NodeSeedData = X42.Utilities.NodeSeedData;
 
 namespace X42.ServerNode
 {
@@ -35,11 +35,11 @@ namespace X42.ServerNode
 
             GracePeriod = 90;
 
-            DNSSeeds = new List<DNSSeedData>
+            NodeSeeds = new List<NodeSeedData>
             {
-                new DNSSeedData("servernode1.x42seed.host", "servernode1.x42seed.host"),
-                new DNSSeedData("servernodeserver1.x42seed.host", "servernodeserver1.x42seed.host"),
-                new DNSSeedData("rnode.x42.cloud", "rnode.x42.cloud")
+                new NodeSeedData("servernode1.x42seed.host", "servernode1.x42seed.host"),
+                new NodeSeedData("servernodeserver1.x42seed.host", "servernodeserver1.x42seed.host"),
+                new NodeSeedData("rnode.x42.cloud", "rnode.x42.cloud")
             };
 
             string[] seedServers = {"63.32.82.169"};

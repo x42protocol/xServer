@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NBitcoin;
 using NBitcoin.Protocol;
-using DNSSeedData = X42.Utilities.DNSSeedData;
+using NodeSeedData = X42.Utilities.NodeSeedData;
 
 namespace X42.ServerNode
 {
@@ -41,7 +41,7 @@ namespace X42.ServerNode
         /// <summary>
         ///     The list of DNS seeds from which to get IP addresses when bootstrapping a server.
         /// </summary>
-        public List<DNSSeedData> DNSSeeds { get; protected set; }
+        public List<NodeSeedData> NodeSeeds { get; protected set; }
 
         protected IEnumerable<NetworkAddress> ConvertToNetworkAddresses(string[] seeds, int defaultPort)
         {

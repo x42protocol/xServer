@@ -8,17 +8,17 @@ namespace X42.Utilities
     ///     As such, DNS seeds must be run by entities in which some level of trust if given by the community running the
     ///     servers.
     /// </summary>
-    public class DNSSeedData
+    public class NodeSeedData
     {
         /// <summary> A list of IP addresses associated with this host. </summary>
         private IPAddress[] addresses;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DNSSeedData" /> class.
+        ///     Initializes a new instance of the <see cref="NodeSeedData" /> class.
         /// </summary>
         /// <param name="name">The name given to this DNS seed.</param>
         /// <param name="host">The DNS server host.</param>
-        public DNSSeedData(string name, string host)
+        public NodeSeedData(string name, string host)
         {
             Name = name;
             Host = host;

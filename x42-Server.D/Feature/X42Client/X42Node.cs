@@ -111,7 +111,7 @@ namespace X42.Feature.X42Client
                             OnNewBlock(statusData.consensusHeight);
                         }
 
-                        //update current height (use consensus because they have been fully validated)
+                        //update current height
                         BlockTIP = statusData.consensusHeight;
 
                         DataDirectory = statusData.dataDirectoryPath;
@@ -141,6 +141,8 @@ namespace X42.Feature.X42Client
 
                     //############  Staking Info #################
                     UpdateStakingInformation();
+
+                    await Task.Delay(10000);
                 }
                 catch (HttpRequestException ex) //API is not accessible or responding
                 {
