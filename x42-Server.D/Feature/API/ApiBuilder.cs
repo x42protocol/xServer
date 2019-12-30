@@ -121,7 +121,7 @@ namespace X42.Feature.Api
                 app.UseSwaggerUI(c =>
                 {
                     c.DefaultModelRendering(ModelRendering.Model);
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "X42.ServerNode.Api V1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "V1");
                 });
             }
         }
