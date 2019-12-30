@@ -8,6 +8,7 @@ using X42.Feature.Database;
 using X42.Feature.X42Client;
 using X42.Utilities;
 using X42.Feature.Database.Tables;
+using System.Collections.Generic;
 
 namespace X42.Feature.Network
 {
@@ -103,25 +104,40 @@ namespace X42.Feature.Network
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
                 IQueryable<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.Active);
+
+                List<Task<ServerNodeData>> nodeTasks = new List<Task<ServerNodeData>>();
+
                 foreach (ServerNodeData serverNode in serverNodes)
                 {
-                    if (await ValidateServer(serverNode))
-                    {
-                        // TODO: Test server.
-                    }
+                    nodeTasks.Add(ServerCheck(serverNode));
                 }
+
+                var results = await Task.WhenAll(nodeTasks);
             }
         }
 
-        private async Task<bool> ValidateServer(ServerNodeData servernode)
+        private async Task<ServerNodeData> ServerCheck(ServerNodeData serverNode)
         {
-            bool result = false;
+            string serverKey = $"{serverNode.Id}{serverNode.Ip}{serverNode.Port}{serverNode.HAddress}";
 
-            string serverKey = $"{servernode.Id}{servernode.Ip}{servernode.Port}{servernode.HAddress}";
+            bool serverIsValid = await x42Client.VerifyMessageAsync(serverNode.CAddress, serverKey, serverNode.Signature);
 
-            result = await x42Client.VerifyMessageAsync(servernode.CAddress, serverKey, servernode.Signature);
+            if (serverIsValid)
+            {
+                if (serverNode.LastSeen > DateTime.UtcNow.AddHours(1))
+                {
+                    serverNode.Active = false;
+                }
+                else
+                {
+                    // TODO: Do the checks.
 
-            return result;
+                    serverNode.Active = true;
+                    serverNode.LastSeen = DateTime.UtcNow;
+                }
+            }
+
+            return serverNode;
         }
 
         public void Dispose()
