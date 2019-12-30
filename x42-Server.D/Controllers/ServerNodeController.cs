@@ -11,7 +11,6 @@ using X42.Feature.API.Requirements;
 using X42.Configuration;
 using X42.Controllers.Models;
 using X42.Controllers.Requests;
-using X42.Controllers.Results;
 using X42.Feature.Setup;
 using X42.ServerNode;
 using X42.Server;
@@ -29,7 +28,7 @@ namespace X42.Controllers
     /// <summary>
     ///     Provides methods that interact with the full node.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("")]
     [Authorize(Policy = Policy.PrivateAccess)]
     public class ServerNodeContoller : Controller
     {
@@ -40,7 +39,7 @@ namespace X42.Controllers
         private readonly ILogger logger;
 
         /// <summary>ServerNode.</summary>
-        private readonly ServerNodeBase serverNode;
+        private readonly ServerNodeBase serverNodeBase;
 
         /// <summary>The settings for the node.</summary>
         private readonly ServerSettings nodeSettings;
@@ -68,24 +67,8 @@ namespace X42.Controllers
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.dateTimeProvider = dateTimeProvider;
             nodeSettings = serverSettings;
-            this.serverNode = serverNode;
+            this.serverNodeBase = serverNode;
             this.databaseFeatures = databaseFeatures;
-        }
-
-        /// <summary>
-        ///     Registers servernode to the network.
-        /// </summary>
-        /// <returns>A <see cref="RegisterResult" /> with registration result.</returns>
-        [HttpGet]
-        [Route("register")]
-        public IActionResult Register()
-        {
-            RegisterResult model = new RegisterResult
-            {
-                Success = true
-            };
-
-            return Json(model);
         }
 
         /// <summary>

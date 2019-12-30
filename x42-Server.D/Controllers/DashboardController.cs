@@ -25,9 +25,8 @@ namespace X42.Controllers
         /// </summary>
         /// <returns>text/latest logs</returns>
         [HttpGet]
-        [Route("")] // the endpoint name
-        [Route("Stats")]
-        public IActionResult Stats()
+        [Route("/")]
+        public IActionResult Log()
         {
             string content = x42Server.LastLogOutput;
             return Content(content);

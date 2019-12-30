@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using X42.Feature.API.Requirements;
+﻿using Microsoft.AspNetCore.Mvc;
+using X42.Controllers.Results;
 using X42.Server;
 
 namespace X42.Controllers.Public
@@ -24,11 +23,27 @@ namespace X42.Controllers.Public
         /// </summary>
         /// <returns>text/html content</returns>
         [HttpGet]
-        [Route("verion")]
-        public IActionResult Verion()
+        [Route("ping")]
+        public IActionResult Ping()
         {
             string content = x42Server.Version.ToString();
             return Content(content);
+        }
+
+        /// <summary>
+        ///     Registers a servernode to the network.
+        /// </summary>
+        /// <returns>A <see cref="RegisterResult" /> with registration result.</returns>
+        [HttpGet]
+        [Route("register")]
+        public IActionResult Register()
+        {
+            RegisterResult model = new RegisterResult
+            {
+                Success = true
+            };
+
+            return Json(model);
         }
     }
 }
