@@ -10,7 +10,6 @@ namespace X42.Controllers
     ///     Controller providing HTML Dashboard
     /// </summary>
     [Route("")]
-    [Route("[controller]")]
     [Authorize(Policy = Policy.PrivateAccess)]
     public class DashboardController : Controller
     {
@@ -22,15 +21,15 @@ namespace X42.Controllers
         }
 
         /// <summary>
-        ///     Returns a web page to act as a dashboard
+        ///     Returns the last iteration of the log output
         /// </summary>
-        /// <returns>text/html content</returns>
+        /// <returns>text/latest logs</returns>
         [HttpGet]
         [Route("")] // the endpoint name
         [Route("Stats")]
         public IActionResult Stats()
         {
-            string content = new X42Server().LastLogOutput;
+            string content = x42Server.LastLogOutput;
             return Content(content);
         }
     }

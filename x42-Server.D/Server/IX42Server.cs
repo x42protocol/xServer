@@ -26,6 +26,9 @@ namespace X42.Server
         /// <summary>Time the server started.</summary>
         DateTime StartTime { get; }
 
+        /// <summary>Latest log output.</summary>
+        string LastLogOutput { get; }
+
         /// <summary>
         ///     Starts the x42 server and all its features.
         /// </summary>

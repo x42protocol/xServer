@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using X42.Controllers;
+using X42.Controllers.Public;
 
 namespace X42.Feature.Api
 {
@@ -30,7 +31,12 @@ namespace X42.Feature.Api
             foreach (ServiceDescriptor featureControllerType in featureControllerTypes)
                 builder.AddApplicationPart(featureControllerType.ServiceType.GetTypeInfo().Assembly);
 
+            // Adds ServerNodeContoller with API endpoints.
             builder.AddApplicationPart(typeof(ServerNodeContoller).Assembly);
+
+            // Adds PublicController with API endpoints.
+            builder.AddApplicationPart(typeof(PublicController).Assembly);
+
             builder.AddControllersAsServices();
             return builder;
         }

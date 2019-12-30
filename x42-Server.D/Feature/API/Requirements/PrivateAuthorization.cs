@@ -15,8 +15,7 @@ namespace X42.Feature.API.Requirements
 
         public List<string> PrivateAddressList { get; }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-            PrivateOnlyRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PrivateOnlyRequirement requirement)
         {
             if (context.Resource is AuthorizationFilterContext mvcContext)
             {
@@ -29,7 +28,7 @@ namespace X42.Feature.API.Requirements
                 else
                 {
                     // There isn't currently a built-in call to result in a status code for .Fail() so we will do it manually.
-                    mvcContext.Result = new JsonResult("Not Authorized") {StatusCode = 403};
+                    mvcContext.Result = new JsonResult("Not Authorized") { StatusCode = 403 };
                     context.Succeed(requirement);
                 }
             }
