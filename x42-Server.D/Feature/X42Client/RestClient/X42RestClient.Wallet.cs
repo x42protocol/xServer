@@ -62,16 +62,13 @@ namespace X42.Feature.X42Client.RestClient
                     signature = signature
                 };
 
-                bool response = await base.SendPostJSON<bool>("api/Wallet/verifysignature", request);
+                string response = await base.SendPostJSON<string>("/api/Wallet/verifymessage", request);
 
-                return response;
+                return response == "True";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                logger.LogCritical(
-                    $"An Error '{ex.Message}' Occured When Verifying a Signed Message: 'Addy: {externalAddress}', Msg: '{message}', Sig: '{signature}'",
-                    ex);
-                throw;
+                return false;
             }
         }
 

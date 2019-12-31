@@ -36,25 +36,21 @@ namespace X42.Feature.Network
 
         private readonly DatabaseSettings databaseSettings;
 
-        private X42Node x42Client;
-
-        private readonly X42ClientSettings x42ClientSettings;
+        private readonly NetworkFeatures networkFeatures;
 
         public NetworkMonitor(
             ILogger mainLogger,
             IX42ServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory,
             DatabaseSettings databaseSettings,
-            X42ClientSettings x42ClientSettings
+            NetworkFeatures networkFeatures
             )
         {
             logger = mainLogger;
             this.serverLifetime = serverLifetime;
             this.asyncLoopFactory = asyncLoopFactory;
             this.databaseSettings = databaseSettings;
-            this.x42ClientSettings = x42ClientSettings;
-
-            x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
+            this.networkFeatures = networkFeatures;
         }
 
         public void Start()
@@ -118,9 +114,7 @@ namespace X42.Feature.Network
 
         private async Task<ServerNodeData> ServerCheck(ServerNodeData serverNode)
         {
-            string serverKey = $"{serverNode.CollateralTX}{serverNode.Ip}{serverNode.Port}";
-
-            bool serverIsValid = await x42Client.VerifyMessageAsync(serverNode.PublicAddress, serverKey, serverNode.Signature);
+            bool serverIsValid = await networkFeatures.IsServerKeyValid(serverNode);
 
             if (serverIsValid)
             {
@@ -139,6 +133,8 @@ namespace X42.Feature.Network
 
             return serverNode;
         }
+
+
 
         public void Dispose()
         {

@@ -17,7 +17,6 @@ namespace X42.Feature.X42Client.RestClient
             logger = mainLogger;
         }
 
-
         /// <summary>
         ///     Gets Status Information For The Target Node
         /// </summary>
@@ -38,7 +37,35 @@ namespace X42.Feature.X42Client.RestClient
                 logger.LogDebug($"An Error '{ex.Message}' Occured When Getting The Node Status!", ex);
 
                 return null;
-            } //end of try-catch
-        } //end of public async Task<NodeStatusResponse> GetNodeStatus()
-    } //end of public class X42RestClient:APIClient
+            }
+        }
+
+        /// <summary>
+        /// Gets an unspent transaction
+        /// </summary>
+        /// <param name="txid">The transaction id</param>
+        /// <param name="vout">The vout of the transaction</param>
+        /// <param name="includeMemPool">Whether or not to include the mempool</param>
+        /// <returns>The unspent transaction for the specified transaction and vout</returns>
+        public async Task<GetTXOutResponse> GetTXOut(string txid, string vout, string includeMemPool = "false")
+        {
+            try
+            {
+                GetTXOutResponse response = await base.SendGet<GetTXOutResponse>
+                    ($"api/Node/gettxout?trxid={txid}&vout={vout}&includeMemPool={includeMemPool}");
+
+                Guard.Null(response, nameof(response), "'api/Node/gettxout' API Response Was Null!");
+
+                logger.LogDebug("Got Node Status Response!");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug($"An Error '{ex.Message}' Occured When Getting The Node Status!", ex);
+
+                return null;
+            }
+        }
+    }
 }

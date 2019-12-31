@@ -230,6 +230,11 @@ namespace X42.Feature.X42Client
             } //end of try-catch
         } //end of private async void GetStaticData()
 
+        public async Task<GetTXOutResponse> GetTXOutData(string txid, string vout)
+        {
+            return await restClient.GetTXOut(txid, vout);
+        }
+
         #region IDisposable Code
 
         private bool _Disposed;
@@ -281,5 +286,5 @@ namespace X42.Feature.X42Client
         //}
 
         #endregion
-    } //end of public class X42Node
+    }
 }

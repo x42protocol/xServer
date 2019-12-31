@@ -9,6 +9,9 @@ using X42.Feature.X42Client;
 using X42.ServerNode;
 using X42.Server;
 using X42.Utilities;
+using X42.Feature.Database.Tables;
+using System.Linq;
+using X42.Feature.X42Client.RestClient.Responses;
 
 namespace X42.Feature.Network
 {
@@ -28,9 +31,10 @@ namespace X42.Feature.Network
         private readonly IAsyncLoopFactory asyncLoopFactory;
 
         private readonly ServerNodeBase network;
-        private readonly NetworkMonitor networkMonitor;
         private readonly DatabaseSettings databaseSettings;
-        private readonly X42ClientSettings x42ClientSettings;
+
+        private NetworkMonitor networkMonitor;
+        private X42Node x42Client;
 
         public NetworkFeatures(
             ServerNodeBase network,
@@ -44,9 +48,10 @@ namespace X42.Feature.Network
             this.network = network;
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.databaseSettings = databaseSettings;
-            this.x42ClientSettings = x42ClientSettings;
             this.serverLifetime = serverLifetime;
             this.asyncLoopFactory = asyncLoopFactory;
+
+            x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
         }
 
         /// <summary>
@@ -84,7 +89,7 @@ namespace X42.Feature.Network
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
-            NetworkMonitor networkMonitor = new NetworkMonitor(logger, serverLifetime, asyncLoopFactory, databaseSettings, x42ClientSettings);
+            networkMonitor = new NetworkMonitor(logger, serverLifetime, asyncLoopFactory, databaseSettings, this);
 
             networkMonitor.Start();
 
@@ -104,6 +109,20 @@ namespace X42.Feature.Network
         {
             // TODO: Check settings and verify features here, then throw exception if not valid
             // Example: throw new ConfigurationException("Something went wrong.");
+        }
+
+        public async Task<bool> IsServerKeyValid(ServerNodeData serverNode)
+        {
+            string serverKey = $"{serverNode.CollateralTX}{serverNode.Ip}{serverNode.Port}";
+
+            GetTXOutResponse publicAddress = await x42Client.GetTXOutData(serverNode.CollateralTX, "1");
+
+            if (publicAddress == null || publicAddress?.scriptPubKey == null || publicAddress?.scriptPubKey?.addresses == null)
+            {
+                return false;
+            }
+
+            return await x42Client.VerifyMessageAsync(publicAddress.scriptPubKey.addresses.FirstOrDefault(), serverKey, serverNode.Signature);
         }
     }
 
