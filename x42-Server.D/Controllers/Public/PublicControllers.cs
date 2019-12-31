@@ -64,6 +64,13 @@ namespace X42.Controllers.Public
                 registerResult.FailReason = "Could not verify collateral";
             }
 
+
+            // Final Check.
+            if (serverIsValid)
+            {
+                registerResult.Success = true;
+            }
+
             return Json(registerResult);
         }
     }

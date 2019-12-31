@@ -115,12 +115,12 @@ namespace X42.Feature.Network
                 throw new ConfigurationException("x42Client Name setting must be set.");
             }
 
-            if (x42ClientSettings.Port > 0)
+            if (x42ClientSettings.Port <= 0)
             {
                 throw new ConfigurationException("x42Client Port setting must be set.");
             }
 
-            if (x42ClientSettings.Address.AddressFamily != System.Net.Sockets.AddressFamily.Unknown)
+            if (x42ClientSettings.Address.AddressFamily == System.Net.Sockets.AddressFamily.Unknown)
             {
                 throw new ConfigurationException("x42Client Address setting must be set, and a valid IP address.");
             }
@@ -132,7 +132,7 @@ namespace X42.Feature.Network
 
             GetTXOutResponse publicAddress = await x42Client.GetTXOutData(serverNode.CollateralTX, "1");
 
-            if (publicAddress == null || publicAddress?.scriptPubKey == null || publicAddress?.scriptPubKey?.addresses?.Count > 0)
+            if (publicAddress == null || publicAddress?.scriptPubKey == null || publicAddress?.scriptPubKey?.addresses?.Count <= 0)
             {
                 return false;
             }
