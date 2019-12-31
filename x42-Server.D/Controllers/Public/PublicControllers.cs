@@ -38,12 +38,13 @@ namespace X42.Controllers.Public
         [Route("register")]
         public IActionResult Register()
         {
-            RegisterResult model = new RegisterResult
+
+            RegisterResult registerResult = new RegisterResult
             {
                 Success = true
             };
 
-            return Json(model);
+            return Json(registerResult);
         }
     }
 }

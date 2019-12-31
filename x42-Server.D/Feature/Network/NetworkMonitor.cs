@@ -118,9 +118,9 @@ namespace X42.Feature.Network
 
         private async Task<ServerNodeData> ServerCheck(ServerNodeData serverNode)
         {
-            string serverKey = $"{serverNode.Id}{serverNode.Ip}{serverNode.Port}{serverNode.HAddress}";
+            string serverKey = $"{serverNode.CollateralTX}{serverNode.Ip}{serverNode.Port}";
 
-            bool serverIsValid = await x42Client.VerifyMessageAsync(serverNode.CAddress, serverKey, serverNode.Signature);
+            bool serverIsValid = await x42Client.VerifyMessageAsync(serverNode.PublicAddress, serverKey, serverNode.Signature);
 
             if (serverIsValid)
             {
