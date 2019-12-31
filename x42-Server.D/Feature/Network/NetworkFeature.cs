@@ -13,6 +13,7 @@ using X42.Feature.Database.Tables;
 using System.Linq;
 using X42.Feature.X42Client.RestClient.Responses;
 using X42.Configuration;
+using X42.Feature.X42Client.Enums;
 
 namespace X42.Feature.Network
 {
@@ -37,6 +38,8 @@ namespace X42.Feature.Network
         private NetworkMonitor networkMonitor;
         private X42ClientSettings x42ClientSettings;
         private X42Node x42Client;
+
+        public ConnectionStatus FullNodeStatus => x42Client.Status;
 
         public NetworkFeatures(
             ServerNodeBase network,

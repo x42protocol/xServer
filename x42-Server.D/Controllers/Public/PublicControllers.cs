@@ -4,6 +4,7 @@ using X42.Controllers.Requests;
 using X42.Controllers.Results;
 using X42.Feature.Database.Tables;
 using X42.Feature.Network;
+using X42.Feature.X42Client.Enums;
 using X42.Server;
 using X42.ServerNode;
 
@@ -57,18 +58,24 @@ namespace X42.Controllers.Public
                 CollateralTX = registerRequest.CollateralTX
             };
 
-            bool serverIsValid = await network.IsServerKeyValid(serverNode);
-
-            if (!serverIsValid)
+            if (network.FullNodeStatus == ConnectionStatus.Online)
             {
-                registerResult.FailReason = "Could not verify collateral";
+                bool serverIsValid = await network.IsServerKeyValid(serverNode);
+
+                if (!serverIsValid)
+                {
+                    registerResult.FailReason = "Could not verify collateral";
+                }
+
+                // Final Check.
+                if (serverIsValid)
+                {
+                    registerResult.Success = true;
+                }
             }
-
-
-            // Final Check.
-            if (serverIsValid)
+            else
             {
-                registerResult.Success = true;
+                registerResult.FailReason = "Node is offline";
             }
 
             return Json(registerResult);
