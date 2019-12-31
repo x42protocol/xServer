@@ -12,6 +12,7 @@ using X42.Utilities;
 using X42.Feature.Database.Tables;
 using System.Linq;
 using X42.Feature.X42Client.RestClient.Responses;
+using X42.Configuration;
 
 namespace X42.Feature.Network
 {
@@ -34,6 +35,7 @@ namespace X42.Feature.Network
         private readonly DatabaseSettings databaseSettings;
 
         private NetworkMonitor networkMonitor;
+        private X42ClientSettings x42ClientSettings;
         private X42Node x42Client;
 
         public NetworkFeatures(
@@ -50,6 +52,7 @@ namespace X42.Feature.Network
             this.databaseSettings = databaseSettings;
             this.serverLifetime = serverLifetime;
             this.asyncLoopFactory = asyncLoopFactory;
+            this.x42ClientSettings = x42ClientSettings;
 
             x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
         }
@@ -107,8 +110,20 @@ namespace X42.Feature.Network
         /// <inheritdoc />
         public override void ValidateDependencies(IServerServiceProvider services)
         {
-            // TODO: Check settings and verify features here, then throw exception if not valid
-            // Example: throw new ConfigurationException("Something went wrong.");
+            if (string.IsNullOrEmpty(x42ClientSettings.Name))
+            {
+                throw new ConfigurationException("x42Client Name setting must be set.");
+            }
+
+            if (x42ClientSettings.Port > 0)
+            {
+                throw new ConfigurationException("x42Client Port setting must be set.");
+            }
+
+            if (x42ClientSettings.Address.AddressFamily != System.Net.Sockets.AddressFamily.Unknown)
+            {
+                throw new ConfigurationException("x42Client Address setting must be set, and a valid IP address.");
+            }
         }
 
         public async Task<bool> IsServerKeyValid(ServerNodeData serverNode)
@@ -117,7 +132,7 @@ namespace X42.Feature.Network
 
             GetTXOutResponse publicAddress = await x42Client.GetTXOutData(serverNode.CollateralTX, "1");
 
-            if (publicAddress == null || publicAddress?.scriptPubKey == null || publicAddress?.scriptPubKey?.addresses == null)
+            if (publicAddress == null || publicAddress?.scriptPubKey == null || publicAddress?.scriptPubKey?.addresses?.Count > 0)
             {
                 return false;
             }
