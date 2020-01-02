@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
+using X42.Feature.Database.Tables;
+using X42.Server.Results;
 using X42.Utilities;
 
 namespace X42.Server
@@ -19,6 +22,9 @@ namespace X42.Server
 
         /// <summary>Software version of the x42 server.</summary>
         Version Version { get; }
+
+        /// <summary>Register a server to the networlk.</summary>
+        Task<RegisterResult> Register(ServerNodeData serverNode);
 
         /// <summary>Provides current state of the server.</summary>
         X42ServerState State { get; }

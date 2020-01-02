@@ -10,6 +10,13 @@ using X42.Configuration;
 using X42.Feature.Setup;
 using X42.ServerNode;
 using X42.Utilities;
+using X42.Server.Results;
+using X42.Feature.Database.Tables;
+using X42.Feature.Network;
+using X42.Feature.X42Client;
+using X42.Feature.Database;
+using X42.Feature.X42Client.Enums;
+using System.Collections.Generic;
 
 namespace X42.Server
 {
@@ -32,9 +39,22 @@ namespace X42.Server
         /// <summary>Application life cycle control - triggers when application shuts down.</summary>
         private X42ServerLifetime serverLifetime;
 
+        private readonly ServerSettings nodeSettings;
+        private readonly NetworkFeatures network;
+        private readonly X42ClientFeature x42FullNode;
+        private readonly DatabaseFeatures database;
+
         /// <summary>Creates new instance of the <see cref="X42Server" />.</summary>
-        public X42Server()
+        public X42Server(NetworkFeatures network,
+            ServerSettings nodeSettings,
+            X42ClientFeature x42FullNode,
+            DatabaseFeatures database)
         {
+            this.network = network;
+            this.nodeSettings = nodeSettings;
+            this.x42FullNode = x42FullNode;
+            this.database = database;
+
             State = X42ServerState.Created;
         }
 
@@ -68,7 +88,7 @@ namespace X42.Server
         public IX42ServerLifetime X42ServerLifetime
         {
             get => serverLifetime;
-            private set => serverLifetime = (X42ServerLifetime) value;
+            private set => serverLifetime = (X42ServerLifetime)value;
         }
 
 
@@ -114,6 +134,75 @@ namespace X42.Server
 
                 return new Version(0, 0);
             }
+        }
+
+        private bool IsServerReady()
+        {
+            return x42FullNode.Status == ConnectionStatus.Online && database.DatabaseConnected;
+        }
+
+        public async Task<RegisterResult> Register(ServerNodeData serverNode)
+        {
+            RegisterResult registerResult = new RegisterResult
+            {
+                Success = false
+            };
+
+            if (IsServerReady())
+            {
+                var collateralDetails = await network.IsTransactionValid(serverNode);
+                IEnumerable<Tier> tier = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount == collateralDetails.collateral);
+
+                if (collateralDetails.isValid && tier.Count() == 1)
+                {
+                    serverNode.PublicAddress = collateralDetails.publicAddress;
+
+                    bool serverIsValid = await network.IsServerKeyValid(serverNode);
+
+                    if (!serverIsValid)
+                    {
+                        registerResult.FailReason = "Could not verify server";
+                    }
+
+                    // TODO: Final Check.
+                    // We need to ping server before finalizing. Testing the availability of server will ensure that the server was at one point available.
+
+                    bool serverAdded = network.AddServer(serverNode);
+                    if (serverAdded)
+                    {
+                        registerResult.Success = true;
+                    }
+                    else
+                    {
+                        registerResult.FailReason = "Server already exists in repo";
+                    }
+                }
+                else
+                {
+                    if (!collateralDetails.isValid)
+                    {
+                        registerResult.FailReason = "Could not verify collateral";
+                    }
+                    else if (tier.Count() != 1)
+                    {
+                        registerResult.FailReason = "Collateral amount is invalid";
+                    }
+                }
+            }
+            else
+            {
+                if (x42FullNode.Status != ConnectionStatus.Online)
+                {
+                    registerResult.FailReason = "Node is offline";
+                }
+                else if (!database.DatabaseConnected)
+                {
+                    registerResult.FailReason = "Databse is offline";
+                }
+
+            }
+
+            return registerResult;
         }
 
         /// <inheritdoc />
