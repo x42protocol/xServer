@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using X42.Feature.Database.Context;
 using X42.Feature.Database;
-using X42.Feature.X42Client;
 using X42.Utilities;
 using X42.Feature.Database.Tables;
 using System.Collections.Generic;

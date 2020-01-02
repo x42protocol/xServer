@@ -230,9 +230,9 @@ namespace X42.Feature.X42Client
             } //end of try-catch
         } //end of private async void GetStaticData()
 
-        public async Task<GetTXOutResponse> GetTXOutData(string txid, string vout)
+        public async Task<GetTXOutResponse> GetTXOutData(string txid, long vout)
         {
-            return await restClient.GetTXOut(txid, vout);
+            return await restClient.GetTXOut(txid, vout.ToString());
         }
 
         #region IDisposable Code

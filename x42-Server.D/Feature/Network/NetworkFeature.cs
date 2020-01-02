@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using X42.Configuration.Logging;
+using X42.Feature.Database.Context;
 using X42.Feature.Database;
 using X42.Feature.Setup;
 using X42.Feature.X42Client;
@@ -14,6 +15,8 @@ using System.Linq;
 using X42.Feature.X42Client.RestClient.Responses;
 using X42.Configuration;
 using X42.Feature.X42Client.Enums;
+using Microsoft.EntityFrameworkCore;
+using NBitcoin;
 
 namespace X42.Feature.Network
 {
@@ -38,8 +41,6 @@ namespace X42.Feature.Network
         private NetworkMonitor networkMonitor;
         private X42ClientSettings x42ClientSettings;
         private X42Node x42Client;
-
-        public ConnectionStatus FullNodeStatus => x42Client.Status;
 
         public NetworkFeatures(
             ServerNodeBase network,
@@ -131,16 +132,47 @@ namespace X42.Feature.Network
 
         public async Task<bool> IsServerKeyValid(ServerNodeData serverNode)
         {
-            string serverKey = $"{serverNode.CollateralTX}{serverNode.Ip}{serverNode.Port}";
+            string serverKey = $"{serverNode.Name}{serverNode.Ip}{serverNode.Port}{serverNode.TxId}{serverNode.TxOut}{serverNode.PublicAddress}";
 
-            GetTXOutResponse publicAddress = await x42Client.GetTXOutData(serverNode.CollateralTX, "1");
+            return await x42Client.VerifyMessageAsync(serverNode.PublicAddress, serverKey, serverNode.Signature);
+        }
 
-            if (publicAddress == null || publicAddress?.scriptPubKey == null || publicAddress?.scriptPubKey?.addresses?.Count <= 0)
+        public async Task<(bool isValid, string publicAddress, Money collateral)> IsTransactionValid(ServerNodeData serverNode)
+        {
+            GetTXOutResponse transactionOutput = await x42Client.GetTXOutData(serverNode.TxId, serverNode.TxOut);
+
+            if (transactionOutput != null || transactionOutput?.scriptPubKey != null || transactionOutput?.scriptPubKey?.addresses?.Count > 0)
             {
-                return false;
+                return (true, transactionOutput.scriptPubKey.addresses.FirstOrDefault(), Money.FromUnit(transactionOutput.value, MoneyUnit.Satoshi));
             }
 
-            return await x42Client.VerifyMessageAsync(publicAddress.scriptPubKey.addresses.FirstOrDefault(), serverKey, serverNode.Signature);
+            return (false, string.Empty, 0);
+        }
+
+        /// <summary>
+        ///     Add a server to the repo
+        /// </summary>
+        /// <param name="serverNodeData">Server Node Data.</param>
+        /// <returns>Will return true if new record wad created, otherwise false.</returns>
+        public bool AddServer(ServerNodeData serverNodeData)
+        {
+            bool result = false;
+
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.Signature == serverNodeData.Signature);
+                if (serverNodes.Count() == 0)
+                {
+                    var newRecord = dbContext.Add(serverNodeData);
+                    if (newRecord.State == EntityState.Added)
+                    {
+                        dbContext.SaveChanges();
+                        result = true;
+                    }
+                }
+            }
+
+            return result;
         }
     }
 
