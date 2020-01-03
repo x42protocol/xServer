@@ -5,10 +5,13 @@ import { Subscription } from 'rxjs';
 
 import { FullNodeApiService } from '../../../shared/services/fullnode.api.service';
 import { ModalService } from '../../../shared/services/modal.service';
+import { ColdStakingService } from '../../../shared/services/coldstaking.service';
 
 import { WalletCreation } from '../../../shared/models/wallet-creation';
 import { SecretWordIndexGenerator } from './secret-word-index-generator';
 import { ThemeService } from '../../../shared/services/theme.service';
+
+import { GlobalService } from '../../../shared/services/global.service';
 
 @Component({
   selector: 'app-confirm-mnemonic',
@@ -19,7 +22,7 @@ export class ConfirmMnemonicComponent implements OnInit {
 
   public secretWordIndexGenerator = new SecretWordIndexGenerator();
 
-  constructor(private FullNodeApiService: FullNodeApiService, private genericModalService: ModalService, private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private themeService: ThemeService) {
+  constructor(private FullNodeApiService: FullNodeApiService, private genericModalService: ModalService, private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private themeService: ThemeService, private stakingService: ColdStakingService, private globalService: GlobalService) {
     this.buildMnemonicForm();
     this.isDarkTheme = themeService.getCurrentTheme().themeType == 'dark';
   }
@@ -32,6 +35,7 @@ export class ConfirmMnemonicComponent implements OnInit {
   public matchError: string = "";
   public isCreating: boolean;
   public isDarkTheme = false;
+  public address: string;
 
   ngOnInit() {
     this.newWallet = new WalletCreation(
@@ -127,14 +131,14 @@ export class ConfirmMnemonicComponent implements OnInit {
       this.createWallet(this.newWallet);
     }
   }
-  
+
   private checkMnemonic(): boolean {
     let mnemonic = this.newWallet.mnemonic;
     let mnemonicArray = mnemonic.split(" ");
 
     if (this.mnemonicForm.get('word1').value.trim() === mnemonicArray[this.secretWordIndexGenerator.index1] &&
-        this.mnemonicForm.get('word2').value.trim() === mnemonicArray[this.secretWordIndexGenerator.index2] &&
-        this.mnemonicForm.get('word3').value.trim() === mnemonicArray[this.secretWordIndexGenerator.index3]) {
+      this.mnemonicForm.get('word2').value.trim() === mnemonicArray[this.secretWordIndexGenerator.index2] &&
+      this.mnemonicForm.get('word3').value.trim() === mnemonicArray[this.secretWordIndexGenerator.index3]) {
       return true;
     } else {
       this.matchError = 'The secret words do not match.'
@@ -142,11 +146,26 @@ export class ConfirmMnemonicComponent implements OnInit {
     }
   }
 
+  getFirstUnusedAddress() {
+    this.stakingService.getAddress(this.globalService.getWalletName(), false).subscribe(x => this.address = x.address);
+  }
+
   private createWallet(wallet: WalletCreation) {
     this.FullNodeApiService.createX42Wallet(wallet)
       .subscribe(
         response => {
-          this.success.emit(true);
+          this.stakingService.createColdStakingAccount(wallet.name, wallet.password, true)
+            .subscribe(
+              createColdStakingAccountResponse => {
+                this.stakingService.createColdStakingAccount(wallet.name, wallet.password, false)
+                  .subscribe(() => {
+                    setTimeout(() => {
+                      this.getFirstUnusedAddress();
+                    }, 2000);
+                    this.success.emit(true);
+                  });
+              }
+            );
         },
         error => {
           this.isCreating = false;

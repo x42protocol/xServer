@@ -23,11 +23,11 @@ export class ServerApiService {
 
   setApiUrl() {
     this.apiPort = this.globalService.getServerApiPort();
-    this.x42ApiUrl = 'http://localhost:' + this.apiPort + '/api';
+    this.x42ApiUrl = 'http://localhost:' + this.apiPort;
   }
 
   getServerStatus(silent?: boolean): Observable<ServerStatus> {
-    return this.http.get<ServerStatus>(this.x42ApiUrl + '/MasterNodeContoller/status').pipe(
+    return this.http.get<ServerStatus>(this.x42ApiUrl + '/status').pipe(
       catchError(err => this.handleHttpError(err, silent))
     );
   }
@@ -35,7 +35,7 @@ export class ServerApiService {
   getServerStatusInterval(): Observable<ServerStatus> {
     return this.pollingInterval.pipe(
       startWith(0),
-      switchMap(() => this.http.get<ServerStatus>(this.x42ApiUrl + '/MasterNodeContoller/status')),
+      switchMap(() => this.http.get<ServerStatus>(this.x42ApiUrl + '/status')),
       catchError(err => this.handleHttpError(err))
     )
   }

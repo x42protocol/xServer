@@ -1,0 +1,50 @@
+<div class="modal-header">
+  <h5 class="modal-title">Withdraw from <span *ngIf="isColdStaking">cold</span><span *ngIf="!isColdStaking">hot</span> balance</h5>
+    <button type="button" class="close closemodal ml-auto" data-dismiss="modal" aria-label="Close" (click)="activeModal.close('Close click')">
+        <i class="lnr lnr-cross"></i>
+    </button>
+</div>
+<div class="modal-body pb-0">
+  <form [formGroup]="sendForm">
+    <!--<div class="form-group has-danger clearfix">-->
+    <div class="form-group clearfix">
+      <label class="float-left" for="amount">Amount</label>
+      <label class="float-right" for="totalAmount">Spendable: {{ spendableBalance | coinNotation }} {{ coinUnit }}</label>
+      <!-- <span class="float-right btn-link" (click)="getMaxBalance()">max</span> -->
+      <div class="input-group">
+        <input type="text" class="form-control" [class.is-invalid]="sendFormErrors.amount" [class.is-valid]="!sendFormErrors.amount && sendForm.get('amount').valid" formControlName="amount" placeholder="0.00 {{ coinUnit }}">
+      <span class="input-group-btn">
+        <button class="btn btn-primary btn-sm" (click)="getMaxBalance()">MAX</button>
+      </span>
+      </div>
+      <div *ngIf="sendFormErrors.amount" class="invalid-feedback">{{ sendFormErrors.amount }}</div>
+    </div>
+    <!--<div class="form-group has-success">-->
+    <div class="form-group clearfix">
+      <label for="destinationAddress">Destination address</label>
+      <i class="lnr lnr-question-circle ml-2" data-placement="right" ngbTooltip="You can use any address to withdraw your coins from Cold Balance, including your own."></i>
+      <input type="text" class="form-control" [class.is-invalid]="sendFormErrors.address" [class.is-valid]="!sendFormErrors.address && sendForm.get('address').valid" formControlName="address" id="destinationAddress" placeholder="Please enter the destination address here.">
+      <div *ngIf="sendFormErrors.address" class="invalid-feedback">{{ sendFormErrors.address }}</div>
+    </div>
+    <div class="form-group clearfix">
+      <label for="feeType">Fee type</label>
+      <select class="form-control" [(ngModel)]="selectedFeeType" [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let feeType of feeTypes" [ngValue]="feeType" [selected]="feeType.id === 0">{{feeType.display}}</option>
+      </select>
+    </div>
+    <div class="form-group clearfix">
+      <label for="walletPassword">Wallet Password</label>
+      <input type="password" class="form-control" [class.is-invalid]="sendFormErrors.password" [class.is-valid]="!sendFormErrors.password && sendForm.get('password').valid" formControlName="password" id="walletPassword" placeholder="Please enter your wallet password.">
+      <div *ngIf="sendFormErrors.password" class="invalid-feedback">{{sendFormErrors.password}}</div>
+    </div>
+    <small *ngIf="apiError" class="text-danger">{{ apiError }}</small>
+  </form>
+</div>
+<div class="modal-footer pt-0 mt-0">
+  <button *ngIf="!isSending" type="button" [disabled]="isSending" class="btn btn-danger text-uppercase" (click)="activeModal.close('Close click')">Cancel</button>
+  <button *ngIf="!isSending" type="button" class="btn btn-primary btn-block text-uppercase" [disabled]="!sendForm.valid || isSending || !estimatedFee" (click)="send()">Send</button>
+  <!-- SVG -->
+  <div *ngIf="isSending" class="Loading LoadingSend col-2 mx-auto">
+    <img src="./assets/images/loading.svg" width="30" height="30" />
+  </div>
+</div>

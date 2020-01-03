@@ -7,6 +7,7 @@ import { GlobalService } from '../../shared/services/global.service';
 import { WalletInfo } from '../../shared/models/wallet-info';
 import { TransactionInfo } from '../../shared/models/transaction-info';
 import { ThemeService } from '../../shared/services/theme.service';
+import { ColdStakingCreateAddressComponent } from '../cold-staking/create-address/create-address.component';
 
 import { SendComponent } from '../send/send.component';
 import { ReceiveComponent } from '../receive/receive.component';
@@ -36,9 +37,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public spendableBalance: number;
   public transactionArray: TransactionInfo[];
   public latestTransactions: TransactionInfo[];
+  public hotTransactions: TransactionInfo[];
   private stakingForm: FormGroup;
   private walletBalanceSubscription: Subscription;
   private walletHistorySubscription: Subscription;
+  private walletHotHistorySubscription: Subscription;
   private stakingInfoSubscription: Subscription;
   public stakingEnabled: boolean;
   public stakingActive: boolean;
@@ -51,6 +54,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public isStopping: boolean;
   public isDarkTheme = false;
   public hasBalance: boolean = false;
+  public hotStakingAccount: string = "coldStakingHotAddresses";
 
   ngOnInit() {
     this.sidechainEnabled = this.globalService.getSidechainEnabled();
@@ -122,28 +126,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   }
 
-  // todo: add history in seperate service to make it reusable
-  private getHistory() {
-    const walletInfo = new WalletInfo(this.globalService.getWalletName());
+  private getHotHistory() {
+    let walletInfo = new WalletInfo(this.globalService.getWalletName());
+    walletInfo.accountName = this.hotStakingAccount;
+
     let historyResponse;
-    this.walletHistorySubscription = this.apiService.getWalletHistory(walletInfo)
+    this.walletHotHistorySubscription = this.apiService.getWalletHistory(walletInfo)
       .subscribe(
         response => {
-          // TO DO - add account feature instead of using first entry in array
           if (!!response.history && response.history[0].transactionsHistory.length > 0) {
             historyResponse = response.history[0].transactionsHistory;
-            this.getTransactionInfo(historyResponse);
+            this.getHotTransactionInfo(historyResponse);
           }
-        },
-        error => {
-          this.cancelSubscriptions();
-          this.startSubscriptions();
         }
       );
   };
 
-  private getTransactionInfo(transactions: any) {
-    this.transactionArray = [];
+  private getHotTransactionInfo(transactions: any) {
+    this.latestTransactions = [];
 
     for (let transaction of transactions) {
       let transactionType;
@@ -153,6 +153,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         transactionType = "received";
       } else if (transaction.type === "staked") {
         transactionType = "staked";
+      } else {
+        transactionType = "unknown";
       }
       let transactionId = transaction.id;
       let transactionAmount = transaction.amount;
@@ -165,14 +167,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
       let transactionConfirmedInBlock = transaction.confirmedInBlock;
       let transactionTimestamp = transaction.timestamp;
 
-      this.transactionArray.push(new TransactionInfo(transactionType, transactionId, transactionAmount, transactionFee, transactionConfirmedInBlock, transactionTimestamp));
-    }
+      if (this.stakingEnabled) {
+        this.makeLatestTxListSmall();
+      } else {
+        this.latestTransactions = this.transactionArray.slice(0, 5);
+      }
 
-    if (this.stakingEnabled) {
-      this.makeLatestTxListSmall();
-    } else {
-      this.latestTransactions = this.transactionArray.slice(0, 5);
+      this.latestTransactions.push(new TransactionInfo(transactionType, transactionId, transactionAmount, transactionFee, transactionConfirmedInBlock, transactionTimestamp));
     }
+  };
+
+  onWalletGetFirstUnusedAddress(isColdStaking: boolean) {
+    let modalData = {
+      "isColdStaking": isColdStaking
+    };
+
+    this.dialogService.open(ColdStakingCreateAddressComponent, {
+      header: 'xServer Address',
+      width: '540px',
+      data: modalData
+    });
   }
 
   private makeLatestTxListSmall() {
@@ -291,11 +305,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.stakingInfoSubscription) {
       this.stakingInfoSubscription.unsubscribe();
     }
+
+    if (this.walletHotHistorySubscription) {
+      this.walletHotHistorySubscription.unsubscribe();
+    }
   }
 
   private startSubscriptions() {
     this.getWalletBalance();
-    this.getHistory();
+    //this.getHistory();
+    this.getHotHistory();
     if (!this.sidechainEnabled) {
       this.getStakingInfo();
     }

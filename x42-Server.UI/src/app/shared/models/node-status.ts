@@ -1,6 +1,6 @@
 export class NodeStatus {
-  constructor(agent: string, version: string, network: string, coinTicker: string, processId: number, consensusHeight: number, blockStoreHeight: number, inboundPeers: [Peer],
-      outbountPeers: [Peer], enabledFeatures: [string], dataDirectoryPath: string, runningtime: string, difficulty: number, protocolVersion: number, testnet: boolean, relayFee: number, state: string) {
+  constructor(agent: string, version: string, network: string, coinTicker: string, processId: number, consensusHeight: number, blockStoreHeight: number, bestPeerHeight: number, inboundPeers: [Peer],
+    outboundPeers: [Peer], enabledFeatures: [string], dataDirectoryPath: string, runningtime: string, difficulty: number, protocolVersion: number, testnet: boolean, relayFee: number, state: string) {
     this.agent = agent;
     this.version = version;
     this.network = network;
@@ -8,8 +8,9 @@ export class NodeStatus {
     this.processId = processId;
     this.consensusHeight = consensusHeight;
     this.blockStoreHeight = blockStoreHeight;
+    this.bestPeerHeight = bestPeerHeight;
     this.inboundPeers = inboundPeers;
-    this.outbountPeers = outbountPeers;
+    this.outboundPeers = outboundPeers;
     this.enabledFeatures = enabledFeatures;
     this.dataDirectoryPath = dataDirectoryPath;
     this.runningTime = runningtime;
@@ -27,8 +28,9 @@ export class NodeStatus {
   public processId: number;
   public consensusHeight: number;
   public blockStoreHeight: number;
+  public bestPeerHeight: number;
   public inboundPeers: [Peer];
-  public outbountPeers: [Peer];
+  public outboundPeers: [Peer];
   public enabledFeatures: [string];
   public dataDirectoryPath: string;
   public runningTime: string;

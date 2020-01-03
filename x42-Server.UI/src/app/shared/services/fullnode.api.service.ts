@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, interval, throwError } from 'rxjs';
-import { catchError, switchMap, startWith} from 'rxjs/operators';
+import { catchError, switchMap, startWith } from 'rxjs/operators';
 
 import { GlobalService } from './global.service';
 import { ModalService } from './modal.service';
@@ -18,16 +18,20 @@ import { TransactionBuilding } from '../models/transaction-building';
 import { TransactionSending } from '../models/transaction-sending';
 import { NodeStatus } from '../models/node-status';
 import { WalletRescan } from '../models/wallet-rescan';
+import { SignMessageRequest } from '../models/wallet-signmessagerequest';
+import { VerifyRequest } from '../models/wallet-verifyrequest';
+import { SplitCoins } from '../models/split-coins';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class FullNodeApiService {
   constructor(private http: HttpClient, private globalService: GlobalService, private modalService: ModalService, private router: Router) {
     this.setApiUrl();
-  };
+  }
 
-  private pollingInterval = interval(3000);
+  private pollingInterval = interval(5000);
   private apiPort;
   private x42ApiUrl;
 
@@ -71,18 +75,6 @@ export class FullNodeApiService {
     );
   }
 
-  /** Rescan wallet from a certain date using remove-transactions */
-  rescanWallet(data: WalletRescan): Observable<any> {
-    console.log(data.fromDate.toDateString());
-    let params = new HttpParams()
-      .set('walletName', data.name)
-      .set('fromDate', data.fromDate.toDateString())
-      .set('reSync', 'true');
-    return this.http.delete(this.x42ApiUrl + '/wallet/remove-transactions/', { params }).pipe(
-      catchError(err => this.handleHttpError(err))
-    );
-  }
-
   /**
    * Gets available wallets at the default path
    */
@@ -103,9 +95,9 @@ export class FullNodeApiService {
     );
   }
 
-    /**
-    * Get a new mnemonic
-    */
+  /**
+  * Get a new mnemonic
+  */
   getNewMnemonic(): Observable<any> {
     let params = new HttpParams()
       .set('language', 'English')
@@ -117,7 +109,7 @@ export class FullNodeApiService {
   }
 
   /**
-   * Create a new X42 wallet.
+   * Create a new x42 wallet.
    */
   createX42Wallet(data: WalletCreation): Observable<any> {
     return this.http.post(this.x42ApiUrl + '/wallet/create/', JSON.stringify(data)).pipe(
@@ -126,7 +118,7 @@ export class FullNodeApiService {
   }
 
   /**
-   * Recover a X42 wallet.
+   * Recover a x42 wallet.
    */
   recoverX42Wallet(data: WalletRecovery): Observable<any> {
     return this.http.post(this.x42ApiUrl + '/wallet/recover/', JSON.stringify(data)).pipe(
@@ -135,7 +127,7 @@ export class FullNodeApiService {
   }
 
   /**
-   * Load a X42 wallet
+   * Load a x42 wallet
    */
   loadX42Wallet(data: WalletLoad): Observable<any> {
     return this.http.post(this.x42ApiUrl + '/wallet/load/', JSON.stringify(data)).pipe(
@@ -180,7 +172,7 @@ export class FullNodeApiService {
   getWalletBalance(data: WalletInfo): Observable<any> {
     let params = new HttpParams()
       .set('walletName', data.walletName)
-      .set('accountName', "account 0");
+      .set('accountName', data.accountName);
     return this.pollingInterval.pipe(
       startWith(0),
       switchMap(() => this.http.get(this.x42ApiUrl + '/wallet/balance', { params })),
@@ -208,13 +200,13 @@ export class FullNodeApiService {
   getWalletHistory(data: WalletInfo): Observable<any> {
     let params = new HttpParams()
       .set('walletName', data.walletName)
-      .set('accountName', "account 0");
+      .set('accountName', data.accountName);
     return this.pollingInterval.pipe(
       startWith(0),
       switchMap(() => this.http.get(this.x42ApiUrl + '/wallet/history', { params: params })),
       catchError(err => this.handleHttpError(err))
     )
-  }
+  };
 
   /**
    * Get an unused receive address for a certain wallet from the API.
@@ -247,17 +239,28 @@ export class FullNodeApiService {
   getAllAddresses(data: WalletInfo): Observable<any> {
     let params = new HttpParams()
       .set('walletName', data.walletName)
-      .set('accountName', "account 0");
+      .set('accountName', data.accountName);
     return this.http.get(this.x42ApiUrl + '/wallet/addresses', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   /**
-   * Estimate the fee of a transaction
-   */
+ * Estimate the fee of a transaction
+ */
   estimateFee(data: FeeEstimation): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/estimate-txfee', JSON.stringify(data)).pipe(
+    return this.http.post(this.x42ApiUrl + '/wallet/estimate-txfee', {
+      'walletName': data.walletName,
+      'accountName': data.accountName,
+      'recipients': [
+        {
+          'destinationAddress': data.recipients[0].destinationAddress,
+          'amount': data.recipients[0].amount
+        }
+      ],
+      'feeType': data.feeType,
+      'allowUnconfirmed': true
+    }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -266,15 +269,18 @@ export class FullNodeApiService {
    * Estimate the fee of a sidechain transaction
    */
   estimateSidechainFee(data: SidechainFeeEstimation): Observable<any> {
-    // let params = data;
-    let params = new HttpParams()
-      .set('walletName', data.walletName)
-      .set('accountName', data.accountName)
-      .set('recipients[0].destinationAddress', data.recipients[0].destinationAddress)
-      .set('recipients[0].amount', data.recipients[0].amount)
-      .set('feeType', data.feeType)
-      .set('allowUnconfirmed', "true");
-    return this.http.get(this.x42ApiUrl + '/wallet/estimate-txfee', { params }).pipe(
+    return this.http.post(this.x42ApiUrl + '/wallet/estimate-txfee', {
+      'walletName': data.walletName,
+      'accountName': data.accountName,
+      'recipients': [
+        {
+          'destinationAddress': data.recipients[0].destinationAddress,
+          'amount': data.recipients[0].amount
+        }
+      ],
+      'feeType': data.feeType,
+      'allowUnconfirmed': true
+    }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -304,6 +310,35 @@ export class FullNodeApiService {
       .set('all', 'true')
       .set('resync', 'true');
     return this.http.delete(this.x42ApiUrl + '/wallet/remove-transactions', { params }).pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
+  /** Rescan wallet from a certain date using remove-transactions */
+  rescanWallet(data: WalletRescan): Observable<any> {
+    let params = new HttpParams()
+      .set('walletName', data.name)
+      .set('fromDate', data.fromDate.toDateString())
+      .set('reSync', 'true');
+    return this.http.delete(this.x42ApiUrl + '/wallet/remove-transactions/', { params }).pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
+  /**
+ * Sign the given message with the private key of the given address
+ */
+  signMessage(data: SignMessageRequest): Observable<any> {
+    return this.http.post(this.x42ApiUrl + '/wallet/signmessage', JSON.stringify(data)).pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
+  /**
+ * Verify the given signature with the given address
+ */
+  verifyMessage(data: VerifyRequest): Observable<any> {
+    return this.http.post(this.x42ApiUrl + '/wallet/verifymessage', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -404,6 +439,15 @@ export class FullNodeApiService {
     */
   postCreateTransaction(transaction: any): Observable<any> {
     return this.http.post(this.x42ApiUrl + '/smartcontractwallet/create', transaction).pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
+  /*
+    * Posts a coin split request
+    */
+  postCoinSplit(splitCoins: SplitCoins): Observable<any> {
+    return this.http.post(this.x42ApiUrl + '/wallet/splitcoins', splitCoins).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }

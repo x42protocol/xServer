@@ -9,8 +9,7 @@
             <div class="col text-right" style="white-space: nowrap; width: 100px; display: inline;">
               <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px;">Balance</span>
               <p style="float: right;">
-                <button type="button" pButton (click)="openReceiveDialog()" label="Receive" class="ui-button-success" icon="pi pi-arrow-circle-down" style="width: 100px; margin-right: 10px;"></button>
-                <button type="button" pButton (click)="openSendDialog()" label="Send" class="ui-button-warning" icon="pi pi-arrow-circle-up" style="width: 100px;"></button>
+                <button type="button" pButton (click)="onWalletGetFirstUnusedAddress(false)" label="Get Server Address" class="ui-button-success" icon="pi pi-arrow-circle-down" style="margin-right: 10px;"></button>
               </p>
             </div>
           </div>
@@ -88,15 +87,15 @@
         <p-header>
           <div class="ui-helper-clearfix">
             <div class="col text-right" style="white-space: nowrap; width: 100px; display: inline;">
-              <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px;">Masternode</span>
+              <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px;">Server</span>
               <div style="float: right;">
-                <p-message *ngIf="!stakingEnabled && !isStarting" [style]="{'float':'right'}" severity="warn" text="Masternode not configured"></p-message>
+                <p-message *ngIf="!stakingEnabled && !isStarting" [style]="{'float':'right'}" severity="warn" text="Server not configured"></p-message>
               </div>
             </div>
           </div>
         </p-header>
         <section>
-            <button type="button" class="btn-block" [disabled]="isStopping" (click)="stopStaking()" label="Setup masternode" pButton></button>
+            <button type="button" class="btn-block" [disabled]="isStopping" (click)="stopStaking()" label="Setup server" pButton></button>
         </section>
       </p-panel>
     </div>

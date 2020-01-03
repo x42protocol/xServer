@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { WalletRoutingModule } from './wallet-routing.module';
-import { ColdStakingModule } from './cold-staking/cold-staking.module';
 import { SmartContractsModule } from './smart-contracts/smart-contracts.module';
 import { MainMenuModule } from '../shared/components/main-menu/main-menu.module';
 
@@ -19,6 +18,13 @@ import { GenerateAddressesComponent } from './advanced/components/generate-addre
 import { ResyncComponent } from './advanced/components/resync/resync.component';
 import { SendComponent } from './send/send.component';
 import { ReceiveComponent } from './receive/receive.component';
+import { ColdStakingOverviewComponent } from './cold-staking/overview.component';
+import { ColdStakingCreateComponent } from './cold-staking/create/create.component';
+import { ColdStakingCreateSuccessComponent } from "./cold-staking/create-success/create-success.component";
+import { ColdStakingCreateAddressComponent } from "./cold-staking/create-address/create-address.component";
+import { ColdStakingWithdrawComponent } from "./cold-staking/withdraw/withdraw.component";
+import { ColdStakingWithdrawConfirmationComponent } from "./cold-staking/withdraw/withdraw-confirmation/withdraw-confirmation.component";
+import { ColdStakingCreateHotComponent } from './cold-staking/create-hot/create-hot.component';
 import { SendConfirmationComponent } from './send/send-confirmation/send-confirmation.component';
 import { TransactionDetailsComponent } from './transaction-details/transaction-details.component';
 import { LogoutConfirmationComponent } from './logout-confirmation/logout-confirmation.component';
@@ -46,7 +52,6 @@ import { CalendarModule } from 'primeng/calendar';
   imports: [
     SharedModule,
     WalletRoutingModule,
-    ColdStakingModule,
     SmartContractsModule,
     MainMenuModule,
     ButtonModule,
@@ -83,7 +88,14 @@ import { CalendarModule } from 'primeng/calendar';
     ExtPubkeyComponent,
     AboutComponent,
     GenerateAddressesComponent,
-    ResyncComponent
+    ResyncComponent,
+    ColdStakingOverviewComponent,
+    ColdStakingCreateComponent,
+    ColdStakingCreateSuccessComponent,
+    ColdStakingCreateAddressComponent,
+    ColdStakingWithdrawComponent,
+    ColdStakingWithdrawConfirmationComponent,
+    ColdStakingCreateHotComponent
   ],
   providers: [
     MessageService,
@@ -94,7 +106,13 @@ import { CalendarModule } from 'primeng/calendar';
     SendConfirmationComponent,
     ReceiveComponent,
     TransactionDetailsComponent,
-    LogoutConfirmationComponent
+    LogoutConfirmationComponent,
+    ColdStakingCreateComponent,
+    ColdStakingCreateSuccessComponent,
+    ColdStakingCreateAddressComponent,
+    ColdStakingWithdrawComponent,
+    ColdStakingWithdrawConfirmationComponent,
+    ColdStakingCreateHotComponent
   ]
 })
 

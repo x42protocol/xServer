@@ -13,6 +13,7 @@ import { WalletInfo } from '../../../shared/models/wallet-info';
 
 import { SendComponent } from '../../../wallet/send/send.component';
 import { ReceiveComponent } from '../../../wallet/receive/receive.component';
+import { NodeStatus } from '../../../shared/models/node-status';
 import { TransactionDetailsComponent } from '../../../wallet/transaction-details/transaction-details.component';
 import { TransactionInfo } from '../../../shared/models/transaction-info';
 
@@ -27,6 +28,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
 
   private generalWalletInfoSubscription: Subscription;
   private stakingInfoSubscription: Subscription;
+  private nodeStatusSubscription: Subscription;
   public lastBlockSyncedHeight: number;
   public chainTip: number;
   private isChainSynced: boolean;
@@ -195,7 +197,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
       width: '540px'
     });
   };
-  
+
   openAdvanced() {
     this.router.navigate(['/wallet/advanced']);
     this.settingsMenu = false;
@@ -212,53 +214,66 @@ export class MainMenuComponent implements OnInit, OnDestroy {
   }
 
   private getGeneralWalletInfo() {
-    let walletInfo = new WalletInfo(this.globalService.getWalletName())
-    this.generalWalletInfoSubscription = this.FullNodeApiService.getGeneralInfo(walletInfo)
-      .subscribe(
-        response => {
-          let generalWalletInfoResponse = response;
-          this.lastBlockSyncedHeight = generalWalletInfoResponse.lastBlockSyncedHeight;
-          this.chainTip = generalWalletInfoResponse.chainTip;
-          this.isChainSynced = generalWalletInfoResponse.isChainSynced;
-          this.connectedNodes = generalWalletInfoResponse.connectedNodes;
-
-          const processedText = `Processed ${this.lastBlockSyncedHeight} out of ${this.chainTip} blocks.`;
-          this.toolTip = `Synchronizing.  ${processedText}`;
-
-          if (this.connectedNodes == 1) {
-            this.connectedNodesTooltip = "1 connection";
-          } else if (this.connectedNodes >= 0) {
-            this.connectedNodesTooltip = `${this.connectedNodes} connections`;
-          }
-
-          if (!this.isChainSynced) {
-            this.percentSynced = "syncing...";
-          }
-          else {
-            this.percentSyncedNumber = ((this.lastBlockSyncedHeight / this.chainTip) * 100);
-            if (this.percentSyncedNumber.toFixed(0) === "100" && this.lastBlockSyncedHeight != this.chainTip) {
-              this.percentSyncedNumber = 99;
+    if (this.globalService.getWalletName() == "") {
+      this.nodeStatusSubscription = this.FullNodeApiService.getNodeStatusInterval()
+        .subscribe(
+          (data: NodeStatus) => {
+            let statusResponse = data
+            this.connectedNodes = statusResponse.inboundPeers.length + statusResponse.outboundPeers.length;
+            this.lastBlockSyncedHeight = statusResponse.blockStoreHeight;
+            if (this.connectedNodes > 0) {
+              this.percentSynced = "Connected...";
+            } else {
+              this.percentSynced = "Connecting...";
             }
-
-            this.percentSynced = this.percentSyncedNumber.toFixed(0) + '%';
-
-            if (this.percentSynced === '100%') {
-              this.toolTip = `Up to date.  ${processedText}`;
-            }
-          }
-        },
-        error => {
-          if (error.status === 0) {
+          },
+          error => {
             this.cancelSubscriptions();
-          } else if (error.status >= 400) {
-            if (!error.error.errors[0].message) {
-              this.cancelSubscriptions();
-              this.startSubscriptions();
-            }
+            this.startSubscriptions();
           }
-        }
-      )
-      ;
+        );
+    } else {
+      let walletInfo = new WalletInfo(this.globalService.getWalletName())
+      this.generalWalletInfoSubscription = this.FullNodeApiService.getGeneralInfo(walletInfo)
+        .subscribe(
+          response => {
+            let generalWalletInfoResponse = response;
+            this.lastBlockSyncedHeight = generalWalletInfoResponse.lastBlockSyncedHeight;
+            this.chainTip = generalWalletInfoResponse.chainTip;
+            this.isChainSynced = generalWalletInfoResponse.isChainSynced;
+            this.connectedNodes = generalWalletInfoResponse.connectedNodes;
+
+            const processedText = `Processed ${this.lastBlockSyncedHeight} out of ${this.chainTip} blocks.`;
+            this.toolTip = `Synchronizing.  ${processedText}`;
+
+            if (this.connectedNodes == 1) {
+              this.connectedNodesTooltip = "1 connection";
+            } else if (this.connectedNodes >= 0) {
+              this.connectedNodesTooltip = `${this.connectedNodes} connections`;
+            }
+
+            if (!this.isChainSynced) {
+              this.percentSynced = "syncing...";
+            }
+            else {
+              this.percentSyncedNumber = ((this.lastBlockSyncedHeight / this.chainTip) * 100);
+              if (this.percentSyncedNumber.toFixed(0) === "100" && this.lastBlockSyncedHeight != this.chainTip) {
+                this.percentSyncedNumber = 99;
+              }
+
+              this.percentSynced = this.percentSyncedNumber.toFixed(0) + '%';
+
+              if (this.percentSynced === '100%') {
+                this.toolTip = `Up to date.  ${processedText}`;
+              }
+            }
+          },
+          error => {
+            this.cancelSubscriptions();
+            this.startSubscriptions();
+          }
+        );
+    }
   };
 
   private getStakingInfo() {
@@ -267,15 +282,10 @@ export class MainMenuComponent implements OnInit, OnDestroy {
         response => {
           let stakingResponse = response
           this.stakingEnabled = stakingResponse.enabled;
-        }, error => {
-          if (error.status === 0) {
-            this.cancelSubscriptions();
-          } else if (error.status >= 400) {
-            if (!error.error.errors[0].message) {
-              this.cancelSubscriptions();
-              this.startSubscriptions();
-            }
-          }
+        },
+        error => {
+          this.cancelSubscriptions();
+          this.startSubscriptions();
         }
       )
       ;
@@ -288,6 +298,10 @@ export class MainMenuComponent implements OnInit, OnDestroy {
 
     if (this.stakingInfoSubscription) {
       this.stakingInfoSubscription.unsubscribe();
+    }
+    
+    if (this.nodeStatusSubscription) {
+      this.nodeStatusSubscription.unsubscribe();
     }
   };
 

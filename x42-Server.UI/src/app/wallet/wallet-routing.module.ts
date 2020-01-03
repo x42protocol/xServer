@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { WalletComponent }   from './wallet.component';
 import { HistoryComponent } from './history/history.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { ColdStakingOverviewComponent } from './cold-staking/components/overview/overview.component';
+import { ColdStakingOverviewComponent } from './cold-staking/overview.component';
 import { AdvancedComponent } from './advanced/advanced.component';
 import { SmartContractsComponent } from './smart-contracts/components/smart-contracts.component';
 import { AddressBookComponent } from './address-book/address-book.component';
