@@ -108,38 +108,6 @@ export class MainMenuComponent implements OnInit, OnDestroy {
             command: (event: Event) => { this.quit(); }
           }
         ]
-      },
-      {
-        label: 'Wallet',
-        items: [
-          {
-            label: 'Receive',
-            icon: 'pi pi-fw pi-arrow-circle-down',
-            command: (event: Event) => {
-              this.openReceiveDialog();
-            }
-          },
-          {
-            label: 'Send',
-            icon: 'pi pi-fw pi-arrow-circle-up',
-            command: (event: Event) => {
-              this.openSendDialog();
-            }
-          },
-          { separator: true },
-          {
-            label: 'Address Book',
-            icon: 'pi pi-fw pi-list',
-            command: (event: Event) => {
-              this.openAddressBook();
-            }
-          },
-          {
-            label: 'History',
-            icon: 'pi pi-fw pi-clock',
-            command: (event: Event) => { this.openHistory(); }
-          }
-        ]
       }
     ];
   }

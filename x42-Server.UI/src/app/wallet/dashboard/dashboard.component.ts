@@ -35,7 +35,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public confirmedBalance: number;
   public unconfirmedBalance: number;
   public spendableBalance: number;
-  public transactionArray: TransactionInfo[];
   public latestTransactions: TransactionInfo[];
   public hotTransactions: TransactionInfo[];
   private stakingForm: FormGroup;
@@ -104,11 +103,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private getWalletBalance() {
     let walletInfo = new WalletInfo(this.globalService.getWalletName());
+    walletInfo.accountName = this.hotStakingAccount;
+
     this.walletBalanceSubscription = this.apiService.getWalletBalance(walletInfo)
       .subscribe(
-        response => {
-          let balanceResponse = response;
-          // TO DO - add account feature instead of using first entry in array
+        balanceResponse => {
           this.confirmedBalance = balanceResponse.balances[0].amountConfirmed;
           this.unconfirmedBalance = balanceResponse.balances[0].amountUnconfirmed;
           this.spendableBalance = balanceResponse.balances[0].spendableAmount;
@@ -123,7 +122,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.startSubscriptions();
         }
       );
-
   }
 
   private getHotHistory() {
@@ -167,25 +165,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
       let transactionConfirmedInBlock = transaction.confirmedInBlock;
       let transactionTimestamp = transaction.timestamp;
 
-      if (this.stakingEnabled) {
-        this.makeLatestTxListSmall();
-      } else {
-        this.latestTransactions = this.transactionArray.slice(0, 5);
-      }
-
       this.latestTransactions.push(new TransactionInfo(transactionType, transactionId, transactionAmount, transactionFee, transactionConfirmedInBlock, transactionTimestamp));
+
+      if (this.latestTransactions !== undefined || this.latestTransactions.length > 0) {
+        if (this.stakingEnabled) {
+          this.makeLatestTxListSmall();
+        } else {
+          this.latestTransactions = this.latestTransactions.slice(0, 5);
+        }
+      }
     }
   };
 
   onWalletGetServerId() {
     this.dialogService.open(CreateServerIDComponent, {
-      header: 'xServer ID',
+      header: 'Server ID',
       width: '540px'
     });
   }
 
   private makeLatestTxListSmall() {
-    this.latestTransactions = this.transactionArray.slice(0, 3);
+    if (this.latestTransactions !== undefined || this.latestTransactions.length > 0) {
+      this.latestTransactions = this.latestTransactions.slice(0, 3);
+    }
   }
 
   private startStaking() {
@@ -308,7 +310,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private startSubscriptions() {
     this.getWalletBalance();
-    //this.getHistory();
     this.getHotHistory();
     if (!this.sidechainEnabled) {
       this.getStakingInfo();

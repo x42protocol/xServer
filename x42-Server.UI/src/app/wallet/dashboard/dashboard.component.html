@@ -123,14 +123,14 @@
             </svg>
           </div>
         </section>
-        <div class="col-12 text-center">
-          <p>Click the down arrow for a receive address.</p>
+        <div class="col-12 text-center" *ngIf="!hasBalance">
+          <p>Please setup your server.</p>
         </div>
       </ng-template>
     </div>
     <!-- /NO TRANSACTIONS -->
 
-    <div *ngIf="transactionArray; else noTransactions">
+    <div *ngIf="latestTransactions; else noTransactions">
       <!-- TRANSACTIONS -->
       <p-table [responsive]="true" [value]="latestTransactions" [style]="{'margin-top':'20px'}" *ngIf="hasBalance && !sidechainEnabled">
         <ng-template pTemplate="caption">
