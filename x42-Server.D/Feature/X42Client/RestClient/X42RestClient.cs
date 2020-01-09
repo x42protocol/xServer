@@ -56,13 +56,40 @@ namespace X42.Feature.X42Client.RestClient
 
                 Guard.Null(response, nameof(response), "'api/Node/gettxout' API Response Was Null!");
 
-                logger.LogDebug("Got Node Status Response!");
+                logger.LogDebug("Got GetTXOut Response!");
 
                 return response;
             }
             catch (Exception ex)
             {
-                logger.LogDebug($"An Error '{ex.Message}' Occured When Getting The Node Status!", ex);
+                logger.LogDebug($"An Error '{ex.Message}' Occured When Getting The GetTXOut!", ex);
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets address balance
+        /// </summary>
+        /// <param name="address">Public address</param>
+        /// <param name="minConfirmations">Minimum confirmations</param>
+        /// <returns>The available balance for the address</returns>
+        public async Task<GetAddressesBalancesResponse> GetAddressBalances(string address, int minConfirmations = 1)
+        {
+            try
+            {
+                GetAddressesBalancesResponse response = await base.SendGet<GetAddressesBalancesResponse>
+                    ($"api/BlockStore/getaddressesbalances?addresses={address}&minConfirmations={minConfirmations}");
+
+                Guard.Null(response, nameof(response), "'api/BlockStore/getaddressesbalances' API Response Was Null!");
+
+                logger.LogDebug("Got Address Balance Response!");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug($"An Error '{ex.Message}' Occured When Getting The Address Balance!", ex);
 
                 return null;
             }

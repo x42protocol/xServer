@@ -235,6 +235,11 @@ namespace X42.Feature.X42Client
             return await restClient.GetTXOut(txid, vout.ToString());
         }
 
+        public async Task<GetAddressesBalancesResponse> GetAddressBalances(string address)
+        {
+            return await restClient.GetAddressBalances(address);
+        }
+
         #region IDisposable Code
 
         private bool _Disposed;

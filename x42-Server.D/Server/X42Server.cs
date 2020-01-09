@@ -150,13 +150,12 @@ namespace X42.Server
 
             if (IsServerReady())
             {
-                var collateralDetails = await network.IsTransactionValid(serverNode);
-                IEnumerable<Tier> tier = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount == collateralDetails.collateral);
+                var collateral = await network.GetServerCollateral(serverNode);
+                IEnumerable<Tier> availableTiers = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount <= collateral);
+                Tier serverTier = availableTiers.Where(t => t.Level == (Tier.TierLevel)serverNode.Tier).FirstOrDefault();
 
-                if (collateralDetails.isValid && tier.Count() == 1)
+                if (serverTier != null)
                 {
-                    serverNode.PublicAddress = collateralDetails.publicAddress;
-
                     bool serverIsValid = await network.IsServerKeyValid(serverNode);
 
                     if (!serverIsValid)
@@ -177,16 +176,13 @@ namespace X42.Server
                         registerResult.FailReason = "Server already exists in repo";
                     }
                 }
-                else
+                else if (availableTiers.Count() != 1)
                 {
-                    if (!collateralDetails.isValid)
-                    {
-                        registerResult.FailReason = "Could not verify collateral";
-                    }
-                    else if (tier.Count() != 1)
-                    {
-                        registerResult.FailReason = "Collateral amount is invalid";
-                    }
+                    registerResult.FailReason = "Collateral amount is invalid";
+                }
+                else if (serverTier == null)
+                {
+                    registerResult.FailReason = "Requested Tier is not available.";
                 }
             }
             else

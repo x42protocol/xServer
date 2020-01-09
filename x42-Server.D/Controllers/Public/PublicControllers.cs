@@ -44,11 +44,11 @@ namespace X42.Controllers.Public
             ServerNodeData serverNode = new ServerNodeData()
             {
                 Name = registerRequest.Name,
-                Ip = registerRequest.Ip,
-                Port = registerRequest.Port,
+                NetworkAddress = registerRequest.NetworkAddress,
+                NetworkPort = registerRequest.NetworkPort,
                 Signature = registerRequest.Signature,
-                TxId = registerRequest.TxId,
-                TxOut = registerRequest.TxOut
+                PublicAddress = registerRequest.Address,
+                Tier = registerRequest.Tier
             };
 
             RegisterResult registerResult = await x42Server.Register(serverNode);

@@ -132,21 +132,21 @@ namespace X42.Feature.Network
 
         public async Task<bool> IsServerKeyValid(ServerNodeData serverNode)
         {
-            string serverKey = $"{serverNode.Name}{serverNode.Ip}{serverNode.Port}{serverNode.TxId}{serverNode.TxOut}{serverNode.PublicAddress}";
+            string serverKey = $"{serverNode.Name}{serverNode.NetworkAddress}{serverNode.NetworkPort}";
 
             return await x42Client.VerifyMessageAsync(serverNode.PublicAddress, serverKey, serverNode.Signature);
         }
 
-        public async Task<(bool isValid, string publicAddress, Money collateral)> IsTransactionValid(ServerNodeData serverNode)
+        public async Task<Money> GetServerCollateral(ServerNodeData serverNode)
         {
-            GetTXOutResponse transactionOutput = await x42Client.GetTXOutData(serverNode.TxId, serverNode.TxOut);
+            GetAddressesBalancesResponse addressBalance = await x42Client.GetAddressBalances(serverNode.PublicAddress);
 
-            if (transactionOutput != null || transactionOutput?.scriptPubKey != null || transactionOutput?.scriptPubKey?.addresses?.Count > 0)
+            if (addressBalance.balances.Count() == 1 && addressBalance.balances.FirstOrDefault().address == serverNode.PublicAddress)
             {
-                return (true, transactionOutput.scriptPubKey.addresses.FirstOrDefault(), Money.FromUnit(transactionOutput.value, MoneyUnit.Satoshi));
+                return Money.FromUnit(addressBalance.balances.FirstOrDefault().balance, MoneyUnit.Satoshi);
             }
 
-            return (false, string.Empty, 0);
+            return Money.Zero;
         }
 
         /// <summary>

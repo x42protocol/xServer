@@ -12,38 +12,38 @@ namespace X42.Controllers.Requests
         public string Name { get; set; }
 
         /// <summary>
-        ///     Public IP of the server requesting to be registered.
+        ///     Public Network Address of the server requesting to be registered.
         /// </summary>
-        [Required(ErrorMessage = "The Ip is missing.")]
-        [StringLength(45, ErrorMessage = "The Ip cannot exceed 45 characters.")]
-        public string Ip { get; set; }
+        [Required(ErrorMessage = "The Network address is missing.")]
+        [StringLength(128, ErrorMessage = "The Network Address cannot exceed 128 characters.")]
+        public string NetworkAddress { get; set; }
 
         /// <summary>
         ///     Public Port of the server requesting to be registered.
         /// </summary>
         [Required(ErrorMessage = "The Port is missing.")]
-        [Range(1, 65535, ErrorMessage = "The Port cannot be below 1 and not exceed 65535 characters.")]
-        public long Port { get; set; }
+        [Range(1, 65535, ErrorMessage = "The Port cannot be below 1 and not exceed 65535.")]
+        public long NetworkPort { get; set; }
 
         /// <summary>
         ///     The Signature of the server requesting to be registered.
         /// </summary>
         [Required(ErrorMessage = "The Signature is missing.")]
-        [StringLength(1024, ErrorMessage = "The address cannot exceed 1024 characters.")]
+        [StringLength(1024, ErrorMessage = "The Signature cannot exceed 1024 characters.")]
         public string Signature { get; set; }
 
         /// <summary>
-        ///     The Transaction ID of the server requesting to be registered.
+        ///     The Public Address of the server requesting to be registered.
         /// </summary>
-        [Required(ErrorMessage = "The TxId is missing.")]
-        [StringLength(128, ErrorMessage = "The transaction id cannot exceed 128 characters.")]
-        public string TxId { get; set; }
+        [Required(ErrorMessage = "The Address is missing.")]
+        [StringLength(128, ErrorMessage = "The Address cannot exceed 128 characters.")]
+        public string Address { get; set; }
 
         /// <summary>
-        ///     The output number in the transaction for the collateral.
+        ///     The Tier the server is requesting to register as.
         /// </summary>
-        [Required(ErrorMessage = "The TxOut is missing.")]
-        [Range(0, int.MaxValue, ErrorMessage = "The Port cannot be below 0 and not exceed 2147483647 characters.")]
-        public long TxOut { get; set; }
+        [Required(ErrorMessage = "The Tier is missing.")]
+        [Range(1, 65535, ErrorMessage = "The Tier cannot be below 1 and not exceed 65535.")]
+        public int Tier { get; set; }
     }
 }
