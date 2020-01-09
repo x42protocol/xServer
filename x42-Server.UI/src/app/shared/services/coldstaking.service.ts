@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, interval, throwError } from 'rxjs';
-import { catchError, startWith, switchMap} from 'rxjs/operators';
+import { catchError, startWith, switchMap } from 'rxjs/operators';
 
 import { GlobalService } from './global.service';
 import { ModalService } from './modal.service';
@@ -78,7 +78,7 @@ export class ColdStakingService {
   private handleHttpError(error: HttpErrorResponse, silent?: boolean) {
     console.log(error);
     if (error.status === 0) {
-      if(!silent) {
+      if (!silent) {
         this.modalService.openModal(null, null);
         this.router.navigate(['app']);
       }

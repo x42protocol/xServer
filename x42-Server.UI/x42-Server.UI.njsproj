@@ -103,6 +103,8 @@
     <Content Include="src\app\wallet\send\send-confirmation\send-confirmation.component.html" />
     <Content Include="src\app\wallet\send\send.component.css" />
     <Content Include="src\app\wallet\send\send.component.html" />
+    <Content Include="src\app\wallet\server\create-serverid\create-serverid.component.css" />
+    <Content Include="src\app\wallet\server\create-serverid\create-serverid.component.html" />
     <Content Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.css" />
     <Content Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.html" />
     <Content Include="src\app\wallet\smart-contracts\components\smart-contracts.component.css" />
@@ -248,6 +250,7 @@
     <TypeScriptCompile Include="src\app\shared\components\main-menu\main-menu.component.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaccountrequest.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaccountresponse.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\serveridresponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaddressresponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakinggetinforesponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingsetup.ts" />
@@ -348,6 +351,8 @@
     <TypeScriptCompile Include="src\app\wallet\send\send-confirmation\send-confirmation.component.ts" />
     <TypeScriptCompile Include="src\app\wallet\send\send.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\send\send.component.ts" />
+    <TypeScriptCompile Include="src\app\wallet\server\create-serverid\create-serverid.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\server\create-serverid\create-serverid.component.ts" />
     <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\balance\balance.component.ts" />
     <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\contract-type.pipe.ts" />
     <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.spec.ts" />
@@ -422,9 +427,11 @@
     <Folder Include="src\app\wallet\history\" />
     <Folder Include="src\app\wallet\logout-confirmation\" />
     <Folder Include="src\app\wallet\menu\" />
+    <Folder Include="src\app\wallet\server\" />
     <Folder Include="src\app\wallet\receive\" />
     <Folder Include="src\app\wallet\send\" />
     <Folder Include="src\app\wallet\send\send-confirmation\" />
+    <Folder Include="src\app\wallet\server\create-serverid\" />
     <Folder Include="src\app\wallet\smart-contracts\" />
     <Folder Include="src\app\wallet\smart-contracts\components\" />
     <Folder Include="src\app\wallet\smart-contracts\components\balance\" />

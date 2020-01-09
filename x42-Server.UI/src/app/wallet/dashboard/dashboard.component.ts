@@ -7,11 +7,11 @@ import { GlobalService } from '../../shared/services/global.service';
 import { WalletInfo } from '../../shared/models/wallet-info';
 import { TransactionInfo } from '../../shared/models/transaction-info';
 import { ThemeService } from '../../shared/services/theme.service';
-import { ColdStakingCreateAddressComponent } from '../cold-staking/create-address/create-address.component';
 
 import { SendComponent } from '../send/send.component';
 import { ReceiveComponent } from '../receive/receive.component';
 import { TransactionDetailsComponent } from '../transaction-details/transaction-details.component';
+import { CreateServerIDComponent } from '../server/create-serverid/create-serverid.component';
 
 import { Subscription } from 'rxjs';
 
@@ -177,15 +177,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   };
 
-  onWalletGetFirstUnusedAddress(isColdStaking: boolean) {
-    let modalData = {
-      "isColdStaking": isColdStaking
-    };
-
-    this.dialogService.open(ColdStakingCreateAddressComponent, {
-      header: 'xServer Address',
-      width: '540px',
-      data: modalData
+  onWalletGetServerId() {
+    this.dialogService.open(CreateServerIDComponent, {
+      header: 'xServer ID',
+      width: '540px'
     });
   }
 

@@ -28,6 +28,7 @@ import { ColdStakingCreateHotComponent } from './cold-staking/create-hot/create-
 import { SendConfirmationComponent } from './send/send-confirmation/send-confirmation.component';
 import { TransactionDetailsComponent } from './transaction-details/transaction-details.component';
 import { LogoutConfirmationComponent } from './logout-confirmation/logout-confirmation.component';
+import { CreateServerIDComponent } from './server/create-serverid/create-serverid.component';
 
 // PrimeNG Components.
 import { MessageService, DialogService } from 'primeng/api';
@@ -95,7 +96,8 @@ import { CalendarModule } from 'primeng/calendar';
     ColdStakingCreateAddressComponent,
     ColdStakingWithdrawComponent,
     ColdStakingWithdrawConfirmationComponent,
-    ColdStakingCreateHotComponent
+    ColdStakingCreateHotComponent,
+    CreateServerIDComponent
   ],
   providers: [
     MessageService,
@@ -112,7 +114,8 @@ import { CalendarModule } from 'primeng/calendar';
     ColdStakingCreateAddressComponent,
     ColdStakingWithdrawComponent,
     ColdStakingWithdrawConfirmationComponent,
-    ColdStakingCreateHotComponent
+    ColdStakingCreateHotComponent,
+    CreateServerIDComponent
   ]
 })
 
