@@ -176,13 +176,9 @@ namespace X42.Server
                         registerResult.FailReason = "Server already exists in repo";
                     }
                 }
-                else if (availableTiers.Count() != 1)
+                else if (serverTier == null || availableTiers.Count() != 1)
                 {
-                    registerResult.FailReason = "Collateral amount is invalid";
-                }
-                else if (serverTier == null)
-                {
-                    registerResult.FailReason = "Requested Tier is not available.";
+                    registerResult.FailReason = "Requested Tier is not available or collateral amount is invalid.";
                 }
             }
             else
