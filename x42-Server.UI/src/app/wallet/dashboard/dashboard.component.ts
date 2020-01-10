@@ -167,7 +167,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       this.latestTransactions.push(new TransactionInfo(transactionType, transactionId, transactionAmount, transactionFee, transactionConfirmedInBlock, transactionTimestamp));
 
-      if (this.latestTransactions !== undefined || this.latestTransactions.length > 0) {
+      if (this.latestTransactions !== undefined && this.latestTransactions.length > 0) {
         if (this.stakingEnabled) {
           this.makeLatestTxListSmall();
         } else {
@@ -185,7 +185,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private makeLatestTxListSmall() {
-    if (this.latestTransactions !== undefined || this.latestTransactions.length > 0) {
+    if (this.latestTransactions !== undefined && this.latestTransactions.length > 0) {
       this.latestTransactions = this.latestTransactions.slice(0, 3);
     }
   }
