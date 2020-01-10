@@ -1,7 +1,7 @@
 <p-blockUI [target]="createWallet" [blocked]="walletLocked">
   <i class="fa fa-lock fa-5x" style="position:absolute;top:25%;left:50%"></i>
 </p-blockUI>
-<div class="formrow" >
+<div class="formrow">
   <!-- /col -->
   <div class="col-12">
     <p-messages [value]="resultMessage"></p-messages>
@@ -27,15 +27,15 @@
       <!-- /form-group -->
       <div class="form-group col-12">
         <span class="ui-float-label">
-          <input type="text" class="form-control form-control-success" formControlName="walletPassphrase" id="walletPassphrase" placement="bottom" ngbTooltip="The passphrase will be combined with your secret words to generate the private seed and will be required to restore your wallet in the future if necessary." triggers="click:blur" pInputText>
-          <label for="walletPassphrase">Enter an optional passphrase.</label>
+          <input type="text" class="form-control form-control-success" formControlName="walletPassphrase" id="walletPassphrase" placement="bottom" ngbTooltip="The recovery phrase will be combined with your secret words to generate the private seed and will be required to restore your wallet in the future if necessary." triggers="click:blur" pInputText>
+          <label for="walletPassphrase">Enter an optional recovery phrase.</label>
         </span>
         <em class="text-muted ml-auto float-left">(optional)</em>
         <div *ngIf="formErrors.walletPassphrase" class="invalid-feedback">{{ formErrors.walletPassphrase }}</div>
       </div>
       <div class="col-12">
         <div class="alert alert-danger text-center" style="padding-top: 20px;" role="alert">
-          Your passphrase will be required to recover your wallet in the future. <br><strong>Keep it safe if you choose to have one</strong>.
+          Your recovery phrase will be required to recover your wallet in the future. <br><strong>Keep it safe if you choose to have one</strong>.
         </div>
       </div>
       <div class="modal-footer col-12">
