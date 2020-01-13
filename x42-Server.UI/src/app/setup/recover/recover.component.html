@@ -37,7 +37,7 @@
 				</div>
 				<div class="modal-footer col-12">
 					<button *ngIf="!isRecovering" type="button" class="btn btn-outline-light" (click)="onBackClicked()">Cancel</button>
-					<button *ngIf="!isRecovering" type="button" class="btn btn-primary btn-block" [disabled]="!recoverWalletForm.valid || isRecovering" (click)="onRecoverClicked()">Restore</button>
+					<button *ngIf="!isRecovering" type="button" class="btn-block" [disabled]="!recoverWalletForm.valid || isRecovering" (click)="onRecoverClicked()" label="Restore" pButton></button>
 					<!-- SVG -->
 					<div *ngIf="isRecovering" [className]="isDarkTheme ? 'LoadingWhite' : 'Loading'" style="padding: 30px;">
 						<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 300 300" enable-background="new 0 0 300 300" xml:space="preserve">
