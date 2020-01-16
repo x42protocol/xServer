@@ -42,7 +42,7 @@ namespace X42.Utilities
         public PrefixLogger(ILoggerFactory loggerFactory, string categoryName, string prefix = null)
         {
             logger = LogManager.GetLogger(categoryName);
-            consoleLogger = loggerFactory.GetConsoleLoggerProvider().CreateLogger(categoryName);
+            consoleLogger = loggerFactory.CreateLogger(categoryName);
 
             this.prefix = prefix != null ? prefix : string.Empty;
             wrapperType = typeof(PrefixLogger);

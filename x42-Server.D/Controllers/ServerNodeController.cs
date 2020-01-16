@@ -28,6 +28,7 @@ namespace X42.Controllers
     /// <summary>
     ///     Provides methods that interact with the full node.
     /// </summary>
+    [ApiController]
     [Route("")]
     [Authorize(Policy = Policy.PrivateAccess)]
     public class ServerNodeContoller : Controller

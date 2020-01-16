@@ -9,6 +9,7 @@ namespace X42.Controllers
     /// <summary>
     ///     Controller providing HTML Dashboard
     /// </summary>
+    [ApiController]
     [Route("")]
     [Authorize(Policy = Policy.PrivateAccess)]
     public class DashboardController : Controller

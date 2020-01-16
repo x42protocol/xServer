@@ -3,16 +3,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using x42.Feature.API;
 using X42.Feature.API.Requirements;
 using X42.Server;
 using X42.Utilities;
@@ -25,7 +32,7 @@ namespace X42.Feature.Api
         /// <summary>Instance logger.</summary>
         private ILogger logger;
 
-        public ApiBuilder(IHostingEnvironment env)
+        public ApiBuilder(IWebHostEnvironment env)
         {
             IConfigurationBuilder builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -54,7 +61,6 @@ namespace X42.Feature.Api
                             builder
                                 .AllowAnyHeader()
                                 .AllowAnyMethod()
-                                .AllowCredentials()
                                 .AllowAnyOrigin();
                         }
                     );
@@ -74,43 +80,55 @@ namespace X42.Feature.Api
 
             // Add framework services.
             services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(LoggingActionFilter));
+                options.EnableEndpointRouting = false;
+                ServiceProvider serviceProvider = services.BuildServiceProvider();
+                var apiSettings = (ApiSettings)serviceProvider.GetRequiredService(typeof(ApiSettings));
+                if (apiSettings.KeepaliveTimer != null)
                 {
-                    options.Filters.Add(typeof(LoggingActionFilter));
-
-                    ServiceProvider serviceProvider = services.BuildServiceProvider();
-                    ApiSettings apiSettings = (ApiSettings)serviceProvider.GetRequiredService(typeof(ApiSettings));
-                    if (apiSettings.KeepaliveTimer != null) options.Filters.Add(typeof(KeepaliveActionFilter));
-                })
+                    options.Filters.Add(typeof(KeepaliveActionFilter));
+                }
+            })
                 // add serializers for NBitcoin objects
-                .AddJsonOptions(options => Serializer.RegisterFrontConverters(options.SerializerSettings))
+                .AddNewtonsoftJson(options => Serializer.RegisterFrontConverters(options.SerializerSettings))
                 .AddControllers(services);
 
-            // Register the Swagger generator, defining one or more Swagger documents
-            services.AddSwaggerGen(setup =>
+            // Enable API versioning.
+            // Note much of this is borrowed from https://github.com/microsoft/aspnet-api-versioning/blob/master/samples/aspnetcore/SwaggerSample/Startup.cs
+            services.AddApiVersioning(options =>
             {
-                setup.SwaggerDoc("v1", new Info { Title = "X42.ServerNode.Api", Version = "v1" });
+                // Our versions are configured to be set via URL path, no need to read from querystring etc.
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
 
-                //Set the comments path for the swagger json and ui.
-                string basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                string apiXmlPath = Path.Combine(basePath, "X42.ServerNode.xml");
-
-                if (File.Exists(apiXmlPath)) setup.IncludeXmlComments(apiXmlPath);
-
-                setup.DescribeAllEnumsAsStrings();
+                // When no API version is specified, redirect to version 1.
+                options.AssumeDefaultVersionWhenUnspecified = true;
             });
 
-            //services.AddSingleton<IAuthorizationHandler, PrivateOnlyRequirement>();
+            // Add the versioned API explorer, which adds the IApiVersionDescriptionProvider service and allows Swagger integration.
+            services.AddVersionedApiExplorer(
+                options =>
+                {
+                    // Format the version as "'v'major[.minor][-status]"
+                    options.GroupNameFormat = "'v'VVV";
+
+                    // Substitute the version into the URLs in the swagger interface where we would otherwise see {version:apiVersion}
+                    options.SubstituteApiVersionInUrl = true;
+                });
+
+            // Add custom Options injectable for Swagger. This is injected with the IApiVersionDescriptionProvider service from above.
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+
+            // Register the Swagger generator. This will use the options we injected just above.
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
-            ApiSettings apiSettings)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, ApiSettings apiSettings)
         {
             logger = loggerFactory.CreateLogger(typeof(ApiBuilder).FullName);
 
             app.UseCors("CorsPolicy");
-
-            app.UseMvc();
 
             if (apiSettings.EnableSwagger)
             {

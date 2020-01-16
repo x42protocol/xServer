@@ -62,9 +62,9 @@ namespace X42.Utilities.Extensions
         /// <exception cref="ArgumentOutOfRangeException">Thrown in case of the port number is out of range.</exception>
         /// <exception cref="FormatException">Thrown in case of ipAddress or port number is invalid.</exception>
         /// <exception cref="SocketException">Thrown if the ipAddress is not a valid host name.</exception>
-        public static IPEndPoint ToIPEndPoint(this string ipAddress, int port)
+        public static EndPoint ToIPEndPoint(this string ipAddress, int port)
         {
-            return Utils.ParseIpEndpoint(ipAddress, port);
+            return Utils.ParseEndpoint(ipAddress, port);
         }
 
         /// <summary>

@@ -11,6 +11,7 @@ namespace X42.Controllers.Public
     /// <summary>
     ///     Controller providing Public Methods for the server.
     /// </summary>
+    [ApiController]
     [Route("")]
     public class PublicController : Controller
     {

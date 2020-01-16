@@ -58,16 +58,11 @@ namespace X42.Configuration
         ///     - Alternatively, if the file name is not supplied then a servernode-specific file
         ///     name would be determined. In this case we first need to determine the servernode.
         /// </remarks>
-        public ServerSettings(ServerNodeBase serverNode,
-            ProtocolVersion protocolVersion = ProtocolVersion.PROTOCOL_VERSION, string agent = "x42",
-            string[] args = null)
+        public ServerSettings(ServerNodeBase serverNode, ProtocolVersion protocolVersion = ProtocolVersion.PROTOCOL_VERSION, string agent = "x42", string[] args = null)
         {
             ServerNode = serverNode;
             // Create the default logger factory and logger.
-            ExtendedLoggerFactory loggerFactory = new ExtendedLoggerFactory();
-            LoggerFactory = loggerFactory;
-            LoggerFactory.AddConsoleWithFilters();
-            LoggerFactory.AddNLog();
+            LoggerFactory = ExtendedLoggerFactory.Create(Log);
             Logger = LoggerFactory.CreateLogger(typeof(ServerSettings).FullName);
 
             ProtocolVersion = protocolVersion;
@@ -124,9 +119,6 @@ namespace X42.Configuration
             // Set the data folder.
             DataFolder = new DataFolder(DataDir);
 
-            // Attempt to load NLog configuration from the DataFolder.
-            loggerFactory.LoadNLogConfiguration(DataFolder);
-
             // Get the configuration file name for the servernode if it was not specified on the command line.
             if (ConfigurationFile == null)
             {
@@ -140,8 +132,9 @@ namespace X42.Configuration
             // Create the custom logger factory.
             Log = new LogSettings();
             Log.Load(ConfigReader);
+            LoggerFactory.AddNLog();
+            LoggerFactory.LoadNLogConfiguration(DataFolder);
             LoggerFactory.AddFilters(Log, DataFolder);
-            LoggerFactory.ConfigureConsoleFilters(LoggerFactory.GetConsoleSettings(), Log);
 
             // Load the configuration.
             LoadConfiguration();
@@ -247,7 +240,7 @@ namespace X42.Configuration
                             BindingFlags.Public | BindingFlags.Static);
                     if (getDefaultConfiguration != null)
                     {
-                        getDefaultConfiguration.Invoke(null, new object[] {builder, ServerNode});
+                        getDefaultConfiguration.Invoke(null, new object[] { builder, ServerNode });
                         builder.AppendLine();
                     }
                 }
