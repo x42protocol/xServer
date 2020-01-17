@@ -25,7 +25,7 @@
     "start:debug": "npm run postinstall:electron && npm run electron:tsc && npm-run-all -p ng:serve",
     "start:prod": "npm run start -- -c production",
     "ng": "ng",
-    "build": "npm run postinstall:electron && npm run electron:tsc && ng build",
+    "build": "npm run postinstall:electron && npm run electron:serve-tsc && ng build",
     "build:prod": "npm run build -- -c production",
     "ng:lint": "ng lint",
     "ng:serve": "ng serve",
