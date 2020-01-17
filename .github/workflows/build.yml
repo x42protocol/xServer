@@ -109,7 +109,7 @@ jobs:
       uses: DennisAMenace/action-release@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        files: "app-builds/x42 Server-v${{env.VERSION}}-${{RELEASE_CONFIGURATION}}"
+        files: "app-builds/x42 Server-v${{env.VERSION}}-${{matrix.runtime}}"
         draft: true
         prerelease: true
         body: ''
