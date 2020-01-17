@@ -27,6 +27,7 @@
     "testnet": "npm run postinstall:electron && npm-run-all -p ng:serve electron:serve:testnet",
     "sidechain": "npm run postinstall:electron && npm-run-all -p ng:serve electron:serve:sidechain",
     "sidechain:testnet": "npm run postinstall:electron && npm-run-all -p ng:serve electron:serve:sidechain:testnet",
+    "builder": "npm run build:prod && npx electron-builder build",
     "build:linux": "npm run builder -- --linux",
     "build:linuxsnap": "npm run builder -- --linux snap",
     "build:win:x86": "export arch=x86|| set arch=x86&& npm run builder -- --windows --ia32",
