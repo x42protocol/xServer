@@ -16,18 +16,6 @@
     "lib": [
       "es2018",
       "dom"
-    ],
-    "paths": {
-      "@models/*": [
-        "./src/app/classes/*"
-      ]
-    }
-  },
-  "include": [
-    "main.ts",
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    ]
+  }
 }
