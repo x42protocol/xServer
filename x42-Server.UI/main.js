@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var electron_1 = require("electron");
 var path = require("path");
 var url = require("url");
@@ -236,4 +236,3 @@ function createMenu() {
     electron_1.Menu.setApplicationMenu(electron_1.Menu.buildFromTemplate(menuTemplate));
 }
 ;
-//# sourceMappingURL=main.js.map
