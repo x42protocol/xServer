@@ -16,7 +16,7 @@ jobs:
           - os: windows-latest
             extension: ".zip"
             runtime: "win-x64"
-            platform: "windows"
+            platform: "win"
           - os: ubuntu-latest
             extension: ".tar.gz"
             runtime: "linux-x64"
