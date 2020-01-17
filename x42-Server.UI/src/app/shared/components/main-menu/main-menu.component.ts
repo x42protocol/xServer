@@ -31,7 +31,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
   private nodeStatusSubscription: Subscription;
   public lastBlockSyncedHeight: number;
   public chainTip: number;
-  private isChainSynced: boolean;
+  public isChainSynced: boolean;
   public connectedNodes: number = 0;
   private percentSyncedNumber: number = 0;
   public percentSynced: string;

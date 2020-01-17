@@ -15,7 +15,7 @@ import { TransactionInfo } from '../../shared/models/transaction-info';
 })
 export class TransactionDetailsComponent implements OnInit, OnDestroy {
   
-  private transaction: TransactionInfo;
+  public transaction: TransactionInfo;
   constructor(private FullNodeApiService: FullNodeApiService, private globalService: GlobalService, public ref: DynamicDialogRef, public config: DynamicDialogConfig) {}
 
   public copied: boolean = false;

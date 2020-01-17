@@ -49,7 +49,7 @@ export class ColdStakingWithdrawComponent implements OnInit, OnDestroy {
   public firstTitle: string;
   public secondTitle: string;
   public opReturnAmount: number = 0;
-  private isColdStaking: boolean;
+  public isColdStaking: boolean;
   private transactionHex: string;
   private walletBalanceSubscription: Subscription;
   private coldStakingAccount: string = "coldStakingColdAddresses";

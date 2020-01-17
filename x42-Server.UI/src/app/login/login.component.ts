@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
   public hasWallet: boolean = false;
   public isDecrypting = false;
   public isDarkTheme = false;
-  private openWalletForm: FormGroup;
+  public openWalletForm: FormGroup;
   private wallets: [string];
 
   ngOnInit() {

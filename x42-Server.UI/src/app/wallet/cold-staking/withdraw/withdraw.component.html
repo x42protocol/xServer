@@ -1,6 +1,6 @@
 <div class="modal-header">
   <h5 class="modal-title">Withdraw from <span *ngIf="isColdStaking">cold</span><span *ngIf="!isColdStaking">hot</span> balance</h5>
-    <button type="button" class="close closemodal ml-auto" data-dismiss="modal" aria-label="Close" (click)="activeModal.close('Close click')">
+    <button type="button" class="close closemodal ml-auto" data-dismiss="modal" aria-label="Close" (click)="ref.close('Close click')">
         <i class="lnr lnr-cross"></i>
     </button>
 </div>
@@ -41,7 +41,7 @@
   </form>
 </div>
 <div class="modal-footer pt-0 mt-0">
-  <button *ngIf="!isSending" type="button" [disabled]="isSending" class="btn btn-danger text-uppercase" (click)="activeModal.close('Close click')">Cancel</button>
+  <button *ngIf="!isSending" type="button" [disabled]="isSending" class="btn btn-danger text-uppercase" (click)="ref.close('Close click')">Cancel</button>
   <button *ngIf="!isSending" type="button" class="btn btn-primary btn-block text-uppercase" [disabled]="!sendForm.valid || isSending || !estimatedFee" (click)="send()">Send</button>
   <!-- SVG -->
   <div *ngIf="isSending" class="Loading LoadingSend col-2 mx-auto">

@@ -27,7 +27,7 @@
 
   <br /><br />
   <h3 style="font-weight:normal">Look and feel</h3>
-  <p-dropdown [options]="groupedThemes" [(ngModel)]="selectedTheme" placeholder="Select a Theme" [group]="true" (onChange)="onThemeChange($event)">
+  <p-dropdown [options]="groupedThemes" placeholder="Select a Theme" [group]="true" (onChange)="onThemeChange($event)">
     <ng-template let-group pTemplate="group">
       <i class="{{group.value}}" aria-hidden="true" style="width:20px;vertical-align:middle"></i>
       <span style="margin-left:.25em">{{group.label}}</span>

@@ -214,7 +214,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       ;
   }
 
-  private stopStaking() {
+  public stopStaking() {
     this.isStopping = true;
     this.isStarting = false;
     this.apiService.stopStaking()

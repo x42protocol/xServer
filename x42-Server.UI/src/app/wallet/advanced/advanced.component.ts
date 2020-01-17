@@ -12,7 +12,7 @@ export class AdvancedComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router) {
   }
-  private items: MenuItem[];
+  public items: MenuItem[];
 
   ngOnInit() {
     this.items = [{
