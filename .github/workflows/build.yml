@@ -51,7 +51,7 @@ jobs:
 
     - name: Variables
       run: |
-        echo "::set-env name=VERSION::$(npm run version --silent)"
+        echo "::set-env name=VERSION::$(npm --prefix ./x42-Server.UI/ run version --silent)"
         echo "::set-env name=RELEASE_CONFIGURATION::${{ matrix.runtime }}"
 
     - name: Tooling
