@@ -89,12 +89,18 @@ jobs:
         tar -xvzf daemon${{ matrix.extension }} -C daemon
 
     - name: Install (npm)
-      run: npm install
+      run: |
+        cd ./x42-Server.UI/
+        npm install
 
     - name: Build (npm)
-      run: npm run build:${{ matrix.platform }}
+      run: |
+        cd ./x42-Server.UI/
+        npm run build:${{ matrix.platform }}
 
     - name: Release (npm)
-      run: npm run publish:${{ matrix.platform }}
+      run: |
+        cd ./x42-Server.UI/
+        npm run publish:${{ matrix.platform }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
