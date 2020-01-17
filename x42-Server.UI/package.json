@@ -52,7 +52,8 @@
     "publish:linux": "npm run builder --  -l -p always",
     "publish:linuxsnap": "npm run builder --  -l snap -p always",
     "test": "npm run postinstall:web && ng test",
-    "e2e": "npm run postinstall:web && ng e2e"
+    "e2e": "npm run postinstall:web && ng e2e",
+    "version": "node -p \"require('./package.json').version\""
   },
   "dependencies": {
     "@angular/cdk": "^7.3.7",
