@@ -37,6 +37,7 @@
     <Content Include="angular.json" />
     <Content Include="e2e\tsconfig.e2e.json" />
     <Content Include="electron-builder.json" />
+    <Content Include="package-lock.json" />
     <Content Include="package.json" />
     <Content Include="src\app\app.component.css" />
     <Content Include="src\app\app.component.html" />
