@@ -1,0 +1,100 @@
+name: Build
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+  
+  buildTestRelease:
+
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        include:
+          - os: windows-latest
+            extension: ".zip"
+            runtime: "win-x64"
+            platform: "windows"
+          - os: ubuntu-latest
+            extension: ".tar.gz"
+            runtime: "linux-x64"
+            platform: "linux"
+          - os: macos-latest
+            runtime: "osx-x64"
+            extension: ".zip"
+            platform: "mac"
+        node_version: [12.x]
+        dotnet_version: ['3.1.101']
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+    
+    env:
+      XSERVER_PROJECT_NAME: 'x42.Server'
+      XSERVER_SOLUTION_PATH: 'x42-Server.D.sln'
+      XSERVER_PROJECT_PATH: 'x42-Server.D/x42.Server.csproj'
+      XSERVER_BUILD_CONFIGURATION: 'Release'
+      BLOCKCORE_DAEMON_VERSION: '1.2.23'
+      ARCH: 'x64'
+
+    steps:
+
+    - uses: actions/checkout@v1
+      name: Checkout
+
+    - name: Setup Node.js (${{ matrix.node_version }})
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node_version }}
+
+    - name: Variables
+      run: |
+        echo "::set-env name=VERSION::$(npm run version --silent)"
+        echo "::set-env name=RELEASE_CONFIGURATION::${{ matrix.runtime }}"
+
+    - name: Tooling
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt update
+        sudo apt install snapd
+        sudo snap install --classic snapcraft
+
+    - name: Download x42-BlockCore
+      shell: pwsh
+      run: |
+        echo ${env:PATH}
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        $url = "https://github.com/x42protocol/x42-BlockCore/releases/download/v${{ env.BLOCKCORE_DAEMON_VERSION }}/x42.x42D-${{ env.BLOCKCORE_DAEMON_VERSION }}-${{ matrix.platform }}-${{ env.ARCH }}${{ matrix.extension }}"
+        $output = Join-Path -Path "./" -ChildPath "daemon${{ matrix.extension }}"
+        Write-Output "Url: $url"
+        Write-Output "Path: $output"
+        $start_time = Get-Date
+        (New-Object System.Net.WebClient).DownloadFile($url, $output)
+        Write-Output "Time taken: $((Get-Date).Subtract($start_time).Seconds) second(s)" 
+
+    - name: Unpack (Windows)
+      if: matrix.os == 'windows-latest'
+      run: 7z x daemon${{ matrix.extension }} -odaemon
+
+    - name: Unpack (Mac)
+      if: matrix.os == 'macos-latest'
+      run: unzip -a daemon${{ matrix.extension }} -d daemon
+
+    - name: Unpack (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        mkdir daemon
+        tar -xvzf daemon${{ matrix.extension }} -C daemon
+
+    - name: Install (npm)
+      run: npm install
+
+    - name: Build (npm)
+      run: npm run build:${{ matrix.platform }}
+
+    - name: Release (npm)
+      run: npm run publish:${{ matrix.platform }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
