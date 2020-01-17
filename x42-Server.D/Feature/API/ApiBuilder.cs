@@ -130,6 +130,8 @@ namespace X42.Feature.Api
 
             app.UseCors("CorsPolicy");
 
+            app.UseMvc();
+
             if (apiSettings.EnableSwagger)
             {
                 // Enable middleware to serve generated Swagger as a JSON endpoint.

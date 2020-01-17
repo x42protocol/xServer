@@ -20,16 +20,18 @@ namespace X42.Feature.Api
         public static IMvcBuilder AddControllers(this IMvcBuilder builder, IServiceCollection services)
         {
             // Adds Controllers with API endpoints
-            IEnumerable<ServiceDescriptor> controllerTypes =
-                services.Where(s => s.ServiceType.GetTypeInfo().BaseType == typeof(Controller));
+            IEnumerable<ServiceDescriptor> controllerTypes = services.Where(s => s.ServiceType.GetTypeInfo().BaseType == typeof(Controller));
             foreach (ServiceDescriptor controllerType in controllerTypes)
+            {
                 builder.AddApplicationPart(controllerType.ServiceType.GetTypeInfo().Assembly);
+            }
 
             // Adds FeatureControllers with API endpoints.
-            IEnumerable<ServiceDescriptor> featureControllerTypes =
-                services.Where(s => s.ServiceType.GetTypeInfo().BaseType == typeof(FeatureController));
+            IEnumerable<ServiceDescriptor> featureControllerTypes = services.Where(s => s.ServiceType.GetTypeInfo().BaseType == typeof(FeatureController));
             foreach (ServiceDescriptor featureControllerType in featureControllerTypes)
+            {
                 builder.AddApplicationPart(featureControllerType.ServiceType.GetTypeInfo().Assembly);
+            }
 
             // Adds ServerNodeContoller with API endpoints.
             builder.AddApplicationPart(typeof(ServerNodeContoller).Assembly);
