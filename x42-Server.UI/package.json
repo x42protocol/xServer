@@ -106,6 +106,8 @@
     "typescript": "3.5.3",
     "wait-on": "^3.3.0",
     "webdriver-manager": "^13.0.0",
-    "zone.js": "^0.10.2"
-  }
+    "zone.js": "^0.10.2",
+    "snyk": "^1.278.1"
+  },
+  "snyk": true
 }
