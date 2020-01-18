@@ -114,7 +114,7 @@ jobs:
       uses: DennisAMenace/action-release@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        files: "${{ env.RELEASE_NAME }}"
+        files: "./x42-Server.UI/${{ env.RELEASE_NAME }}"
         draft: true
         prerelease: true
         body: ''
