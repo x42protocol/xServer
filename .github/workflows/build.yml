@@ -14,16 +14,19 @@ jobs:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
         include:
           - os: windows-latest
-            extension: ".zip"
+            extension: ".exe"
+            bc_extension: ".zip"
             runtime: "win-x64"
             platform: "win"
           - os: ubuntu-latest
-            extension: ".tar.gz"
+            extension: ".deb"
+            bc_extension: ".tar.gz"
             runtime: "linux-x64"
             platform: "linux"
           - os: macos-latest
             runtime: "osx-x64"
-            extension: ".zip"
+            extension: ".dmg"
+            bc_extension: ".zip"
             platform: "osx"
         node_version: [12.x]
         dotnet_version: ['3.1.101']
@@ -32,6 +35,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     
     env:
+      XSERVER_NAME: 'xServer'
       XSERVER_PROJECT_NAME: 'x42.Server'
       XSERVER_SOLUTION_PATH: 'x42-Server.D.sln'
       XSERVER_PROJECT_PATH: 'x42-Server.D/x42.Server.csproj'
@@ -53,6 +57,7 @@ jobs:
       run: |
         echo "::set-env name=VERSION::$(npm --prefix ./x42-Server.UI/ run version --silent)"
         echo "::set-env name=RELEASE_CONFIGURATION::${{ matrix.runtime }}"
+        echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
 
     - name: Tooling
       if: matrix.os == 'ubuntu-latest'
@@ -66,7 +71,7 @@ jobs:
       run: |
         echo ${env:PATH}
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        $url = "https://github.com/x42protocol/x42-BlockCore/releases/download/v${{ env.BLOCKCORE_DAEMON_VERSION }}/x42.x42D-${{ env.BLOCKCORE_DAEMON_VERSION }}-${{ matrix.platform }}-${{ env.ARCH }}${{ matrix.extension }}"
+        $url = "https://github.com/x42protocol/x42-BlockCore/releases/download/v${{ env.BLOCKCORE_DAEMON_VERSION }}/x42.x42D-${{ env.BLOCKCORE_DAEMON_VERSION }}-${{ matrix.platform }}-${{ env.ARCH }}${{ matrix.bc_extension }}"
         $output = Join-Path -Path "./" -ChildPath "daemon${{ matrix.extension }}"
         Write-Output "Url: $url"
         Write-Output "Path: $output"
