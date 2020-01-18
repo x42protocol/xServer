@@ -1,6 +1,6 @@
 {
   "appId": "com.x42.server",
-  "productName": "x42 Server",
+  "productName": "xServer",
   "publish": null,
   "directories": {
     "output": "app-builds"
@@ -37,7 +37,7 @@
     "category": "Utility",
     "artifactName": "${productName}-v${version}-${os}-${arch}.${ext}"
   },
-  "mac": {
+  "osx": {
     "icon": "dist/assets/images/icon.icns",
     "target": [
       "dmg"
