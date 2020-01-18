@@ -37,7 +37,7 @@
     "category": "Utility",
     "artifactName": "${productName}-v${version}-${os}-${arch}.${ext}"
   },
-  "osx": {
+  "mac": {
     "icon": "dist/assets/images/icon.icns",
     "target": [
       "dmg"
