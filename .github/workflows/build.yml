@@ -36,6 +36,7 @@ jobs:
     
     env:
       XSERVER_NAME: 'xServer'
+      XSERVER_VERSION: '4.0.0'
       XSERVER_PROJECT_NAME: 'x42.Server'
       XSERVER_SOLUTION_PATH: 'x42-Server.D.sln'
       XSERVER_PROJECT_PATH: 'x42-Server.D/x42.Server.csproj'
@@ -55,13 +56,9 @@ jobs:
 
     - name: Variables
       run: |
-        echo "::set-env name=VERSION::$(npm --prefix ./x42-Server.UI/ run version)"
+        echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
         echo "::set-env name=RELEASE_CONFIGURATION::${{ matrix.runtime }}"
 
-    - name: Package Release Name
-      run: |
-        echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
-        
     - name: Tooling
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -121,5 +118,5 @@ jobs:
         draft: true
         prerelease: true
         body: ''
-        name: "xServer (Release ${{env.VERSION}})"
+        name: "${{env.XSERVER_NAME}} (Release ${{env.XSERVER_VERSION}})"
         tag: v${{env.VERSION}}  
