@@ -50,7 +50,7 @@
     "perMachine": true,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": true,
-    "guid": "42ae8cbf-d2b7-4686-9897-d2cd48e4f942",
+    "guid": "42b3d819-ed7d-42cb-a66a-61226b1ce042",
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
     "license": "src/assets/images/license_en.txt"
