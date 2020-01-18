@@ -120,7 +120,7 @@ jobs:
       uses: DennisAMenace/action-release@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        files: "${{ env.UI_PATH }}${{ env.RELEASE_NAME }}"
+        files: "${{ env.UI_PATH }}app-builds/${{ env.RELEASE_NAME }}"
         draft: true
         prerelease: true
         body: ''
