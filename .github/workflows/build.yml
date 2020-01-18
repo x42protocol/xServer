@@ -104,3 +104,14 @@ jobs:
         npm run publish:${{ matrix.platform }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Publish Release
+      uses: DennisAMenace/action-release@master
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        files: "app-builds/x42 Server-v${{env.VERSION}}-${{matrix.runtime}}"
+        draft: true
+        prerelease: true
+        body: ''
+        name: "x42-BlockCore (Release ${{env.VERSION}})"
+        tag: v${{env.VERSION}}  
