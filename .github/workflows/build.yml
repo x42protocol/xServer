@@ -55,10 +55,13 @@ jobs:
 
     - name: Variables
       run: |
-        echo "::set-env name=VERSION::$(npm --prefix ./x42-Server.UI/ run version --silent)"
+        echo "::set-env name=VERSION::$(npm --prefix ./x42-Server.UI/ run version)"
         echo "::set-env name=RELEASE_CONFIGURATION::${{ matrix.runtime }}"
-        echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
 
+    - name: Package Release Name
+      run: |
+        echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
+        
     - name: Tooling
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -114,9 +117,9 @@ jobs:
       uses: DennisAMenace/action-release@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        files: "x42 Server-v${{env.VERSION}}-${{matrix.runtime}}"
+        files: "${{ env.RELEASE_NAME }}"
         draft: true
         prerelease: true
         body: ''
-        name: "x42-BlockCore (Release ${{env.VERSION}})"
+        name: "xServer (Release ${{env.VERSION}})"
         tag: v${{env.VERSION}}  
