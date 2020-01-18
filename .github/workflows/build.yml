@@ -16,15 +16,15 @@ jobs:
           - os: windows-latest
             extension: ".exe"
             bc_extension: ".zip"
-            runtime: "win-x64"
+            runtime: "win"
             platform: "win"
           - os: ubuntu-latest
             extension: ".deb"
             bc_extension: ".tar.gz"
-            runtime: "linux-x64"
+            runtime: "linux-amd64"
             platform: "linux"
           - os: macos-latest
-            runtime: "mac-x64"
+            runtime: "mac"
             extension: ".dmg"
             bc_extension: ".zip"
             platform: "mac"
@@ -56,8 +56,7 @@ jobs:
 
     - name: Variables
       run: |
-        echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.platform }}${{ matrix.extension }}"
-        echo "::set-env name=RELEASE_CONFIGURATION::${{ matrix.runtime }}"
+        echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
 
     - name: Tooling
       if: matrix.os == 'ubuntu-latest'
