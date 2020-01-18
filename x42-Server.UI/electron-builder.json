@@ -3,7 +3,7 @@
   "productName": "xServer",
   "publish": null,
   "directories": {
-    "output": "./"
+    "output": "app-builds"
   },
   "files": [
     "**/*",
