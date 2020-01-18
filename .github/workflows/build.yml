@@ -16,15 +16,15 @@ jobs:
           - os: windows-latest
             extension: ".exe"
             bc_extension: ".zip"
-            runtime: "win-x64"
+            runtime: "win"
             platform: "win"
           - os: ubuntu-latest
             extension: ".deb"
             bc_extension: ".tar.gz"
-            runtime: "linux-x64"
+            runtime: "linux-amd64"
             platform: "linux"
           - os: macos-latest
-            runtime: "mac-x64"
+            runtime: "mac"
             extension: ".dmg"
             bc_extension: ".zip"
             platform: "mac"
@@ -42,6 +42,7 @@ jobs:
       XSERVER_PROJECT_PATH: 'x42-Server.D/x42.Server.csproj'
       XSERVER_BUILD_CONFIGURATION: 'Release'
       BLOCKCORE_DAEMON_VERSION: '1.2.23'
+      UI_PATH: './x42-Server.UI/'
       ARCH: 'x64'
 
     steps:
@@ -57,7 +58,6 @@ jobs:
     - name: Variables
       run: |
         echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
-        echo "::set-env name=RELEASE_CONFIGURATION::${{ matrix.runtime }}"
 
     - name: Tooling
       if: matrix.os == 'ubuntu-latest'
@@ -69,10 +69,11 @@ jobs:
     - name: Download x42-BlockCore
       shell: pwsh
       run: |
+        cd ${{ env.UI_PATH }}
         echo ${env:PATH}
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         $url = "https://github.com/x42protocol/x42-BlockCore/releases/download/v${{ env.BLOCKCORE_DAEMON_VERSION }}/x42.x42D-${{ env.BLOCKCORE_DAEMON_VERSION }}-${{ matrix.platform }}-${{ env.ARCH }}${{ matrix.bc_extension }}"
-        $output = Join-Path -Path "./" -ChildPath "daemon${{ matrix.extension }}"
+        $output = Join-Path -Path "${{ env.UI_PATH }}" -ChildPath "daemon${{ matrix.bc_extension }}"
         Write-Output "Url: $url"
         Write-Output "Path: $output"
         $start_time = Get-Date
@@ -81,31 +82,36 @@ jobs:
 
     - name: Unpack (Windows)
       if: matrix.os == 'windows-latest'
-      run: 7z x daemon${{ matrix.extension }} -odaemon
+      run: |
+        cd ${{ env.UI_PATH }}
+        7z x daemon${{ matrix.bc_extension }} -odaemon
 
     - name: Unpack (Mac)
       if: matrix.os == 'macos-latest'
-      run: unzip -a daemon${{ matrix.extension }} -d daemon
+      run: |
+        cd ${{ env.UI_PATH }}
+        unzip -a daemon${{ matrix.bc_extension }} -d daemon
 
     - name: Unpack (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
+        cd ${{ env.UI_PATH }}
         mkdir daemon
-        tar -xvzf daemon${{ matrix.extension }} -C daemon
+        tar -xvzf daemon${{ matrix.bc_extension }} -C daemon
 
     - name: Install (npm)
       run: |
-        cd ./x42-Server.UI/
+        cd ${{ env.UI_PATH }}
         npm install
 
     - name: Build (npm)
       run: |
-        cd ./x42-Server.UI/
+        cd ${{ env.UI_PATH }}
         npm run build:${{ matrix.platform }}
 
     - name: Release (npm)
       run: |
-        cd ./x42-Server.UI/
+        cd ${{ env.UI_PATH }}
         npm run publish:${{ matrix.platform }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -114,7 +120,7 @@ jobs:
       uses: DennisAMenace/action-release@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        files: "${{ env.RELEASE_NAME }}"
+        files: "${{ env.UI_PATH }}${{ env.RELEASE_NAME }}"
         draft: true
         prerelease: true
         body: ''
