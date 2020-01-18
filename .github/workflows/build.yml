@@ -24,10 +24,10 @@ jobs:
             runtime: "linux-x64"
             platform: "linux"
           - os: macos-latest
-            runtime: "osx-x64"
+            runtime: "mac-x64"
             extension: ".dmg"
             bc_extension: ".zip"
-            platform: "osx"
+            platform: "mac"
         node_version: [12.x]
         dotnet_version: ['3.1.101']
       fail-fast: false
