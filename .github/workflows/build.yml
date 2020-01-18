@@ -73,7 +73,7 @@ jobs:
         echo ${env:PATH}
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         $url = "https://github.com/x42protocol/x42-BlockCore/releases/download/v${{ env.BLOCKCORE_DAEMON_VERSION }}/x42.x42D-${{ env.BLOCKCORE_DAEMON_VERSION }}-${{ matrix.platform }}-${{ env.ARCH }}${{ matrix.bc_extension }}"
-        $output = Join-Path -Path "./" -ChildPath "daemon${{ matrix.bc_extension }}"
+        $output = Join-Path -Path "${{ env.UI_PATH }}" -ChildPath "daemon${{ matrix.bc_extension }}"
         Write-Output "Url: $url"
         Write-Output "Path: $output"
         $start_time = Get-Date
