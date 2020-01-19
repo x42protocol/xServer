@@ -61,7 +61,11 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
-              ]
+              ],
+              "index": {
+                "input": "src/index.prod.html",
+                "output": "index.html"
+              }
             }
           }
         },

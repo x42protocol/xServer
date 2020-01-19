@@ -136,6 +136,7 @@
     <Content Include="src\assets\images\logo_white.svg" />
     <Content Include="src\assets\images\notransactions.svg" />
     <Content Include="src\assets\images\Tick_Mark-16.png" />
+    <Content Include="src\index.prod.html" />
     <Content Include="src\index.html" />
     <Content Include="src\scss\bootstrap-grid.scss" />
     <Content Include="src\scss\bootstrap-reboot.scss" />

@@ -5,8 +5,8 @@ import { DialogService } from 'primeng/api';
 import { FullNodeApiService } from '../../shared/services/fullnode.api.service';
 import { GlobalService } from '../../shared/services/global.service';
 import { WalletInfo } from '../../shared/models/wallet-info';
-import { TransactionInfo } from '../../shared/models/transaction-info';
 import { ThemeService } from '../../shared/services/theme.service';
+import { TransactionInfo } from '../../shared/models/transaction-info';
 
 import { SendComponent } from '../send/send.component';
 import { ReceiveComponent } from '../receive/receive.component';
@@ -37,11 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public spendableBalance: number;
   public latestTransactions: TransactionInfo[];
   public hotTransactions: TransactionInfo[];
-  private stakingForm: FormGroup;
-  private walletBalanceSubscription: Subscription;
-  private walletHistorySubscription: Subscription;
-  private walletHotHistorySubscription: Subscription;
-  private stakingInfoSubscription: Subscription;
+  public stakingForm: FormGroup;
   public stakingEnabled: boolean;
   public stakingActive: boolean;
   public stakingWeight: number;
@@ -54,6 +50,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public isDarkTheme = false;
   public hasBalance: boolean = false;
   public hotStakingAccount: string = "coldStakingHotAddresses";
+
+  private walletBalanceSubscription: Subscription;
+  private walletHistorySubscription: Subscription;
+  private walletHotHistorySubscription: Subscription;
+  private stakingInfoSubscription: Subscription;
 
   ngOnInit() {
     this.sidechainEnabled = this.globalService.getSidechainEnabled();
@@ -190,7 +191,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  private startStaking() {
+  public startStaking() {
     this.isStarting = true;
     this.isStopping = false;
     const walletData = {

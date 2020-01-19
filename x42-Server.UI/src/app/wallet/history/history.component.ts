@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 import { FullNodeApiService } from '../../shared/services/fullnode.api.service';
 import { GlobalService } from '../../shared/services/global.service';
+import { ThemeService } from '../../shared/services/theme.service';
 
 import { WalletInfo } from '../../shared/models/wallet-info';
 import { TransactionInfo } from '../../shared/models/transaction-info';
@@ -19,13 +20,16 @@ import { TransactionDetailsComponent } from '../transaction-details/transaction-
 })
 
 export class HistoryComponent {
-  constructor(private FullNodeApiService: FullNodeApiService, private globalService: GlobalService, private router: Router, public dialogService: DialogService) {}
+  constructor(private FullNodeApiService: FullNodeApiService, private globalService: GlobalService, private router: Router, public dialogService: DialogService, private themeService: ThemeService) {
+    this.isDarkTheme = themeService.getCurrentTheme().themeType == 'dark';
+  }
 
   public transactions: TransactionInfo[];
   public coinUnit: string;
   public pageNumber: number = 1;
   public hasTransaction: boolean = true;
-  private errorMessage: string;
+  public isDarkTheme = false;
+
   private walletHistorySubscription: Subscription;
 
   ngOnInit() {
@@ -41,7 +45,7 @@ export class HistoryComponent {
     this.router.navigate(['/wallet']);
   }
 
-  private openTransactionDetailDialog(transaction: any) {
+  public openTransactionDetailDialog(transaction: any) {
     let modalData = {
       "transaction": transaction
     };
@@ -52,7 +56,7 @@ export class HistoryComponent {
     });
   }
 
-    // todo: add history in seperate service to make it reusable
+  // todo: add history in seperate service to make it reusable
   private getHistory() {
     let walletInfo = new WalletInfo(this.globalService.getWalletName())
     let historyResponse;
@@ -78,7 +82,7 @@ export class HistoryComponent {
           }
         }
       )
-    ;
+      ;
   };
 
   private getTransactionInfo(transactions: any) {
@@ -113,7 +117,7 @@ export class HistoryComponent {
   }
 
   private cancelSubscriptions() {
-    if(this.walletHistorySubscription) {
+    if (this.walletHistorySubscription) {
       this.walletHistorySubscription.unsubscribe();
     }
   };

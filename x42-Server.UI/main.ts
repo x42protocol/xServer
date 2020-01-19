@@ -43,6 +43,7 @@ require('electron-context-menu')({
   showInspectElement: serve
 });
 
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow = null;
@@ -89,6 +90,9 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  // Remove menu, new from Electron 5
+  mainWindow.removeMenu();
 
 };
 
