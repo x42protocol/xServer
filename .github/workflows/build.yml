@@ -104,19 +104,12 @@ jobs:
         cd ${{ env.UI_PATH }}
         npm install
 
-    - name: Build (npm)
+    - name: Package (npm)
       run: |
         cd ${{ env.UI_PATH }}
-        npm run build:${{ matrix.platform }}
+        npm run package:${{ matrix.platform }}
 
-    - name: Release (npm)
-      run: |
-        cd ${{ env.UI_PATH }}
-        npm run publish:${{ matrix.platform }}
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Publish Release
+    - name: Release Package
       uses: DennisAMenace/action-release@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
