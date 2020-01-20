@@ -5,7 +5,7 @@ x42 Server as the foundation of the x42 distributed network and hosting distribu
 
 ## x42-Server.D
 
-x42-Server daemon can be ran without the UI as a *hedless* application. 
+xServer daemon can be ran without the UI as a *hedless* application. 
 
 ### Config
 Use the `x42Server.conf` to make any configuration changes for the desired enviroment.
