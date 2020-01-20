@@ -59,6 +59,7 @@
     "warningsAsErrors": false
   },
   "extraResources": [
+    "xserver.d/**/*",
     "daemon/**/*",
     "src/assets/images/icon-tray.png",
     "src/assets/images/license_en.txt",
