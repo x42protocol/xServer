@@ -21,7 +21,7 @@ namespace X42
                 ServerSettings serverSettings =
                     new ServerSettings(new X42ServerNode(), ProtocolVersion.PROTOCOL_VERSION, args: args);
 
-                IX42Server server = new ServerBuilder()
+                IxServer server = new ServerBuilder()
                     .UseServerSettings(serverSettings)
                     .UseX42Client()
                     .UseSql()

@@ -29,8 +29,18 @@ else if (sidechain && testnet) {
 else if (sidechain && !testnet) {
     apiPort = 42221;
 }
+var xServerPort;
+if (testnet) {
+    xServerPort = 4242;
+}
+else {
+    xServerPort = 4242;
+}
 electron_1.ipcMain.on('get-port', function (event, arg) {
     event.returnValue = apiPort;
+});
+electron_1.ipcMain.on('get-xserver-port', function (event, arg) {
+    event.returnValue = xServerPort;
 });
 electron_1.ipcMain.on('get-testnet', function (event, arg) {
     event.returnValue = testnet;
@@ -73,7 +83,8 @@ function createWindow() {
     }
     // Emitted when the window is going to close.
     mainWindow.on('close', function (e) {
-        shutdownDaemon(apiPort);
+        shutdownx42Node(apiPort);
+        shutdownxServer(xServerPort);
     });
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -95,10 +106,12 @@ electron_1.app.on('ready', function () {
     }
     else {
         if (sidechain && !nodaemon) {
-            startDaemon("x42.x42D");
+            startx42Node("x42.x42D");
+            startxServer("xServer");
         }
         else if (!nodaemon) {
-            startDaemon("x42.x42D");
+            startx42Node("x42.x42D");
+            startxServer("x42.xServerD");
         }
     }
     createTray();
@@ -111,17 +124,20 @@ electron_1.app.on('ready', function () {
  * the signal to exit and wants to start closing windows */
 electron_1.app.on('before-quit', function () {
     if (!serve && !nodaemon) {
-        shutdownDaemon(apiPort);
+        shutdownx42Node(apiPort);
+        shutdownxServer(xServerPort);
     }
 });
 electron_1.app.on('quit', function () {
     if (!serve && !nodaemon) {
-        shutdownDaemon(apiPort);
+        shutdownx42Node(apiPort);
+        shutdownxServer(xServerPort);
     }
 });
 // Quit when all windows are closed.
 electron_1.app.on('window-all-closed', function () {
-    shutdownDaemon(apiPort);
+    shutdownx42Node(apiPort);
+    shutdownxServer(xServerPort);
     electron_1.app.quit();
 });
 electron_1.app.on('activate', function () {
@@ -131,7 +147,7 @@ electron_1.app.on('activate', function () {
         createWindow();
     }
 });
-function shutdownDaemon(portNumber) {
+function shutdownx42Node(portNumber) {
     var http = require('http');
     var body = JSON.stringify({});
     var request = new http.ClientRequest({
@@ -151,7 +167,27 @@ function shutdownDaemon(portNumber) {
     request.end(body);
 }
 ;
-function startDaemon(daemonName) {
+function shutdownxServer(portNumber) {
+    var http = require('http');
+    var body = JSON.stringify({});
+    var request = new http.ClientRequest({
+        method: 'POST',
+        hostname: 'localhost',
+        port: portNumber,
+        path: '/shutdown',
+        headers: {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body)
+        }
+    });
+    request.write('true');
+    request.on('error', function (e) { });
+    request.on('timeout', function (e) { request.abort(); });
+    request.on('uncaughtException', function (e) { request.abort(); });
+    request.end(body);
+}
+;
+function startx42Node(daemonName) {
     var daemonProcess;
     var spawnDaemon = require('child_process').spawn;
     var daemonPath;
@@ -163,6 +199,26 @@ function startDaemon(daemonName) {
     }
     else {
         daemonPath = path.resolve(__dirname, '..//..//resources//daemon//' + daemonName);
+    }
+    daemonProcess = spawnDaemon(daemonPath, [args.join(' ').replace('--', '-')], {
+        detached: true
+    });
+    daemonProcess.stdout.on('data', function (data) {
+        writeLog("x42: " + data);
+    });
+}
+function startxServer(daemonName) {
+    var daemonProcess;
+    var spawnDaemon = require('child_process').spawn;
+    var daemonPath;
+    if (os.platform() === 'win32') {
+        daemonPath = path.resolve(__dirname, '..\\..\\resources\\xserver.d\\' + daemonName + '.exe');
+    }
+    else if (os.platform() === 'linux') {
+        daemonPath = path.resolve(__dirname, '..//..//resources//xserver.d//' + daemonName);
+    }
+    else {
+        daemonPath = path.resolve(__dirname, '..//..//resources//xserver.d//' + daemonName);
     }
     daemonProcess = spawnDaemon(daemonPath, [args.join(' ').replace('--', '-')], {
         detached: true
@@ -206,7 +262,8 @@ function createTray() {
         }
     });
     electron_1.app.on('window-all-closed', function () {
-        shutdownDaemon(apiPort);
+        shutdownx42Node(apiPort);
+        shutdownxServer(xServerPort);
         if (systemTray)
             systemTray.destroy();
     });

@@ -4,7 +4,7 @@ namespace X42.Configuration
 {
     /// <summary>
     ///     Contains path locations to folders and files on disk.
-    ///     Used by various components of the x42 server.
+    ///     Used by various components of the xServer.
     /// </summary>
     /// <remarks>
     ///     Location name should describe if its a file or a folder.
@@ -33,7 +33,7 @@ namespace X42.Configuration
         /// <seealso cref="Logging.LoggingConfiguration" />
         public string LogPath { get; internal set; }
 
-        /// <summary>Path to x42 Server applications</summary>
+        /// <summary>Path to xServer applications</summary>
         public string ApplicationsPath { get; internal set; }
     }
 }

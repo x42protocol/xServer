@@ -45,13 +45,13 @@ namespace X42.Controllers
         /// <summary>The settings for the node.</summary>
         private readonly ServerSettings nodeSettings;
 
-        /// <summary>x42 Server.</summary>
-        private readonly IX42Server x42Server;
+        /// <summary>xServer.</summary>
+        private readonly IxServer xServer;
 
         /// <summary>Database details.</summary>
         private readonly DatabaseFeatures databaseFeatures;
 
-        public ServerNodeContoller(IX42Server x42Server, ILoggerFactory loggerFactory,
+        public ServerNodeContoller(IxServer x42Server, ILoggerFactory loggerFactory,
             IDateTimeProvider dateTimeProvider,
             ServerSettings serverSettings,
             ServerNodeBase serverNode,
@@ -64,7 +64,7 @@ namespace X42.Controllers
             Guard.NotNull(dateTimeProvider, nameof(dateTimeProvider));
             Guard.NotNull(databaseFeatures, nameof(databaseFeatures));
 
-            this.x42Server = x42Server;
+            this.xServer = x42Server;
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.dateTimeProvider = dateTimeProvider;
             nodeSettings = serverSettings;
@@ -82,17 +82,17 @@ namespace X42.Controllers
         {
             StatusResult model = new StatusResult
             {
-                Version = x42Server.Version?.ToString() ?? "0",
+                Version = xServer.Version?.ToString() ?? "0",
                 ProtocolVersion = (uint)nodeSettings.ProtocolVersion,
                 ProcessId = Process.GetCurrentProcess().Id,
                 DataDirectoryPath = nodeSettings.DataDir,
-                RunningTime = dateTimeProvider.GetUtcNow() - x42Server.StartTime,
-                State = x42Server.State.ToString(),
+                RunningTime = dateTimeProvider.GetUtcNow() - xServer.StartTime,
+                State = xServer.State.ToString(),
                 DatabaseConnected = databaseFeatures.DatabaseConnected
             };
 
             // Add the list of features that are enabled.
-            foreach (IServerFeature feature in x42Server.Services.Features)
+            foreach (IServerFeature feature in xServer.Services.Features)
                 model.EnabledFeatures.Add(feature.GetType().ToString());
 
             return Json(model);
@@ -114,8 +114,8 @@ namespace X42.Controllers
         public IActionResult Shutdown([FromBody] bool corsProtection = true)
         {
             // Start the node shutdown process, by calling StopApplication, which will signal to
-            // the x42 server RunAsync to continue processing, which calls Dispose on the node.
-            x42Server?.X42ServerLifetime.StopApplication();
+            // the xServer RunAsync to continue processing, which calls Dispose on the node.
+            xServer?.X42ServerLifetime.StopApplication();
 
             return Ok();
         }

@@ -62,7 +62,7 @@ namespace X42.Utilities
             lock (locker)
             {
                 string date = dateTimeProvider.GetUtcNow().ToString(CultureInfo.InvariantCulture);
-                statsBuilder.AppendLine($"====== x42 Master Node Stats ====== {date}");
+                statsBuilder.AppendLine($"====== x42 xServer Stats ====== {date}");
 
                 foreach (StatsItem actionPriority in stats.Where(x => x.StatsType == StatsType.Inline))
                     actionPriority.AppendStatsAction(statsBuilder);

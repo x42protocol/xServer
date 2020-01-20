@@ -14,7 +14,7 @@ namespace X42.Server
         /// <summary>User defined server settings.</summary>
         ServerSettings ServerSettings { get; }
 
-        /// <summary>Specification of the master node the server runs on.</summary>
+        /// <summary>Specification of the xServer.</summary>
         ServerNodeBase ServerNode { get; }
 
         /// <summary>Collection of DI services.</summary>
@@ -24,7 +24,7 @@ namespace X42.Server
         ///     Constructs the x42 server with the required features, services, and settings.
         /// </summary>
         /// <returns>Initialized x42 server.</returns>
-        IX42Server Build();
+        IxServer Build();
 
         /// <summary>
         ///     Adds features to the builder.

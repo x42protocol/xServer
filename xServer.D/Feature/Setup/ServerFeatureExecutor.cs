@@ -8,18 +8,18 @@ using X42.Utilities;
 namespace X42.Feature.Setup
 {
     /// <summary>
-    ///     Starts and stops all features registered with a x42 server.
+    ///     Starts and stops all features registered with a xServer.
     /// </summary>
     public interface IServerFeatureExecutor : IDisposable
     {
         /// <summary>
-        ///     Starts all registered features of the associated x42 server.
+        ///     Starts all registered features of the associated xServer.
         /// </summary>
         void Initialize();
     }
 
     /// <summary>
-    ///     Starts and stops all features registered with a x42 server.
+    ///     Starts and stops all features registered with a xServer.
     /// </summary>
     /// <remarks>Borrowed from ASP.NET.</remarks>
     public class ServerFeatureExecutor : IServerFeatureExecutor
@@ -27,15 +27,15 @@ namespace X42.Feature.Setup
         /// <summary>Object logger.</summary>
         private readonly ILogger logger;
 
-        /// <summary>x42 server which features are to be managed by this executor.</summary>
-        private readonly IX42Server server;
+        /// <summary>xServer which features are to be managed by this executor.</summary>
+        private readonly IxServer server;
 
         /// <summary>
-        ///     Initializes an instance of the object with specific x42 server and logger factory.
+        ///     Initializes an instance of the object with specific xServer and logger factory.
         /// </summary>
-        /// <param name="server">x42 server which features are to be managed by this executor.</param>
+        /// <param name="server">xServer which features are to be managed by this executor.</param>
         /// <param name="loggerFactory">Factory to be used to create logger for the object.</param>
-        public ServerFeatureExecutor(IX42Server server, ILoggerFactory loggerFactory)
+        public ServerFeatureExecutor(IxServer server, ILoggerFactory loggerFactory)
         {
             Guard.NotNull(server, nameof(server));
 
@@ -75,7 +75,7 @@ namespace X42.Feature.Setup
         }
 
         /// <summary>
-        ///     Executes start or stop method of all the features registered with the associated x42 server.
+        ///     Executes start or stop method of all the features registered with the associated xServer.
         /// </summary>
         /// <param name="callback">Delegate to run start or stop method of the feature.</param>
         /// <param name="disposing">Reverse the order of which the features are executed.</param>

@@ -157,7 +157,7 @@ namespace X42.Server
         }
 
         /// <inheritdoc />
-        public IX42Server Build()
+        public IxServer Build()
         {
             if (serverBuilt)
                 throw new InvalidOperationException("x42 server already built");

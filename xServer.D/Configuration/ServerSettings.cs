@@ -28,13 +28,13 @@ namespace X42.Configuration
     }
 
     /// <summary>
-    ///     Сontains the configuration settings for a x42 server. These settings are taken from both the application
+    ///     Сontains the configuration settings for a xServer. These settings are taken from both the application
     ///     command line arguments and the configuration file.
-    ///     Unlike the settings held by <see cref="X42.ServerNode" />, these settings are individualized for each x42 server.
+    ///     Unlike the settings held by <see cref="X42.ServerNode" />, these settings are individualized for each xServer.
     /// </summary>
     public class ServerSettings : IDisposable
     {
-        /// <summary>The version of the protocol supported by the current implementation of the x42 server.</summary>
+        /// <summary>The version of the protocol supported by the current implementation of the xServer.</summary>
         public const ProtocolVersion SupportedProtocolVersion = ProtocolVersion.PROTOCOL_VERSION;
 
         public string ServerName = "x42Server";
@@ -140,17 +140,17 @@ namespace X42.Configuration
             LoadConfiguration();
         }
 
-        /// <summary>A factory responsible for creating a x42 server logger instance.</summary>
+        /// <summary>A factory responsible for creating a xServer logger instance.</summary>
         public ILoggerFactory LoggerFactory { get; }
 
-        /// <summary>An instance of the x42 server logger, which reports on the x42 server's activity.</summary>
+        /// <summary>An instance of the xServer logger, which reports on the xServer's activity.</summary>
         public ILogger Logger { get; }
 
-        /// <summary>The settings of the x42 server's logger.</summary>
+        /// <summary>The settings of the xServer's logger.</summary>
         public LogSettings Log { get; }
 
         /// <summary>
-        ///     A list of paths to folders which x42 server components use to store data. These folders are found
+        ///     A list of paths to folders which xServer components use to store data. These folders are found
         ///     in the <see cref="DataDir" />.
         /// </summary>
         public DataFolder DataFolder { get; }
@@ -164,35 +164,35 @@ namespace X42.Configuration
 
         /// <summary>
         ///     The path to the root data directory, which holds all server data on the machine.
-        ///     This includes separate subfolders for different servers that run on the machine: a x42 server folder for a
-        ///     x42 server This value is read-only and can only be set via the ServerSettings constructor's arguments.
+        ///     This includes separate subfolders for different servers that run on the machine: a xServer folder for a
+        ///     xServer This value is read-only and can only be set via the ServerSettings constructor's arguments.
         /// </summary>
         public string DataDirRoot { get; }
 
         /// <summary>
-        ///     The path to the x42 server's configuration file.
+        ///     The path to the xServer's configuration file.
         ///     This value is read-only and can only be set via the ServerSettings constructor's arguments.
         /// </summary>
         public string ConfigurationFile { get; }
 
         /// <summary>
-        ///     A combination of the settings from the x42 server's configuration file and the command
-        ///     line arguments supplied to the x42 server when it was run. This places the settings from both sources
+        ///     A combination of the settings from the xServer's configuration file and the command
+        ///     line arguments supplied to the xServer when it was run. This places the settings from both sources
         ///     into a single object, which is referenced at runtime.
         /// </summary>
         public TextFileConfiguration ConfigReader { get; }
 
-        /// <summary>The version of the protocol supported by the x42 server.</summary>
+        /// <summary>The version of the protocol supported by the xServer.</summary>
         public ProtocolVersion ProtocolVersion { get; }
 
-        /// <summary>The lowest version of the protocol which the x42 server supports.</summary>
+        /// <summary>The lowest version of the protocol which the xServer supports.</summary>
         public ProtocolVersion? MinProtocolVersion { get; set; }
 
         /// <summary>The servernode which the server is configured to run on.</summary>
         public ServerNodeBase ServerNode { get; }
 
         /// <summary>
-        ///     A string that is used to help identify the x42 server when it connects to other peers on a servernode.
+        ///     A string that is used to help identify the xServer when it connects to other peers on a servernode.
         ///     Defaults to "x42Server".
         /// </summary>
         public string Agent { get; }
@@ -211,7 +211,7 @@ namespace X42.Configuration
         /// <summary>
         ///     Initializes default configuration.
         /// </summary>
-        /// <param name="serverNode">Specification of the master node the server runs on</param>
+        /// <param name="serverNode">Specification of the xServer the server runs on</param>
         /// <param name="protocolVersion">Supported protocol version for which to create the configuration.</param>
         /// <returns>Default server configuration.</returns>
         public static ServerSettings Default(ServerNodeBase serverNode,

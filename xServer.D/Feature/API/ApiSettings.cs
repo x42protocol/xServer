@@ -13,7 +13,7 @@ namespace X42.Feature.Api
     /// </summary>
     public class ApiSettings
     {
-        /// <summary>The default host used by the API when the master node runs on the x42 server.</summary>
+        /// <summary>The default host used by the API when the xServer runs.</summary>
         public const string DefaultApiHost = "http://0.0.0.0";
 
         /// <summary>Instance logger.</summary>

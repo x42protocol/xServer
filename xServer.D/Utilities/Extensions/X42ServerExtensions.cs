@@ -16,7 +16,7 @@ namespace X42.Utilities.Extensions
         ///     Installs handlers for graceful shutdown in the console, starts the x42 server and waits until it terminates.
         /// </summary>
         /// <param name="server">X42 Server to run.</param>
-        public static async Task RunAsync(this IX42Server server)
+        public static async Task RunAsync(this IxServer server)
         {
             ManualResetEventSlim done = new ManualResetEventSlim(false);
             using (CancellationTokenSource cts = new CancellationTokenSource())
@@ -69,7 +69,7 @@ namespace X42.Utilities.Extensions
         /// <param name="cancellationToken">Cancellation token that triggers when the server should be shut down.</param>
         /// <param name="shutdownMessage">Message to display on the console to instruct the user on how to invoke the shutdown.</param>
         /// <param name="shutdownCompleteMessage">Message to display on the console when the shutdown is complete.</param>
-        public static async Task RunAsync(this IX42Server server, CancellationToken cancellationToken,
+        public static async Task RunAsync(this IxServer server, CancellationToken cancellationToken,
             string shutdownMessage, string shutdownCompleteMessage)
         {
             server.Start();

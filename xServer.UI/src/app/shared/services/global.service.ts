@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
 import { ElectronService } from 'ngx-electron';
 
 @Injectable({
@@ -10,6 +10,7 @@ export class GlobalService {
     this.setSidechainEnabled();
     this.setTestnetEnabled();
     this.setApiPort();
+    this.setxServerPort();
     this.setWalletName("");
   }
 
@@ -22,6 +23,7 @@ export class GlobalService {
   private testSideChainApiPort: number = 42221;
   private mainServerPort: number = 4242;
   private apiPort: number;
+  private xServerPort: number;
   private walletPath: string;
   private currentWalletName: string;
   private coinUnit: string;
@@ -66,7 +68,7 @@ export class GlobalService {
   }
 
   getServerApiPort() {
-    return this.mainServerPort;
+    return this.xServerPort;
   }
 
   setApiPort() {
@@ -80,6 +82,16 @@ export class GlobalService {
       this.apiPort = this.testSideChainApiPort;
     } else if (!this.testnet && this.sidechain) {
       this.apiPort = this.mainSideChainApiPort;
+    }
+  }
+
+  setxServerPort() {
+    if (this.electronService.isElectronApp) {
+      this.xServerPort = this.electronService.ipcRenderer.sendSync('get-xserver-port');
+    } else if (this.testnet) {
+      this.xServerPort = this.mainServerPort;
+    } else {
+      this.xServerPort = this.mainServerPort;
     }
   }
 

@@ -8,7 +8,7 @@ namespace X42.Controllers
     public abstract class FeatureController : Controller
     {
         private FeatureController(
-            IX42Server x42Server = null,
+            IxServer x42Server = null,
             ServerSettings nodeSettings = null,
             ServerNodeBase network = null)
         {
@@ -17,7 +17,7 @@ namespace X42.Controllers
             Network = network;
         }
 
-        protected IX42Server X42Server { get; set; }
+        protected IxServer X42Server { get; set; }
 
         protected ServerSettings Settings { get; set; }
 

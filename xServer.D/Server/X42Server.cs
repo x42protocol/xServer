@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using X42.Properties;
 using X42.Configuration;
 using X42.Feature.Setup;
 using X42.ServerNode;
@@ -17,13 +16,14 @@ using X42.Feature.X42Client;
 using X42.Feature.Database;
 using X42.Feature.X42Client.Enums;
 using System.Collections.Generic;
+using x42.Properties;
 
 namespace X42.Server
 {
     /// <summary>
     ///     Server providing all supported features of the servernode and its network.
     /// </summary>
-    public class X42Server : IX42Server
+    public class X42Server : IxServer
     {
         /// <summary>Instance logger.</summary>
         private ILogger logger;
@@ -64,7 +64,7 @@ namespace X42.Server
         /// <summary>Factory for creating and execution of asynchronous loops.</summary>
         public IAsyncLoopFactory AsyncLoopFactory { get; set; }
 
-        /// <summary>Specification of the master node the server runs on.</summary>
+        /// <summary>Specification of the xServer.</summary>
         public ServerNodeBase ServerNode { get; internal set; }
 
         /// <summary>Contains path locations to folders and files on disk.</summary>

@@ -176,7 +176,7 @@ namespace X42.Feature.Api
                 {
                     if (services == null) return;
 
-                    // copies all the services defined for the x42 server to the Api.
+                    // copies all the services defined for the xServer to the Api.
                     // also copies over singleton instances already defined
                     foreach (ServiceDescriptor service in services)
                     {

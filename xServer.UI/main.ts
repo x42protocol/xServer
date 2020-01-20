@@ -27,8 +27,19 @@ if (testnet && !sidechain) {
   apiPort = 42221;
 }
 
+let xServerPort;
+if (testnet) {
+  xServerPort = 4242;
+} else {
+  xServerPort = 4242;
+}
+
 ipcMain.on('get-port', (event, arg) => {
   event.returnValue = apiPort;
+});
+
+ipcMain.on('get-xserver-port', (event, arg) => {
+  event.returnValue = xServerPort;
 });
 
 ipcMain.on('get-testnet', (event, arg) => {
@@ -80,7 +91,8 @@ function createWindow() {
 
   // Emitted when the window is going to close.
   mainWindow.on('close', function (e) {
-    shutdownDaemon(apiPort);
+    shutdownx42Node(apiPort);
+    shutdownxServer(xServerPort);
   });
 
   // Emitted when the window is closed.
@@ -123,19 +135,22 @@ app.on('ready', () => {
  * the signal to exit and wants to start closing windows */
 app.on('before-quit', () => {
   if (!serve && !nodaemon) {
-    shutdownDaemon(apiPort);
+    shutdownx42Node(apiPort);
+    shutdownxServer(xServerPort);
   }
 });
 
 app.on('quit', () => {
   if (!serve && !nodaemon) {
-    shutdownDaemon(apiPort);
+    shutdownx42Node(apiPort);
+    shutdownxServer(xServerPort);
   }
 });
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  shutdownDaemon(apiPort);
+  shutdownx42Node(apiPort);
+  shutdownxServer(xServerPort);
   app.quit();
 });
 
@@ -147,7 +162,7 @@ app.on('activate', () => {
   }
 });
 
-function shutdownDaemon(portNumber) {
+function shutdownx42Node(portNumber) {
   var http = require('http');
   var body = JSON.stringify({});
 
@@ -156,6 +171,29 @@ function shutdownDaemon(portNumber) {
     hostname: 'localhost',
     port: portNumber,
     path: '/api/node/shutdown',
+    headers: {
+      "Content-Type": "application/json",
+      "Content-Length": Buffer.byteLength(body)
+    }
+  })
+
+  request.write('true');
+  request.on('error', function (e) { });
+  request.on('timeout', function (e) { request.abort(); });
+  request.on('uncaughtException', function (e) { request.abort(); });
+
+  request.end(body);
+};
+
+function shutdownxServer(portNumber) {
+  var http = require('http');
+  var body = JSON.stringify({});
+
+  var request = new http.ClientRequest({
+    method: 'POST',
+    hostname: 'localhost',
+    port: portNumber,
+    path: '/shutdown',
     headers: {
       "Content-Type": "application/json",
       "Content-Length": Buffer.byteLength(body)
@@ -251,7 +289,8 @@ function createTray() {
   });
 
   app.on('window-all-closed', function () {
-    shutdownDaemon(apiPort);
+    shutdownx42Node(apiPort);
+    shutdownxServer(xServerPort);
     if (systemTray) systemTray.destroy();
   });
 };

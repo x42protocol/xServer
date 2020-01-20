@@ -9,7 +9,7 @@ namespace X42.Server
     /// <summary>
     ///     Contract for the x42 server built by x42 server builder.
     /// </summary>
-    public interface IX42Server : IDisposable
+    public interface IxServer : IDisposable
     {
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
         IX42ServerLifetime X42ServerLifetime { get; }

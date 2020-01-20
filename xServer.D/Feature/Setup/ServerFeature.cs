@@ -29,8 +29,8 @@ namespace X42.Feature.Setup
     }
 
     /// <summary>
-    ///     A feature is used to extend functionality into the x42 server.
-    ///     It can manage its life time or use the x42 server disposable resources.
+    ///     A feature is used to extend functionality into the xServer.
+    ///     It can manage its life time or use the xServer disposable resources.
     ///     <para>
     ///         If a feature adds an option of a certain functionality to be available to be used by the server
     ///         (it may be disabled/enabled by the configuration) the naming convention is

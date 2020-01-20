@@ -14,9 +14,9 @@ namespace X42.Controllers
     [Authorize(Policy = Policy.PrivateAccess)]
     public class DashboardController : Controller
     {
-        private readonly IX42Server x42Server;
+        private readonly IxServer x42Server;
 
-        public DashboardController(IX42Server x42Server)
+        public DashboardController(IxServer x42Server)
         {
             this.x42Server = x42Server;
         }

@@ -11,7 +11,7 @@ namespace X42.Feature.Setup
     /// <summary>
     ///     Base server services, these are the services a server has to have.
     ///     The ConnectionManager feature is also part of the base but may go in a feature of its own.
-    ///     The base features are the minimal components required for the master nodes system.
+    ///     The base features are the minimal components required for the xServer system.
     /// </summary>
     public sealed class BaseFeature : ServerFeature
     {
@@ -81,10 +81,10 @@ namespace X42.Feature.Setup
     public static class ServerBuilderBaseFeatureExtension
     {
         /// <summary>
-        ///     Makes the x42 server use all the required features - <see cref="BaseFeature" />.
+        ///     Makes the xServer use all the required features - <see cref="BaseFeature" />.
         /// </summary>
         /// <param name="serverBuilder">Builder responsible for creating the server.</param>
-        /// <returns>x42 server builder's interface to allow fluent code.</returns>
+        /// <returns>xServer builder's interface to allow fluent code.</returns>
         public static IServerBuilder UseBaseFeature(this IServerBuilder serverBuilder)
         {
             serverBuilder.ConfigureFeature(features =>
@@ -99,7 +99,7 @@ namespace X42.Feature.Setup
                         services.AddSingleton<ServerFeatureExecutor>();
                         services.AddSingleton<X42Server>().AddSingleton(provider =>
                         {
-                            return provider.GetService<X42Server>() as IX42Server;
+                            return provider.GetService<X42Server>() as IxServer;
                         });
                         services.AddSingleton(DateTimeProvider.Default);
                         services.AddSingleton<IAsyncLoopFactory, AsyncLoopFactory>();

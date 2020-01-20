@@ -11,7 +11,7 @@ using X42.Server;
 namespace X42.Feature.Api
 {
     /// <summary>
-    ///     Provides an Api to the x42 Server
+    ///     Provides an Api to the xServer
     /// </summary>
     public sealed class ApiFeature : ServerFeature
     {
