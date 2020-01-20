@@ -16,11 +16,11 @@ Steps to reproduce the bug:
 3. Scroll down to '....'
 4. See error
 
-Expected Behavior:
-A clear and concise description of what you expected to happen.
-
 Screenshots:
 If applicable, attach screenshots to help explain the issue you've experienced, please post them in a chronological manner, and on the proper step of the bug reproduction section.
+
+Expected Behavior:
+A clear and concise description of what you expected to happen.
 
 Desktop (please complete the following information if applicable):
  - OS: [e.g. iOS including version]
