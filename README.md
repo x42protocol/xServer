@@ -1,7 +1,7 @@
 [![Build Status](https://github.com/x42protocol/xServer/workflows/Build/badge.svg)](https://github.com/x42protocol/xServer/actions)
 
-# x42-Server
-x42 Server as the foundation of the x42 distributed network and hosting distributed applications.
+# xServer
+xServer as the foundation of the x42 distributed network and hosting distributed applications.
 
 ## x42-Server.D
 
