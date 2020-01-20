@@ -18,16 +18,19 @@ jobs:
             bc_extension: ".zip"
             runtime: "win"
             platform: "win"
+            xs_package_runtime: "win-x64"
           - os: ubuntu-latest
             extension: ".deb"
             bc_extension: ".tar.gz"
             runtime: "linux-amd64"
             platform: "linux"
+            xs_package_runtime: "linux-x64"
           - os: macos-latest
             runtime: "mac"
             extension: ".dmg"
             bc_extension: ".zip"
             platform: "mac"
+            xs_package_runtime: "mac-x64"
         node_version: [12.x]
         dotnet_version: ['3.1.101']
       fail-fast: false
@@ -58,6 +61,22 @@ jobs:
     - name: Variables
       run: |
         echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
+        echo "::set-env name=VERSION::$(npm run version --silent)"
+        echo "::set-env name=RELEASE_CONFIGURATION::${{ matrix.runtime }}"
+
+    - name: Setup .NET Core (${{ matrix.dotnet_version }})
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ matrix.dotnet_version }}
+
+    - name: Restore
+      run: dotnet restore ${{env.XSERVER_SOLUTION_PATH}}
+
+    - name: Build
+      run: dotnet build -c ${{env.BUILD_CONFIGURATION}} -r ${{env.RELEASE_CONFIGURATION}} -v m ${{env.XSERVER_SOLUTION_PATH}}
+
+    - name: Publish
+      run: dotnet publish -c ${{env.BUILD_CONFIGURATION}} -r ${{env.RELEASE_CONFIGURATION}} -v m -o ${{ env.UI_PATH }}/xserver.d ${{env.XSERVER_PROJECT_PATH}}
 
     - name: Tooling
       if: matrix.os == 'ubuntu-latest'
