@@ -17,7 +17,7 @@ Located in your home directory ~/.x42Server/
 
 ## xServer.UI
 The user interface is what is used to make it easier to setup and monitor the xServer daemon.
-You can also use it to check your balances, hosted applications and several others xServer functions.
+You can also use it to check your cold balance, hosted applications and several others xServer functions.
 
 ## Further help
 [Please join our Discord channel for help and discussions](https://discord.gg/bmYUmjr)
