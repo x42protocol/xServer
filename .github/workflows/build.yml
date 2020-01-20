@@ -40,12 +40,12 @@ jobs:
     env:
       XSERVER_NAME: 'xServer'
       XSERVER_VERSION: '4.0.0'
-      XSERVER_PROJECT_NAME: 'x42.Server'
-      XSERVER_SOLUTION_PATH: 'x42-Server.D/x42-Server.D.sln'
-      XSERVER_PROJECT_PATH: 'x42-Server.D/x42.Server.csproj'
+      XSERVER_PROJECT_NAME: 'xServer'
+      XSERVER_SOLUTION_PATH: 'xServer.D.sln'
+      XSERVER_PROJECT_PATH: 'xServer.D/xServerD.csproj'
       XSERVER_BUILD_CONFIGURATION: 'Release'
       BLOCKCORE_DAEMON_VERSION: '1.2.23'
-      UI_PATH: './x42-Server.UI/'
+      UI_PATH: './xServer.UI/'
       ARCH: 'x64'
 
     steps:
