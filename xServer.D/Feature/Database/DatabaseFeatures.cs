@@ -85,11 +85,12 @@ namespace X42.Feature.Database
                     logger.LogInformation("Database Feature Initialized");
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 logger.LogCritical("Database failed to Initialize.");
+                logger.LogCritical(ex.Message);
+                logger.LogCritical(ex.InnerException.ToString());
                 logger.LogTrace("(-)[INITIALIZE_EXCEPTION]");
-                throw;
             }
 
             return Task.CompletedTask;
