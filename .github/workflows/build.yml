@@ -62,21 +62,20 @@ jobs:
       run: |
         echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
         echo "::set-env name=VERSION::$(npm run version --silent)"
-        echo "::set-env name=RELEASE_CONFIGURATION::${{ matrix.runtime }}"
 
     - name: Setup .NET Core (${{ matrix.dotnet_version }})
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ matrix.dotnet_version }}
 
-    - name: Restore
+    - name: Restore xServer.D
       run: dotnet restore ${{env.XSERVER_SOLUTION_PATH}}
 
-    - name: Build
-      run: dotnet build -c ${{env.BUILD_CONFIGURATION}} -r ${{env.RELEASE_CONFIGURATION}} -v m ${{env.XSERVER_SOLUTION_PATH}}
+    - name: Build xServer.D
+      run: dotnet build -c ${{env.BUILD_CONFIGURATION}} -r ${{ matrix.runtime }} -v m ${{env.XSERVER_SOLUTION_PATH}}
 
-    - name: Publish
-      run: dotnet publish -c ${{env.BUILD_CONFIGURATION}} -r ${{env.RELEASE_CONFIGURATION}} -v m -o ${{ env.UI_PATH }}/xserver.d ${{env.XSERVER_PROJECT_PATH}}
+    - name: Publish xServer.D
+      run: dotnet publish -c ${{env.BUILD_CONFIGURATION}} -r ${{ matrix.runtime }} -v m -o ${{ env.UI_PATH }}/xserver.d ${{env.XSERVER_PROJECT_PATH}}
 
     - name: Tooling
       if: matrix.os == 'ubuntu-latest'
