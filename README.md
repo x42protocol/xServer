@@ -3,7 +3,7 @@
 # xServer
 xServer as the foundation of the x42 distributed network and hosting distributed applications.
 
-## x42-Server.D
+## xServer.D
 
 xServer daemon can be ran without the UI as a *hedless* application. 
 
@@ -16,7 +16,7 @@ Use the `x42Server.conf` to make any configuration changes for the desired envir
 ##### Linux config locaiton:
 Located in your home directory ~/.x42Node/x42/x42Server/
 
-## x42-Server.UI
+## xServer.UI
 
 The user interface is what is used to make it easier to setup and monitor the x42-Server daemon.
 
