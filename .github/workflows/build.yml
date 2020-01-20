@@ -18,18 +18,21 @@ jobs:
             bc_extension: ".zip"
             runtime: "win"
             platform: "win"
+            dotnet_runtime: "win-x64"
             xs_package_runtime: "win-x64"
           - os: ubuntu-latest
             extension: ".deb"
             bc_extension: ".tar.gz"
             runtime: "linux-amd64"
             platform: "linux"
+            dotnet_runtime: "linux-x64"
             xs_package_runtime: "linux-x64"
           - os: macos-latest
             runtime: "mac"
             extension: ".dmg"
             bc_extension: ".zip"
             platform: "mac"
+            dotnet_runtime: "osx-x64"
             xs_package_runtime: "mac-x64"
         node_version: [12.x]
         dotnet_version: ['3.1.101']
@@ -71,10 +74,10 @@ jobs:
       run: dotnet restore ${{env.XSERVER_SOLUTION_PATH}}
 
     - name: Build xServer.D
-      run: dotnet build -c ${{ env.XSERVER_BUILD_CONFIGURATION }} -r ${{ matrix.xs_package_runtime }} -v m ${{ env.XSERVER_SOLUTION_PATH }}
+      run: dotnet build -c ${{ env.XSERVER_BUILD_CONFIGURATION }} -r ${{ matrix.dotnet_runtime }} -v m ${{ env.XSERVER_SOLUTION_PATH }}
 
     - name: Publish xServer.D
-      run: dotnet publish -c ${{ env.XSERVER_BUILD_CONFIGURATION }} -r ${{ matrix.xs_package_runtime }} -v m -o ${{ env.UI_PATH }}/xserver.d ${{ env.XSERVER_PROJECT_PATH }}
+      run: dotnet publish -c ${{ env.XSERVER_BUILD_CONFIGURATION }} -r ${{ matrix.dotnet_runtime }} -v m -o ${{ env.UI_PATH }}/xserver.d ${{ env.XSERVER_PROJECT_PATH }}
 
     - name: Tooling
       if: matrix.os == 'ubuntu-latest'
