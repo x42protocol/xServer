@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "xServer.UI", "x42-Server.UI\xServer.UI.njsproj", "{509CEAB5-9EA5-4CE5-851B-86A438D95DCC}"
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "xServer.UI", "xServer.UI\xServer.UI.njsproj", "{509CEAB5-9EA5-4CE5-851B-86A438D95DCC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
