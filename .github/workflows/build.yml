@@ -41,7 +41,7 @@ jobs:
       XSERVER_NAME: 'xServer'
       XSERVER_VERSION: '4.0.0'
       XSERVER_PROJECT_NAME: 'x42.Server'
-      XSERVER_SOLUTION_PATH: 'x42-Server.D.sln'
+      XSERVER_SOLUTION_PATH: 'x42-Server.D/x42-Server.D.sln'
       XSERVER_PROJECT_PATH: 'x42-Server.D/x42.Server.csproj'
       XSERVER_BUILD_CONFIGURATION: 'Release'
       BLOCKCORE_DAEMON_VERSION: '1.2.23'
@@ -61,7 +61,6 @@ jobs:
     - name: Variables
       run: |
         echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
-        echo "::set-env name=VERSION::$(npm run version --silent)"
 
     - name: Setup .NET Core (${{ matrix.dotnet_version }})
       uses: actions/setup-dotnet@v1
