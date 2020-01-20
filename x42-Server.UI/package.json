@@ -17,6 +17,7 @@
   "private": true,
   "scripts": {
     "postinstall": "npm run postinstall:electron && electron-builder install-app-deps",
+    "postinstall:electron": "node postinstall",
     "ng": "ng",
     "ng:serve": "ng serve",
     "ng:serve:web": "ng serve -c web -o",
