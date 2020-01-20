@@ -164,6 +164,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public openSupport() {
-    this.electronService.shell.openExternal("https://github.com/x42protocol/x42-Server/blob/master/README.md");
+    this.electronService.shell.openExternal("https://github.com/x42protocol/xServer/blob/master/README.md");
   }
 }

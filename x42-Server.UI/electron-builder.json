@@ -33,7 +33,7 @@
       "deb",
       "tar.gz"
     ],
-    "synopsis": "x42-Server.UI: x42's server.",
+    "synopsis": "xServer.UI: x42's server.",
     "category": "Utility",
     "artifactName": "${productName}-v${version}-${os}-${arch}.${ext}"
   },

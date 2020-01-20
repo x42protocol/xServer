@@ -1,15 +1,15 @@
 import { AngularElectronPage } from './app.po';
 import { browser, element, by } from 'protractor';
 
-describe('x42-Server App', () => {
+describe('xServer App', () => {
   let page: AngularElectronPage;
 
   beforeEach(() => {
     page = new AngularElectronPage();
   });
 
-  it('Page title should be x42 Server', () => {
+  it('Page title should be xServer', () => {
     page.navigateTo('/');
-    expect(page.getTitle()).toEqual('x42 Server');
+    expect(page.getTitle()).toEqual('xServer');
   });
 });

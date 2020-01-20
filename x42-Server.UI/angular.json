@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "x42-Server": {
+    "xServer": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -72,21 +72,21 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "x42-Server:build"
+            "browserTarget": "xServer:build"
           },
           "configurations": {
             "dev": {
-              "browserTarget": "x42-Server:build:dev"
+              "browserTarget": "xServer:build:dev"
             },
             "production": {
-              "browserTarget": "x42-Server:build:production"
+              "browserTarget": "xServer:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "x42-Server:build"
+            "browserTarget": "xServer:build"
           }
         },
         "test": {
@@ -119,7 +119,7 @@
         }
       }
     },
-    "x42-Server-e2e": {
+    "xServer-e2e": {
       "root": "e2e",
       "projectType": "application",
       "architect": {
@@ -144,7 +144,7 @@
       }
     }
   },
-  "defaultProject": "x42-Server",
+  "defaultProject": "xServer",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
