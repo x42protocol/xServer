@@ -87,9 +87,7 @@ namespace X42.Feature.Database
             }
             catch (Exception ex)
             {
-                logger.LogCritical("Database failed to Initialize.");
-                logger.LogCritical(ex.Message);
-                logger.LogCritical(ex.InnerException.ToString());
+                logger.LogCritical("Database failed to Initialize.", ex);
                 logger.LogTrace("(-)[INITIALIZE_EXCEPTION]");
             }
 
