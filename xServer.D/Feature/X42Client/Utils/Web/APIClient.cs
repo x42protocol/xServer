@@ -63,7 +63,7 @@ namespace X42.Feature.X42Client.Utils.Web
             //httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("gzip"));
             //httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("defalte"));
             httpClient.DefaultRequestHeaders.UserAgent.Add(
-                new ProductInfoHeaderValue(new ProductHeaderValue("x42-Server", "1.0")));
+                new ProductInfoHeaderValue(new ProductHeaderValue("xServer", "4.0")));
 
             //if creds were provided then add a basic auth header
             if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password))

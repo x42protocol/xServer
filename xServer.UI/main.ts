@@ -105,9 +105,11 @@ app.on('ready', () => {
   }
   else {
     if (sidechain && !nodaemon) {
-      startDaemon("x42.x42D");
+      startx42Node("x42.x42D");
+      startxServer("xServer");
     } else if (!nodaemon) {
-      startDaemon("x42.x42D")
+      startx42Node("x42.x42D");
+      startxServer("xServer");
     }
   }
   createTray();
@@ -168,7 +170,7 @@ function shutdownDaemon(portNumber) {
   request.end(body);
 };
 
-function startDaemon(daemonName) {
+function startx42Node(daemonName) {
   var daemonProcess;
   var spawnDaemon = require('child_process').spawn;
 
@@ -179,6 +181,28 @@ function startDaemon(daemonName) {
     daemonPath = path.resolve(__dirname, '..//..//resources//daemon//' + daemonName);
   } else {
     daemonPath = path.resolve(__dirname, '..//..//resources//daemon//' + daemonName);
+  }
+
+  daemonProcess = spawnDaemon(daemonPath, [args.join(' ').replace('--', '-')], {
+    detached: true
+  });
+
+  daemonProcess.stdout.on('data', (data) => {
+    writeLog(`x42: ${data}`);
+  });
+}
+
+function startxServer(daemonName) {
+  var daemonProcess;
+  var spawnDaemon = require('child_process').spawn;
+
+  var daemonPath;
+  if (os.platform() === 'win32') {
+    daemonPath = path.resolve(__dirname, '..\\..\\resources\\xserver.d\\' + daemonName + '.exe');
+  } else if (os.platform() === 'linux') {
+    daemonPath = path.resolve(__dirname, '..//..//resources//xserver.d//' + daemonName);
+  } else {
+    daemonPath = path.resolve(__dirname, '..//..//resources//xserver.d//' + daemonName);
   }
 
   daemonProcess = spawnDaemon(daemonPath, [args.join(' ').replace('--', '-')], {

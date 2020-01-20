@@ -33,7 +33,7 @@ namespace X42
             }
             catch (Exception ex)
             {
-                Console.WriteLine($@"There was a problem initializing x42-Server. Details: '{ex}'");
+                Console.WriteLine($@"There was a problem initializing xServer. Details: '{ex}'");
             }
         }
     }

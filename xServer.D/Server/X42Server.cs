@@ -290,7 +290,7 @@ namespace X42.Server
             AsyncLoopFactory = Services.ServiceProvider.GetService<IAsyncLoopFactory>();
 
             logger.LogInformation(Resources.AsciiLogo);
-            logger.LogInformation("x42-Server initialized {0}.", ServerNode.Name);
+            logger.LogInformation("xServer initialized {0}.", ServerNode.Name);
 
             State = X42ServerState.Initialized;
             StartTime = DateTimeProvider.GetUtcNow();

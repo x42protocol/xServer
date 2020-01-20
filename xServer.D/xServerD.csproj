@@ -5,10 +5,10 @@
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 	<LangVersion>latest</LangVersion>
 		<RootNamespace>x42</RootNamespace>
-		<AssemblyName>x42.Server</AssemblyName>
+		<AssemblyName>xServer</AssemblyName>
 		<Authors>x42</Authors>
 		<Company>x42</Company>
-		<Product>x42-Server</Product>
+		<Product>xServer</Product>
 		<Version>1.0.0</Version>
 		<ApplicationIcon />
 		<StartupObject />
