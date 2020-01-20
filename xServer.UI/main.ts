@@ -109,7 +109,7 @@ app.on('ready', () => {
       startxServer("xServer");
     } else if (!nodaemon) {
       startx42Node("x42.x42D");
-      startxServer("xServer");
+      startxServer("x42.xServerD");
     }
   }
   createTray();

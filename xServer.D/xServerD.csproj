@@ -5,7 +5,7 @@
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 	<LangVersion>latest</LangVersion>
 		<RootNamespace>x42</RootNamespace>
-		<AssemblyName>xServer</AssemblyName>
+		<AssemblyName>x42.xServerD</AssemblyName>
 		<Authors>x42</Authors>
 		<Company>x42</Company>
 		<Product>xServer</Product>
