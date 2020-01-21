@@ -86,15 +86,15 @@ export class MainMenuComponent implements OnInit, OnDestroy {
   setUnlockedMenuItems() {
     this.menuItems = [
       {
+        label: 'Dashboard',
+        icon: 'pi pi-fw pi-home',
+        command: (event: Event) => {
+          this.openDashBoard();
+        }
+      },
+      {
         label: 'Server',
         items: [
-          {
-            label: 'Dashboard',
-            icon: 'pi pi-fw pi-home',
-            command: (event: Event) => {
-              this.openDashBoard();
-            }
-          },
           { separator: true },
           {
             label: 'Lock',
@@ -267,7 +267,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     if (this.stakingInfoSubscription) {
       this.stakingInfoSubscription.unsubscribe();
     }
-    
+
     if (this.nodeStatusSubscription) {
       this.nodeStatusSubscription.unsubscribe();
     }
