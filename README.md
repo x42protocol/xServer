@@ -12,7 +12,7 @@ Use the `x42Server.conf` to make any configuration changes for the desired envir
 ##### Windows config location:
 %AppData%\x42Server\
 
-##### Linux config locaiton:
+##### Linux config location:
 Located in your home directory ~/.x42Server/
 
 ## xServer.UI
