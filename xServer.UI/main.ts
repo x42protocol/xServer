@@ -163,49 +163,55 @@ app.on('activate', () => {
 });
 
 function shutdownx42Node(portNumber) {
-  var http = require('http');
-  var body = JSON.stringify({});
-
-  var request = new http.ClientRequest({
-    method: 'POST',
+  const http = require('http');
+  const options = {
     hostname: 'localhost',
     port: portNumber,
     path: '/api/node/shutdown',
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": Buffer.byteLength(body)
+    method: 'POST'
+  };
+
+  const req = http.request(options);
+
+  req.on('response', function (res) {
+    if (res.statusCode === 200) {
+      console.log('Request to shutdown x42 node daemon returned HTTP success code.');
+    } else {
+      console.log('Request to shutdown x42 node daemon returned HTTP failure code: ' + res.statusCode);
     }
-  })
+  });
 
-  request.write('true');
-  request.on('error', function (e) { });
-  request.on('timeout', function (e) { request.abort(); });
-  request.on('uncaughtException', function (e) { request.abort(); });
+  req.on('error', function (err) { });
 
-  request.end(body);
+  req.setHeader('content-type', 'application/json-patch+json');
+  req.write('true');
+  req.end();
 };
 
 function shutdownxServer(portNumber) {
-  var http = require('http');
-  var body = JSON.stringify({});
-
-  var request = new http.ClientRequest({
-    method: 'POST',
+  const http = require('http');
+  const options = {
     hostname: 'localhost',
     port: portNumber,
     path: '/shutdown',
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": Buffer.byteLength(body)
+    method: 'POST'
+  };
+
+  const req = http.request(options);
+
+  req.on('response', function (res) {
+    if (res.statusCode === 200) {
+      console.log('Request to shutdown xServer daemon returned HTTP success code.');
+    } else {
+      console.log('Request to shutdown xServer daemon returned HTTP failure code: ' + res.statusCode);
     }
-  })
+  });
 
-  request.write('true');
-  request.on('error', function (e) { });
-  request.on('timeout', function (e) { request.abort(); });
-  request.on('uncaughtException', function (e) { request.abort(); });
+  req.on('error', function (err) { });
 
-  request.end(body);
+  req.setHeader('content-type', 'application/json-patch+json');
+  req.write('true');
+  req.end();
 };
 
 function startx42Node(daemonName) {
