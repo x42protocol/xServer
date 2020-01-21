@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { DialogService } from 'primeng/api';
+import { ElectronService } from 'ngx-electron';
 
 import { FullNodeApiService } from '../../shared/services/fullnode.api.service';
 import { GlobalService } from '../../shared/services/global.service';
@@ -24,7 +25,7 @@ import { Router } from '@angular/router';
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
-  constructor(private apiService: FullNodeApiService, private globalService: GlobalService, public dialogService: DialogService, private router: Router, private fb: FormBuilder, private themeService: ThemeService) {
+  constructor(private apiService: FullNodeApiService, private globalService: GlobalService, public dialogService: DialogService, private router: Router, private fb: FormBuilder, private themeService: ThemeService, private electronService: ElectronService) {
     this.buildStakingForm();
     this.isDarkTheme = themeService.getCurrentTheme().themeType == 'dark';
   }
@@ -178,11 +179,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   };
 
-  onWalletGetServerId() {
+  public onWalletGetServerId() {
     this.dialogService.open(CreateServerIDComponent, {
       header: 'Server ID',
       width: '540px'
     });
+  }
+
+  public openSetupGuide() {
+    this.electronService.shell.openExternal("https://github.com/x42protocol/xServer/blob/master/Documentation/xServer-Setup-Guide.md");
   }
 
   private makeLatestTxListSmall() {
