@@ -138,4 +138,4 @@ jobs:
         prerelease: true
         body: ''
         name: "${{env.XSERVER_NAME}} (Release ${{env.XSERVER_VERSION}})"
-        tag: v${{env.VERSION}}  
+        tag: v${{env.XSERVER_VERSION}}  
