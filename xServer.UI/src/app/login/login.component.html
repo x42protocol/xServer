@@ -6,7 +6,7 @@
 		</div>
 		<form class="form-group col-12" [formGroup]="openWalletForm">
 			<div class="form-group mt-3">
-				<input type="password" class="form-control" id="Password" [class.is-invalid]="formErrors.password" [class.is-valid]="!formErrors.password && openWalletForm.get('password').valid" id="Password" formControlName="password" formControlName="password" placeholder="Enter your password." (keyup.enter)="onEnter()" pInputText>
+				<input type="password" class="form-control" id="Password" [class.is-invalid]="formErrors.password" [class.is-valid]="!formErrors.password && openWalletForm.get('password').valid" id="Password" formControlName="password" formControlName="password" placeholder="Enter your password." (keyup.enter)="onEnter()" autofocus pInputText>
 				<div *ngIf="formErrors.password" class="invalid-feedback">{{ formErrors.password }}</div>
 			</div>
 		</form>
