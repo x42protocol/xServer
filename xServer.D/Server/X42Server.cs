@@ -23,7 +23,7 @@ namespace X42.Server
     /// <summary>
     ///     Server providing all supported features of the servernode and its network.
     /// </summary>
-    public class X42Server : IxServer
+    public class XServer : IxServer
     {
         /// <summary>Instance logger.</summary>
         private ILogger logger;
@@ -37,15 +37,15 @@ namespace X42.Server
         private ServerFeatureExecutor serverFeatureExecutor;
 
         /// <summary>Application life cycle control - triggers when application shuts down.</summary>
-        private X42ServerLifetime serverLifetime;
+        private XServerLifetime serverLifetime;
 
         private readonly ServerSettings nodeSettings;
         private readonly NetworkFeatures network;
         private readonly X42ClientFeature x42FullNode;
         private readonly DatabaseFeatures database;
 
-        /// <summary>Creates new instance of the <see cref="X42Server" />.</summary>
-        public X42Server(NetworkFeatures network,
+        /// <summary>Creates new instance of the <see cref="XServer" />.</summary>
+        public XServer(NetworkFeatures network,
             ServerSettings nodeSettings,
             X42ClientFeature x42FullNode,
             DatabaseFeatures database)
@@ -55,7 +55,7 @@ namespace X42.Server
             this.x42FullNode = x42FullNode;
             this.database = database;
 
-            State = X42ServerState.Created;
+            State = XServerState.Created;
         }
 
         /// <summary>Server command line and configuration file settings.</summary>
@@ -76,7 +76,7 @@ namespace X42.Server
         public string LastLogOutput { get; private set; }
 
         /// <inheritdoc />
-        public X42ServerState State { get; private set; }
+        public XServerState State { get; private set; }
 
         /// <inheritdoc />
         public DateTime StartTime { get; set; }
@@ -85,10 +85,10 @@ namespace X42.Server
         public IDateTimeProvider DateTimeProvider { get; set; }
 
         /// <inheritdoc />
-        public IX42ServerLifetime X42ServerLifetime
+        public IxServerLifetime xServerLifetime
         {
             get => serverLifetime;
-            private set => serverLifetime = (X42ServerLifetime)value;
+            private set => serverLifetime = (XServerLifetime)value;
         }
 
 
@@ -116,7 +116,7 @@ namespace X42.Server
         {
             get
             {
-                string versionString = typeof(X42Server).GetTypeInfo().Assembly
+                string versionString = typeof(XServer).GetTypeInfo().Assembly
                                            .GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ??
                                        PlatformServices.Default.Application.ApplicationVersion;
 
@@ -200,16 +200,16 @@ namespace X42.Server
         /// <inheritdoc />
         public void Start()
         {
-            State = X42ServerState.Starting;
+            State = XServerState.Starting;
 
-            if (State == X42ServerState.Disposing || State == X42ServerState.Disposed)
-                throw new ObjectDisposedException(nameof(X42Server));
+            if (State == XServerState.Disposing || State == XServerState.Disposed)
+                throw new ObjectDisposedException(nameof(XServer));
 
-            serverLifetime = Services.ServiceProvider.GetRequiredService<IX42ServerLifetime>() as X42ServerLifetime;
+            serverLifetime = Services.ServiceProvider.GetRequiredService<IxServerLifetime>() as XServerLifetime;
             serverFeatureExecutor = Services.ServiceProvider.GetRequiredService<ServerFeatureExecutor>();
 
             if (serverLifetime == null)
-                throw new InvalidOperationException($"{nameof(IX42ServerLifetime)} must be set.");
+                throw new InvalidOperationException($"{nameof(IxServerLifetime)} must be set.");
 
             if (serverFeatureExecutor == null)
                 throw new InvalidOperationException($"{nameof(ServerFeatureExecutor)} must be set.");
@@ -224,16 +224,16 @@ namespace X42.Server
 
             StartPeriodicLog();
 
-            State = X42ServerState.Started;
+            State = XServerState.Started;
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            if (State == X42ServerState.Disposing || State == X42ServerState.Disposed)
+            if (State == XServerState.Disposing || State == XServerState.Disposed)
                 return;
 
-            State = X42ServerState.Disposing;
+            State = XServerState.Disposing;
 
             logger.LogInformation("Closing server pending.");
 
@@ -250,7 +250,7 @@ namespace X42.Server
             logger.LogInformation("Notify application has stopped.");
             serverLifetime.NotifyStopped();
 
-            State = X42ServerState.Disposed;
+            State = XServerState.Disposed;
         }
 
         public T ServerFeature<T>(bool failWithError = false)
@@ -269,9 +269,9 @@ namespace X42.Server
         }
 
         /// <inheritdoc />
-        public X42Server Initialize(ServerServiceProvider serviceProvider)
+        public XServer Initialize(ServerServiceProvider serviceProvider)
         {
-            State = X42ServerState.Initializing;
+            State = XServerState.Initializing;
 
             Guard.NotNull(serviceProvider, nameof(serviceProvider));
 
@@ -292,7 +292,7 @@ namespace X42.Server
             logger.LogInformation(Resources.AsciiLogo);
             logger.LogInformation("xServer initialized {0}.", ServerNode.Name);
 
-            State = X42ServerState.Initialized;
+            State = XServerState.Initialized;
             StartTime = DateTimeProvider.GetUtcNow();
             return this;
         }

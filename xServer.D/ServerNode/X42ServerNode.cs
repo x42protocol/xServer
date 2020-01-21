@@ -5,12 +5,12 @@ using NodeSeedData = X42.Utilities.NodeSeedData;
 
 namespace X42.ServerNode
 {
-    public class X42ServerNode : ServerNodeBase
+    public class XServerNode : ServerNodeBase
     {
         /// <summary> The default name used for the x42 server configuration file. </summary>
-        public const string x42DefaultConfigFilename = "x42Server.conf";
+        public const string x42DefaultConfigFilename = "xServer.conf";
 
-        public X42ServerNode()
+        public XServerNode()
         {
             Name = "x42 ServerNode";
             DefaultPort = 4242;

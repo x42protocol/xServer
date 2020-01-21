@@ -88,7 +88,7 @@ namespace X42.Utilities
         /// </remarks>
         public AsyncLoopFactory(ILoggerFactory loggerFactory)
         {
-            logger = loggerFactory.CreateLogger(typeof(X42Server).FullName);
+            logger = loggerFactory.CreateLogger(typeof(XServer).FullName);
         }
 
         /// <inheritdoc />

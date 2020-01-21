@@ -28,20 +28,20 @@ namespace X42.Feature.Api
 
         private readonly IServerBuilder serverBuilder;
 
-        private readonly X42Server x42Server;
+        private readonly XServer xServer;
 
         private IWebHost webHost;
 
         public ApiFeature(
-            IServerBuilder x42ServerBuilder,
-            X42Server x42Server,
+            IServerBuilder xServerBuilder,
+            XServer xServer,
             ApiFeatureOptions apiFeatureOptions,
             ApiSettings apiSettings,
             ILoggerFactory loggerFactory,
             ICertificateStore certificateStore)
         {
-            serverBuilder = x42ServerBuilder;
-            this.x42Server = x42Server;
+            serverBuilder = xServerBuilder;
+            this.xServer = xServer;
             this.apiFeatureOptions = apiFeatureOptions;
             this.apiSettings = apiSettings;
             this.certificateStore = certificateStore;
@@ -51,7 +51,7 @@ namespace X42.Feature.Api
         public override Task InitializeAsync()
         {
             logger.LogInformation("API starting on URL '{0}'.", apiSettings.ApiUri);
-            webHost = ApiBuilder.Initialize(serverBuilder.Services, x42Server, apiSettings, certificateStore,
+            webHost = ApiBuilder.Initialize(serverBuilder.Services, xServer, apiSettings, certificateStore,
                 new WebHostBuilder());
 
             if (apiSettings.KeepaliveTimer == null)
@@ -68,7 +68,7 @@ namespace X42.Feature.Api
 
                 apiSettings.KeepaliveTimer.Stop();
                 apiSettings.KeepaliveTimer.Enabled = false;
-                x42Server.X42ServerLifetime.StopApplication();
+                xServer.xServerLifetime.StopApplication();
             };
 
             apiSettings.KeepaliveTimer.Start();

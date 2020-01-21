@@ -6,7 +6,7 @@ namespace X42.Utilities
     /// <summary>
     ///     Allows consumers to perform cleanup during a graceful shutdown.
     /// </summary>
-    public interface IX42ServerLifetime
+    public interface IxServerLifetime
     {
         /// <summary>
         ///     Triggered when the application host has fully started and is about to wait
@@ -35,7 +35,7 @@ namespace X42.Utilities
     ///     Allows consumers to perform cleanup during a graceful shutdown.
     ///     Borrowed from asp.net core
     /// </summary>
-    public class X42ServerLifetime : IX42ServerLifetime
+    public class XServerLifetime : IxServerLifetime
     {
         private readonly CancellationTokenSource startedSource = new CancellationTokenSource();
 

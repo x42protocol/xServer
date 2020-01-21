@@ -15,11 +15,11 @@ namespace X42.Controllers.Public
     [Route("")]
     public class PublicController : Controller
     {
-        private readonly X42Server x42Server;
+        private readonly XServer xServer;
 
-        public PublicController(X42Server x42Server)
+        public PublicController(XServer xServer)
         {
-            this.x42Server = x42Server;
+            this.xServer = xServer;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace X42.Controllers.Public
         [Route("ping")]
         public IActionResult Ping()
         {
-            string content = x42Server.Version.ToString();
+            string content = xServer.Version.ToString();
             return Content(content);
         }
 
@@ -52,7 +52,7 @@ namespace X42.Controllers.Public
                 Tier = registerRequest.Tier
             };
 
-            RegisterResult registerResult = await x42Server.Register(serverNode);
+            RegisterResult registerResult = await xServer.Register(serverNode);
 
             return Json(registerResult);
         }

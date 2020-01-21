@@ -146,10 +146,10 @@ namespace X42.Feature.Api
             }
         }
 
-        public static IWebHost Initialize(IEnumerable<ServiceDescriptor> services, X42Server x42Server,
+        public static IWebHost Initialize(IEnumerable<ServiceDescriptor> services, XServer xServer,
             ApiSettings apiSettings, ICertificateStore store, IWebHostBuilder webHostBuilder)
         {
-            Guard.NotNull(x42Server, nameof(x42Server));
+            Guard.NotNull(xServer, nameof(xServer));
             Guard.NotNull(webHostBuilder, nameof(webHostBuilder));
 
             Uri apiUri = apiSettings.ApiUri;
@@ -180,7 +180,7 @@ namespace X42.Feature.Api
                     // also copies over singleton instances already defined
                     foreach (ServiceDescriptor service in services)
                     {
-                        object obj = x42Server.Services.ServiceProvider.GetService(service.ServiceType);
+                        object obj = xServer.Services.ServiceProvider.GetService(service.ServiceType);
                         if (obj != null && service.Lifetime == ServiceLifetime.Singleton &&
                             service.ImplementationInstance == null)
                             collection.AddSingleton(service.ServiceType, obj);

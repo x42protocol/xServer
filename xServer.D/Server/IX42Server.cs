@@ -12,7 +12,7 @@ namespace X42.Server
     public interface IxServer : IDisposable
     {
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
-        IX42ServerLifetime X42ServerLifetime { get; }
+        IxServerLifetime xServerLifetime { get; }
 
         /// <summary>Provider of date time functionality.</summary>
         IDateTimeProvider DateTimeProvider { get; }
@@ -27,7 +27,7 @@ namespace X42.Server
         Task<RegisterResult> Register(ServerNodeData serverNode);
 
         /// <summary>Provides current state of the server.</summary>
-        X42ServerState State { get; }
+        XServerState State { get; }
 
         /// <summary>Time the server started.</summary>
         DateTime StartTime { get; }
@@ -50,7 +50,7 @@ namespace X42.Server
     }
 
     /// <summary>Represents <see cref="IServer" /> state.</summary>
-    public enum X42ServerState
+    public enum XServerState
     {
         /// <summary>Assigned when <see cref="IServer" /> instance is created.</summary>
         Created,

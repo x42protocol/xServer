@@ -58,7 +58,7 @@ namespace X42.Feature.Database
         {
             builder.AppendLine("####Database Settings####");
             builder.AppendLine("#Connection string for database.");
-            builder.AppendLine("#connectionstring=<string>");
+            builder.AppendLine("#connectionstring=User ID=postgres;Password=password;Host=localhost;Port=5432;Database=x42; ");
         }
     }
 }

@@ -31,21 +31,21 @@ namespace X42.Feature.Setup
         private readonly ILoggerFactory loggerFactory;
 
         /// <inheritdoc cref="Network" />
-        private readonly X42Server network;
+        private readonly XServer network;
 
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
-        private readonly IX42ServerLifetime serverLifetime;
+        private readonly IxServerLifetime serverLifetime;
 
         /// <summary>User defined server settings.</summary>
         private readonly ServerSettings serverSettings;
 
         public BaseFeature(ServerSettings serverSettings,
             DataFolder dataFolder,
-            IX42ServerLifetime serverLifetime,
+            IxServerLifetime serverLifetime,
             IDateTimeProvider dateTimeProvider,
             IAsyncLoopFactory asyncLoopFactory,
             ILoggerFactory loggerFactory,
-            X42Server network)
+            XServer network)
         {
             this.serverSettings = Guard.NotNull(serverSettings, nameof(serverSettings));
             this.dataFolder = Guard.NotNull(dataFolder, nameof(dataFolder));
@@ -95,11 +95,11 @@ namespace X42.Feature.Setup
                     {
                         services.AddSingleton(serverBuilder.ServerSettings.LoggerFactory);
                         services.AddSingleton(serverBuilder.ServerSettings.DataFolder);
-                        services.AddSingleton<IX42ServerLifetime, X42ServerLifetime>();
+                        services.AddSingleton<IxServerLifetime, XServerLifetime>();
                         services.AddSingleton<ServerFeatureExecutor>();
-                        services.AddSingleton<X42Server>().AddSingleton(provider =>
+                        services.AddSingleton<XServer>().AddSingleton(provider =>
                         {
-                            return provider.GetService<X42Server>() as IxServer;
+                            return provider.GetService<XServer>() as IxServer;
                         });
                         services.AddSingleton(DateTimeProvider.Default);
                         services.AddSingleton<IAsyncLoopFactory, AsyncLoopFactory>();

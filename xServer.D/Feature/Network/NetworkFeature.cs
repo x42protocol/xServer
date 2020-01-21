@@ -30,7 +30,7 @@ namespace X42.Feature.Network
         private readonly ILogger logger;
 
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
-        private readonly IX42ServerLifetime serverLifetime;
+        private readonly IxServerLifetime serverLifetime;
 
         /// <summary>Factory for creating background async loop tasks.</summary>
         private readonly IAsyncLoopFactory asyncLoopFactory;
@@ -47,7 +47,7 @@ namespace X42.Feature.Network
             ILoggerFactory loggerFactory,
             DatabaseSettings databaseSettings,
             X42ClientSettings x42ClientSettings,
-            IX42ServerLifetime serverLifetime,
+            IxServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory
             )
         {

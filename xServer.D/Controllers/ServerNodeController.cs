@@ -51,20 +51,20 @@ namespace X42.Controllers
         /// <summary>Database details.</summary>
         private readonly DatabaseFeatures databaseFeatures;
 
-        public ServerNodeContoller(IxServer x42Server, ILoggerFactory loggerFactory,
+        public ServerNodeContoller(IxServer xServer, ILoggerFactory loggerFactory,
             IDateTimeProvider dateTimeProvider,
             ServerSettings serverSettings,
             ServerNodeBase serverNode,
             DatabaseFeatures databaseFeatures)
         {
-            Guard.NotNull(x42Server, nameof(x42Server));
+            Guard.NotNull(xServer, nameof(xServer));
             Guard.NotNull(serverNode, nameof(serverNode));
             Guard.NotNull(loggerFactory, nameof(loggerFactory));
             Guard.NotNull(serverSettings, nameof(serverSettings));
             Guard.NotNull(dateTimeProvider, nameof(dateTimeProvider));
             Guard.NotNull(databaseFeatures, nameof(databaseFeatures));
 
-            this.xServer = x42Server;
+            this.xServer = xServer;
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.dateTimeProvider = dateTimeProvider;
             nodeSettings = serverSettings;
@@ -115,7 +115,7 @@ namespace X42.Controllers
         {
             // Start the node shutdown process, by calling StopApplication, which will signal to
             // the xServer RunAsync to continue processing, which calls Dispose on the node.
-            xServer?.X42ServerLifetime.StopApplication();
+            xServer?.xServerLifetime.StopApplication();
 
             return Ok();
         }

@@ -196,9 +196,9 @@ namespace X42.Server
             if (serverNode == null)
                 throw new ServerBuilderException("ServerNode not specified");
 
-            X42Server server = serverServiceProvider.GetService<X42Server>();
+            XServer server = serverServiceProvider.GetService<XServer>();
             if (server == null)
-                throw new InvalidOperationException("X42Server not registered with provider");
+                throw new InvalidOperationException("XServer not registered with provider");
 
             server.Initialize(
                 new ServerServiceProvider(

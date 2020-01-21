@@ -37,7 +37,7 @@ namespace X42.Configuration
         /// <summary>The version of the protocol supported by the current implementation of the xServer.</summary>
         public const ProtocolVersion SupportedProtocolVersion = ProtocolVersion.PROTOCOL_VERSION;
 
-        public string ServerName = "x42Server";
+        public string ServerName = "xServer";
 
         /// <summary>
         ///     Initializes a new instance of the object.
@@ -80,7 +80,7 @@ namespace X42.Configuration
             // but both the data directory and the configuration file path may be changed using the -datadir and -conf command-line arguments.
             ConfigurationFile = ConfigReader.GetOrDefault<string>("conf", null, Logger)?.NormalizeDirectorySeparator();
             DataDir = ConfigReader.GetOrDefault<string>("datadir", null, Logger)?.NormalizeDirectorySeparator();
-            DataDirRoot = ConfigReader.GetOrDefault("datadirroot", "x42Server", Logger);
+            DataDirRoot = ConfigReader.GetOrDefault("datadirroot", "xServerData", Logger);
 
             // If the configuration file is relative then assume it is relative to the data folder and combine the paths.
             if (DataDir != null && ConfigurationFile != null)
@@ -106,7 +106,7 @@ namespace X42.Configuration
             if (DataDir == null)
             {
                 // Create the data directories if they don't exist.
-                DataDir = CreateDefaultDataDirectories(ServerName);
+                DataDir = CreateDefaultDataDirectories($"{ServerName}Data");
             }
             else
             {
@@ -193,7 +193,7 @@ namespace X42.Configuration
 
         /// <summary>
         ///     A string that is used to help identify the xServer when it connects to other peers on a servernode.
-        ///     Defaults to "x42Server".
+        ///     Defaults to "xServer".
         /// </summary>
         public string Agent { get; }
 

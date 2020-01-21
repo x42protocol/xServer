@@ -17,12 +17,12 @@ namespace X42.Feature.Network
         private readonly ILogger logger;
 
         /// <summary>
-        ///     A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IX42ServerLifetime.ApplicationStopping"/>.
+        ///     A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IxServerLifetime.ApplicationStopping"/>.
         /// </summary>
         private CancellationTokenSource networkCancellationTokenSource;
 
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
-        private readonly IX42ServerLifetime serverLifetime;
+        private readonly IxServerLifetime serverLifetime;
 
         /// <summary>Loop in which the node attempts to maintain a connection with the x42 network.</summary>
         private IAsyncLoop networkMonitorLoop;
@@ -39,7 +39,7 @@ namespace X42.Feature.Network
 
         public NetworkMonitor(
             ILogger mainLogger,
-            IX42ServerLifetime serverLifetime,
+            IxServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory,
             DatabaseSettings databaseSettings,
             NetworkFeatures networkFeatures

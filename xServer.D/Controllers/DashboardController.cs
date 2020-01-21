@@ -14,11 +14,11 @@ namespace X42.Controllers
     [Authorize(Policy = Policy.PrivateAccess)]
     public class DashboardController : Controller
     {
-        private readonly IxServer x42Server;
+        private readonly IxServer xServer;
 
-        public DashboardController(IxServer x42Server)
+        public DashboardController(IxServer xServer)
         {
-            this.x42Server = x42Server;
+            this.xServer = xServer;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace X42.Controllers
         [Route("/")]
         public IActionResult Log()
         {
-            string content = x42Server.LastLogOutput;
+            string content = xServer.LastLogOutput;
             return Content(content);
         }
     }

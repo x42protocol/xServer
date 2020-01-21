@@ -19,12 +19,12 @@ namespace X42.Feature.X42Client
         private readonly ILogger logger;
 
         /// <summary>
-        /// A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IX42ServerLifetime.ApplicationStopping"/>.
+        /// A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IxServerLifetime.ApplicationStopping"/>.
         /// </summary>
         private CancellationTokenSource nodeCancellationTokenSource;
 
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
-        private readonly IX42ServerLifetime serverLifetime;
+        private readonly IxServerLifetime serverLifetime;
 
         /// <summary>Loop in which the node attempts to maintain a connection with the x42 node.</summary>
         private IAsyncLoop nodeMonitorLoop;
@@ -35,7 +35,7 @@ namespace X42.Feature.X42Client
         /// <summary>Time in milliseconds between attempts to connect to x42 node.</summary>
         private readonly int monitorSleep;
 
-        public X42Node(string name, IPAddress address, uint port, ILogger mainLogger, IX42ServerLifetime serverLifetime, IAsyncLoopFactory asyncLoopFactory, bool eventsEnabled = true)
+        public X42Node(string name, IPAddress address, uint port, ILogger mainLogger, IxServerLifetime serverLifetime, IAsyncLoopFactory asyncLoopFactory, bool eventsEnabled = true)
         {
             logger = mainLogger;
             this.serverLifetime = serverLifetime;

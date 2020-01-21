@@ -19,7 +19,7 @@ namespace X42
             try
             {
                 ServerSettings serverSettings =
-                    new ServerSettings(new X42ServerNode(), ProtocolVersion.PROTOCOL_VERSION, args: args);
+                    new ServerSettings(new XServerNode(), ProtocolVersion.PROTOCOL_VERSION, args: args);
 
                 IxServer server = new ServerBuilder()
                     .UseServerSettings(serverSettings)

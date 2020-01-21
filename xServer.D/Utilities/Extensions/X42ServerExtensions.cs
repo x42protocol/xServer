@@ -40,7 +40,7 @@ namespace X42.Utilities.Extensions
                 };
 
                 AssemblyLoadContext assemblyLoadContext =
-                    AssemblyLoadContext.GetLoadContext(typeof(X42Server).GetTypeInfo().Assembly);
+                    AssemblyLoadContext.GetLoadContext(typeof(XServer).GetTypeInfo().Assembly);
                 assemblyLoadContext.Unloading += context => shutdown();
 
                 Console.CancelKeyPress += (sender, eventArgs) =>
@@ -81,12 +81,12 @@ namespace X42.Utilities.Extensions
                 Console.WriteLine();
             }
 
-            cancellationToken.Register(state => { ((IX42ServerLifetime) state).StopApplication(); },
-                server.X42ServerLifetime);
+            cancellationToken.Register(state => { ((IxServerLifetime) state).StopApplication(); },
+                server.xServerLifetime);
 
             TaskCompletionSource<object> waitForStop =
                 new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-            server.X42ServerLifetime.ApplicationStopping.Register(obj =>
+            server.xServerLifetime.ApplicationStopping.Register(obj =>
             {
                 TaskCompletionSource<object> tcs = (TaskCompletionSource<object>) obj;
                 tcs.TrySetResult(null);
