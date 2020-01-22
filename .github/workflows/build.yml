@@ -41,8 +41,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     
     env:
-      XSERVER_NAME: 'xServer'
-      XSERVER_VERSION: '4.0.0'
       XSERVER_PROJECT_NAME: 'xServer'
       XSERVER_SOLUTION_PATH: 'xServer.D.sln'
       XSERVER_PROJECT_PATH: 'xServer.D/xServerD.csproj'
@@ -60,8 +58,14 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node_version }}
-
-    - name: Variables
+    
+    - name: Package NPM Variables
+      run: |
+        cd ${{ env.UI_PATH }}
+        echo "::set-env name=XSERVER_NAME::$(npm run name --silent)"
+        echo "::set-env name=XSERVER_VERSION::$(npm run version --silent)"
+        
+    - name: Release Variables
       run: |
         echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
 
