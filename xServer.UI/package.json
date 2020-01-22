@@ -52,7 +52,8 @@
     "lint": "ng lint",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
-    "version": "node -p \"require('./package.json').version\""
+    "version": "node -p \"require('./package.json').version\"",
+    "name": "node -p \"require('./package.json').name\""
   },
   "dependencies": {
     "@angular/cdk": "^7.3.7",
