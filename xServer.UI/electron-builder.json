@@ -21,14 +21,14 @@
     "!tslint.json"
   ],
   "win": {
-    "icon": "dist/assets/images/icon",
+    "icon": "dist/assets/images/icons/icon.ico",
     "target": [
       "nsis"
     ],
     "artifactName": "${productName}-v${version}-${os}-${arch}.${ext}"
   },
   "linux": {
-    "icon": "dist/assets/images/",
+    "icon": "dist/assets/images/icons/",
     "target": [
       "deb",
       "tar.gz"
@@ -38,7 +38,7 @@
     "artifactName": "${productName}-v${version}-${os}-${arch}.${ext}"
   },
   "mac": {
-    "icon": "dist/assets/images/icon.icns",
+    "icon": "dist/assets/images/icons/icon.icns",
     "target": [
       "dmg"
     ],
@@ -61,7 +61,7 @@
   "extraResources": [
     "xserver.d/**/*",
     "daemon/**/*",
-    "src/assets/images/icon-tray.png",
+    "src/assets/images/icons/32x32.png",
     "src/assets/images/license_en.txt",
     "src/assets/themes/**/*"
   ]

@@ -237,10 +237,10 @@ function createTray() {
     //Put the app in system tray
     var trayIcon;
     if (serve) {
-        trayIcon = electron_1.nativeImage.createFromPath('./src/assets/images/icon-tray.png');
+        trayIcon = electron_1.nativeImage.createFromPath('./src/assets/images/icons/32x32.png');
     }
     else {
-        trayIcon = electron_1.nativeImage.createFromPath(path.resolve(__dirname, '../../resources/src/assets/images/icon-tray.png'));
+        trayIcon = electron_1.nativeImage.createFromPath(path.resolve(__dirname, '../../resources/src/assets/images/icons/32x32.png'));
     }
     var systemTray = new electron_1.Tray(trayIcon);
     var contextMenu = electron_1.Menu.buildFromTemplate([

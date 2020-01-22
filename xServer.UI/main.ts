@@ -262,9 +262,9 @@ function createTray() {
   //Put the app in system tray
   let trayIcon;
   if (serve) {
-    trayIcon = nativeImage.createFromPath('./src/assets/images/icon-tray.png');
+    trayIcon = nativeImage.createFromPath('./src/assets/images/icons/32x32.png');
   } else {
-    trayIcon = nativeImage.createFromPath(path.resolve(__dirname, '../../resources/src/assets/images/icon-tray.png'));
+    trayIcon = nativeImage.createFromPath(path.resolve(__dirname, '../../resources/src/assets/images/icons/32x32.png'));
   }
 
   let systemTray = new Tray(trayIcon);
