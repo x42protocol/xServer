@@ -163,7 +163,7 @@ export class ColdStakingCreateComponent implements OnInit, OnDestroy {
     this.stakingService.createColdStakingAccount(walletName, walletPassword, true)
       .subscribe(
         createColdStakingAccountResponse => {
-          this.stakingService.getAddress(walletName, true).subscribe(getAddressResponse => {
+          this.stakingService.getAddress(walletName, true, true).subscribe(getAddressResponse => {
             this.stakingService.createColdstaking(new ColdStakingSetup(
               hotWalletAddress,
               getAddressResponse.address,

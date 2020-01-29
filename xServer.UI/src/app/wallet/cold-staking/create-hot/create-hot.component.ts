@@ -65,7 +65,7 @@ export class ColdStakingCreateHotComponent {
   };
 
   getFirstUnusedAddress() {
-    this.stakingService.getAddress(this.globalService.getWalletName(), false).subscribe(x => this.address = x.address);
+    this.stakingService.getAddress(this.globalService.getWalletName(), false, true).subscribe(x => this.address = x.address);
   }
 
   public createAccount(): void {

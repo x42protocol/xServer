@@ -31,7 +31,7 @@ export class ColdStakingCreateAddressComponent implements OnInit {
 
     this.isColdStaking = this.config.data.isColdStaking;
     console.log(this.isColdStaking);
-    this.stakingService.getAddress(this.globalService.getWalletName(), this.isColdStaking).subscribe(x => this.address = x.address);
+    this.stakingService.getAddress(this.globalService.getWalletName(), this.isColdStaking, true).subscribe(x => this.address = x.address);
   }
 
   closeClicked() {

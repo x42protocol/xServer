@@ -147,7 +147,7 @@ export class ConfirmMnemonicComponent implements OnInit {
   }
 
   getFirstUnusedAddress() {
-    this.stakingService.getAddress(this.globalService.getWalletName(), false).subscribe(x => this.address = x.address);
+    this.stakingService.getAddress(this.globalService.getWalletName(), false, true).subscribe(x => this.address = x.address);
   }
 
   private createWallet(wallet: WalletCreation) {
