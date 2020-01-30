@@ -2,6 +2,7 @@
   "name": "xServer",
   "description": "x42 Server",
   "version": "4.0.0",
+  "bc_version": "1.2.24",
   "author": {
     "name": "x42 Protocol",
     "email": "contact@x42.info"
@@ -53,7 +54,8 @@
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
     "version": "node -p \"require('./package.json').version\"",
-    "name": "node -p \"require('./package.json').name\""
+    "name": "node -p \"require('./package.json').name\"",
+    "blockcore_version": "node -p \"require('./package.json').bc_version\""
   },
   "dependencies": {
     "@angular/cdk": "^7.3.7",
