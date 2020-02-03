@@ -187,7 +187,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public openSetupGuide() {
-    this.electronService.shell.openExternal("https://github.com/x42protocol/xServer/blob/master/Documentation/xServer-Setup-Guide.md");
+    this.electronService.shell.openExternal("https://github.com/x42protocol/documentation/blob/master/xServer-Setup-Guide.md");
   }
 
   private makeLatestTxListSmall() {
