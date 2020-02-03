@@ -12,10 +12,10 @@ A clear and concise description of what the bug is.
 
 Steps to reproduce the bug:
 
-1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See error '...'
+01. Go to '...'
+02. Click on '...'
+03. Scroll down to '...'
+04. See error '...'
 
 Screenshots:
 If applicable, attach screenshots to help explain the issue you've experienced, please post them in a chronological manner, and on the proper step of the bug reproduction section.
