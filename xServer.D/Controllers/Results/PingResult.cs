@@ -16,7 +16,7 @@ namespace X42.Controllers.Models
         /// <summary>The node's version.</summary>
         public string Version { get; set; }
 
-        /// <summary>System identifier of the node's process.</summary>
+        /// <summary>The nodes best block height.</summary>
         public ulong BestBlockHeight { get; set; }
     }
 }

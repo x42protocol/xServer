@@ -125,14 +125,12 @@ namespace X42.Feature.X42Client
                     List<GetPeerInfoResponse> peersResponse = await restClient.GetPeerInfo();
                     if (peersResponse == null)
                     {
-                        logger.LogDebug(
-                            $"Node '{Name}' ({Address}:{Port}) An Error Occured Getting The Node Peer List!");
+                        logger.LogDebug($"Node '{Name}' ({Address}:{Port}) An Error Occured Getting The Node Peer List!");
                     }
                     else
                     {
                         Peers = peersResponse.ToPeersList();
-                    } //end of if-else (_Peers == null)
-
+                    }
 
                     //############  TX History Processing #################
                     UpdateWalletTXs();
