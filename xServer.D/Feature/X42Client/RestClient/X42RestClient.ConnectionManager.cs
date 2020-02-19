@@ -45,9 +45,7 @@ namespace X42.Feature.X42Client.RestClient
             {
                 Guard.Null(blockHash, nameof(blockHash), "Block Hash Cannot Be NULL/Empty!");
 
-                GetBlockHeaderResponse response =
-                    await base.SendGet<GetBlockHeaderResponse>(
-                        $"api/Node/getblockheader?hash={blockHash}&isJsonFormat=true");
+                GetBlockHeaderResponse response = await base.SendGet<GetBlockHeaderResponse>($"api/Node/getblockheader?hash={blockHash}&isJsonFormat=true");
                 Guard.Null(response, nameof(response), "'api/Node/getblockheader' API Response Was Null!");
 
                 return response;
@@ -86,7 +84,7 @@ namespace X42.Feature.X42Client.RestClient
                     ex);
 
                 throw;
-            } //end of try-catch
-        } //end of public async Task<GetBlockHeaderResponse> GetBlockHeader(string blockHash)
-    } //end of class
+            }
+        }
+    }
 }

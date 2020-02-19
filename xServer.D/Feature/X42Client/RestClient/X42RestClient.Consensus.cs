@@ -36,7 +36,7 @@ namespace X42.Feature.X42Client.RestClient
         {
             try
             {
-                string response = await base.SendGet<string>("api/Consensus/getbestblockhash");
+                string response = await base.SendGet<string>("/api/Consensus/getbestblockhash");
 
                 Guard.Null(response, nameof(response), "'/api/Consensus/getbestblockhash' API Response Was Null!");
 
@@ -46,7 +46,7 @@ namespace X42.Feature.X42Client.RestClient
             {
                 logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Best Block Hash!", ex);
                 throw;
-            } //end of try-catch
-        } //end of public async Task<string> GetBlockHash(ulong height)
-    } //end of class
+            }
+        }
+    }
 }

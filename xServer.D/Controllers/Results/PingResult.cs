@@ -17,6 +17,6 @@ namespace X42.Controllers.Models
         public string Version { get; set; }
 
         /// <summary>System identifier of the node's process.</summary>
-        public int BestBlockHeight { get; set; }
+        public ulong BestBlockHeight { get; set; }
     }
 }

@@ -33,7 +33,8 @@ namespace X42.Controllers.Public
         {
             PingResult pingResult = new PingResult()
             {
-                Version = xServer.Version.ToString()
+                Version = xServer.Version.ToString(),
+                BestBlockHeight = xServer.BestBlockHeight
             };
             return Json(pingResult);
         }

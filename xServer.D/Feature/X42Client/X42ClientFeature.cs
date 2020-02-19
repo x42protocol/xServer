@@ -31,6 +31,7 @@ namespace X42.Feature.X42Client
         private readonly X42ClientSettings x42ClientSettings;
 
         public ConnectionStatus Status => x42Client.Status;
+        public ulong BlockTIP => x42Client.BlockTIP;
 
         public X42ClientFeature(
             ServerNodeBase network,

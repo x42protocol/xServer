@@ -141,6 +141,8 @@ namespace X42.Server
             return x42FullNode.Status == ConnectionStatus.Online && database.DatabaseConnected;
         }
 
+        public ulong BestBlockHeight { get => x42FullNode.BlockTIP; }
+
         public async Task<RegisterResult> Register(ServerNodeData serverNode)
         {
             RegisterResult registerResult = new RegisterResult

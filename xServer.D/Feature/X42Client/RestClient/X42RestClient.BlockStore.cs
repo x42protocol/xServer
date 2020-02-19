@@ -36,8 +36,8 @@ namespace X42.Feature.X42Client.RestClient
                 logger.LogCritical(
                     $"An Error '{ex.Message}' Occured When Getting Block Information For Hash '{blockHash}'!", ex);
                 throw;
-            } //end of try-catch
-        } //end of public async Task<GetStakingInfoResponse> GetStakingInfo()
+            }
+        }
 
 
         /// <summary>
@@ -63,9 +63,8 @@ namespace X42.Feature.X42Client.RestClient
                 logger.LogCritical(
                     $"An Error '{ex.Message}' Occured When Getting Block Information At Height '{blockHeight}'!", ex);
                 throw;
-            } //end of try-catch
-        } //end of public async Task<GetBlockResponse> GetBlock(ulong blockHeight, bool showTX = true)
-
+            }
+        }
 
         /// <summary>
         ///     Gets The Total Number of Blocks Downloaded
@@ -75,13 +74,13 @@ namespace X42.Feature.X42Client.RestClient
         {
             try
             {
-                return await base.SendGet<ulong>("api/BlockStore/getblockcount");
+                return await base.SendGet<ulong>("/api/BlockStore/getblockcount");
             }
             catch (Exception ex)
             {
                 logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Block Height'!", ex);
                 throw;
-            } //end of try-catch
-        } //end of  public async Task<ulong> GetBlockCount()
-    } //end of class
+            }
+        }
+    }
 }

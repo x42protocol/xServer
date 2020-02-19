@@ -91,16 +91,14 @@ namespace X42.Feature.X42Client
                     //are we connected??
                     if (ConnectionMethod == ConnectionType.Disconnected)
                     {
-                        logger.LogDebug(
-                            $"Node '{Name}' ({Address}:{Port}), Aborting 'Status' Update.  Internal State Is Disconnected!");
+                        logger.LogDebug($"Node '{Name}' ({Address}:{Port}), Aborting 'Status' Update.  Internal State Is Disconnected!");
                     }
 
                     //############  Status Data #################
                     NodeStatusResponse statusData = await restClient.GetNodeStatus();
                     if (statusData == null)
                     {
-                        logger.LogDebug(
-                            $"Node '{Name}' ({Address}:{Port}) An Error Occured Getting Node Status!");
+                        logger.LogDebug($"Node '{Name}' ({Address}:{Port}) An Error Occured Getting Node Status!");
                         Status = ConnectionStatus.Offline;
                     }
                     else

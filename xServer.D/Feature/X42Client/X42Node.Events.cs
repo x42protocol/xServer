@@ -58,7 +58,7 @@ namespace X42.Feature.X42Client
             Port = port;
 
             OnConnectedEvent?.Invoke(this, new ConnectDisconnectEvent(true, address, port));
-        } //end of public virtual void OnConnected(IPAddress address, ushort port)
+        }
 
         /// <summary>
         ///     Used To When An Existing Connection Is Offline
@@ -74,7 +74,7 @@ namespace X42.Feature.X42Client
             ConnectionMethod = ConnectionType.Disconnected;
 
             OnDisconnectedEvent?.Invoke(this, new ConnectDisconnectEvent(false, address, port));
-        } //end of public virtual void OnDisconnected(IPAddress address, ushort port)
+        }
 
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace X42.Feature.X42Client
                 $"Node '{Name}' ({Address}:{Port}) Detected A New TX But Account Name Is Null!");
 
             NewTransactionEvent?.Invoke(this, new NewTXEvent(wallet, account, txs));
-        } //end of public virtual async void OnNewTX(List<Transaction> txs)
+        }
 
 
         /// <summary>
@@ -103,8 +103,7 @@ namespace X42.Feature.X42Client
             {
                 GetBlockResponse blockData = await restClient.GetBlock(blockNumber);
 
-                Guard.Null(blockData, nameof(blockData),
-                    $"Node '{Name}' ({Address}:{Port}) Detected A New Block @ Height '{blockNumber}' But GetBlock Returned NULL!");
+                Guard.Null(blockData, nameof(blockData), $"Node '{Name}' ({Address}:{Port}) Detected A New Block @ Height '{blockNumber}' But GetBlock Returned NULL!");
 
                 NewBlockEvent?.Invoke(this, new NewBlockEvent(blockData.ToBlockHeader()));
             }
@@ -112,6 +111,6 @@ namespace X42.Feature.X42Client
             {
                 logger.LogDebug("Failed to call OnNewBlock()", ex);
             }
-        } //end of public virtual void OnNewBlock(ulong blockNumber)
-    } //end of public partial class X42Node.Events
+        }
+    }
 }
