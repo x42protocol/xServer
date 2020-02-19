@@ -36,7 +36,12 @@ namespace X42.ServerNode
         /// <summary>
         ///     The Grade period (In Minutes) when for how long a node is offline before inactive.
         /// </summary>
-        public long GracePeriod { get; protected set; }
+        public long DowntimeGracePeriod { get; protected set; }
+
+        /// <summary>
+        ///     The Block Grade period (In Block amount) when the node can be behind before inactive.
+        /// </summary>
+        public long BlockGracePeriod { get; protected set; }
 
         /// <summary>
         ///     The list of DNS seeds from which to get IP addresses when bootstrapping a server.

@@ -33,7 +33,8 @@ namespace X42.ServerNode
             };
             this.Tiers = Tiers;
 
-            GracePeriod = 90;
+            DowntimeGracePeriod = 90;
+            BlockGracePeriod = 6;
 
             NodeSeeds = new List<NodeSeedData>
             {

@@ -4,6 +4,6 @@
     {
         public bool Success { get; set; }
 
-        public string FailReason { get; set; }
+        public string ResultMessage { get; set; }
     }
 }

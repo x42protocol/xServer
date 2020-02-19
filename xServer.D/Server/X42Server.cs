@@ -160,36 +160,34 @@ namespace X42.Server
 
                     if (!serverIsValid)
                     {
-                        registerResult.FailReason = "Could not verify server";
+                        registerResult.ResultMessage = "Could not verify server";
                     }
 
                     // TODO: Final Check.
                     // We need to ping server before finalizing. Testing the availability of server will ensure that the server was at one point available.
 
                     bool serverAdded = network.AddServer(serverNode);
-                    if (serverAdded)
+                    if (!serverAdded)
                     {
-                        registerResult.Success = true;
+                        registerResult.ResultMessage = "Server already exists in repo";
                     }
-                    else
-                    {
-                        registerResult.FailReason = "Server already exists in repo";
-                    }
+                    registerResult.Success = true;
+
                 }
                 else if (serverTier == null || availableTiers.Count() != 1)
                 {
-                    registerResult.FailReason = "Requested Tier is not available or collateral amount is invalid.";
+                    registerResult.ResultMessage = "Requested Tier is not available or collateral amount is invalid.";
                 }
             }
             else
             {
                 if (x42FullNode.Status != ConnectionStatus.Online)
                 {
-                    registerResult.FailReason = "Node is offline";
+                    registerResult.ResultMessage = "Node is offline";
                 }
                 else if (!database.DatabaseConnected)
                 {
-                    registerResult.FailReason = "Databse is offline";
+                    registerResult.ResultMessage = "Databse is offline";
                 }
 
             }

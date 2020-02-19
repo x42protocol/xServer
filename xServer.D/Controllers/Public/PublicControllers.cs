@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using X42.Controllers.Models;
 using X42.Controllers.Requests;
 using X42.Feature.Database.Tables;
 using X42.Server;
@@ -30,8 +31,11 @@ namespace X42.Controllers.Public
         [Route("ping")]
         public IActionResult Ping()
         {
-            string content = xServer.Version.ToString();
-            return Content(content);
+            PingResult pingResult = new PingResult()
+            {
+                Version = xServer.Version.ToString()
+            };
+            return Json(pingResult);
         }
 
         /// <summary>

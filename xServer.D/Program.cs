@@ -18,8 +18,7 @@ namespace X42
         {
             try
             {
-                ServerSettings serverSettings =
-                    new ServerSettings(new XServerNode(), ProtocolVersion.PROTOCOL_VERSION, args: args);
+                ServerSettings serverSettings = new ServerSettings(new XServerNode(), ProtocolVersion.PROTOCOL_VERSION, args: args);
 
                 IxServer server = new ServerBuilder()
                     .UseServerSettings(serverSettings)
