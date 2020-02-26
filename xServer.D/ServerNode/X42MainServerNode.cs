@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NBitcoin;
-using NodeSeedData = X42.Utilities.NodeSeedData;
 
 namespace X42.ServerNode
 {
-    public class XServerNode : ServerNodeBase
+    public class X42MainServerNode : ServerNodeBase
     {
         /// <summary> The default name used for the x42 server configuration file. </summary>
         public const string x42DefaultConfigFilename = "xServer.conf";
 
-        public XServerNode()
+        public X42MainServerNode()
         {
             Name = "x42 ServerNode";
             DefaultPort = 4242;

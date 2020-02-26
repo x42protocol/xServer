@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "xServerD": {
+      "commandName": "Project"
+    },
+    "xServerD Test": {
+      "commandName": "Project",
+      "commandLineArgs": "-testnet"
+    }
+  }
+}

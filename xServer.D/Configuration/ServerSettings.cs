@@ -60,7 +60,6 @@ namespace X42.Configuration
         /// </remarks>
         public ServerSettings(ServerNodeBase serverNode, ProtocolVersion protocolVersion = ProtocolVersion.PROTOCOL_VERSION, string agent = "x42", string[] args = null)
         {
-            ServerNode = serverNode;
             // Create the default logger factory and logger.
             LoggerFactory = ExtendedLoggerFactory.Create(Log);
             Logger = LoggerFactory.CreateLogger(typeof(ServerSettings).FullName);
@@ -102,11 +101,23 @@ namespace X42.Configuration
                 ReadConfigurationFile();
             }
 
+            // Find out if we need to run on testnet from the config file.
+            bool testNet = ConfigReader.GetOrDefault("testnet", false, Logger);
+            if (testNet)
+            {
+                ServerNode = new X42TestServerNode();
+            }
+            else
+            {
+                ServerNode = serverNode;
+            }
+
+
             // Set the full data directory path.
             if (DataDir == null)
             {
                 // Create the data directories if they don't exist.
-                DataDir = CreateDefaultDataDirectories($"{ServerName}Data");
+                DataDir = CreateDefaultDataDirectories(Path.Combine($"{ServerName}Data", testNet ? "Test" : "Main"));
             }
             else
             {
