@@ -36,14 +36,7 @@ namespace X42.ServerNode
             DowntimeGracePeriod = 90;
             BlockGracePeriod = 6;
 
-            NodeSeeds = new List<NodeSeedData>
-            {
-                new NodeSeedData("servernode1.x42seed.host", "servernode1.x42seed.host"),
-                new NodeSeedData("servernodeserver1.x42seed.host", "servernodeserver1.x42seed.host"),
-                new NodeSeedData("rnode.x42.cloud", "rnode.x42.cloud")
-            };
-
-            string[] seedServers = {"63.32.82.169"};
+            string[] seedServers = { "63.32.82.169" };
             SeedServers = ConvertToNetworkAddresses(seedServers, DefaultPort).ToList();
         }
     }

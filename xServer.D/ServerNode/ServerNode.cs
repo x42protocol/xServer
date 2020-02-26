@@ -43,11 +43,6 @@ namespace X42.ServerNode
         /// </summary>
         public long BlockGracePeriod { get; protected set; }
 
-        /// <summary>
-        ///     The list of DNS seeds from which to get IP addresses when bootstrapping a server.
-        /// </summary>
-        public List<NodeSeedData> NodeSeeds { get; protected set; }
-
         protected IEnumerable<NetworkAddress> ConvertToNetworkAddresses(string[] seeds, int defaultPort)
         {
             Random rand = new Random();
