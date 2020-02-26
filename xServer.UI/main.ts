@@ -29,7 +29,7 @@ if (testnet && !sidechain) {
 
 let xServerPort;
 if (testnet) {
-  xServerPort = 4242;
+  xServerPort = 4243;
 } else {
   xServerPort = 4242;
 }

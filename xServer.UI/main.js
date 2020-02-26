@@ -31,7 +31,7 @@ else if (sidechain && !testnet) {
 }
 var xServerPort;
 if (testnet) {
-    xServerPort = 4242;
+    xServerPort = 4243;
 }
 else {
     xServerPort = 4242;

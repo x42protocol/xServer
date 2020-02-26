@@ -11,7 +11,7 @@ namespace X42.ServerNode
 
         public X42MainServerNode()
         {
-            Name = "x42 ServerNode";
+            Name = "xServer";
             DefaultPort = 4242;
             DefaultConfigFilename = x42DefaultConfigFilename;
 
