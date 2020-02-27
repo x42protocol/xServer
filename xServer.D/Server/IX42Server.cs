@@ -47,6 +47,13 @@ namespace X42.Server
         /// <param name="failWithDefault">Set to true to return null instead of throwing an error</param>
         /// <returns></returns>
         T ServerService<T>(bool failWithDefault = false);
+
+        /// <summary>
+        ///     Add the server to setup
+        /// </summary>
+        /// <param name="ServerData">Server Data.</param>
+        /// <returns>Will return true if new record wad created, otherwise false.</returns>
+        bool AddServerToSetup(ServerData serverData);
     }
 
     /// <summary>Represents <see cref="IServer" /> state.</summary>

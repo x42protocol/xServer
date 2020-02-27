@@ -17,6 +17,8 @@ using X42.Feature.Database;
 using X42.Feature.X42Client.Enums;
 using System.Collections.Generic;
 using x42.Properties;
+using X42.Feature.Database.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace X42.Server
 {
@@ -43,17 +45,20 @@ namespace X42.Server
         private readonly NetworkFeatures network;
         private readonly X42ClientFeature x42FullNode;
         private readonly DatabaseFeatures database;
+        private readonly DatabaseSettings databaseSettings;
 
         /// <summary>Creates new instance of the <see cref="XServer" />.</summary>
         public XServer(NetworkFeatures network,
             ServerSettings nodeSettings,
             X42ClientFeature x42FullNode,
-            DatabaseFeatures database)
+            DatabaseFeatures database,
+            DatabaseSettings databaseSettings)
         {
             this.network = network;
             this.nodeSettings = nodeSettings;
             this.x42FullNode = x42FullNode;
             this.database = database;
+            this.databaseSettings = databaseSettings;
 
             State = XServerState.Created;
         }
@@ -317,6 +322,28 @@ namespace X42.Server
                 serverLifetime.ApplicationStopping,
                 TimeSpans.FiveSeconds,
                 TimeSpans.FiveSeconds);
+        }
+
+        /// <inheritdoc />
+        public bool AddServerToSetup(ServerData serverData)
+        {
+            bool result = false;
+
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<ServerData> serverNodes = dbContext.Servers;
+                if (serverNodes.Count() == 0)
+                {
+                    var newRecord = dbContext.Add(serverData);
+                    if (newRecord.State == EntityState.Added)
+                    {
+                        dbContext.SaveChanges();
+                        result = true;
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

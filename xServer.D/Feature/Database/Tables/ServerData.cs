@@ -5,16 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace X42.Feature.Database.Tables
 {
     [Table("server")]
-    class ServerData
+    public class ServerData
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public Guid Id { get; set; }
-        public string Ip { get; set; }
-        public string Port { get; set; }
-        public string HAddress { get; set; }
-        public string CAddress { get; set; }
-        public string Signature { get; set; }
+        public string PublicAddress { get; set; }
         public DateTime DateAdded { get; set; }
     }
 }

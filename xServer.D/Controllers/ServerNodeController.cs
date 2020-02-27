@@ -21,6 +21,7 @@ using X42.Utilities.ModelStateErrors;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = NLog.LogLevel;
 using X42.Feature.Database;
+using X42.Feature.Database.Tables;
 
 namespace X42.Controllers
 {
@@ -96,6 +97,25 @@ namespace X42.Controllers
                 model.EnabledFeatures.Add(feature.GetType().ToString());
 
             return Json(model);
+        }
+
+        /// <summary>
+        ///     Prepares the server to get ready to setup.
+        /// </summary>
+        /// <returns>
+        ///     <see cref="OkResult" />
+        /// </returns>
+        [HttpPost]
+        [Route("setup")]
+        public IActionResult Setup([FromBody] SetupRequest setupRequest)
+        {
+            xServer.AddServerToSetup(new ServerData()
+            {
+                PublicAddress = setupRequest.Address,
+                DateAdded = DateTime.UtcNow
+            });
+
+            return Ok();
         }
 
         /// <summary>
