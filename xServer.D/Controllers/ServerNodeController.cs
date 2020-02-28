@@ -109,13 +109,21 @@ namespace X42.Controllers
         [Route("setup")]
         public IActionResult Setup([FromBody] SetupRequest setupRequest)
         {
-            xServer.AddServerToSetup(new ServerData()
+            bool result = xServer.AddServerToSetup(new ServerData()
             {
                 PublicAddress = setupRequest.Address,
                 DateAdded = DateTime.UtcNow
             });
 
-            return Ok();
+            if (result)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+
         }
 
         /// <summary>
