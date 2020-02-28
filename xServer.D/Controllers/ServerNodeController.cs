@@ -112,14 +112,7 @@ namespace X42.Controllers
         {
             bool result = xServer.AddServerToSetup(setupRequest);
 
-            if (result)
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return Ok(result);
         }
 
         /// <summary>
