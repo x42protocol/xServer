@@ -4,6 +4,7 @@ import { DialogService } from 'primeng/api';
 import { ElectronService } from 'ngx-electron';
 
 import { FullNodeApiService } from '../../shared/services/fullnode.api.service';
+import { ServerApiService } from '../../shared/services/server.api.service';
 import { GlobalService } from '../../shared/services/global.service';
 import { WalletInfo } from '../../shared/models/wallet-info';
 import { ThemeService } from '../../shared/services/theme.service';
@@ -25,7 +26,7 @@ import { Router } from '@angular/router';
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
-  constructor(private apiService: FullNodeApiService, private globalService: GlobalService, public dialogService: DialogService, private router: Router, private fb: FormBuilder, private themeService: ThemeService, private electronService: ElectronService) {
+  constructor(private apiService: FullNodeApiService, private serverApiService: ServerApiService, private globalService: GlobalService, public dialogService: DialogService, private router: Router, private fb: FormBuilder, private themeService: ThemeService, private electronService: ElectronService) {
     this.buildStakingForm();
     this.isDarkTheme = themeService.getCurrentTheme().themeType == 'dark';
   }
@@ -45,6 +46,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public awaitingMaturity: number = 0;
   public netStakingWeight: number;
   public expectedTime: number;
+  public serverSetupStatus: number;
   public dateTime: string;
   public isStarting: boolean;
   public isStopping: boolean;
@@ -56,6 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private walletHistorySubscription: Subscription;
   private walletHotHistorySubscription: Subscription;
   private stakingInfoSubscription: Subscription;
+  private serverSetupStatusSubscription: Subscription;
 
   ngOnInit() {
     this.sidechainEnabled = this.globalService.getSidechainEnabled();
@@ -142,6 +145,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
       );
   };
 
+  private getServerSetupStatus() {
+    this.serverSetupStatusSubscription = this.serverApiService.getServerSetupStatusInterval()
+      .subscribe(
+        response => {
+          this.serverSetupStatus = response.serverStatus;
+        },
+        error => {
+          this.cancelSubscriptions();
+          this.startSubscriptions();
+        }
+      );
+  };
+
   private getHotTransactionInfo(transactions: any) {
     this.latestTransactions = [];
 
@@ -179,15 +195,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   };
 
-  public onWalletGetServerId() {
+  public onOpenServerSetup() {
     this.dialogService.open(CreateServerIDComponent, {
       header: 'Server ID',
       width: '540px'
     });
-  }
-
-  public openSetupGuide() {
-    this.electronService.shell.openExternal("https://github.com/x42protocol/documentation/blob/master/xServer-Setup-Guide.md");
   }
 
   private makeLatestTxListSmall() {
@@ -216,8 +228,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.stakingEnabled = false;
           this.stakingForm.patchValue({ walletPassword: "" });
         }
-      )
-      ;
+      );
   }
 
   public stopStaking() {
@@ -228,8 +239,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         response => {
           this.stakingEnabled = false;
         }
-      )
-      ;
+      );
   }
 
   private getStakingInfo() {
@@ -254,8 +264,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.cancelSubscriptions();
           this.startSubscriptions();
         }
-      )
-      ;
+      );
   }
 
   private secondsToString(seconds: number) {
@@ -312,9 +321,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.walletHotHistorySubscription) {
       this.walletHotHistorySubscription.unsubscribe();
     }
+
+    if (this.serverSetupStatusSubscription) {
+      this.serverSetupStatusSubscription.unsubscribe();
+    }
   }
 
   private startSubscriptions() {
+    this.getServerSetupStatus();
     this.getWalletBalance();
     this.getHotHistory();
     if (!this.sidechainEnabled) {

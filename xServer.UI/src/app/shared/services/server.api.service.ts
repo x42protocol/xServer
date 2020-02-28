@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, interval, throwError } from 'rxjs';
-import { catchError, switchMap, startWith} from 'rxjs/operators';
+import { catchError, switchMap, startWith } from 'rxjs/operators';
 
 import { GlobalService } from './global.service';
 import { ModalService } from './modal.service';
 
 import { ServerStatus } from '../models/server-status';
+import { ServerSetupStatusResponse } from '../models/server-setupstatusresponse';
+import { ServerSetupRequest } from '../models/server-setuprequest';
 
 @Injectable({
   providedIn: 'root'
@@ -40,10 +42,24 @@ export class ServerApiService {
     )
   }
 
+  getServerSetupStatusInterval(): Observable<ServerSetupStatusResponse> {
+    return this.pollingInterval.pipe(
+      startWith(0),
+      switchMap(() => this.http.get<ServerSetupStatusResponse>(this.x42ApiUrl + '/getserversetupstatus')),
+      catchError(err => this.handleHttpError(err))
+    )
+  }
+
+  setSetupAddress(data: ServerSetupRequest): Observable<any> {
+    return this.http.post(this.x42ApiUrl + '/setup', JSON.stringify(data)).pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
   private handleHttpError(error: HttpErrorResponse, silent?: boolean, superSilent?: boolean) {
     console.log(error);
     if (error.status === 0) {
-      if(!silent) {
+      if (!silent) {
         this.modalService.openModal(null, null);
         this.router.navigate(['app']);
       }

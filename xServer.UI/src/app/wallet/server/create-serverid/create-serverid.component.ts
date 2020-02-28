@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { DynamicDialogRef, DynamicDialogConfig, SelectItem } from 'primeng/api';
 
 import { ColdStakingService } from '../../../shared/services/coldstaking.service';
+import { ServerApiService } from '../../../shared/services/server.api.service';
 import { GlobalService } from '../../../shared/services/global.service';
 import { ThemeService } from '../../../shared/services/theme.service';
 
 import { ServerIDResponse } from "../../../shared/models/serveridresponse";
+import { ServerSetupRequest } from '../../../shared/models/server-setuprequest';
 
 @Component({
   selector: 'app-create-serverid',
@@ -13,7 +15,7 @@ import { ServerIDResponse } from "../../../shared/models/serveridresponse";
   styleUrls: ['./create-serverid.component.css']
 })
 export class CreateServerIDComponent implements OnInit {
-  constructor(private globalService: GlobalService, private stakingService: ColdStakingService, public ref: DynamicDialogRef, public config: DynamicDialogConfig, private themeService: ThemeService) {
+  constructor(private globalService: GlobalService, private serverApiService: ServerApiService, private stakingService: ColdStakingService, public ref: DynamicDialogRef, public config: DynamicDialogConfig, private themeService: ThemeService) {
     this.isDarkTheme = themeService.getCurrentTheme().themeType == 'dark';
   }
 
@@ -28,7 +30,13 @@ export class CreateServerIDComponent implements OnInit {
       { label: 'Copy', value: 'Copy', icon: 'pi pi-copy' }
     ];
 
-    this.stakingService.getAddress(this.globalService.getWalletName(), false, false).subscribe(x => this.server.setServerId(x.address));
+    this.stakingService.getAddress(this.globalService.getWalletName(), false, false).subscribe(
+      response => {
+        let addressToSetup = new ServerSetupRequest(response.address);
+        this.server.setServerId(response.address);
+        this.serverApiService.setSetupAddress(addressToSetup).subscribe();
+      }
+    );
   }
 
   closeClicked() {
