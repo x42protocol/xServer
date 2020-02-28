@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using X42.Controllers.Requests;
 using X42.Feature.Database.Tables;
 using X42.Server.Results;
 using X42.Utilities;
@@ -53,7 +54,13 @@ namespace X42.Server
         /// </summary>
         /// <param name="ServerData">Server Data.</param>
         /// <returns>Will return true if new record wad created, otherwise false.</returns>
-        bool AddServerToSetup(ServerData serverData);
+        bool AddServerToSetup(SetupRequest setupRequest);
+
+        /// <summary>
+        ///     Get's the server setup status
+        /// </summary>
+        /// <returns>Will return the status of the server setup.</returns>
+        SetupStatusResult GetServerSetupStatus();
     }
 
     /// <summary>Represents <see cref="IServer" /> state.</summary>

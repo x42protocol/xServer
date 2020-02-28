@@ -17,8 +17,8 @@ using X42.Feature.Database;
 using X42.Feature.X42Client.Enums;
 using System.Collections.Generic;
 using x42.Properties;
-using X42.Feature.Database.Context;
-using Microsoft.EntityFrameworkCore;
+using x42.Server;
+using X42.Controllers.Requests;
 
 namespace X42.Server
 {
@@ -325,25 +325,19 @@ namespace X42.Server
         }
 
         /// <inheritdoc />
-        public bool AddServerToSetup(ServerData serverData)
+        public bool AddServerToSetup(SetupRequest setupRequest)
         {
-            bool result = false;
+            SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
 
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-            {
-                IQueryable<ServerData> serverNodes = dbContext.Servers;
-                if (serverNodes.Count() == 0)
-                {
-                    var newRecord = dbContext.Add(serverData);
-                    if (newRecord.State == EntityState.Added)
-                    {
-                        dbContext.SaveChanges();
-                        result = true;
-                    }
-                }
-            }
+            return setupServer.AddServerToSetup(setupRequest);
+        }
 
-            return result;
+        /// <inheritdoc />
+        public SetupStatusResult GetServerSetupStatus()
+        {
+            SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
+
+            return setupServer.GetServerSetupStatus();
         }
     }
 }

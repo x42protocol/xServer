@@ -22,6 +22,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = NLog.LogLevel;
 using X42.Feature.Database;
 using X42.Feature.Database.Tables;
+using X42.Server.Results;
 
 namespace X42.Controllers
 {
@@ -109,11 +110,7 @@ namespace X42.Controllers
         [Route("setup")]
         public IActionResult Setup([FromBody] SetupRequest setupRequest)
         {
-            bool result = xServer.AddServerToSetup(new ServerData()
-            {
-                PublicAddress = setupRequest.Address,
-                DateAdded = DateTime.UtcNow
-            });
+            bool result = xServer.AddServerToSetup(setupRequest);
 
             if (result)
             {
@@ -123,7 +120,19 @@ namespace X42.Controllers
             {
                 return BadRequest();
             }
+        }
 
+        /// <summary>
+        ///     Get the status of the sever setup.
+        /// </summary>
+        /// <returns>A <see cref="SetupStatusResult" /> with information about the node.</returns>
+        [HttpGet]
+        [Route("getserversetupstatus")]
+        public IActionResult GetServerSetupStatus()
+        {
+            SetupStatusResult result = xServer.GetServerSetupStatus();
+
+            return Json(result);
         }
 
         /// <summary>
