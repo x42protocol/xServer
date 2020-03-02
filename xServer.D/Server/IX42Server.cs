@@ -68,7 +68,7 @@ namespace X42.Server
         ///     MAX 100
         /// </summary>
         /// <returns>Will return the information about the top xServers.</returns>
-        TopResult GetTopXServers(int top)
+        TopResult GetTopXServers(int top);
     }
 
     /// <summary>Represents <see cref="IServer" /> state.</summary>
