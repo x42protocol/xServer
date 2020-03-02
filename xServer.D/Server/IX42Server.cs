@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using X42.Controllers.Models;
 using X42.Controllers.Requests;
 using X42.Feature.Database.Tables;
 using X42.Server.Results;
@@ -61,6 +62,13 @@ namespace X42.Server
         /// </summary>
         /// <returns>Will return the status of the server setup.</returns>
         SetupStatusResult GetServerSetupStatus();
+
+        /// <summary>
+        ///     Get's the top xServers available to connect to
+        ///     MAX 100
+        /// </summary>
+        /// <returns>Will return the information about the top xServers.</returns>
+        TopResult GetTopXServers(int top)
     }
 
     /// <summary>Represents <see cref="IServer" /> state.</summary>

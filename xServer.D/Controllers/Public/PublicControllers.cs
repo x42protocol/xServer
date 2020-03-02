@@ -24,9 +24,9 @@ namespace X42.Controllers.Public
         }
 
         /// <summary>
-        ///     Returns a web page to act as a dashboard
+        ///     Returns simple information about the xServer.
         /// </summary>
-        /// <returns>text/html content</returns>
+        /// <returns>A JSON object containing the xServer information.</returns>
         [HttpGet]
         [Route("ping")]
         public IActionResult Ping()
@@ -37,6 +37,19 @@ namespace X42.Controllers.Public
                 BestBlockHeight = xServer.BestBlockHeight
             };
             return Json(pingResult);
+        }
+
+        /// <summary>
+        ///     Returns the top xServers available.
+        /// </summary>
+        /// <param name="top">The number of top xServers to return.</param>
+        /// <returns>A JSON object containing the top xServers available.</returns>
+        [HttpGet]
+        [Route("gettop")]
+        public IActionResult GetTop([FromQuery] int top = 10)
+        {
+            TopResult topResult = xServer.GetTopXServers(top);
+            return Json(topResult);
         }
 
         /// <summary>

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using x42.Properties;
 using x42.Server;
 using X42.Controllers.Requests;
+using X42.Controllers.Models;
 
 namespace X42.Server
 {
@@ -328,7 +329,6 @@ namespace X42.Server
         public bool AddServerToSetup(SetupRequest setupRequest)
         {
             SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
-
             return setupServer.AddServerToSetup(setupRequest);
         }
 
@@ -336,8 +336,20 @@ namespace X42.Server
         public SetupStatusResult GetServerSetupStatus()
         {
             SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
-
             return setupServer.GetServerSetupStatus();
+        }
+
+        /// <inheritdoc />
+        public TopResult GetTopXServers(int top)
+        {
+            int maxResults = 100;
+            if (top > maxResults)
+            {
+                top = maxResults;
+            }
+
+            ServerFunctions serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
+            return serverFunctions.GetTopXServers(top);
         }
     }
 }
