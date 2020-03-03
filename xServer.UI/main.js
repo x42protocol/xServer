@@ -206,7 +206,10 @@ function startx42Node(daemonName) {
     else {
         daemonPath = path.resolve(__dirname, '..//..//resources//daemon//' + daemonName);
     }
-    daemonProcess = spawnDaemon(daemonPath, [args.join(' ').replace('--', '-')], {
+    var nodeArguments = args;
+    nodeArguments.push("-txindex=1");
+    nodeArguments.push("-addressindex=1");
+    daemonProcess = spawnDaemon(daemonPath, nodeArguments, {
         detached: true
     });
     daemonProcess.stdout.on('data', function (data) {
