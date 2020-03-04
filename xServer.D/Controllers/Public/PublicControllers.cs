@@ -55,6 +55,7 @@ namespace X42.Controllers.Public
         /// <summary>
         ///     Registers a servernode to the network.
         /// </summary>
+        /// <param name="registerRequest">The object with all of the nessesary data to register a xServer.</param>
         /// <returns>A <see cref="RegisterResult" /> with registration result.</returns>
         [HttpPost]
         [Route("register")]
