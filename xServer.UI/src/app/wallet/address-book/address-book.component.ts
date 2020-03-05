@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
-import { DialogService, SelectItem } from 'primeng/api';
+import { SelectItem } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { FullNodeApiService } from '../../shared/services/fullnode.api.service';
 import { SendComponent } from '../send/send.component';

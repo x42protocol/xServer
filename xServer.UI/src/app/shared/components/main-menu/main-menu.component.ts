@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ThemeService } from '../../services/theme.service';
-import { SelectItemGroup, MenuItem, DialogService } from 'primeng/api';
+import { SelectItemGroup, MenuItem } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 

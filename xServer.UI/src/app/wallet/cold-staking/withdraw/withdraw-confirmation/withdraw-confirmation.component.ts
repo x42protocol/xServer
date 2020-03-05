@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { DynamicDialogRef } from 'primeng/api';
-
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-withdraw-confirmation',

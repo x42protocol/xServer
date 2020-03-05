@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
-import { DialogService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 import { GenericModalComponent } from '../components/generic-modal/generic-modal.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModalService {
-  constructor(public dialogService: DialogService) {}
+  constructor(public dialogService: DialogService) { }
 
   public openModal(title, message) {
 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 
 import { GlobalService } from '../../../shared/services/global.service';

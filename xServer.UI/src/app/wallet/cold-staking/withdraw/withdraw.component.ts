@@ -5,7 +5,7 @@ import { FullNodeApiService } from '../../../shared/services/fullnode.api.servic
 import { GlobalService } from '../../../shared/services/global.service';
 import { ColdStakingService } from "../../../shared/services/coldstaking.service";
 
-import { DynamicDialogRef, DynamicDialogConfig, DialogService } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig, DialogService } from 'primeng/dynamicdialog';
 
 import { FeeEstimation } from '../../../shared/models/fee-estimation';
 import { TransactionSending } from '../../../shared/models/transaction-sending';

@@ -32,7 +32,8 @@ import { CreateServerIDComponent } from './server/create-serverid/create-serveri
 import { CollateralSetupComponent } from './collateral-setup/collateral-setup.component';
 
 // PrimeNG Components.
-import { MessageService, DialogService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MenubarModule } from 'primeng/menubar';

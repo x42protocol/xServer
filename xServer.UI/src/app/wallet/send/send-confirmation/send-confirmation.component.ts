@@ -4,7 +4,7 @@ import { GlobalService } from '../../../shared/services/global.service';
 
 import { CoinNotationPipe } from '../../../shared/pipes/coin-notation.pipe';
 
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-send-confirmation',

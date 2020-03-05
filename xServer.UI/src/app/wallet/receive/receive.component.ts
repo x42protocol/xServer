@@ -6,7 +6,8 @@ import { ThemeService } from '../../shared/services/theme.service';
 
 import { WalletInfo } from '../../shared/models/wallet-info';
 
-import { DynamicDialogRef, SelectItem } from 'primeng/api';
+import { SelectItem } from 'primeng/api';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'receive-component',

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, SelectItem } from 'primeng/api';
+import { SelectItem } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { Subscription } from 'rxjs';
 
 import { FullNodeApiService } from '../../shared/services/fullnode.api.service';
@@ -14,9 +15,9 @@ import { TransactionInfo } from '../../shared/models/transaction-info';
   styleUrls: ['./transaction-details.component.css']
 })
 export class TransactionDetailsComponent implements OnInit, OnDestroy {
-  
+
   public transaction: TransactionInfo;
-  constructor(private FullNodeApiService: FullNodeApiService, private globalService: GlobalService, public ref: DynamicDialogRef, public config: DynamicDialogConfig) {}
+  constructor(private FullNodeApiService: FullNodeApiService, private globalService: GlobalService, public ref: DynamicDialogRef, public config: DynamicDialogConfig) { }
 
   public copied: boolean = false;
   public coinUnit: string;
@@ -47,7 +48,7 @@ export class TransactionDetailsComponent implements OnInit, OnDestroy {
     let walletInfo = new WalletInfo(this.globalService.getWalletName())
     this.generalWalletInfoSubscription = this.FullNodeApiService.getGeneralInfo(walletInfo)
       .subscribe(
-        response =>  {
+        response => {
           let generalWalletInfoResponse = response;
           this.lastBlockSyncedHeight = generalWalletInfoResponse.lastBlockSyncedHeight;
           this.getConfirmations(this.transaction);
@@ -74,7 +75,7 @@ export class TransactionDetailsComponent implements OnInit, OnDestroy {
   }
 
   private cancelSubscriptions() {
-    if(this.generalWalletInfoSubscription) {
+    if (this.generalWalletInfoSubscription) {
       this.generalWalletInfoSubscription.unsubscribe();
     }
   };

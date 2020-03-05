@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { DynamicDialogRef } from 'primeng/api';
-
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FullNodeApiService } from '../../../../shared/services/fullnode.api.service';
 import { AddressLabel } from '../../../../shared/models/address-label';
 

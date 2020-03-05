@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include=".editorconfig" />
+    <Content Include=".eslintrc.js" />
     <Content Include="angular.json" />
     <Content Include="e2e\tsconfig.e2e.json" />
     <Content Include="electron-builder.json" />
@@ -124,13 +125,12 @@
     <Content Include="src\assets\fonts\Linearicons-Free.woff" />
     <Content Include="src\assets\fonts\Linearicons-Free.woff2" />
     <Content Include="src\assets\images\anim.svg" />
-    <Content Include="src\assets\images\icon-512x512.png" />
-    <Content Include="src\assets\images\icon-tray.ico" />
-    <Content Include="src\assets\images\icon-tray.png" />
-    <Content Include="src\assets\images\icon.icns" />
-    <Content Include="src\assets\images\icon.ico" />
-    <Content Include="src\assets\images\icon.png" />
-    <Content Include="src\assets\images\icon.svg" />
+    <Content Include="src\assets\images\icons\32x32.png" />
+    <Content Include="src\assets\images\icons\512x512.png" />
+    <Content Include="src\assets\images\icons\icon-tray.ico" />
+    <Content Include="src\assets\images\icons\icon.icns" />
+    <Content Include="src\assets\images\icons\icon.ico" />
+    <Content Include="src\assets\images\icons\icon.svg" />
     <Content Include="src\assets\images\if_Error_16.png" />
     <Content Include="src\assets\images\license_en.txt" />
     <Content Include="src\assets\images\logo.svg" />
@@ -232,7 +232,6 @@
     <Content Include="src\tsconfig.spec.json" />
     <Content Include="tsconfig-serve.json" />
     <Content Include="tsconfig.json" />
-    <Content Include="tslint.json" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="e2e\app.e2e-spec.ts" />
@@ -448,6 +447,7 @@
     <Folder Include="src\assets\" />
     <Folder Include="src\assets\fonts\" />
     <Folder Include="src\assets\images\" />
+    <Folder Include="src\assets\images\icons\" />
     <Folder Include="src\environments\" />
     <Folder Include="src\scss\" />
     <Folder Include="src\scss\mixins\" />

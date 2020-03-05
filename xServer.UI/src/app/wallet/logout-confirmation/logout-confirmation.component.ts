@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogRef} from 'primeng/api';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Router } from '@angular/router';
 
 import { FullNodeApiService } from '../../shared/services/fullnode.api.service';

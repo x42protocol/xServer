@@ -13,8 +13,7 @@ import { GenericModalComponent } from './components/generic-modal/generic-modal.
 
 // PrimeNG Components.
 import { ButtonModule } from 'primeng/button';
-import { DialogService } from 'primeng/api';
-import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { DynamicDialogModule, DialogService } from 'primeng/dynamicdialog';
 
 @NgModule({
   imports: [CommonModule, ButtonModule, DynamicDialogModule],

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DialogService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 import { Router } from '@angular/router';
 
 import { FullNodeApiService } from '../../shared/services/fullnode.api.service';

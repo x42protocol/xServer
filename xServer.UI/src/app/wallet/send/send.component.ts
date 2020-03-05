@@ -17,7 +17,7 @@ import { SendConfirmationComponent } from './send-confirmation/send-confirmation
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { DialogService, DynamicDialogRef, DynamicDialogConfig } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig, DialogService } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'send-component',
