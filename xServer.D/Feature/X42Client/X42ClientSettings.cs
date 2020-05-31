@@ -26,13 +26,13 @@ namespace X42.Feature.X42Client
 
             Name = config.GetOrDefault("name", "X42Node", logger);
             Address = config.GetOrDefault("address", IPAddress.Parse("127.0.0.1"), logger);
-            Port = config.GetOrDefault("port", (uint)42221, logger);
+            Port = config.GetOrDefault("port", (uint)serverSettings.ServerNode.DefaultNodePort, logger);
             SshUserName = config.GetOrDefault("sshusername", "username", logger);
             SshPassword = config.GetOrDefault("sshpassword", "password", logger);
             SshServerAddress = config.GetOrDefault("sshserveraddress", "127.0.0.1", logger);
             SshPort = config.GetOrDefault("sshport", 22, logger);
             SshLocalBoundAddress = config.GetOrDefault("sshlocalboundaddress", "127.0.0.1", logger);
-            SshLocalBoundPort = config.GetOrDefault("sshlocalboundport", 42221, logger);
+            SshLocalBoundPort = config.GetOrDefault("sshlocalboundport", serverSettings.ServerNode.DefaultNodePort, logger);
         }
 
         /// <summary>
