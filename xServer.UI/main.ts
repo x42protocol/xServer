@@ -117,10 +117,10 @@ app.on('ready', () => {
   }
   else {
     if (sidechain && !nodaemon) {
-      startx42Node("x42.x42D");
+      startx42Node("x42.Node");
       startxServer("xServer");
     } else if (!nodaemon) {
-      startx42Node("x42.x42D");
+      startx42Node("x42.Node");
       startxServer("x42.xServerD");
     }
   }
