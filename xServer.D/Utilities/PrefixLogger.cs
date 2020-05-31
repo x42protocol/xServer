@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using NLog;
-using TracerAttributes;
 using X42.Configuration.Logging;
 using X42.Utilities.Extensions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -18,7 +17,6 @@ namespace X42.Utilities
     ///     the logging output will not go to the console even if the logging
     ///     level is at or above the minimum logging level for the console.
     /// </remarks>
-    [NoTrace]
     public class PrefixLogger : ILogger
     {
         /// <summary>Internal console logger instance.</summary>

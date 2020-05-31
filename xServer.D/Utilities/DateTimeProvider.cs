@@ -1,5 +1,4 @@
 ﻿using System;
-using TracerAttributes;
 using X42.Utilities.Extensions;
 
 namespace X42.Utilities
@@ -44,7 +43,6 @@ namespace X42.Utilities
     }
 
     /// <inheritdoc />
-    [NoTrace]
     public class DateTimeProvider : IDateTimeProvider
     {
         /// <summary>UTC adjusted timestamp, or null if no adjusted time is set.</summary>

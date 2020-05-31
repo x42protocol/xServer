@@ -1,5 +1,4 @@
 ﻿using System;
-using TracerAttributes;
 
 namespace X42.Utilities
 {
@@ -51,7 +50,6 @@ namespace X42.Utilities
         /// <param name="parameterName">The name of the object.</param>
         /// <returns>The object if it is not null.</returns>
         /// <exception cref="ArgumentNullException">An exception if the object passed is null.</exception>
-        [NoTrace]
         public static T NotNull<T>(T value, string parameterName)
         {
             // the parameterName should never be null or empty
@@ -69,7 +67,6 @@ namespace X42.Utilities
         /// <param name="value">The string to check.</param>
         /// <param name="parameterName">The name of the string.</param>
         /// <returns>The string if it is not null or empty.</returns>
-        [NoTrace]
         public static string NotEmpty(string value, string parameterName)
         {
             NotNull(value, parameterName);

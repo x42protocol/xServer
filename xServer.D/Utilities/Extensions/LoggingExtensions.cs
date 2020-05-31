@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using TracerAttributes;
 using LogLevel = NLog.LogLevel;
 
 namespace X42.Utilities.Extensions
@@ -8,7 +7,6 @@ namespace X42.Utilities.Extensions
     /// <summary>
     ///     Extension methods for classes and interfaces related to logging.
     /// </summary>
-    [NoTrace]
     public static class LoggingExtensions
     {
         /// <summary>
