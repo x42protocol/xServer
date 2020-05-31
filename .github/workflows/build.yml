@@ -35,7 +35,7 @@ jobs:
             dotnet_runtime: "osx-x64"
             xs_package_runtime: "mac-x64"
         node_version: [12.x]
-        dotnet_version: ['3.1.101']
+        dotnet_version: ['3.1.300']
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
