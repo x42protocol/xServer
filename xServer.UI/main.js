@@ -106,11 +106,11 @@ electron_1.app.on('ready', function () {
     }
     else {
         if (sidechain && !nodaemon) {
-            startx42Node("x42.x42D");
+            startx42Node("x42.Node");
             startxServer("xServer");
         }
         else if (!nodaemon) {
-            startx42Node("x42.x42D");
+            startx42Node("x42.Node");
             startxServer("x42.xServerD");
         }
     }
@@ -229,7 +229,8 @@ function startxServer(daemonName) {
     else {
         daemonPath = path.resolve(__dirname, '..//..//resources//xserver.d//' + daemonName);
     }
-    daemonProcess = spawnDaemon(daemonPath, [args.join(' ').replace('--', '-')], {
+    var nodeArguments = args;
+    daemonProcess = spawnDaemon(daemonPath, nodeArguments, {
         detached: true
     });
     daemonProcess.stdout.on('data', function (data) {

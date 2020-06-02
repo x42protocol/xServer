@@ -253,7 +253,8 @@ function startxServer(daemonName) {
     daemonPath = path.resolve(__dirname, '..//..//resources//xserver.d//' + daemonName);
   }
 
-  daemonProcess = spawnDaemon(daemonPath, [args.join(' ').replace('--', '-')], {
+  let nodeArguments = args;
+  daemonProcess = spawnDaemon(daemonPath, nodeArguments, {
     detached: true
   });
 
