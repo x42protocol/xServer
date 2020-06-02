@@ -3,11 +3,11 @@ using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Renci.SshNet;
-using X42.Feature.X42Client.Enums;
-using X42.Feature.X42Client.Utils.Extensions;
-using X42.Utilities;
+using x42.Feature.X42Client.Enums;
+using x42.Feature.X42Client.Utils.Extensions;
+using x42.Utilities;
 
-namespace X42.Feature.X42Client
+namespace x42.Feature.X42Client
 {
     public sealed partial class X42Node
     {

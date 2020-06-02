@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using X42.Controllers.Models;
-using X42.Controllers.Requests;
-using X42.Feature.Database.Tables;
-using X42.Server;
-using X42.Server.Results;
+using x42.Controllers.Results;
+using x42.Controllers.Requests;
+using x42.Feature.Database.Tables;
+using x42.Server;
+using x42.Server.Results;
 
-namespace X42.Controllers.Public
+namespace x42.Controllers.Public
 {
     /// <inheritdoc />
     /// <summary>

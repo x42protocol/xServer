@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     Collection of guard methods.

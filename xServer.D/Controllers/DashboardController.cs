@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using X42.Feature.API.Requirements;
-using X42.Server;
+using x42.Feature.API.Requirements;
+using x42.Server;
 
-namespace X42.Controllers
+namespace x42.Controllers
 {
     /// <inheritdoc />
     /// <summary>

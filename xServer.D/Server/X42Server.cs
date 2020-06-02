@@ -5,23 +5,23 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using X42.Configuration;
-using X42.Feature.Setup;
-using X42.ServerNode;
-using X42.Utilities;
-using X42.Server.Results;
-using X42.Feature.Database.Tables;
-using X42.Feature.Network;
-using X42.Feature.X42Client;
-using X42.Feature.Database;
-using X42.Feature.X42Client.Enums;
+using x42.Configuration;
+using x42.Feature.Setup;
+using x42.ServerNode;
+using x42.Utilities;
+using x42.Server.Results;
+using x42.Feature.Database.Tables;
+using x42.Feature.Network;
+using x42.Feature.X42Client;
+using x42.Feature.Database;
+using x42.Feature.X42Client.Enums;
 using System.Collections.Generic;
 using x42.Properties;
 using x42.Server;
-using X42.Controllers.Requests;
-using X42.Controllers.Models;
+using x42.Controllers.Requests;
+using x42.Controllers.Results;
 
-namespace X42.Server
+namespace x42.Server
 {
     /// <summary>
     ///     Server providing all supported features of the servernode and its network.

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     Allows running application defined in a loop with specific timing.

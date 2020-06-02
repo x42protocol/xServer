@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using NLog;
-using X42.Configuration.Logging;
-using X42.Utilities.Extensions;
+using x42.Configuration.Logging;
+using x42.Utilities.Extensions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     Logger that prefixes every log with specified string.

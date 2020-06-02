@@ -4,12 +4,12 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using X42.Configuration;
-using X42.Feature.Setup;
-using X42.ServerNode;
-using X42.Utilities;
+using x42.Configuration;
+using x42.Feature.Setup;
+using x42.ServerNode;
+using x42.Utilities;
 
-namespace X42.Server
+namespace x42.Server
 {
     /// <summary>
     ///     Exception thrown by ServerBuilder.Build.

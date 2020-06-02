@@ -1,6 +1,6 @@
 ﻿using System.Timers;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     Extension methods for the <see cref="Timer" /> class.

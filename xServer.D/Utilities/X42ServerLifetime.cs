@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     Allows consumers to perform cleanup during a graceful shutdown.

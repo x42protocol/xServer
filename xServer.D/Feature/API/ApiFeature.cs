@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using X42.Feature.Setup;
-using X42.ServerNode;
-using X42.Server;
+using x42.Feature.Setup;
+using x42.ServerNode;
+using x42.Server;
 
-namespace X42.Feature.Api
+namespace x42.Feature.Api
 {
     /// <summary>
     ///     Provides an Api to the xServer

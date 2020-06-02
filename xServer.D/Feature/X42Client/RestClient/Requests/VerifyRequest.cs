@@ -1,4 +1,4 @@
-﻿namespace X42.Feature.X42Client.RestClient.Requests
+﻿namespace x42.Feature.X42Client.RestClient.Requests
 {
     /// <summary>
     /// Object to verify a signed message.

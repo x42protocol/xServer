@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using X42.Configuration;
-using X42.Feature.Setup;
+using x42.Configuration;
+using x42.Feature.Setup;
 
-namespace X42.Server
+namespace x42.Server
 {
     /// <summary>
     ///     A class providing extension methods for <see cref="IServerBuilder" />.

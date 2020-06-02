@@ -1,6 +1,6 @@
 ﻿using NBitcoin;
 
-namespace X42.ServerNode
+namespace x42.ServerNode
 {
     public class Collateral
     {

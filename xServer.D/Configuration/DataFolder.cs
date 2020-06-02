@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace X42.Configuration
+namespace x42.Configuration
 {
     /// <summary>
     ///     Contains path locations to folders and files on disk.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace X42.Feature.Setup
+namespace x42.Feature.Setup
 {
     /// <summary>
     ///     Exception thrown when feature dependencies are missing.

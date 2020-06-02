@@ -1,4 +1,4 @@
-﻿namespace X42.Feature.X42Client.Utils.Extensions
+﻿namespace x42.Feature.X42Client.Utils.Extensions
 {
     public static class IntegerExtensions
     {

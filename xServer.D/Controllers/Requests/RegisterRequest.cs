@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace X42.Controllers.Requests
+namespace x42.Controllers.Requests
 {
     public class RegisterRequest
     {

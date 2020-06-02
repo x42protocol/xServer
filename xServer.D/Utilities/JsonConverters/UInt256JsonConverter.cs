@@ -3,7 +3,7 @@ using System.IO;
 using NBitcoin;
 using Newtonsoft.Json;
 
-namespace X42.Utilities.JsonConverters
+namespace x42.Utilities.JsonConverters
 {
     /// <summary>
     ///     Converter used to convert a <see cref="uint256" /> to and from JSON.

@@ -1,4 +1,4 @@
-﻿namespace X42.Protocol
+﻿namespace x42.Protocol
 {
     /// <summary>
     ///     x42 protocol versioning.

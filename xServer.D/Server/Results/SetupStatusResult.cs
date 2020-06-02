@@ -1,6 +1,6 @@
 ﻿using static x42.Server.SetupServer;
 
-namespace X42.Server.Results
+namespace x42.Server.Results
 {
     public class SetupStatusResult
     {

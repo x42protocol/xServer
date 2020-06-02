@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 
-namespace X42.Configuration.Settings
+namespace x42.Configuration.Settings
 {
     /// <summary>
     ///     Configuration related to logging.

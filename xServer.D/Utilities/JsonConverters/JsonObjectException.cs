@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace X42.Utilities.JsonConverters
+namespace x42.Utilities.JsonConverters
 {
     public class JsonObjectException : Exception
     {

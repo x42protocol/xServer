@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using X42.Utilities;
+using x42.Utilities;
 
-namespace X42.Feature.Api
+namespace x42.Feature.Api
 {
     /// <summary>
     ///     An asynchronous action filter whose role is to reset the keepalive counter.

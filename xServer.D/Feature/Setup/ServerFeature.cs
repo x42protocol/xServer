@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using X42.Server;
+using x42.Server;
 
-namespace X42.Feature.Setup
+namespace x42.Feature.Setup
 {
     /// <summary>
     ///     Defines methods for features that are managed by the Server.

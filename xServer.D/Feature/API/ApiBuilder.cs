@@ -20,12 +20,12 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using x42.Feature.API;
-using X42.Feature.API.Requirements;
-using X42.Server;
-using X42.Utilities;
-using X42.Utilities.JsonConverters;
+using x42.Feature.API.Requirements;
+using x42.Server;
+using x42.Utilities;
+using x42.Utilities.JsonConverters;
 
-namespace X42.Feature.Api
+namespace x42.Feature.Api
 {
     public class ApiBuilder
     {

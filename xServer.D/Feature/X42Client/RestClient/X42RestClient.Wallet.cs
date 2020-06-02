@@ -4,12 +4,12 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using X42.Feature.X42Client.Enums;
-using X42.Feature.X42Client.RestClient.Requests;
-using X42.Feature.X42Client.RestClient.Responses;
-using X42.Utilities;
+using x42.Feature.X42Client.Enums;
+using x42.Feature.X42Client.RestClient.Requests;
+using x42.Feature.X42Client.RestClient.Responses;
+using x42.Utilities;
 
-namespace X42.Feature.X42Client.RestClient
+namespace x42.Feature.X42Client.RestClient
 {
     /*
      /api/Wallet/signmessage

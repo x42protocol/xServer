@@ -1,4 +1,4 @@
-﻿namespace X42.Server.Results
+﻿namespace x42.Server.Results
 {
     public class RegisterResult
     {

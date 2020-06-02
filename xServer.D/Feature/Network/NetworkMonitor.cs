@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using X42.Feature.Database.Context;
-using X42.Feature.Database;
-using X42.Utilities;
-using X42.Feature.Database.Tables;
+using x42.Feature.Database.Context;
+using x42.Feature.Database;
+using x42.Utilities;
+using x42.Feature.Database.Tables;
 using System.Collections.Generic;
 
-namespace X42.Feature.Network
+namespace x42.Feature.Network
 {
     public sealed partial class NetworkMonitor : IDisposable
     {

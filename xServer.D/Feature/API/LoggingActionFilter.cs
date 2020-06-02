@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
-namespace X42.Feature.Api
+namespace x42.Feature.Api
 {
     /// <summary>
     ///     An asynchronous action filter whose role is to log details from the Http requests to the API.

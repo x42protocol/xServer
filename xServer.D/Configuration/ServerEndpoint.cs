@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace X42.Configuration
+namespace x42.Configuration
 {
     /// <summary>
     ///     Description of network interface on which the server listens.

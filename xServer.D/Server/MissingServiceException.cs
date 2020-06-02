@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace X42.Server
+namespace x42.Server
 {
     /// <summary>
     ///     Exception thrown when a required service has not been registered into <see cref="IServerServiceProvider" />.

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace X42.Controllers.Models
+namespace x42.Controllers.Results
 {
     /// <summary>
     ///     Class representing the top preforming xServers available.
@@ -33,5 +32,8 @@ namespace X42.Controllers.Models
 
         /// <summary>xServer priority.</summary>
         public long Priotiry { get; set; }
+
+        /// <summary>xServer tier.</summary>
+        public int Tier { get; set; }
     }
 }

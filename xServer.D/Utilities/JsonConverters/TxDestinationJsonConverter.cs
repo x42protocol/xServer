@@ -3,7 +3,7 @@ using NBitcoin;
 using NBitcoin.DataEncoders;
 using Newtonsoft.Json;
 
-namespace X42.Utilities.JsonConverters
+namespace x42.Utilities.JsonConverters
 {
     /// <summary>
     ///     Converter used to convert a <see cref="KeyId" />, a <see cref="ScriptId" />, a <see cref="WitKeyId" /> or a

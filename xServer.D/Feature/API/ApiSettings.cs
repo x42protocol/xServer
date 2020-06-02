@@ -2,11 +2,11 @@
 using System.Text;
 using System.Timers;
 using Microsoft.Extensions.Logging;
-using X42.Configuration;
-using X42.ServerNode;
-using X42.Utilities;
+using x42.Configuration;
+using x42.ServerNode;
+using x42.Utilities;
 
-namespace X42.Feature.Api
+namespace x42.Feature.Api
 {
     /// <summary>
     ///     Configuration related to the API interface.

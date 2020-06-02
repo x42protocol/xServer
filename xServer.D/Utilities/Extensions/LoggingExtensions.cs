@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using LogLevel = NLog.LogLevel;
 
-namespace X42.Utilities.Extensions
+namespace x42.Utilities.Extensions
 {
     /// <summary>
     ///     Extension methods for classes and interfaces related to logging.

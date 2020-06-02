@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace X42.Controllers.Models
+namespace x42.Controllers.Results
 {
     /// <summary>
     ///     Class representing the ping result of the currently running node.

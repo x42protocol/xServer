@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace X42.Controllers.Converters
+namespace x42.Controllers.Converters
 {
     public class ToStringJsonConverter : JsonConverter
     {

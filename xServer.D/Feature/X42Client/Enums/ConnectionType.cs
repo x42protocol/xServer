@@ -1,4 +1,4 @@
-﻿namespace X42.Feature.X42Client.Enums
+﻿namespace x42.Feature.X42Client.Enums
 {
     public enum ConnectionType
     {

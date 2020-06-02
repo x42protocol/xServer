@@ -1,6 +1,6 @@
-﻿using X42.Feature.X42Client.Enums;
+﻿using x42.Feature.X42Client.Enums;
 
-namespace X42.Feature.X42Client.Models
+namespace x42.Feature.X42Client.Models
 {
     public class Transaction
     {

@@ -6,14 +6,14 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using X42.Configuration.Logging;
-using X42.Configuration.Settings;
-using X42.Feature.Setup;
-using X42.ServerNode;
-using X42.Protocol;
-using X42.Utilities;
+using x42.Configuration.Logging;
+using x42.Configuration.Settings;
+using x42.Feature.Setup;
+using x42.ServerNode;
+using x42.Protocol;
+using x42.Utilities;
 
-namespace X42.Configuration
+namespace x42.Configuration
 {
     internal static class NormalizeDirectorySeparatorExt
     {
@@ -30,7 +30,7 @@ namespace X42.Configuration
     /// <summary>
     ///     Сontains the configuration settings for a xServer. These settings are taken from both the application
     ///     command line arguments and the configuration file.
-    ///     Unlike the settings held by <see cref="X42.ServerNode" />, these settings are individualized for each xServer.
+    ///     Unlike the settings held by <see cref="x42.ServerNode" />, these settings are individualized for each xServer.
     /// </summary>
     public class ServerSettings : IDisposable
     {

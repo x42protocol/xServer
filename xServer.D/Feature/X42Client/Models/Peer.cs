@@ -1,4 +1,4 @@
-﻿namespace X42.Feature.X42Client.Models
+﻿namespace x42.Feature.X42Client.Models
 {
     public class Peer
     {

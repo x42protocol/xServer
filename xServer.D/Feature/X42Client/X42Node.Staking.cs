@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using X42.Feature.X42Client.RestClient.Responses;
-using X42.Feature.X42Client.Utils.Extensions;
+using x42.Feature.X42Client.RestClient.Responses;
+using x42.Feature.X42Client.Utils.Extensions;
 
-namespace X42.Feature.X42Client
+namespace x42.Feature.X42Client
 {
     public sealed partial class X42Node
     {

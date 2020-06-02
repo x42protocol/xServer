@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using NBitcoin;
 using NBitcoin.Protocol;
-using NodeSeedData = X42.Utilities.NodeSeedData;
+using NodeSeedData = x42.Utilities.NodeSeedData;
 
-namespace X42.ServerNode
+namespace x42.ServerNode
 {
     public abstract class ServerNodeBase
     {

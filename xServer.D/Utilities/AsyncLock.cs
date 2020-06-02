@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     An async synchronization primitive that allows the caller to await inside the critical section.

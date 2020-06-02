@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using X42.Controllers.Requests;
-using X42.Feature.Database.Context;
-using X42.Feature.Database.Tables;
-using X42.Server.Results;
+using x42.Controllers.Requests;
+using x42.Feature.Database.Context;
+using x42.Feature.Database.Tables;
+using x42.Server.Results;
 
 namespace x42.Server
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace X42.Utilities.JsonErrors
+namespace x42.Utilities.JsonErrors
 {
     public class ErrorResponse
     {

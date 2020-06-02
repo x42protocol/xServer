@@ -2,23 +2,23 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using X42.Configuration.Logging;
-using X42.Feature.Database.Context;
-using X42.Feature.Database;
-using X42.Feature.Setup;
-using X42.Feature.X42Client;
-using X42.ServerNode;
-using X42.Server;
-using X42.Utilities;
-using X42.Feature.Database.Tables;
+using x42.Configuration.Logging;
+using x42.Feature.Database.Context;
+using x42.Feature.Database;
+using x42.Feature.Setup;
+using x42.Feature.X42Client;
+using x42.ServerNode;
+using x42.Server;
+using x42.Utilities;
+using x42.Feature.Database.Tables;
 using System.Linq;
-using X42.Feature.X42Client.RestClient.Responses;
-using X42.Configuration;
-using X42.Feature.X42Client.Enums;
+using x42.Feature.X42Client.RestClient.Responses;
+using x42.Configuration;
+using x42.Feature.X42Client.Enums;
 using Microsoft.EntityFrameworkCore;
 using NBitcoin;
 
-namespace X42.Feature.Network
+namespace x42.Feature.Network
 {
     /// <inheritdoc />
     /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace X42.Feature.X42Client.RestClient.Responses
+﻿namespace x42.Feature.X42Client.RestClient.Responses
 {
     public class GetSpendableTXResponse
     {

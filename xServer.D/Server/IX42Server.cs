@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using X42.Controllers.Models;
-using X42.Controllers.Requests;
-using X42.Feature.Database.Tables;
-using X42.Server.Results;
-using X42.Utilities;
+using x42.Controllers.Results;
+using x42.Controllers.Requests;
+using x42.Feature.Database.Tables;
+using x42.Server.Results;
+using x42.Utilities;
 
-namespace X42.Server
+namespace x42.Server
 {
     /// <summary>
     ///     Contract for the x42 server built by x42 server builder.

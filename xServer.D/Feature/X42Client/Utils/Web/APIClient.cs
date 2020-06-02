@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using X42.Utilities;
+using x42.Utilities;
 
-namespace X42.Feature.X42Client.Utils.Web
+namespace x42.Feature.X42Client.Utils.Web
 {
     /// <inheritdoc />
     /// <summary>

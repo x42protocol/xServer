@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     Represent a DNS seed.

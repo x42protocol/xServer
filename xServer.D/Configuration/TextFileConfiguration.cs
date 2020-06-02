@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using NBitcoin;
 
-namespace X42.Configuration
+namespace x42.Configuration
 {
     /// <summary>
     ///     Exception that is used when a problem in command line or configuration file configuration is found.

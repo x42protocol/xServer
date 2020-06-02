@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace X42.Controllers.Requests
+namespace x42.Controllers.Requests
 {
     public class LogRulesRequest
     {

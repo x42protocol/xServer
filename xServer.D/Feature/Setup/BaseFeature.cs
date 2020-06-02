@@ -2,11 +2,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NBitcoin;
-using X42.Configuration;
-using X42.Server;
-using X42.Utilities;
+using x42.Configuration;
+using x42.Server;
+using x42.Utilities;
 
-namespace X42.Feature.Setup
+namespace x42.Feature.Setup
 {
     /// <summary>
     ///     Base server services, these are the services a server has to have.

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using X42.Configuration;
-using X42.Feature.Api;
-using X42.Feature.Database;
-using X42.Feature.X42Client;
-using X42.Feature.Network;
-using X42.ServerNode;
-using X42.Protocol;
-using X42.Server;
-using X42.Utilities.Extensions;
+using x42.Configuration;
+using x42.Feature.Api;
+using x42.Feature.Database;
+using x42.Feature.X42Client;
+using x42.Feature.Network;
+using x42.ServerNode;
+using x42.Protocol;
+using x42.Server;
+using x42.Utilities.Extensions;
 
-namespace X42
+namespace x42
 {
     internal class Program
     {

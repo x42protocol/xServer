@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using X42.Feature.X42Client.Enums;
-using X42.Feature.X42Client.Models;
-using X42.Feature.X42Client.RestClient;
+using x42.Feature.X42Client.Enums;
+using x42.Feature.X42Client.Models;
+using x42.Feature.X42Client.RestClient;
 
-namespace X42.Feature.X42Client
+namespace x42.Feature.X42Client
 {
     public sealed partial class X42Node
     {

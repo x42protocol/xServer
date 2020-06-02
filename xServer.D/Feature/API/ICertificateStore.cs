@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 
-namespace X42.Feature.Api
+namespace x42.Feature.Api
 {
     /// <summary>
     ///     An interface providing operations on certificate repositories.

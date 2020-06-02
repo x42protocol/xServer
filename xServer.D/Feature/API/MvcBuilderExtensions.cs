@@ -3,10 +3,10 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using X42.Controllers;
-using X42.Controllers.Public;
+using x42.Controllers;
+using x42.Controllers.Public;
 
-namespace X42.Feature.Api
+namespace x42.Feature.Api
 {
     public static class MvcBuilderExtensions
     {

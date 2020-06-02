@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using X42.Feature.X42Client.RestClient.Responses;
-using X42.Utilities;
+using x42.Feature.X42Client.RestClient.Responses;
+using x42.Utilities;
 
-namespace X42.Feature.X42Client.RestClient
+namespace x42.Feature.X42Client.RestClient
 {
     public partial class X42RestClient
     {

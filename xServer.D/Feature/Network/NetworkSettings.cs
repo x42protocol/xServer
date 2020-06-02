@@ -1,10 +1,10 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Logging;
-using X42.Configuration;
-using X42.ServerNode;
-using X42.Utilities;
+using x42.Configuration;
+using x42.ServerNode;
+using x42.Utilities;
 
-namespace X42.Feature.Network
+namespace x42.Feature.Network
 {
     /// <summary>
     ///     Configuration related to the network interface.

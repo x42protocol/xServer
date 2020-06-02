@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
 
-namespace X42.Feature.Api
+namespace x42.Feature.Api
 {
     public class CertificateStore : ICertificateStore
     {

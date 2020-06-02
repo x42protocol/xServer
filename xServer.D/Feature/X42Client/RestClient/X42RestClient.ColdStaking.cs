@@ -1,4 +1,4 @@
-﻿namespace X42.Feature.X42Client
+﻿namespace x42.Feature.X42Client
 {
     public class x42ColdStaking
     {

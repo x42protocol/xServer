@@ -3,7 +3,7 @@ using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace X42.Utilities.JsonConverters
+namespace x42.Utilities.JsonConverters
 {
     /// <summary>
     ///     Converter used to convert <see cref="IPEndPoint" /> to and from JSON.

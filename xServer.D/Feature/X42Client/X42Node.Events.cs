@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
-using X42.Feature.X42Client.Enums;
-using X42.Feature.X42Client.Models;
-using X42.Feature.X42Client.Models.Event;
-using X42.Feature.X42Client.RestClient.Responses;
-using X42.Feature.X42Client.Utils.Extensions;
-using X42.Utilities;
+using x42.Feature.X42Client.Enums;
+using x42.Feature.X42Client.Models;
+using x42.Feature.X42Client.Models.Event;
+using x42.Feature.X42Client.RestClient.Responses;
+using x42.Feature.X42Client.Utils.Extensions;
+using x42.Utilities;
 
-namespace X42.Feature.X42Client
+namespace x42.Feature.X42Client
 {
     public delegate void NewBlockEventHandler(object sender, NewBlockEvent e);
 

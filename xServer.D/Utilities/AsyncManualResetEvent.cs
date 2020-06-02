@@ -28,7 +28,7 @@ Stephen Cleary's AsyncEx library - https://github.com/StephenCleary/AsyncEx .
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     An async-compatible manual-reset event.

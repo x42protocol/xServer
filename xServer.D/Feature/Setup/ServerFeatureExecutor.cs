@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using X42.Server;
-using X42.Utilities;
+using x42.Server;
+using x42.Utilities;
 
-namespace X42.Feature.Setup
+namespace x42.Feature.Setup
 {
     /// <summary>
     ///     Starts and stops all features registered with a xServer.

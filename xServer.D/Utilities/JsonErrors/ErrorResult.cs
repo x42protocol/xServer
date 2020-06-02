@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace X42.Utilities.JsonErrors
+namespace x42.Utilities.JsonErrors
 {
     public class ErrorResult : ObjectResult
     {

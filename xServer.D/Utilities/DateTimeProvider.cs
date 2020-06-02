@@ -1,7 +1,7 @@
 ﻿using System;
-using X42.Utilities.Extensions;
+using x42.Utilities.Extensions;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     Providing date time functionality.

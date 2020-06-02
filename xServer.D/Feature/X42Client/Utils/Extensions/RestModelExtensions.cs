@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using X42.Feature.X42Client.Models;
-using X42.Feature.X42Client.RestClient.Responses;
-using X42.Utilities;
+using x42.Feature.X42Client.Models;
+using x42.Feature.X42Client.RestClient.Responses;
+using x42.Utilities;
 
-namespace X42.Feature.X42Client.Utils.Extensions
+namespace x42.Feature.X42Client.Utils.Extensions
 {
     public static class RestModelExtensions
     {

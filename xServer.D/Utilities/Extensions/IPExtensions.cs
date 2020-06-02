@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using NBitcoin;
 
-namespace X42.Utilities.Extensions
+namespace x42.Utilities.Extensions
 {
     public static class IPExtensions
     {

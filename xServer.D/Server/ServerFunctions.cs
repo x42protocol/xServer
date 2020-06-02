@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using X42.Controllers.Models;
-using X42.Feature.Database.Context;
-using X42.Feature.Database.Tables;
+using x42.Controllers.Results;
+using x42.Feature.Database.Context;
+using x42.Feature.Database.Tables;
 
 namespace x42.Server
 {
@@ -30,7 +30,8 @@ namespace x42.Server
                                 Name = x.Name,
                                 Address = x.NetworkAddress,
                                 Port = x.NetworkPort,
-                                Priotiry = x.Priority
+                                Priotiry = x.Priority,
+                                Tier = x.Tier
                             }
                     ));
                 }

@@ -10,10 +10,10 @@ using NLog.Config;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
-using X42.Configuration.Settings;
+using x42.Configuration.Settings;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace X42.Configuration.Logging
+namespace x42.Configuration.Logging
 {
     /// <summary>
     /// An extension of the <see cref="LoggerFactory"/> that allows access to some internal components.
@@ -92,9 +92,9 @@ namespace X42.Configuration.Logging
                 // { "zmq", "" },
 
                 // Short Names
-                {"configuration", $"{nameof(X42)}.{nameof(Server)}.{nameof(Configuration)}.*"},
-                {"server", $"{nameof(X42)}.{nameof(Server)}.*"},
-                {"x42client", $"{nameof(X42)}.{nameof(Feature)}.{nameof(Feature.X42Client)}.*"}
+                {"configuration", $"{nameof(x42)}.{nameof(Server)}.{nameof(Configuration)}.*"},
+                {"server", $"{nameof(x42)}.{nameof(Server)}.*"},
+                {"x42client", $"{nameof(x42)}.{nameof(Feature)}.{nameof(Feature.X42Client)}.*"}
             };
 
         public static void RegisterFeatureNamespace<T>(string key)
@@ -202,7 +202,7 @@ namespace X42.Configuration.Logging
             LogManager.Configuration.AddTarget(mainTarget);
 
             // Default logging level is Info for all components.
-            var defaultRule = new LoggingRule($"{nameof(X42)}.*", settings.LogLevel, mainTarget);
+            var defaultRule = new LoggingRule($"{nameof(x42)}.*", settings.LogLevel, mainTarget);
 
             if (settings.DebugArgs.Any() && settings.DebugArgs[0] != "1")
             {
@@ -260,7 +260,7 @@ namespace X42.Configuration.Logging
                     if (settings.DebugArgs[0] == "1")
                     {
                         // Increase all logging to Debug.
-                        builder.AddFilter($"{nameof(X42)}.{nameof(Server)}", LogLevel.Debug);
+                        builder.AddFilter($"{nameof(x42)}.{nameof(Server)}", LogLevel.Debug);
                     }
                     else
                     {

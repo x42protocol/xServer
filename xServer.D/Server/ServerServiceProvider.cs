@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using X42.Feature.Setup;
-using X42.Utilities;
+using x42.Feature.Setup;
+using x42.Utilities;
 
-namespace X42.Server
+namespace x42.Server
 {
     /// <summary>
     ///     Provider of access to services and features registered with the x42 server.

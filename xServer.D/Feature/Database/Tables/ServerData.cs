@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace X42.Feature.Database.Tables
+namespace x42.Feature.Database.Tables
 {
     [Table("server")]
     public class ServerData

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using X42.Utilities.JsonErrors;
+using x42.Utilities.JsonErrors;
 
-namespace X42.Utilities.ModelStateErrors
+namespace x42.Utilities.ModelStateErrors
 {
     public static class ModelStateErrors
     {

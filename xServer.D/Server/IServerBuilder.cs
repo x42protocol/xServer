@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using X42.Configuration;
-using X42.Feature.Setup;
-using X42.ServerNode;
+using x42.Configuration;
+using x42.Feature.Setup;
+using x42.ServerNode;
 
-namespace X42.Server
+namespace x42.Server
 {
     /// <summary>
     ///     x42 server builder allows constructing a x42 server using specific components.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace X42.Feature.X42Client.Models.Event
+namespace x42.Feature.X42Client.Models.Event
 {
     public class ConnectDisconnectEvent : BaseEvent
     {

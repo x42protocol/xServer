@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     public interface IServerStats
     {

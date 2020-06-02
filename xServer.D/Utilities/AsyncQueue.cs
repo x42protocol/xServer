@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>
     ///     Async queue is a thread-safe queue that can operate in callback mode or blocking dequeue mode.

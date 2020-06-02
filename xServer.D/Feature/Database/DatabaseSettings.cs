@@ -1,10 +1,10 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Logging;
-using X42.Configuration;
-using X42.ServerNode;
-using X42.Utilities;
+using x42.Configuration;
+using x42.ServerNode;
+using x42.Utilities;
 
-namespace X42.Feature.Database
+namespace x42.Feature.Database
 {
     /// <summary>
     ///     Configuration related to the database interface.

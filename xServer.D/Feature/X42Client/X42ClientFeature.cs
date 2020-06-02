@@ -2,14 +2,14 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using X42.Configuration.Logging;
-using X42.Feature.Setup;
-using X42.Feature.X42Client.Enums;
-using X42.ServerNode;
-using X42.Server;
-using X42.Utilities;
+using x42.Configuration.Logging;
+using x42.Feature.Setup;
+using x42.Feature.X42Client.Enums;
+using x42.ServerNode;
+using x42.Server;
+using x42.Utilities;
 
-namespace X42.Feature.X42Client
+namespace x42.Feature.X42Client
 {
     /// <inheritdoc />
     /// <summary>

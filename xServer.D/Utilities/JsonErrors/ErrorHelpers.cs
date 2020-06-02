@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 
-namespace X42.Utilities.JsonErrors
+namespace x42.Utilities.JsonErrors
 {
     public static class ErrorHelpers
     {

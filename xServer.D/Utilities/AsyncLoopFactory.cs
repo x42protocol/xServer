@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using X42.Server;
+using x42.Server;
 
-namespace X42.Utilities
+namespace x42.Utilities
 {
     /// <summary>Factory for creating and also possibly starting application defined tasks inside async loop.</summary>
     public interface IAsyncLoopFactory
