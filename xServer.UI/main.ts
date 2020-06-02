@@ -168,7 +168,8 @@ function shutdownx42Node(portNumber) {
     hostname: 'localhost',
     port: portNumber,
     path: '/api/node/shutdown',
-    method: 'POST'
+    method: 'POST',
+    body: 'true'
   };
 
   const req = http.request(options);
@@ -194,7 +195,8 @@ function shutdownxServer(portNumber) {
     hostname: 'localhost',
     port: portNumber,
     path: '/shutdown',
-    method: 'POST'
+    method: 'POST',
+    body: 'true'
   };
 
   const req = http.request(options);
