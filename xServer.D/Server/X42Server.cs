@@ -164,19 +164,21 @@ namespace x42.Server
 
                 if (serverTier != null)
                 {
-                    bool serverIsValid = await network.IsServerKeyValid(serverNode);
-
-                    if (serverIsValid)
+                    bool serverKeysAreValid = await network.IsServerKeyValid(serverNode);
+                    if (serverKeysAreValid)
                     {
-                        // TODO: Final Check.
-                        // We need to ping server before finalizing. Testing the availability of server will ensure that the server was at one point available.
-
-                        bool serverAdded = network.AddServer(serverNode);
-                        if (!serverAdded)
+                        string xServerURL = $"{serverNode.PublicAddress}:{serverNode.NetworkPort}";
+                        bool nodeAvailable = network.ValidateNodeOnline(serverNode.NetworkAddress, serverNode.NetworkPort);
+                        bool serverAvailable = await network.ValidateServerIsOnlineAndSynced(xServerURL, BestBlockHeight);
+                        if (nodeAvailable)
                         {
-                            registerResult.ResultMessage = "Server already exists in repo";
+                            bool serverAdded = network.AddServer(serverNode);
+                            if (!serverAdded)
+                            {
+                                registerResult.ResultMessage = "Server already exists in repo";
+                            }
+                            registerResult.Success = true;
                         }
-                        registerResult.Success = true;
                     }
                     else
                     {

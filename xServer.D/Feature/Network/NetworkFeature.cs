@@ -14,9 +14,13 @@ using x42.Feature.Database.Tables;
 using System.Linq;
 using x42.Feature.X42Client.RestClient.Responses;
 using x42.Configuration;
-using x42.Feature.X42Client.Enums;
 using Microsoft.EntityFrameworkCore;
 using NBitcoin;
+using System.Net.Sockets;
+using System;
+using RestSharp;
+using System.Net;
+using x42.Controllers.Results;
 
 namespace x42.Feature.Network
 {
@@ -135,6 +139,41 @@ namespace x42.Feature.Network
             string serverKey = $"{serverNode.Name}{serverNode.NetworkAddress}{serverNode.NetworkPort}";
 
             return await x42Client.VerifyMessageAsync(serverNode.PublicAddress, serverKey, serverNode.Signature);
+        }
+
+        public bool ValidateNodeOnline(string networkAddress, long networkPort)
+        {
+            bool result = false;
+            try
+            {
+                using var client = new TcpClient(networkAddress, Convert.ToInt32(networkPort));
+                result = true;
+            }
+            catch (SocketException) { }
+            return result;
+        }
+
+        public async Task<bool> ValidateServerIsOnlineAndSynced(string xServerURL, ulong chainHeight)
+        {
+            bool result = false;
+            try
+            {
+                logger.LogDebug($"Attempting validate connection to {xServerURL}.");
+
+                var client = new RestClient(xServerURL);
+                var xServersPingRequest = new RestRequest("/ping", Method.GET);
+                var xServerPingResult = await client.ExecuteAsync<PingResult>(xServersPingRequest).ConfigureAwait(false);
+                if (xServerPingResult.StatusCode == HttpStatusCode.OK)
+                {
+                    ulong minimumBlockHeight = xServerPingResult.Data.BestBlockHeight + network.BlockGracePeriod;
+                    if (minimumBlockHeight >= chainHeight)
+                    {
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception) { }
+            return result;
         }
 
         public async Task<Money> GetServerCollateral(ServerNodeData serverNode)
