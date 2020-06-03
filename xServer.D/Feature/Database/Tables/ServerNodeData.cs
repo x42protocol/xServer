@@ -11,6 +11,7 @@ namespace x42.Feature.Database.Tables
         [Key]
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public int NetworkProtocol { get; set; }
         public string NetworkAddress { get; set; }
         public long NetworkPort { get; set; }
         public string PublicAddress { get; set; }

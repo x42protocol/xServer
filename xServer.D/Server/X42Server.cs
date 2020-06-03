@@ -167,22 +167,33 @@ namespace x42.Server
                     bool serverKeysAreValid = await network.IsServerKeyValid(serverNode);
                     if (serverKeysAreValid)
                     {
-                        string xServerURL = $"{serverNode.PublicAddress}:{serverNode.NetworkPort}";
-                        bool nodeAvailable = network.ValidateNodeOnline(serverNode.NetworkAddress, serverNode.NetworkPort);
-                        bool serverAvailable = await network.ValidateServerIsOnlineAndSynced(xServerURL, BestBlockHeight);
+                        string xServerURL = network.GetServerUrl(serverNode.NetworkProtocol, serverNode.NetworkAddress, serverNode.NetworkPort);
+                        bool nodeAvailable = network.ValidateNodeOnline(serverNode.NetworkAddress);
                         if (nodeAvailable)
                         {
-                            bool serverAdded = network.AddServer(serverNode);
-                            if (!serverAdded)
+                            bool serverAvailable = await network.ValidateServerIsOnlineAndSynced(xServerURL, BestBlockHeight);
+                            if (serverAvailable)
                             {
-                                registerResult.ResultMessage = "Server already exists in repo";
+                                bool serverAdded = network.AddServer(serverNode);
+                                if (!serverAdded)
+                                {
+                                    registerResult.ResultMessage = "Server already exists in repo";
+                                }
+                                registerResult.Success = true;
                             }
-                            registerResult.Success = true;
+                            else
+                            {
+                                registerResult.ResultMessage = "Network availability failed for xServer";
+                            }
+                        }
+                        else
+                        {
+                            registerResult.ResultMessage = "Network availability failed for x42 node";
                         }
                     }
                     else
                     {
-                        registerResult.ResultMessage = "Could not verify server";
+                        registerResult.ResultMessage = "Could not verify server keys";
                     }
                 }
                 else if (serverTier == null || availableTiers.Count() != 1)

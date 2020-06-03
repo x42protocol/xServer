@@ -68,7 +68,8 @@ namespace x42.Controllers.Public
                 NetworkPort = registerRequest.NetworkPort,
                 Signature = registerRequest.Signature,
                 PublicAddress = registerRequest.Address,
-                Tier = registerRequest.Tier
+                Tier = registerRequest.Tier,
+                NetworkProtocol = registerRequest.NetworkProtocol
             };
 
             RegisterResult registerResult = await xServer.Register(serverNode);

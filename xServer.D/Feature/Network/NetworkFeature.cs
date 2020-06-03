@@ -141,12 +141,37 @@ namespace x42.Feature.Network
             return await x42Client.VerifyMessageAsync(serverNode.PublicAddress, serverKey, serverNode.Signature);
         }
 
-        public bool ValidateNodeOnline(string networkAddress, long networkPort)
+        private string GetProtocolString(int networkProtocol)
+        {
+            string result = string.Empty;
+            switch (networkProtocol)
+            {
+                case 0: // Default to HTTP
+                case 1:
+                    result = "http";
+                    break;
+                case 2:
+                    result = "https";
+                    break;
+                case 3:
+                    // TODO: Add Websocket
+                    result = "ws";
+                    break;
+            }
+            return result;
+        }
+
+        public string GetServerUrl(int networkProtocol, string networkAddress, long networkPort)
+        {
+            return $"{GetProtocolString(networkProtocol)}://{networkAddress}:{networkPort}/";
+        }
+
+        public bool ValidateNodeOnline(string networkAddress)
         {
             bool result = false;
             try
             {
-                using var client = new TcpClient(networkAddress, Convert.ToInt32(networkPort));
+                using var client = new TcpClient(networkAddress, Convert.ToInt32(network.DefaultNodePort));
                 result = true;
             }
             catch (SocketException) { }
