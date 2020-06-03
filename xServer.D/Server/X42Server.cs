@@ -156,7 +156,7 @@ namespace x42.Server
                 Success = false
             };
 
-            if (IsServerReady())
+            if (IsServerReady() && !network.ServerExists(serverNode))
             {
                 var collateral = await network.GetServerCollateral(serverNode);
                 IEnumerable<Tier> availableTiers = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount <= collateral);
@@ -177,9 +177,12 @@ namespace x42.Server
                                 bool serverAdded = network.AddServer(serverNode);
                                 if (!serverAdded)
                                 {
-                                    registerResult.ResultMessage = "Server already exists in repo";
+                                    registerResult.ResultMessage = "Server could not be added.";
                                 }
-                                registerResult.Success = true;
+                                else
+                                {
+                                    registerResult.Success = true;
+                                }
                             }
                             else
                             {
@@ -210,6 +213,10 @@ namespace x42.Server
                 else if (!database.DatabaseConnected)
                 {
                     registerResult.ResultMessage = "Databse is offline";
+                }
+                else
+                {
+                    registerResult.ResultMessage = "Already added ";
                 }
 
             }

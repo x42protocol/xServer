@@ -14,6 +14,11 @@ namespace x42.ServerNode
         public int DefaultPort { get; protected set; }
 
         /// <summary>
+        ///     The default port to communicate with the blockchain node over the API.
+        /// </summary>
+        public int DefaultNodeAPIPort { get; protected set; }
+
+        /// <summary>
         ///     The default port to communicate with the blockchain node.
         /// </summary>
         public int DefaultNodePort { get; protected set; }

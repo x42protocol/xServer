@@ -41,7 +41,7 @@ namespace x42.Feature.X42Client
             this.serverLifetime = serverLifetime;
             this.asyncLoopFactory = asyncLoopFactory;
 
-            monitorSleep = 1000;
+            monitorSleep = 3000;
 
             SetupNodeConnection(name, address, port);
 
@@ -67,7 +67,7 @@ namespace x42.Feature.X42Client
             {
                 try
                 {
-                    await this.UpdateNodeData(this.nodeCancellationTokenSource.Token).ConfigureAwait(false);
+                    await this.UpdateNodeData().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -82,10 +82,8 @@ namespace x42.Feature.X42Client
         }
 
         //The Workhorse which refreshes all Node Data
-        public async Task UpdateNodeData(CancellationToken cancellationToken)
+        public async Task UpdateNodeData()
         {
-            while (!cancellationToken.IsCancellationRequested)
-            {
                 try
                 {
                     //are we connected??
@@ -153,7 +151,6 @@ namespace x42.Feature.X42Client
                         ex);
                     Status = ConnectionStatus.Offline;
                 }
-            }
         }
 
 

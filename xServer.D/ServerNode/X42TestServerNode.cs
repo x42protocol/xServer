@@ -13,7 +13,8 @@ namespace x42.ServerNode
         {
             Name = "x42 Test xServer";
             DefaultPort = 4243;
-            DefaultNodePort = 42221;
+            DefaultNodeAPIPort = 42221;
+            DefaultNodePort = 62342;
             DefaultConfigFilename = x42DefaultConfigFilename;
 
             List<Tier> Tiers = new List<Tier>

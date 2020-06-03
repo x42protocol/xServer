@@ -238,6 +238,27 @@ namespace x42.Feature.Network
 
             return result;
         }
+
+        /// <summary>
+        ///     Check if server is already added
+        /// </summary>
+        /// <param name="serverNodeData">Server Node Data.</param>
+        /// <returns>Will return true if the server exists, otherwise false.</returns>
+        public bool ServerExists(ServerNodeData serverNodeData)
+        {
+            bool result = false;
+
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.Signature == serverNodeData.Signature);
+                if (serverNodes.Count() > 0)
+                {
+                    result = true;
+                }
+            }
+
+            return result;
+        }
     }
 
     /// <summary>
