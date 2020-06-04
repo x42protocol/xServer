@@ -54,8 +54,8 @@ namespace x42.Server
         ///     Add the server to setup
         /// </summary>
         /// <param name="ServerData">Server Data.</param>
-        /// <returns>Will return true if new record wad created, otherwise false.</returns>
-        bool AddServerToSetup(SetupRequest setupRequest);
+        /// <returns>Will return an address if it was able to either find an existing address or gather one from the node, otherwise empty string.</returns>
+        Task<string> SetupServer(SetupRequest setupRequest = null);
 
         /// <summary>
         ///     Get's the server setup status

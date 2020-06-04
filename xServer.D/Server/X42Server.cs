@@ -347,10 +347,43 @@ namespace x42.Server
         }
 
         /// <inheritdoc />
-        public bool AddServerToSetup(SetupRequest setupRequest)
+        public async Task<string> SetupServer(SetupRequest setupRequest = null)
         {
+            string result = string.Empty;
             SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
-            return setupServer.AddServerToSetup(setupRequest);
+            if (setupRequest == null)
+            {
+                string serverPublicAddress = setupServer.GetServerAddress();
+                if (string.IsNullOrEmpty(serverPublicAddress))
+                {
+                    setupRequest = new SetupRequest()
+                    {
+                        Address = await network.GetServerAddress("x42ServerMain")
+                    };
+                    AddServerAddress(setupServer, setupRequest);
+                }
+                else
+                {
+                    result = serverPublicAddress;
+                }
+            }
+            else
+            {
+                AddServerAddress(setupServer, setupRequest);
+            }
+
+            return result;
+        }
+
+        private string AddServerAddress(SetupServer setupServer, SetupRequest setupRequest)
+        {
+            string result = string.Empty;
+            bool success = setupServer.AddServerToSetup(setupRequest);
+            if (success)
+            {
+                result = setupRequest.Address;
+            }
+            return result;
         }
 
         /// <inheritdoc />

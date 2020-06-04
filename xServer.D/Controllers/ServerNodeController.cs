@@ -23,6 +23,7 @@ using LogLevel = NLog.LogLevel;
 using x42.Feature.Database;
 using x42.Feature.Database.Tables;
 using x42.Server.Results;
+using System.Threading.Tasks;
 
 namespace x42.Controllers
 {
@@ -101,16 +102,34 @@ namespace x42.Controllers
         }
 
         /// <summary>
+        ///     Prepares the server address.
+        /// </summary>
+        /// <returns>
+        ///     <see cref="SetupResponse" />
+        /// </returns>
+        [HttpGet]
+        [Route("setup")]
+        public async Task<IActionResult> Setup()
+        {
+            string address = await xServer.SetupServer();
+            var setupResult = new SetupResponse()
+            {
+                Address = address
+            };
+            return Json(setupResult);
+        }
+
+        /// <summary>
         ///     Prepares the server to get ready to setup.
         /// </summary>
         /// <returns>
         ///     <see cref="OkResult" />
         /// </returns>
         [HttpPost]
-        [Route("setup")]
-        public IActionResult Setup([FromBody] SetupRequest setupRequest)
+        [Route("set-server-address")]
+        public async Task<IActionResult> SetServerAddress([FromBody] SetupRequest setupRequest)
         {
-            bool result = xServer.AddServerToSetup(setupRequest);
+            string result = await xServer.SetupServer(setupRequest);
 
             return Ok(result);
         }

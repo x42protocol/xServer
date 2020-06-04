@@ -84,73 +84,73 @@ namespace x42.Feature.X42Client
         //The Workhorse which refreshes all Node Data
         public async Task UpdateNodeData()
         {
-                try
+            try
+            {
+                //are we connected??
+                if (ConnectionMethod == ConnectionType.Disconnected)
                 {
-                    //are we connected??
-                    if (ConnectionMethod == ConnectionType.Disconnected)
-                    {
-                        logger.LogDebug($"Node '{Name}' ({Address}:{Port}), Aborting 'Status' Update.  Internal State Is Disconnected!");
-                    }
-
-                    //############  Status Data #################
-                    NodeStatusResponse statusData = await restClient.GetNodeStatus();
-                    if (statusData == null)
-                    {
-                        logger.LogDebug($"Node '{Name}' ({Address}:{Port}) An Error Occured Getting Node Status!");
-                        Status = ConnectionStatus.Offline;
-                    }
-                    else
-                    {
-                        //we have a new block, so fire off an event
-                        if (statusData.consensusHeight > BlockTIP)
-                        {
-                            OnNewBlock(statusData.consensusHeight);
-                        }
-
-                        //update current height
-                        BlockTIP = statusData.consensusHeight;
-
-                        DataDirectory = statusData.dataDirectoryPath;
-
-                        NodeVersion = statusData.version;
-                        ProtocolVersion = $"{statusData.protocolVersion}";
-                        IsTestNet = statusData.testnet;
-
-                        Status = ConnectionStatus.Online;
-                    }
-
-                    //############  Update Peers #################
-                    List<GetPeerInfoResponse> peersResponse = await restClient.GetPeerInfo();
-                    if (peersResponse == null)
-                    {
-                        logger.LogDebug($"Node '{Name}' ({Address}:{Port}) An Error Occured Getting The Node Peer List!");
-                    }
-                    else
-                    {
-                        Peers = peersResponse.ToPeersList();
-                    }
-
-                    //############  TX History Processing #################
-                    UpdateWalletTXs();
-
-                    //############  Staking Info #################
-                    UpdateStakingInformation();
-
-                    await Task.Delay(10000);
+                    logger.LogDebug($"Node '{Name}' ({Address}:{Port}), Aborting 'Status' Update.  Internal State Is Disconnected!");
                 }
-                catch (HttpRequestException ex) //API is not accessible or responding
+
+                //############  Status Data #################
+                NodeStatusResponse statusData = await restClient.GetNodeStatus();
+                if (statusData == null)
                 {
-                    OnDisconnected(Address, Port);
-                    logger.LogDebug(
-                        $"Node '{Name}' ({Address}:{Port}) Something Happened & The Node API Is Not Accessible", ex);
+                    logger.LogDebug($"Node '{Name}' ({Address}:{Port}) An Error Occured Getting Node Status!");
                     Status = ConnectionStatus.Offline;
                 }
-                catch (Exception ex)
+                else
                 {
-                    logger.LogDebug($"Node '{Name}' ({Address}:{Port}) An Error Occured When Polling For Data!",
-                        ex);
-                    Status = ConnectionStatus.Offline;
+                    //we have a new block, so fire off an event
+                    if (statusData.consensusHeight > BlockTIP)
+                    {
+                        OnNewBlock(statusData.consensusHeight);
+                    }
+
+                    //update current height
+                    BlockTIP = statusData.consensusHeight;
+
+                    DataDirectory = statusData.dataDirectoryPath;
+
+                    NodeVersion = statusData.version;
+                    ProtocolVersion = $"{statusData.protocolVersion}";
+                    IsTestNet = statusData.testnet;
+
+                    Status = ConnectionStatus.Online;
                 }
+
+                //############  Update Peers #################
+                List<GetPeerInfoResponse> peersResponse = await restClient.GetPeerInfo();
+                if (peersResponse == null)
+                {
+                    logger.LogDebug($"Node '{Name}' ({Address}:{Port}) An Error Occured Getting The Node Peer List!");
+                }
+                else
+                {
+                    Peers = peersResponse.ToPeersList();
+                }
+
+                //############  TX History Processing #################
+                UpdateWalletTXs();
+
+                //############  Staking Info #################
+                UpdateStakingInformation();
+
+                await Task.Delay(10000);
+            }
+            catch (HttpRequestException ex) //API is not accessible or responding
+            {
+                OnDisconnected(Address, Port);
+                logger.LogDebug(
+                    $"Node '{Name}' ({Address}:{Port}) Something Happened & The Node API Is Not Accessible", ex);
+                Status = ConnectionStatus.Offline;
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug($"Node '{Name}' ({Address}:{Port}) An Error Occured When Polling For Data!",
+                    ex);
+                Status = ConnectionStatus.Offline;
+            }
         }
 
 
@@ -231,6 +231,11 @@ namespace x42.Feature.X42Client
         public async Task<GetAddressesBalancesResponse> GetAddressBalances(string address)
         {
             return await restClient.GetAddressBalances(address);
+        }
+
+        public async Task<GetColdStakingAddressResponse> GetColdStakingAddress(string walletName, bool isColdWalletAddress, bool segwit)
+        {
+            return await restClient.GetColdStakingAddress(walletName, isColdWalletAddress, segwit);
         }
 
         #region IDisposable Code

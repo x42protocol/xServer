@@ -213,6 +213,12 @@ namespace x42.Feature.Network
             return Money.Zero;
         }
 
+        public async Task<string> GetServerAddress(string walletName)
+        {
+            var getColdStakingAddressResponse = await x42Client.GetColdStakingAddress(walletName, false, false);
+            return getColdStakingAddressResponse.Address;
+        }
+
         /// <summary>
         ///     Add a server to the repo
         /// </summary>

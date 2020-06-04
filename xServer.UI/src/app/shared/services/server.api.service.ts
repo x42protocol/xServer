@@ -10,6 +10,7 @@ import { ModalService } from './modal.service';
 import { ServerStatus } from '../models/server-status';
 import { ServerSetupStatusResponse } from '../models/server-setupstatusresponse';
 import { ServerSetupRequest } from '../models/server-setuprequest';
+import { ColdStakingCreateAddressResponse } from '../models/coldstakingcreateaddressresponse';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +52,13 @@ export class ServerApiService {
   }
 
   setSetupAddress(data: ServerSetupRequest): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/setup', JSON.stringify(data)).pipe(
+    return this.http.post(this.x42ApiUrl + '/set-server-address', JSON.stringify(data)).pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
+  getSetupAddress(): Observable<ColdStakingCreateAddressResponse> {
+    return this.http.get<ColdStakingCreateAddressResponse>(this.x42ApiUrl + '/setup').pipe(
       catchError(err => this.handleHttpError(err))
     );
   }

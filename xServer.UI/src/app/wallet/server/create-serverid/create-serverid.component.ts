@@ -31,11 +31,9 @@ export class CreateServerIDComponent implements OnInit {
       { label: 'Copy', value: 'Copy', icon: 'pi pi-copy' }
     ];
 
-    this.stakingService.getAddress(this.globalService.getWalletName(), false, false).subscribe(
+    this.serverApiService.getSetupAddress().subscribe(
       response => {
-        let addressToSetup = new ServerSetupRequest(response.address);
         this.server.setServerId(response.address);
-        this.serverApiService.setSetupAddress(addressToSetup).subscribe();
       }
     );
   }

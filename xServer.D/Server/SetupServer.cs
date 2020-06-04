@@ -72,7 +72,20 @@ namespace x42.Server
                     }
                 }
             }
+            return result;
+        }
 
+        public string GetServerAddress()
+        {
+            string result = string.Empty;
+            using (X42DbContext dbContext = new X42DbContext(ConnectionString))
+            {
+                IQueryable<ServerData> server = dbContext.Servers;
+                if (server.Count() > 0)
+                {
+                    result = server.First().PublicAddress;
+                }
+            }
             return result;
         }
     }
