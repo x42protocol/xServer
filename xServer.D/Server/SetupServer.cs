@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using x42.Controllers.Requests;
 using x42.Feature.Database.Context;
 using x42.Feature.Database.Tables;
@@ -38,6 +36,7 @@ namespace x42.Server
                     ServerData serverData = new ServerData()
                     {
                         PublicAddress = setupRequest.Address,
+                        KeyAddress = setupRequest.KeyAddress,
                         DateAdded = DateTime.UtcNow
                     };
 
@@ -63,9 +62,9 @@ namespace x42.Server
                 {
                     result.ServerStatus = Status.Started;
 
-                    string publicAddress = server.First().PublicAddress;
+                    string keyAddress = server.First().KeyAddress;
 
-                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.PublicAddress == publicAddress);
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.PublicAddress == keyAddress);
                     if (serverNode.Count() > 0)
                     {
                         result.ServerStatus = Status.Complete;

@@ -251,6 +251,7 @@
     <TypeScriptCompile Include="src\app\shared\components\main-menu\main-menu.component.spec.ts" />
     <TypeScriptCompile Include="src\app\shared\components\main-menu\main-menu.component.ts" />
     <TypeScriptCompile Include="src\app\shared\components\main-menu\main-menu.module.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\application.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaccountrequest.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaccountresponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\server-setuprequest.ts" />

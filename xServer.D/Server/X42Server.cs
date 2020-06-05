@@ -351,16 +351,14 @@ namespace x42.Server
         {
             string result = string.Empty;
             SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
-            if (setupRequest == null)
+            if (string.IsNullOrEmpty(setupRequest.Address))
             {
                 string serverPublicAddress = setupServer.GetServerAddress();
                 if (string.IsNullOrEmpty(serverPublicAddress))
                 {
-                    setupRequest = new SetupRequest()
-                    {
-                        Address = await network.GetServerAddress("x42ServerMain")
-                    };
+                    setupRequest.Address = await network.GetServerAddress("x42ServerMain");
                     AddServerAddress(setupServer, setupRequest);
+                    result = setupRequest.Address;
                 }
                 else
                 {

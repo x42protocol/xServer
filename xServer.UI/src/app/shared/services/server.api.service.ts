@@ -51,8 +51,8 @@ export class ServerApiService {
     )
   }
 
-  setSetupAddress(data: ServerSetupRequest): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/set-server-address', JSON.stringify(data)).pipe(
+  setSetupAddress(data: ServerSetupRequest): Observable<ColdStakingCreateAddressResponse> {
+    return this.http.post<ColdStakingCreateAddressResponse>(this.x42ApiUrl + '/set-server-address', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -63,23 +63,14 @@ export class ServerApiService {
     );
   }
 
-  private handleHttpError(error: HttpErrorResponse, silent?: boolean, superSilent?: boolean) {
+  private handleHttpError(error: HttpErrorResponse, silent?: boolean) {
     console.log(error);
-    if (error.status === 0) {
-      if (!silent) {
-        this.modalService.openModal(null, null);
-        this.router.navigate(['app']);
-      }
-    } else if (error.status >= 400) {
-      if (!error.error.errors[0].message) {
-        console.log(error);
-      }
-      else {
-        if (!superSilent) {
-          this.modalService.openModal(null, error.error.errors[0].message);
-        }
+    if (error.status >= 400) {
+      if (error.error.errors[0] && !silent) {
+        this.modalService.openModal(null, error.error.errors[0]);
       }
     }
+    console.log(error);
     return throwError(error);
   }
 }

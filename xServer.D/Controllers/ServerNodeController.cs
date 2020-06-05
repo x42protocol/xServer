@@ -130,8 +130,11 @@ namespace x42.Controllers
         public async Task<IActionResult> SetServerAddress([FromBody] SetupRequest setupRequest)
         {
             string result = await xServer.SetupServer(setupRequest);
-
-            return Ok(result);
+            var setupResult = new SetupResponse()
+            {
+                Address = result
+            };
+            return Json(setupResult);
         }
 
         /// <summary>

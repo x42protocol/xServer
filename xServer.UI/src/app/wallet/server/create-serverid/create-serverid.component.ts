@@ -22,6 +22,8 @@ export class CreateServerIDComponent implements OnInit {
 
   public isDarkTheme = false;
   public copyType: SelectItem[];
+  public keyAddress: string;
+  public keyAddressAdded: boolean;
 
   server: ServerIDResponse = new ServerIDResponse();
   serverIdCopied = false;
@@ -30,12 +32,20 @@ export class CreateServerIDComponent implements OnInit {
     this.copyType = [
       { label: 'Copy', value: 'Copy', icon: 'pi pi-copy' }
     ];
+  }
 
-    this.serverApiService.getSetupAddress().subscribe(
+  setKeyAddress() {
+    let setup = new ServerSetupRequest("", this.keyAddress);
+    this.serverApiService.setSetupAddress(setup).subscribe(
       response => {
         this.server.setServerId(response.address);
       }
     );
+  }
+
+  onKeyAddressAdded() {
+    this.keyAddressAdded = true;
+    this.setKeyAddress();
   }
 
   closeClicked() {

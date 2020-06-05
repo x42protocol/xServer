@@ -18,6 +18,7 @@ import { CreateServerIDComponent } from '../server/create-serverid/create-server
 import { Subscription } from 'rxjs';
 
 import { Router } from '@angular/router';
+import { Application } from '../../shared/models/application';
 
 @Component({
   selector: 'dashboard-component',
@@ -53,6 +54,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public isDarkTheme = false;
   public hasBalance: boolean = false;
   public hotStakingAccount: string = "coldStakingHotAddresses";
+  public installedApps: Application[];
 
   private walletBalanceSubscription: Subscription;
   private walletHistorySubscription: Subscription;
@@ -65,6 +67,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.walletName = this.globalService.getWalletName();
     this.coinUnit = this.globalService.getCoinUnit();
     this.startSubscriptions();
+
+    this.installedApps = [
+      { name: 'TestApp', revenue: "231.32423 Tx42" },
+      { name: 'Testing', revenue: "0 Tx42" },
+    ];
   };
 
   ngOnDestroy() {
