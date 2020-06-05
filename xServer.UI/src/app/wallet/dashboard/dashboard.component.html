@@ -114,7 +114,7 @@
                     <p class="text-muted" style="font-weight: bold; font-size: 14px;">You are not hosting any apps.</p>
                   </div>
                   <div class="text-center">
-                    <button type="button" pButton (click)="addNewAddressClicked()" label="Add New Application" class="mb-2 pr-0" icon="pi pi-plus"></button>
+                    <button type="button" pButton (click)="addApplicationClicked()" label="Add New Application" class="mb-2 pr-0" icon="pi pi-plus"></button>
                   </div>
                 </ng-template>
               </div>
@@ -127,7 +127,7 @@
                       <input type="text" pInputText size="50" placeholder="Search" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:200px">
                     </div>
                     <div class="text-right" style="flex: 1;">
-                      <button type="button" pButton (click)="addNewAddressClicked()" label="Add New Application" class="mb-2 pr-0" icon="pi pi-plus"></button>
+                      <button type="button" pButton (click)="addApplicationClicked()" label="Add New Application" class="mb-2 pr-0" icon="pi pi-plus"></button>
                     </div>
                   </div>
                 </ng-template>

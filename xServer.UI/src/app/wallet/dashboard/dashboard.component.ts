@@ -113,6 +113,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  public addApplicationClicked() {
+
+  }
+
+  public manageApp(application: Application) {
+
+  }
+
   private getWalletBalance() {
     let walletInfo = new WalletInfo(this.globalService.getWalletName());
     walletInfo.accountName = this.hotStakingAccount;
