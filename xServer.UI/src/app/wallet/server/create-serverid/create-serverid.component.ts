@@ -18,12 +18,14 @@ import { ServerSetupRequest } from '../../../shared/models/server-setuprequest';
 export class CreateServerIDComponent implements OnInit {
   constructor(private globalService: GlobalService, private serverApiService: ServerApiService, private stakingService: ColdStakingService, public ref: DynamicDialogRef, public config: DynamicDialogConfig, private themeService: ThemeService) {
     this.isDarkTheme = themeService.getCurrentTheme().themeType == 'dark';
+    this.elementType = 'url';
   }
 
   public isDarkTheme = false;
   public copyType: SelectItem[];
   public keyAddress: string;
   public keyAddressAdded: boolean;
+  public elementType: string;
 
   server: ServerIDResponse = new ServerIDResponse();
   serverIdCopied = false;

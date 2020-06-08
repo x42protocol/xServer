@@ -1,5 +1,4 @@
 import { Component, OnInit, Injectable } from '@angular/core';
-import { Http, Response, Headers } from '@angular/http';
 import { Router } from '@angular/router';
 
 import { Theme } from '../theme';
