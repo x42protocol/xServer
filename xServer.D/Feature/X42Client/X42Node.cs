@@ -238,6 +238,11 @@ namespace x42.Feature.X42Client
             return await restClient.GetColdStakingAddress(walletName, isColdWalletAddress, segwit);
         }
 
+        public async Task<GetXServerStatsResult> GetXServerStats()
+        {
+            return await restClient.GetXServerStats();
+        }
+
         #region IDisposable Code
 
         private bool _Disposed;

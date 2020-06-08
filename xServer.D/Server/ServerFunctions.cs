@@ -20,7 +20,12 @@ namespace x42.Server
 
             using (X42DbContext dbContext = new X42DbContext(ConnectionString))
             {
-                IQueryable<ServerNodeData> servers = dbContext.ServerNodes.OrderByDescending(u => u.Priority).Take(top);
+                IQueryable<ServerNodeData> servers = dbContext.ServerNodes.OrderByDescending(u => u.Priority);
+                if (top > 0)
+                {
+                    servers = servers.Take(top);
+                }
+
                 if (servers.Count() > 0)
                 {
                     servers.ToList().ForEach(

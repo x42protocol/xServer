@@ -219,6 +219,12 @@ namespace x42.Feature.Network
             return getColdStakingAddressResponse.Address;
         }
 
+        public async Task<GetXServerStatsResult> GetXServerStats()
+        {
+            var getXServerStatsResponse = await x42Client.GetXServerStats();
+            return getXServerStatsResponse;
+        }
+
         /// <summary>
         ///     Add a server to the repo
         /// </summary>

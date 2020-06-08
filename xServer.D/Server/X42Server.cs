@@ -216,9 +216,8 @@ namespace x42.Server
                 }
                 else
                 {
-                    registerResult.ResultMessage = "Already added ";
+                    registerResult.ResultMessage = "Already added";
                 }
-
             }
 
             return registerResult;

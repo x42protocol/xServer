@@ -21,5 +21,6 @@ namespace x42.Feature.Database.Tables
         public DateTime LastSeen { get; set; }
         public long Priority { get; set; }
         public bool Active { get; set; }
+        public bool Relayed { get; set; }
     }
 }
