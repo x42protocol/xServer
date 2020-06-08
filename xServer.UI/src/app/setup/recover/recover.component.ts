@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 import { GlobalService } from '../../shared/services/global.service';
 import { FullNodeApiService } from '../../shared/services/fullnode.api.service';
@@ -28,11 +27,9 @@ export class RecoverComponent implements OnInit {
   public isDarkTheme = false;
   public minDate = new Date("2009-08-09");
   public maxDate = new Date();
-  public bsConfig: Partial<BsDatepickerConfig>;
   private walletRecovery: WalletRecovery;
 
   ngOnInit() {
-    this.bsConfig = Object.assign({}, {showWeekNumbers: false, containerClass: 'theme-blue'});
   }
 
   private buildRecoverForm(): void {
