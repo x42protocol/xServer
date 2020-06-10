@@ -188,7 +188,7 @@ namespace x42.Feature.Network
                                 Name = connectedXServer.Name,
                                 NetworkAddress = connectedXServer.Address,
                                 NetworkPort = connectedXServer.Port,
-                                NetworkProtocol = 0 // TODO: Need to implement protocol.
+                                NetworkProtocol = connectedXServer.NetworkProtocol
                             });
                         }
                     }
@@ -279,7 +279,7 @@ namespace x42.Feature.Network
                             Name = connectedXServer.Name,
                             NetworkAddress = connectedXServer.Address,
                             NetworkPort = connectedXServer.Port,
-                            NetworkProtocol = 0 // TODO: Need to implement protocol.
+                            NetworkProtocol = connectedXServer.NetworkProtocol
                         });
                     }
                 }

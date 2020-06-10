@@ -31,14 +31,15 @@ namespace x42.Server
                 if (servers.Count() > 0)
                 {
                     servers.ToList().ForEach(
-                        x => result.XServers.Add(
+                        server => result.XServers.Add(
                             new XServerConnectionInfo()
                             {
-                                Name = x.Name,
-                                Address = x.NetworkAddress,
-                                Port = x.NetworkPort,
-                                Priotiry = x.Priority,
-                                Tier = x.Tier
+                                Name = server.Name,
+                                NetworkProtocol = server.NetworkProtocol,
+                                Address = server.NetworkAddress,
+                                Port = server.NetworkPort,
+                                Priotiry = server.Priority,
+                                Tier = server.Tier
                             }
                     ));
                 }
@@ -69,16 +70,16 @@ namespace x42.Server
                 if (servers.Count() > 0)
                 {
                     servers.ToList().ForEach(
-                        x => result.Add(
+                        server => result.Add(
                             new RegisterRequest()
                             {
-                                Name = x.Name,
-                                NetworkAddress = x.NetworkAddress,
-                                NetworkPort = x.NetworkPort,
-                                Signature = x.Signature,
-                                Address = x.PublicAddress,
-                                Tier = x.Tier,
-                                NetworkProtocol = x.NetworkProtocol
+                                Name = server.Name,
+                                NetworkProtocol = server.NetworkProtocol,
+                                NetworkAddress = server.NetworkAddress,
+                                NetworkPort = server.NetworkPort,
+                                Signature = server.Signature,
+                                Address = server.PublicAddress,
+                                Tier = server.Tier
                             }
                     ));
                 }
