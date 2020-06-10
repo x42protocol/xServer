@@ -21,6 +21,9 @@ using System;
 using RestSharp;
 using System.Net;
 using x42.Controllers.Results;
+using x42.Server.Results;
+using System.Collections.Generic;
+using x42.Feature.X42Client.Enums;
 
 namespace x42.Feature.Network
 {
@@ -41,29 +44,39 @@ namespace x42.Feature.Network
 
         private readonly ServerNodeBase network;
         private readonly DatabaseSettings databaseSettings;
-
+        private readonly ServerSettings nodeSettings;
         private NetworkMonitor networkMonitor;
         private X42ClientSettings x42ClientSettings;
+        private readonly X42ClientFeature x42FullNode;
+        private readonly DatabaseFeatures database;
         private X42Node x42Client;
 
         public NetworkFeatures(
             ServerNodeBase network,
+            ServerSettings nodeSettings,
             ILoggerFactory loggerFactory,
             DatabaseSettings databaseSettings,
             X42ClientSettings x42ClientSettings,
             IxServerLifetime serverLifetime,
-            IAsyncLoopFactory asyncLoopFactory
+            IAsyncLoopFactory asyncLoopFactory,
+            X42ClientFeature x42FullNode,
+            DatabaseFeatures database
             )
         {
             this.network = network;
+            this.nodeSettings = nodeSettings;
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.databaseSettings = databaseSettings;
             this.serverLifetime = serverLifetime;
             this.asyncLoopFactory = asyncLoopFactory;
             this.x42ClientSettings = x42ClientSettings;
+            this.x42FullNode = x42FullNode;
+            this.database = database;
 
             x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
         }
+
+        public ulong BestBlockHeight { get => x42FullNode.BlockTIP; }
 
         /// <summary>
         ///     Prints command-line help.
@@ -223,6 +236,85 @@ namespace x42.Feature.Network
         {
             var getXServerStatsResponse = await x42Client.GetXServerStats();
             return getXServerStatsResponse;
+        }
+
+        public bool IsServerReady()
+        {
+            return x42FullNode.Status == ConnectionStatus.Online && database.DatabaseConnected;
+        }
+
+        public async Task<RegisterResult> Register(ServerNodeData serverNode)
+        {
+            RegisterResult registerResult = new RegisterResult
+            {
+                Success = false
+            };
+
+            if (IsServerReady() && !ServerExists(serverNode))
+            {
+                var collateral = await GetServerCollateral(serverNode);
+                IEnumerable<Tier> availableTiers = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount <= collateral);
+                Tier serverTier = availableTiers.Where(t => t.Level == (Tier.TierLevel)serverNode.Tier).FirstOrDefault();
+
+                if (serverTier != null)
+                {
+                    bool serverKeysAreValid = await IsServerKeyValid(serverNode);
+                    if (serverKeysAreValid)
+                    {
+                        string xServerURL = GetServerUrl(serverNode.NetworkProtocol, serverNode.NetworkAddress, serverNode.NetworkPort);
+                        bool nodeAvailable = ValidateNodeOnline(serverNode.NetworkAddress);
+                        if (nodeAvailable)
+                        {
+                            bool serverAvailable = await ValidateServerIsOnlineAndSynced(xServerURL, BestBlockHeight);
+                            if (serverAvailable)
+                            {
+                                bool serverAdded = AddServer(serverNode);
+                                if (!serverAdded)
+                                {
+                                    registerResult.ResultMessage = "Server could not be added.";
+                                }
+                                else
+                                {
+                                    registerResult.Success = true;
+                                }
+                            }
+                            else
+                            {
+                                registerResult.ResultMessage = "Network availability failed for xServer";
+                            }
+                        }
+                        else
+                        {
+                            registerResult.ResultMessage = "Network availability failed for x42 node";
+                        }
+                    }
+                    else
+                    {
+                        registerResult.ResultMessage = "Could not verify server keys";
+                    }
+                }
+                else if (serverTier == null || availableTiers.Count() != 1)
+                {
+                    registerResult.ResultMessage = "Requested Tier is not available or collateral amount is invalid.";
+                }
+            }
+            else
+            {
+                if (x42FullNode.Status != ConnectionStatus.Online)
+                {
+                    registerResult.ResultMessage = "Node is offline";
+                }
+                else if (!database.DatabaseConnected)
+                {
+                    registerResult.ResultMessage = "Databse is offline";
+                }
+                else
+                {
+                    registerResult.ResultMessage = "Already added";
+                }
+            }
+
+            return registerResult;
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using x42.Controllers.Requests;
 using x42.Feature.Database.Tables;
 using x42.Server.Results;
 using x42.Utilities;
+using System.Collections.Generic;
 
 namespace x42.Server
 {
@@ -69,6 +70,18 @@ namespace x42.Server
         /// </summary>
         /// <returns>Will return the information about the top xServers.</returns>
         TopResult GetTopXServers(int top);
+
+        /// <summary>
+        ///     Get's the count of active servers.
+        /// </summary>
+        /// <returns>Will return the count of active servers.</returns>
+        int GetActiveServerCount();
+
+        /// <summary>
+        ///     Return all active xServers available
+        /// </summary>
+        /// <returns>Will return all of active servers.</returns>
+        List<RegisterRequest> GetAllActiveXServers();
     }
 
     /// <summary>Represents <see cref="IServer" /> state.</summary>

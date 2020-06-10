@@ -76,5 +76,32 @@ namespace x42.Controllers.Public
 
             return Json(registerResult);
         }
+
+        /// <summary>
+        ///     Returns the active xServer count.
+        /// </summary>
+        /// <returns>A JSON object containing a count of active xServers.</returns>
+        [HttpGet]
+        [Route("getactivecount")]
+        public IActionResult GetActiveCount()
+        {
+            CountResult topResult = new CountResult()
+            {
+                Count = xServer.GetActiveServerCount()
+            };
+            return Json(topResult);
+        }
+
+        /// <summary>
+        ///     Returns the active xServers.
+        /// </summary>
+        /// <returns>A JSON object containing a list of active xServers.</returns>
+        [HttpGet]
+        [Route("getallactivexservers")]
+        public IActionResult GetAllActiveXServers()
+        {
+            var allServers = xServer.GetAllActiveXServers();
+            return Json(allServers);
+        }
     }
 }

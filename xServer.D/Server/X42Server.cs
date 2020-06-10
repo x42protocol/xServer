@@ -142,85 +142,11 @@ namespace x42.Server
             }
         }
 
-        private bool IsServerReady()
-        {
-            return x42FullNode.Status == ConnectionStatus.Online && database.DatabaseConnected;
-        }
-
         public ulong BestBlockHeight { get => x42FullNode.BlockTIP; }
 
         public async Task<RegisterResult> Register(ServerNodeData serverNode)
         {
-            RegisterResult registerResult = new RegisterResult
-            {
-                Success = false
-            };
-
-            if (IsServerReady() && !network.ServerExists(serverNode))
-            {
-                var collateral = await network.GetServerCollateral(serverNode);
-                IEnumerable<Tier> availableTiers = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount <= collateral);
-                Tier serverTier = availableTiers.Where(t => t.Level == (Tier.TierLevel)serverNode.Tier).FirstOrDefault();
-
-                if (serverTier != null)
-                {
-                    bool serverKeysAreValid = await network.IsServerKeyValid(serverNode);
-                    if (serverKeysAreValid)
-                    {
-                        string xServerURL = network.GetServerUrl(serverNode.NetworkProtocol, serverNode.NetworkAddress, serverNode.NetworkPort);
-                        bool nodeAvailable = network.ValidateNodeOnline(serverNode.NetworkAddress);
-                        if (nodeAvailable)
-                        {
-                            bool serverAvailable = await network.ValidateServerIsOnlineAndSynced(xServerURL, BestBlockHeight);
-                            if (serverAvailable)
-                            {
-                                bool serverAdded = network.AddServer(serverNode);
-                                if (!serverAdded)
-                                {
-                                    registerResult.ResultMessage = "Server could not be added.";
-                                }
-                                else
-                                {
-                                    registerResult.Success = true;
-                                }
-                            }
-                            else
-                            {
-                                registerResult.ResultMessage = "Network availability failed for xServer";
-                            }
-                        }
-                        else
-                        {
-                            registerResult.ResultMessage = "Network availability failed for x42 node";
-                        }
-                    }
-                    else
-                    {
-                        registerResult.ResultMessage = "Could not verify server keys";
-                    }
-                }
-                else if (serverTier == null || availableTiers.Count() != 1)
-                {
-                    registerResult.ResultMessage = "Requested Tier is not available or collateral amount is invalid.";
-                }
-            }
-            else
-            {
-                if (x42FullNode.Status != ConnectionStatus.Online)
-                {
-                    registerResult.ResultMessage = "Node is offline";
-                }
-                else if (!database.DatabaseConnected)
-                {
-                    registerResult.ResultMessage = "Databse is offline";
-                }
-                else
-                {
-                    registerResult.ResultMessage = "Already added";
-                }
-            }
-
-            return registerResult;
+            return await network.Register(serverNode);
         }
 
         /// <inheritdoc />
@@ -401,6 +327,20 @@ namespace x42.Server
 
             ServerFunctions serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
             return serverFunctions.GetTopXServers(top);
+        }
+
+        /// <inheritdoc />
+        public int GetActiveServerCount()
+        {
+            ServerFunctions serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
+            return serverFunctions.GetActiveServerCount();
+        }
+
+        /// <inheritdoc />
+        public List<RegisterRequest> GetAllActiveXServers()
+        {
+            ServerFunctions serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
+            return serverFunctions.GetAllActiveXServers();
         }
     }
 }

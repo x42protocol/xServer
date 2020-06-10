@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using x42.Controllers.Requests;
 using RestSharp;
 using Newtonsoft.Json;
+using System.Net;
+using x42.Controllers.Results;
 
 namespace x42.Feature.Network
 {
@@ -38,6 +40,9 @@ namespace x42.Feature.Network
 
         /// <summary>Time in seconds between attempts run the relay monitor</summary>
         private readonly int relaySleepSeconds = 10;
+
+        /// <summary>Time in seconds between attempts to run the reconciliation process</summary>
+        private readonly int serverRecoSleepSeconds = 86400;
 
         private readonly DatabaseSettings databaseSettings;
 
@@ -83,7 +88,7 @@ namespace x42.Feature.Network
             {
                 try
                 {
-                    await RelayService().ConfigureAwait(false);
+                    await RelayService(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -94,6 +99,23 @@ namespace x42.Feature.Network
             },
             this.networkCancellationTokenSource.Token,
             repeatEvery: TimeSpan.FromSeconds(this.relaySleepSeconds),
+            startAfter: TimeSpans.Second);
+
+            this.networkMonitorLoop = asyncLoopFactory.Run("NetworkManager.Reconciliation", async token =>
+            {
+                try
+                {
+                    await RecoServiceAsync(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Exception: {0}", ex);
+                    this.logger.LogTrace("(-)[UNHANDLED_EXCEPTION_RECO]");
+                    throw;
+                }
+            },
+            this.networkCancellationTokenSource.Token,
+            repeatEvery: TimeSpan.FromSeconds(this.serverRecoSleepSeconds),
             startAfter: TimeSpans.Second);
         }
 
@@ -131,22 +153,22 @@ namespace x42.Feature.Network
             }
         }
 
-        public async Task RelayService()
+        public async Task RelayService(CancellationToken cancellationToken)
         {
             try
             {
-                await CheckRelayAsync().ConfigureAwait(false);
+                await CheckRelayAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                logger.LogDebug($"Error in UpdateNetworkHealth", ex);
+                logger.LogDebug($"Error in Relay Service", ex);
             }
         }
 
         /// <summary>
         ///     Check for new xServers to relay to active xServers.
         /// </summary>
-        private async Task CheckRelayAsync()
+        private async Task CheckRelayAsync(CancellationToken cancellationToken)
         {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
@@ -171,7 +193,7 @@ namespace x42.Feature.Network
                     }
                     foreach (ServerNodeData newServer in newServerNodes)
                     {
-                        RelayXServer(newServer, serverNodes);
+                        await RelayXServerAsync(newServer, serverNodes, cancellationToken);
                         newServer.Relayed = true;
                     }
                     dbContext.SaveChanges();
@@ -179,7 +201,7 @@ namespace x42.Feature.Network
             }
         }
 
-        public void RelayXServer(ServerNodeData newServer, List<ServerNodeData> activeXServers)
+        public async Task RelayXServerAsync(ServerNodeData newServer, List<ServerNodeData> activeXServers, CancellationToken cancellationToken)
         {
             RegisterRequest registerRequest = new RegisterRequest()
             {
@@ -201,7 +223,7 @@ namespace x42.Feature.Network
                 registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
                 registerRestRequest.RequestFormat = DataFormat.Json;
 
-                client.Execute(registerRestRequest);
+                await client.ExecuteAsync(registerRestRequest, cancellationToken);
             }
         }
 
@@ -227,7 +249,87 @@ namespace x42.Feature.Network
             return serverNode;
         }
 
+        public async Task RecoServiceAsync(CancellationToken cancellationToken)
+        {
+            await ReconciliationAsync(cancellationToken).ConfigureAwait(false);
+        }
 
+
+        /// <summary>
+        ///     Reconcile with other active xServers to check for discrepancies.
+        /// </summary>
+        private async Task ReconciliationAsync(CancellationToken cancellationToken)
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                List<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.Active).ToList();
+                int localActiveCount = serverNodes.Count();
+                var xServerStats = await networkFeatures.GetXServerStats();
+                foreach (var connectedXServer in xServerStats.Nodes)
+                {
+                    var xServer = serverNodes.Where(x => x.NetworkAddress == connectedXServer.Address);
+                    if (xServer.Count() == 0)
+                    {
+                        serverNodes.Add(new ServerNodeData()
+                        {
+                            Name = connectedXServer.Name,
+                            NetworkAddress = connectedXServer.Address,
+                            NetworkPort = connectedXServer.Port,
+                            NetworkProtocol = 0 // TODO: Need to implement protocol.
+                        });
+                    }
+                }
+
+                if (serverNodes.Count() > 0)
+                {
+                    List<ServerNodeData> newserverNodes = new List<ServerNodeData>();
+                    foreach (ServerNodeData server in serverNodes)
+                    {
+                        try
+                        {
+                            string xServerURL = networkFeatures.GetServerUrl(server.NetworkProtocol, server.NetworkAddress, server.NetworkPort);
+                            var client = new RestClient(xServerURL);
+                            var activeServerCountRequest = new RestRequest("/getactivecount/", Method.GET);
+                            var topXServerResult = await client.ExecuteAsync<CountResult>(activeServerCountRequest, cancellationToken).ConfigureAwait(false);
+                            if (topXServerResult.StatusCode == HttpStatusCode.OK)
+                            {
+                                var remoteCountResult = topXServerResult.Data;
+                                if (remoteCountResult.Count > localActiveCount) // TODO: Need a better way to do this, both servers can have the same count with diffrent set of active servers, perhaps a hash of all of the active server signatures.
+                                {
+                                    var allActiveXServersRequest = new RestRequest("/getallactivexservers/", Method.GET);
+                                    var allActiveXServersResult = await client.ExecuteAsync<List<RegisterRequest>>(allActiveXServersRequest, cancellationToken).ConfigureAwait(false);
+                                    if (allActiveXServersResult.StatusCode == HttpStatusCode.OK)
+                                    {
+                                        var activeXServersList = allActiveXServersResult.Data;
+                                        foreach (var serverResult in activeXServersList)
+                                        {
+                                            var registeredServer = serverNodes.Where(s => s.Signature == serverResult.Signature).FirstOrDefault();
+                                            if (registeredServer == null)
+                                            {
+                                                await networkFeatures.Register(new ServerNodeData()
+                                                {
+                                                    Name = serverResult.Name,
+                                                    PublicAddress = serverResult.Address,
+                                                    NetworkAddress = serverResult.NetworkAddress,
+                                                    NetworkPort = serverResult.NetworkPort,
+                                                    NetworkProtocol = serverResult.NetworkProtocol,
+                                                    Signature = serverResult.Signature,
+                                                    Tier = serverResult.Tier
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogDebug($"Error in Reconciliation Service", ex);
+                        }
+                    }
+                }
+            }
+        }
 
         public void Dispose()
         {
