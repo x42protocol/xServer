@@ -191,7 +191,7 @@ namespace x42.Feature.Network
             return result;
         }
 
-        public async Task<bool> ValidateServerIsOnlineAndSynced(string xServerURL, ulong chainHeight)
+        public async Task<bool> ValidateServerIsOnlineAndSynced(string xServerURL)
         {
             bool result = false;
             try
@@ -204,7 +204,7 @@ namespace x42.Feature.Network
                 if (xServerPingResult.StatusCode == HttpStatusCode.OK)
                 {
                     ulong minimumBlockHeight = xServerPingResult.Data.BestBlockHeight + network.BlockGracePeriod;
-                    if (minimumBlockHeight >= chainHeight)
+                    if (minimumBlockHeight >= BestBlockHeight)
                     {
                         result = true;
                     }
@@ -265,7 +265,7 @@ namespace x42.Feature.Network
                         bool nodeAvailable = ValidateNodeOnline(serverNode.NetworkAddress);
                         if (nodeAvailable)
                         {
-                            bool serverAvailable = await ValidateServerIsOnlineAndSynced(xServerURL, BestBlockHeight);
+                            bool serverAvailable = await ValidateServerIsOnlineAndSynced(xServerURL);
                             if (serverAvailable)
                             {
                                 bool serverAdded = AddServer(serverNode);

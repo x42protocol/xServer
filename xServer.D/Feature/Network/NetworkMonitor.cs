@@ -140,7 +140,7 @@ namespace x42.Feature.Network
         {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                IQueryable<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.Active);
+                IQueryable<ServerNodeData> serverNodes = dbContext.ServerNodes;
 
                 List<Task<ServerNodeData>> nodeTasks = new List<Task<ServerNodeData>>();
 
@@ -149,7 +149,8 @@ namespace x42.Feature.Network
                     nodeTasks.Add(ServerCheck(serverNode));
                 }
 
-                var results = await Task.WhenAll(nodeTasks);
+                await Task.WhenAll(nodeTasks);
+                dbContext.SaveChanges();
             }
         }
 
@@ -239,10 +240,13 @@ namespace x42.Feature.Network
                 }
                 else
                 {
-                    // TODO: Do the checks.
-
-                    serverNode.Active = true;
-                    serverNode.LastSeen = DateTime.UtcNow;
+                    string xServerURL = networkFeatures.GetServerUrl(serverNode.NetworkProtocol, serverNode.NetworkAddress, serverNode.NetworkPort);
+                    bool serverValid = await networkFeatures.ValidateServerIsOnlineAndSynced(xServerURL);
+                    if (serverValid)
+                    {
+                        serverNode.Active = true;
+                        serverNode.LastSeen = DateTime.UtcNow;
+                    }
                 }
             }
 
