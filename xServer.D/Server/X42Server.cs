@@ -288,6 +288,7 @@ namespace x42.Server
                 else
                 {
                     result = serverPublicAddress;
+                    setupServer.UpdateServerKey(setupRequest.KeyAddress);
                 }
             }
             else

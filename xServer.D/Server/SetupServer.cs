@@ -51,6 +51,20 @@ namespace x42.Server
             return result;
         }
 
+        public void UpdateServerKey(string KeyAddress)
+        {
+            using (X42DbContext dbContext = new X42DbContext(ConnectionString))
+            {
+                ServerData serverNode = dbContext.Servers.FirstOrDefault();
+                if (serverNode != null)
+                {
+                    serverNode.KeyAddress = KeyAddress;
+
+                    dbContext.SaveChanges();
+                }
+            }
+        }
+
         public SetupStatusResult GetServerSetupStatus()
         {
             SetupStatusResult result = new SetupStatusResult() { ServerStatus = Status.NotStarted };
