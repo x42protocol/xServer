@@ -285,9 +285,50 @@ namespace x42.Feature.Network
         /// </summary>
         private async Task ReconciliationAsync(CancellationToken cancellationToken)
         {
+            var xServerUrls = await LocateAndAddNewServers(cancellationToken);
+
+            if (xServerUrls.Count() > 0)
+            {
+                await AddSelfToNetwork(xServerUrls, cancellationToken);
+            }
+        }
+
+        private async Task AddSelfToNetwork(List<string> xServerUrls, CancellationToken cancellationToken)
+        {
+            var selfNode = networkFeatures.GetSelfServerNode();
+            if (selfNode.Active)
+            {
+                RegisterRequest registerRequest = new RegisterRequest()
+                {
+                    Name = selfNode.Name,
+                    Address = selfNode.PublicAddress,
+                    NetworkProtocol = selfNode.NetworkProtocol,
+                    NetworkAddress = selfNode.NetworkAddress,
+                    NetworkPort = selfNode.NetworkPort,
+                    Signature = selfNode.Signature,
+                    Tier = selfNode.Tier
+                };
+                foreach (string xServerURL in xServerUrls)
+                {
+                    var client = new RestClient(xServerURL);
+                    var registerRestRequest = new RestRequest("/register", Method.POST);
+                    var request = JsonConvert.SerializeObject(registerRequest);
+                    registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
+                    registerRestRequest.RequestFormat = DataFormat.Json;
+
+                    await client.ExecuteAsync(registerRestRequest, cancellationToken);
+                }
+            }
+        }
+
+        private async Task<List<string>> LocateAndAddNewServers(CancellationToken cancellationToken)
+        {
+            List<string> result = new List<string>();
+
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
                 List<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.Active).ToList();
+                string selfKeyAddress = networkFeatures.GetServerKeyAddress();
                 int localActiveCount = serverNodes.Count();
                 var xServerStats = await networkFeatures.GetXServerStats();
                 foreach (var connectedXServer in xServerStats.Nodes)
@@ -310,6 +351,7 @@ namespace x42.Feature.Network
                     List<ServerNodeData> newserverNodes = new List<ServerNodeData>();
                     foreach (ServerNodeData server in serverNodes)
                     {
+                        bool foundSelf = false;
                         try
                         {
                             string xServerURL = networkFeatures.GetServerUrl(server.NetworkProtocol, server.NetworkAddress, server.NetworkPort);
@@ -328,9 +370,14 @@ namespace x42.Feature.Network
                                         var activeXServersList = allActiveXServersResult.Data;
                                         foreach (var serverResult in activeXServersList)
                                         {
+                                            if (serverResult.Address == selfKeyAddress)
+                                            {
+                                                foundSelf = true;
+                                            }
                                             var registeredServer = serverNodes.Where(s => s.Signature == serverResult.Signature).FirstOrDefault();
                                             if (registeredServer == null)
                                             {
+                                                // Local Registration of new nodes we don't know about.
                                                 await networkFeatures.Register(new ServerNodeData()
                                                 {
                                                     Name = serverResult.Name,
@@ -343,6 +390,10 @@ namespace x42.Feature.Network
                                                 });
                                             }
                                         }
+                                        if (!foundSelf)
+                                        {
+                                            result.Add(xServerURL);
+                                        }
                                     }
                                 }
                             }
@@ -354,6 +405,7 @@ namespace x42.Feature.Network
                     }
                 }
             }
+            return result;
         }
 
         public void Dispose()

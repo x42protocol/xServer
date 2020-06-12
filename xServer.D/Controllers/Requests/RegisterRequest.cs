@@ -41,7 +41,7 @@ namespace x42.Controllers.Requests
         public string Signature { get; set; }
 
         /// <summary>
-        ///     The Public Address of the server requesting to be registered.
+        ///     The Public Key Address of the server requesting to be registered.
         /// </summary>
         [Required(ErrorMessage = "The Address is missing.")]
         [StringLength(128, ErrorMessage = "The Address cannot exceed 128 characters.")]

@@ -370,6 +370,53 @@ namespace x42.Feature.Network
 
             return result;
         }
+
+        /// <summary>
+        ///     The key address <see cref="string" /> if key address is available, if not empty string is returned.
+        /// </summary>
+        public string GetServerKeyAddress()
+        {
+            string activeKeyAddress = string.Empty;
+
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<ServerData> server = dbContext.Servers;
+                if (server.Count() > 0)
+                {
+                    string keyAddress = server.First().KeyAddress;
+
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.PublicAddress == keyAddress && s.Active);
+                    if (serverNode.Count() > 0)
+                    {
+                        activeKeyAddress = keyAddress;
+                    }
+                }
+            }
+            return activeKeyAddress;
+        }
+
+        /// <summary>
+        ///     Will get this xServer <see cref="ServerNodeData" /> if key address is available, if not empty <see cref="ServerNodeData" /> is returned.
+        /// </summary>
+        public ServerNodeData GetSelfServerNode()
+        {
+            ServerNodeData result = new ServerNodeData();
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<ServerData> server = dbContext.Servers;
+                if (server.Count() > 0)
+                {
+                    string keyAddress = server.First().KeyAddress;
+
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.PublicAddress == keyAddress && s.Active);
+                    if (serverNode.Count() > 0)
+                    {
+                        result = serverNode.First();
+                    }
+                }
+            }
+            return result;
+        }
     }
 
     /// <summary>
