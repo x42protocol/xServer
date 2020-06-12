@@ -113,7 +113,7 @@ namespace x42.Feature.Network
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
-            networkMonitor = new NetworkMonitor(logger, serverLifetime, asyncLoopFactory, databaseSettings, this);
+            networkMonitor = new NetworkMonitor(logger, serverLifetime, asyncLoopFactory, databaseSettings, this, network);
 
             networkMonitor.Start();
 
@@ -243,14 +243,14 @@ namespace x42.Feature.Network
             return x42FullNode.Status == ConnectionStatus.Online && database.DatabaseConnected;
         }
 
-        public async Task<RegisterResult> Register(ServerNodeData serverNode)
+        public async Task<RegisterResult> Register(ServerNodeData serverNode, bool serverCheckOnly = false)
         {
             RegisterResult registerResult = new RegisterResult
             {
                 Success = false
             };
 
-            if (IsServerReady() && !ServerExists(serverNode))
+            if ((IsServerReady() && !ServerExists(serverNode)) || serverCheckOnly)
             {
                 var collateral = await GetServerCollateral(serverNode);
                 IEnumerable<Tier> availableTiers = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount <= collateral);
@@ -268,14 +268,21 @@ namespace x42.Feature.Network
                             bool serverAvailable = await ValidateServerIsOnlineAndSynced(xServerURL);
                             if (serverAvailable)
                             {
-                                bool serverAdded = AddServer(serverNode);
-                                if (!serverAdded)
+                                if (serverCheckOnly)
                                 {
-                                    registerResult.ResultMessage = "Server could not be added.";
+                                    registerResult.Success = true;
                                 }
                                 else
                                 {
-                                    registerResult.Success = true;
+                                    bool serverAdded = AddServer(serverNode);
+                                    if (!serverAdded)
+                                    {
+                                        registerResult.ResultMessage = "Server could not be added.";
+                                    }
+                                    else
+                                    {
+                                        registerResult.Success = true;
+                                    }
                                 }
                             }
                             else

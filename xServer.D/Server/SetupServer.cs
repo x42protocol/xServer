@@ -78,7 +78,7 @@ namespace x42.Server
 
                     string keyAddress = server.First().KeyAddress;
 
-                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.PublicAddress == keyAddress);
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.PublicAddress == keyAddress && s.Active);
                     if (serverNode.Count() > 0)
                     {
                         result.ServerStatus = Status.Complete;

@@ -13,6 +13,7 @@ using RestSharp;
 using Newtonsoft.Json;
 using System.Net;
 using x42.Controllers.Results;
+using x42.ServerNode;
 
 namespace x42.Feature.Network
 {
@@ -35,8 +36,8 @@ namespace x42.Feature.Network
         /// <summary>Factory for creating background async loop tasks.</summary>
         private readonly IAsyncLoopFactory asyncLoopFactory;
 
-        /// <summary>Time in milliseconds between attempts run the network health monitor</summary>
-        private readonly int monitorSleep = 10000;
+        /// <summary>Time in seconds between attempts run the network health monitor</summary>
+        private readonly int monitorSleep = 10;
 
         /// <summary>Time in seconds between attempts run the relay monitor</summary>
         private readonly int relaySleepSeconds = 10;
@@ -48,12 +49,15 @@ namespace x42.Feature.Network
 
         private readonly NetworkFeatures networkFeatures;
 
+        private readonly ServerNodeBase network;
+
         public NetworkMonitor(
             ILogger mainLogger,
             IxServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory,
             DatabaseSettings databaseSettings,
-            NetworkFeatures networkFeatures
+            NetworkFeatures networkFeatures,
+            ServerNodeBase network
             )
         {
             logger = mainLogger;
@@ -61,6 +65,7 @@ namespace x42.Feature.Network
             this.asyncLoopFactory = asyncLoopFactory;
             this.databaseSettings = databaseSettings;
             this.networkFeatures = networkFeatures;
+            this.network = network;
         }
 
         public void Start()
@@ -81,7 +86,7 @@ namespace x42.Feature.Network
                 }
             },
             this.networkCancellationTokenSource.Token,
-            repeatEvery: TimeSpan.FromMilliseconds(this.monitorSleep),
+            repeatEvery: TimeSpan.FromSeconds(this.monitorSleep),
             startAfter: TimeSpans.Second);
 
             this.networkMonitorLoop = asyncLoopFactory.Run("NetworkManager.RelayWorker", async token =>
@@ -140,16 +145,41 @@ namespace x42.Feature.Network
         {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                IQueryable<ServerNodeData> serverNodes = dbContext.ServerNodes;
+                IQueryable<ServerNodeData> allServerNodes = dbContext.ServerNodes;
 
                 List<Task<ServerNodeData>> nodeTasks = new List<Task<ServerNodeData>>();
 
-                foreach (ServerNodeData serverNode in serverNodes)
+                foreach (ServerNodeData serverNode in allServerNodes)
                 {
                     nodeTasks.Add(ServerCheck(serverNode));
                 }
-
                 await Task.WhenAll(nodeTasks);
+                dbContext.SaveChanges();
+
+                // Remove any servers that have been available past the grace period.
+                var inactiveServers = allServerNodes.Where(n => n.Active == false);
+                foreach (ServerNodeData serverNode in inactiveServers)
+                {
+                    var lastSeen = serverNode.LastSeen.AddMinutes(network.DowntimeGracePeriod);
+                    if (DateTime.UtcNow > lastSeen)
+                    {
+                        dbContext.ServerNodes.Remove(serverNode);
+                    }
+                }
+            }
+
+            // Remove any servers that have been unavailable past the grace period.
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<ServerNodeData> inactiveServers = dbContext.ServerNodes.Where(n => !n.Active);
+                foreach (ServerNodeData serverNode in inactiveServers)
+                {
+                    var lastSeen = serverNode.LastSeen.AddMinutes(network.DowntimeGracePeriod);
+                    if (DateTime.UtcNow > lastSeen)
+                    {
+                        dbContext.ServerNodes.Remove(serverNode);
+                    }
+                }
                 dbContext.SaveChanges();
             }
         }
@@ -230,26 +260,16 @@ namespace x42.Feature.Network
 
         private async Task<ServerNodeData> ServerCheck(ServerNodeData serverNode)
         {
-            bool serverIsValid = await networkFeatures.IsServerKeyValid(serverNode);
-
-            if (serverIsValid)
+            var serverCheck = await networkFeatures.Register(serverNode, serverCheckOnly: true);
+            if (serverCheck.Success)
             {
-                if (serverNode.LastSeen > DateTime.UtcNow.AddHours(1))
-                {
-                    serverNode.Active = false;
-                }
-                else
-                {
-                    string xServerURL = networkFeatures.GetServerUrl(serverNode.NetworkProtocol, serverNode.NetworkAddress, serverNode.NetworkPort);
-                    bool serverValid = await networkFeatures.ValidateServerIsOnlineAndSynced(xServerURL);
-                    if (serverValid)
-                    {
-                        serverNode.Active = true;
-                        serverNode.LastSeen = DateTime.UtcNow;
-                    }
-                }
+                serverNode.Active = true;
+                serverNode.LastSeen = DateTime.UtcNow;
             }
-
+            else
+            {
+                serverNode.Active = false;
+            }
             return serverNode;
         }
 
@@ -261,6 +281,7 @@ namespace x42.Feature.Network
 
         /// <summary>
         ///     Reconcile with other active xServers to check for discrepancies.
+        ///     This function will only add newly discovered xServers.
         /// </summary>
         private async Task ReconciliationAsync(CancellationToken cancellationToken)
         {
