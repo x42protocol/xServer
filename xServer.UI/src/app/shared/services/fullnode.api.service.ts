@@ -21,6 +21,7 @@ import { WalletRescan } from '../models/wallet-rescan';
 import { SignMessageRequest } from '../models/wallet-signmessagerequest';
 import { VerifyRequest } from '../models/wallet-verifyrequest';
 import { SplitCoins } from '../models/split-coins';
+import { ValidateAddressResponse } from '../models/validateaddressresponse';
 
 @Injectable({
   providedIn: 'root'
@@ -378,6 +379,17 @@ export class FullNodeApiService {
   shutdownNode(): Observable<any> {
     return this.http.post(this.x42ApiUrl + '/node/shutdown', 'corsProtection:true').pipe(
       catchError(err => this.handleHttpError(err))
+    );
+  }
+
+  /**
+   * Get address information if valid.
+   */
+  validateAddress(address: string, silent?: boolean): Observable<ValidateAddressResponse> {
+    let params = new HttpParams()
+      .set('address', address);
+    return this.http.get<ValidateAddressResponse>(this.x42ApiUrl + '/node/validateaddress', { params }).pipe(
+      catchError(err => this.handleHttpError(err, silent))
     );
   }
 

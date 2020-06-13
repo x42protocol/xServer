@@ -9,6 +9,7 @@ import { ThemeService } from '../../../shared/services/theme.service';
 
 import { ServerIDResponse } from "../../../shared/models/serveridresponse";
 import { ServerSetupRequest } from '../../../shared/models/server-setuprequest';
+import { FullNodeApiService } from '../../../shared/services/fullnode.api.service';
 
 @Component({
   selector: 'app-create-serverid',
@@ -16,7 +17,7 @@ import { ServerSetupRequest } from '../../../shared/models/server-setuprequest';
   styleUrls: ['./create-serverid.component.css']
 })
 export class CreateServerIDComponent implements OnInit {
-  constructor(private globalService: GlobalService, private serverApiService: ServerApiService, private stakingService: ColdStakingService, public ref: DynamicDialogRef, public config: DynamicDialogConfig, private themeService: ThemeService) {
+  constructor(private globalService: GlobalService, private serverApiService: ServerApiService, private apiService: FullNodeApiService, private stakingService: ColdStakingService, public ref: DynamicDialogRef, public config: DynamicDialogConfig, private themeService: ThemeService) {
     this.isDarkTheme = themeService.getCurrentTheme().themeType == 'dark';
     this.elementType = 'url';
   }
@@ -26,6 +27,8 @@ export class CreateServerIDComponent implements OnInit {
   public keyAddress: string;
   public keyAddressAdded: boolean;
   public elementType: string;
+  public addressNotValid: boolean;
+  public keySaving: boolean;
 
   server: ServerIDResponse = new ServerIDResponse();
   serverIdCopied = false;
@@ -34,6 +37,8 @@ export class CreateServerIDComponent implements OnInit {
     this.copyType = [
       { label: 'Copy', value: 'Copy', icon: 'pi pi-copy' }
     ];
+    this.addressNotValid = false;
+    this.keySaving = false;
   }
 
   setKeyAddress() {
@@ -41,13 +46,27 @@ export class CreateServerIDComponent implements OnInit {
     this.serverApiService.setSetupAddress(setup).subscribe(
       response => {
         this.server.setServerId(response.address);
+        this.keyAddressAdded = true;
+        this.keySaving = false;
       }
     );
   }
 
   onKeyAddressAdded() {
-    this.keyAddressAdded = true;
-    this.setKeyAddress();
+    this.keySaving = true;
+    this.apiService.validateAddress(this.keyAddress, true).subscribe(
+      verifyResult => {
+        if (verifyResult.isvalid) {
+          this.setKeyAddress();
+        } else {
+          this.addressNotValid = true;
+          this.keySaving = false;
+        }
+      },
+      () => {
+        this.addressNotValid = true;
+        this.keySaving = false;
+      });
   }
 
   closeClicked() {
