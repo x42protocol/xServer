@@ -250,75 +250,82 @@ namespace x42.Feature.Network
                 Success = false
             };
 
-            if ((IsServerReady() && !ServerExists(serverNode)) || serverCheckOnly)
+            if (IsNetworkAddressAllowed(serverNode.NetworkAddress))
             {
-                var collateral = await GetServerCollateral(serverNode);
-                IEnumerable<Tier> availableTiers = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount <= collateral);
-                Tier serverTier = availableTiers.Where(t => t.Level == (Tier.TierLevel)serverNode.Tier).FirstOrDefault();
-
-                if (serverTier != null)
+                if ((IsServerReady() && !ServerExists(serverNode)) || serverCheckOnly)
                 {
-                    bool serverKeysAreValid = await IsServerKeyValid(serverNode);
-                    if (serverKeysAreValid)
+                    var collateral = await GetServerCollateral(serverNode);
+                    IEnumerable<Tier> availableTiers = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount <= collateral);
+                    Tier serverTier = availableTiers.Where(t => t.Level == (Tier.TierLevel)serverNode.Tier).FirstOrDefault();
+
+                    if (serverTier != null)
                     {
-                        string xServerURL = GetServerUrl(serverNode.NetworkProtocol, serverNode.NetworkAddress, serverNode.NetworkPort);
-                        bool nodeAvailable = ValidateNodeOnline(serverNode.NetworkAddress);
-                        if (nodeAvailable)
+                        bool serverKeysAreValid = await IsServerKeyValid(serverNode);
+                        if (serverKeysAreValid)
                         {
-                            bool serverAvailable = await ValidateServerIsOnlineAndSynced(xServerURL);
-                            if (serverAvailable)
+                            string xServerURL = GetServerUrl(serverNode.NetworkProtocol, serverNode.NetworkAddress, serverNode.NetworkPort);
+                            bool nodeAvailable = ValidateNodeOnline(serverNode.NetworkAddress);
+                            if (nodeAvailable)
                             {
-                                if (serverCheckOnly)
+                                bool serverAvailable = await ValidateServerIsOnlineAndSynced(xServerURL);
+                                if (serverAvailable)
                                 {
-                                    registerResult.Success = true;
-                                }
-                                else
-                                {
-                                    bool serverAdded = AddServer(serverNode);
-                                    if (!serverAdded)
-                                    {
-                                        registerResult.ResultMessage = "Server could not be added.";
-                                    }
-                                    else
+                                    if (serverCheckOnly)
                                     {
                                         registerResult.Success = true;
                                     }
+                                    else
+                                    {
+                                        bool serverAdded = AddServer(serverNode);
+                                        if (!serverAdded)
+                                        {
+                                            registerResult.ResultMessage = "Server could not be added.";
+                                        }
+                                        else
+                                        {
+                                            registerResult.Success = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    registerResult.ResultMessage = "Network availability failed for xServer";
                                 }
                             }
                             else
                             {
-                                registerResult.ResultMessage = "Network availability failed for xServer";
+                                registerResult.ResultMessage = "Network availability failed for x42 node";
                             }
                         }
                         else
                         {
-                            registerResult.ResultMessage = "Network availability failed for x42 node";
+                            registerResult.ResultMessage = "Could not verify server keys";
                         }
+                    }
+                    else if (serverTier == null || availableTiers.Count() != 1)
+                    {
+                        registerResult.ResultMessage = "Requested Tier is not available or collateral amount is invalid.";
+                    }
+                }
+                else
+                {
+                    if (x42FullNode.Status != ConnectionStatus.Online)
+                    {
+                        registerResult.ResultMessage = "Node is offline";
+                    }
+                    else if (!database.DatabaseConnected)
+                    {
+                        registerResult.ResultMessage = "Databse is offline";
                     }
                     else
                     {
-                        registerResult.ResultMessage = "Could not verify server keys";
+                        registerResult.ResultMessage = "Already added";
                     }
-                }
-                else if (serverTier == null || availableTiers.Count() != 1)
-                {
-                    registerResult.ResultMessage = "Requested Tier is not available or collateral amount is invalid.";
                 }
             }
             else
             {
-                if (x42FullNode.Status != ConnectionStatus.Online)
-                {
-                    registerResult.ResultMessage = "Node is offline";
-                }
-                else if (!database.DatabaseConnected)
-                {
-                    registerResult.ResultMessage = "Databse is offline";
-                }
-                else
-                {
-                    registerResult.ResultMessage = "Already added";
-                }
+                registerResult.ResultMessage = "Network address is not allowed.";
             }
 
             return registerResult;
@@ -416,6 +423,29 @@ namespace x42.Feature.Network
                 }
             }
             return result;
+        }
+
+        public bool IsNetworkAddressAllowed(string networkAddress)
+        {
+            if (networkAddress.StartsWith("127"))
+            {
+                return false;
+            }
+            List<string> blackListedAddresses = new List<string>
+            {
+                    "localhost",
+                    "::1",
+                    "::",
+                    "0.0.0.0",
+                    "0:0:0:0:0:0:0:0"
+            };
+
+            if (blackListedAddresses.Where(a => a == networkAddress).Count() > 0)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 
