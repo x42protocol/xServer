@@ -1,6 +1,6 @@
 <p align="center">
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/41244965/83691926-3d548d80-a5b0-11ea-9e59-8b58daf5c7b2.png" height="100" alt="xServer" />
+    <img src="https://user-images.githubusercontent.com/41244965/85176865-0e891900-b238-11ea-9b60-f040f7ceec65.png" height="100" alt="xServer" />
   </p>
   <h3 align="center">
     About xServer
