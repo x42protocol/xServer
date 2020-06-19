@@ -1,6 +1,6 @@
 <p align="center">
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/41244965/83691926-3d548d80-a5b0-11ea-9e59-8b58daf5c7b2.png" height="100" alt="xServer" />
+    <img src="https://user-images.githubusercontent.com/41244965/85176865-0e891900-b238-11ea-9b60-f040f7ceec65.png" height="100" alt="xServer" />
   </p>
   <h3 align="center">
     About xServer
@@ -20,10 +20,10 @@ xServer daemon can be ran without the UI as a *headless* application.
 Use the `x42Server.conf` to make any configuration changes for the desired enviroment.
 
 ##### Windows config location:
-%AppData%\x42Server\
+%AppData%\xServerData\
 
 ##### Linux config location:
-Located in your home directory ~/.x42Server/
+Located in your home directory ~/.xServerData/
 
 ## xServer.UI
 The user interface is what is used to make it easier to setup and monitor the xServer daemon.
