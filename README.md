@@ -20,10 +20,10 @@ xServer daemon can be ran without the UI as a *headless* application.
 Use the `x42Server.conf` to make any configuration changes for the desired enviroment.
 
 ##### Windows config location:
-%AppData%\x42Server\
+%AppData%\xServerData\
 
 ##### Linux config location:
-Located in your home directory ~/.x42Server/
+Located in your home directory ~/.xServerData/
 
 ## xServer.UI
 The user interface is what is used to make it easier to setup and monitor the xServer daemon.
