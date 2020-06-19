@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace x42.Server
 {
@@ -27,23 +24,11 @@ namespace x42.Server
             }
         }
 
-        public string TimeString
+        public TimeSpan RuntimeTime
         {
             get
             {
-                string day = "days";
-                string hour = "days";
-                string minute = "days";
-
-                TimeSpan now = DateTime.Now - _timeStart;
-                object[] timeFormat = new object[3];
-                int days = now.Days;
-                timeFormat[0] = days.ToString("D2");
-                days = now.Hours;
-                timeFormat[1] = days.ToString("D2");
-                days = now.Minutes;
-                timeFormat[2] = days.ToString("D2");
-                return string.Format("{0} days {1} hours {2} minutes", timeFormat);
+                return DateTime.Now - _timeStart;
             }
         }
 
