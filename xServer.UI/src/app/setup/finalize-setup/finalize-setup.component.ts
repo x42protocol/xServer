@@ -20,7 +20,7 @@ export class FinalizeSetupComponent implements OnInit {
 
   }
 
-  onFinalize() {
+  onClose() {
     this.router.navigate(['/login/app-login']);
   }
 }

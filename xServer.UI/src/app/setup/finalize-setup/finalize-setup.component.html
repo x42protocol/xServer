@@ -1,4 +1,4 @@
-<p-panel #createWallet header="Finalize">
+<p-panel #createWallet header="Checks">
   <ul class="checklist">
     <li *ngIf="walletCreated"><i class="pi pi-check green"></i>Main wallet created.</li>
     <li *ngIf="!walletCreated"><i class="pi pi-times red"></i>Please setup main wallet.</li>
@@ -6,7 +6,7 @@
     <li *ngIf="!databaseConnected"><i class="pi pi-times red"></i>Could not connect to database, Please close and install PostgreSQL, then check again.</li>
   </ul>
   <div>
-    <button *ngIf="walletCreated && databaseConnected" type="button" pButton [disabled]="false" (click)="onFinalize()" label="Finalize Setup" class="btn-block"></button>
+    <button *ngIf="walletCreated && databaseConnected" type="button" pButton [disabled]="false" (click)="onClose()" label="Close Wizard" class="btn-block"></button>
     <!-- /SVG -->
   </div>
 </p-panel>
