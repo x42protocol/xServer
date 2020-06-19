@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { ElectronService } from 'ngx-electron';
 import { GlobalService } from '../shared/services/global.service';
 import { FullNodeApiService } from '../shared/services/fullnode.api.service';
 import { ServerApiService } from '../shared/services/server.api.service';
@@ -20,7 +20,15 @@ import { MenuItem, MessageService, Message, SelectItemGroup } from 'primeng/api'
 })
 
 export class SetupComponent implements OnInit {
-  constructor(private globalService: GlobalService, private themeService: ThemeService, private messageService: MessageService, private FullNodeApiService: FullNodeApiService, private serverApiService: ServerApiService, private genericModalService: ModalService, private router: Router, private fb: FormBuilder) {
+  constructor(private globalService: GlobalService,
+    private themeService: ThemeService,
+    private messageService: MessageService,
+    private FullNodeApiService: FullNodeApiService,
+    private serverApiService: ServerApiService,
+    private genericModalService: ModalService,
+    private router: Router,
+    private fb: FormBuilder,
+    private electronService: ElectronService) {
     this.buildDecryptForm();
 
     this.groupedThemes = [
@@ -215,5 +223,9 @@ export class SetupComponent implements OnInit {
           console.log('Failed to get database status.');
         }
       );
+  }
+
+  public openSetupGuide() {
+    this.electronService.shell.openExternal("https://github.com/x42protocol/xServer/wiki");
   }
 }
