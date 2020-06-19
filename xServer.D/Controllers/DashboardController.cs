@@ -32,5 +32,33 @@ namespace x42.Controllers
             string content = xServer.LastLogOutput;
             return Content(content);
         }
+
+        /// <summary>
+        ///     Starts the xServer
+        /// </summary>
+        /// <returns>
+        ///     <see cref="OkResult" />
+        /// </returns>
+        [HttpGet]
+        [Route("start")]
+        public IActionResult Start()
+        {
+            xServer.Start();
+            return Ok();
+        }
+
+        /// <summary>
+        ///     Stops the xServer
+        /// </summary>
+        /// <returns>
+        ///     <see cref="OkResult" />
+        /// </returns>
+        [HttpGet]
+        [Route("stop")]
+        public IActionResult Stop()
+        {
+            xServer.Stop();
+            return Ok();
+        }
     }
 }

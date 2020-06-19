@@ -20,6 +20,7 @@ using x42.Properties;
 using x42.Server;
 using x42.Controllers.Requests;
 using x42.Controllers.Results;
+using System.Threading;
 
 namespace x42.Server
 {
@@ -47,6 +48,9 @@ namespace x42.Server
         private readonly X42ClientFeature x42FullNode;
         private readonly DatabaseFeatures database;
         private readonly DatabaseSettings databaseSettings;
+
+        public RuntimeStats Stats { get; set; } = new RuntimeStats();
+
 
         /// <summary>Creates new instance of the <see cref="XServer" />.</summary>
         public XServer(NetworkFeatures network,
@@ -96,7 +100,6 @@ namespace x42.Server
             get => serverLifetime;
             private set => serverLifetime = (XServerLifetime)value;
         }
-
 
         /// <inheritdoc />
         public IServerServiceProvider Services { get; set; }
@@ -149,8 +152,19 @@ namespace x42.Server
             return await network.Register(serverNode);
         }
 
-        /// <inheritdoc />
         public void Start()
+        {
+            Stats = new RuntimeStats();
+            // TODO: Start serving apps.
+        }
+
+        public void Stop()
+        {
+            // TODO: Stop serving apps.
+        }
+
+        /// <inheritdoc />
+        public void StartFeature()
         {
             State = XServerState.Starting;
 

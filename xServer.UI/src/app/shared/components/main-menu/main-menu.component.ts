@@ -109,6 +109,28 @@ export class MainMenuComponent implements OnInit, OnDestroy {
             command: (event: Event) => { this.quit(); }
           }
         ]
+      },
+      {
+        label: 'Applications',
+        items: [
+          { separator: true },
+          {
+            label: 'Add App',
+            icon: 'pi pi-fw pi-plus',
+            command: (event: Event) => { this.lockClicked(); }
+          },
+          {
+            label: 'Manage Apps',
+            icon: 'pi pi-fw pi-sliders-h',
+            command: (event: Event) => { this.quit(); }
+          },
+          { separator: true },
+          {
+            label: 'Manage Bans',
+            icon: 'pi pi-fw pi-ban',
+            command: (event: Event) => { this.quit(); }
+          }
+        ]
       }
     ];
   }

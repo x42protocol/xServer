@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using x42.Server;
 
 namespace x42.Controllers.Results
 {
@@ -39,5 +40,8 @@ namespace x42.Controllers.Results
 
         /// <summary>Returns the status of the database.</summary>
         public bool DatabaseConnected { get; set; }
+
+        /// <summary>Returns the xServer stats.</summary>
+        public RuntimeStats Stats { get; set; }
     }
 }

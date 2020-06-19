@@ -91,7 +91,8 @@ namespace x42.Controllers
                 DataDirectoryPath = nodeSettings.DataDir,
                 RunningTime = dateTimeProvider.GetUtcNow() - xServer.StartTime,
                 State = xServer.State.ToString(),
-                DatabaseConnected = databaseFeatures.DatabaseConnected
+                DatabaseConnected = databaseFeatures.DatabaseConnected,
+                Stats = xServer.Stats
             };
 
             // Add the list of features that are enabled.

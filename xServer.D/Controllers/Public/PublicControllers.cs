@@ -31,6 +31,7 @@ namespace x42.Controllers.Public
         [Route("ping")]
         public IActionResult Ping()
         {
+            xServer.Stats.IncrementPublicRequest();
             PingResult pingResult = new PingResult()
             {
                 Version = xServer.Version.ToString(),
@@ -48,6 +49,7 @@ namespace x42.Controllers.Public
         [Route("gettop")]
         public IActionResult GetTop([FromQuery] int top = 10)
         {
+            xServer.Stats.IncrementPublicRequest();
             TopResult topResult = xServer.GetTopXServers(top);
             return Json(topResult);
         }
@@ -61,6 +63,7 @@ namespace x42.Controllers.Public
         [Route("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest registerRequest)
         {
+            xServer.Stats.IncrementPublicRequest();
             ServerNodeData serverNode = new ServerNodeData()
             {
                 Name = registerRequest.Name,
@@ -85,6 +88,7 @@ namespace x42.Controllers.Public
         [Route("getactivecount")]
         public IActionResult GetActiveCount()
         {
+            xServer.Stats.IncrementPublicRequest();
             CountResult topResult = new CountResult()
             {
                 Count = xServer.GetActiveServerCount()
@@ -100,6 +104,7 @@ namespace x42.Controllers.Public
         [Route("getallactivexservers")]
         public IActionResult GetAllActiveXServers()
         {
+            xServer.Stats.IncrementPublicRequest();
             var allServers = xServer.GetAllActiveXServers();
             return Json(allServers);
         }

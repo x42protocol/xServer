@@ -35,13 +35,26 @@ namespace x42.Server
         /// <summary>Time the server started.</summary>
         DateTime StartTime { get; }
 
+        /// <summary>Time the server started.</summary>
+        RuntimeStats Stats { get; }
+
         /// <summary>Latest log output.</summary>
         string LastLogOutput { get; }
 
         /// <summary>
-        ///     Starts the x42 server and all its features.
+        ///     Starts the x42 server.
         /// </summary>
         void Start();
+
+        /// <summary>
+        ///     Starts the xServer features.
+        /// </summary>
+        void StartFeature();
+
+        /// <summary>
+        ///     Stops the x42 server.
+        /// </summary>
+        void Stop();
 
         /// <summary>
         ///     Find a service of a particular type

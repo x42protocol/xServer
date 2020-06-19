@@ -1,0 +1,66 @@
+<div class="modal-body">
+  <section *ngIf="serverSetupStatus == 3 && stakingEnabled">
+    <div class="form-group">
+      <div>
+        <div class="row">
+          <ng-template #noApplications>
+            <div class="col-12 text-center">
+              <p class="text-muted" style="font-weight: bold; font-size: 14px;">You are not hosting any apps.</p>
+            </div>
+            <div class="text-center">
+              <button type="button" pButton (click)="addApplicationClicked()" label="Add New Application" class="mb-2 pr-0" icon="pi pi-plus"></button>
+            </div>
+          </ng-template>
+        </div>
+        <p-table #dt [value]="installedApps" [paginator]="true" [rows]="2" *ngIf="installedApps; else noApplications" [globalFilterFields]="['name']">
+          <ng-template pTemplate="caption">
+            <div class="mb-4">Hosted Applications</div>
+            <div style="display: flex;">
+              <div style="text-align: left">
+                <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                <input type="text" pInputText size="50" placeholder="Search" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:200px">
+              </div>
+              <div class="text-right" style="flex: 1;">
+                <button type="button" pButton (click)="addApplicationClicked()" label="Add New Application" class="mb-2 pr-0" icon="pi pi-plus"></button>
+              </div>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'name'">
+                Name
+                <p-sortIcon [field]="'name'"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'revenue'">
+                Revenue
+                <p-sortIcon [field]="'revenue'"></p-sortIcon>
+              </th>
+              <th style="width: 70px;">
+                Manage
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-applicationRow>
+            <tr [pSelectableRow]="applicationRow">
+              <td>
+                {{applicationRow.name}}
+              </td>
+              <td>
+                <div class="myAddress d-inline">
+                  <code class="d-inline-block">{{applicationRow.revenue}}</code>
+                </div>
+              </td>
+              <td>
+                <button type="button" pButton (click)="manageApp(applicationRow)" icon="pi pi-pencil" style="margin-left: 5px;"></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-footer" *ngIf="keyAddressAdded">
+  <button type="button" class="btn-block" (click)="closeClicked()" label="Close" pButton></button>
+</div>

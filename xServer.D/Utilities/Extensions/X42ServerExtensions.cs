@@ -72,7 +72,7 @@ namespace x42.Utilities.Extensions
         public static async Task RunAsync(this IxServer server, CancellationToken cancellationToken,
             string shutdownMessage, string shutdownCompleteMessage)
         {
-            server.Start();
+            server.StartFeature();
 
             if (!string.IsNullOrEmpty(shutdownMessage))
             {
