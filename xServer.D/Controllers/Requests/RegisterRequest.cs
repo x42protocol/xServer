@@ -36,8 +36,8 @@ namespace x42.Controllers.Requests
         /// <summary>
         ///     The Signature of the server requesting to be registered.
         /// </summary>
-        [Required(ErrorMessage = "The Signature is missing.")]
-        [StringLength(1024, ErrorMessage = "The Signature cannot exceed 1024 characters.")]
+        [Required(ErrorMessage = "The signature is missing.")]
+        [StringLength(1024, ErrorMessage = "The signature cannot exceed 1024 characters.")]
         public string Signature { get; set; }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace x42.Controllers.Requests
         /// </summary>
         [Required(ErrorMessage = "The Address is missing.")]
         [StringLength(128, ErrorMessage = "The Address cannot exceed 128 characters.")]
-        public string Address { get; set; }
+        public string KeyAddress { get; set; }
 
         /// <summary>
         ///     The Tier the server is requesting to register as.

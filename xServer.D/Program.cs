@@ -5,10 +5,12 @@ using x42.Feature.Api;
 using x42.Feature.Database;
 using x42.Feature.X42Client;
 using x42.Feature.Network;
+using x42.Feature.Profile;
 using x42.ServerNode;
 using x42.Protocol;
 using x42.Server;
 using x42.Utilities.Extensions;
+using x42.Feature.PriceLock;
 
 namespace x42
 {
@@ -25,7 +27,9 @@ namespace x42
                     .UseX42Client()
                     .UseSql()
                     .UseApi()
+                    .UsePriceLock()
                     .UseNetwork()
+                    .UseProfile()
                     .Build();
 
                 if (server != null) await server.RunAsync();

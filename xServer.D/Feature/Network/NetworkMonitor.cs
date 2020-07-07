@@ -215,7 +215,6 @@ namespace x42.Feature.Network
                         {
                             serverNodes.Add(new ServerNodeData()
                             {
-                                Name = connectedXServer.Name,
                                 NetworkAddress = connectedXServer.Address,
                                 NetworkPort = connectedXServer.Port,
                                 NetworkProtocol = connectedXServer.NetworkProtocol
@@ -236,8 +235,7 @@ namespace x42.Feature.Network
         {
             RegisterRequest registerRequest = new RegisterRequest()
             {
-                Name = newServer.Name,
-                Address = newServer.PublicAddress,
+                KeyAddress = newServer.KeyAddress,
                 NetworkAddress = newServer.NetworkAddress,
                 NetworkPort = newServer.NetworkPort,
                 NetworkProtocol = newServer.NetworkProtocol,
@@ -300,8 +298,7 @@ namespace x42.Feature.Network
             {
                 RegisterRequest registerRequest = new RegisterRequest()
                 {
-                    Name = selfNode.Name,
-                    Address = selfNode.PublicAddress,
+                    KeyAddress = selfNode.KeyAddress,
                     NetworkProtocol = selfNode.NetworkProtocol,
                     NetworkAddress = selfNode.NetworkAddress,
                     NetworkPort = selfNode.NetworkPort,
@@ -331,6 +328,10 @@ namespace x42.Feature.Network
                 string selfKeyAddress = networkFeatures.GetServerKeyAddress();
                 int localActiveCount = serverNodes.Count();
                 var xServerStats = await networkFeatures.GetXServerStats();
+                if (xServerStats == null)
+                {
+                    return result;
+                }
                 foreach (var connectedXServer in xServerStats.Nodes)
                 {
                     var xServer = serverNodes.Where(x => x.NetworkAddress == connectedXServer.Address);
@@ -338,7 +339,6 @@ namespace x42.Feature.Network
                     {
                         serverNodes.Add(new ServerNodeData()
                         {
-                            Name = connectedXServer.Name,
                             NetworkAddress = connectedXServer.Address,
                             NetworkPort = connectedXServer.Port,
                             NetworkProtocol = connectedXServer.NetworkProtocol
@@ -370,7 +370,7 @@ namespace x42.Feature.Network
                                         var activeXServersList = allActiveXServersResult.Data;
                                         foreach (var serverResult in activeXServersList)
                                         {
-                                            if (serverResult.Address == selfKeyAddress)
+                                            if (serverResult.KeyAddress == selfKeyAddress)
                                             {
                                                 foundSelf = true;
                                             }
@@ -380,8 +380,7 @@ namespace x42.Feature.Network
                                                 // Local Registration of new nodes we don't know about.
                                                 await networkFeatures.Register(new ServerNodeData()
                                                 {
-                                                    Name = serverResult.Name,
-                                                    PublicAddress = serverResult.Address,
+                                                    KeyAddress = serverResult.KeyAddress,
                                                     NetworkAddress = serverResult.NetworkAddress,
                                                     NetworkPort = serverResult.NetworkPort,
                                                     NetworkProtocol = serverResult.NetworkProtocol,

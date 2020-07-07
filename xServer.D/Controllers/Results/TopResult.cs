@@ -21,17 +21,14 @@ namespace x42.Controllers.Results
 
     public class XServerConnectionInfo
     {
-        /// <summary>xServer name.</summary>
-        public string Name { get; set; }
-
         /// <summary>xServer connection protocol.</summary>
         public int NetworkProtocol { get; set; }
 
         /// <summary>xServer connection address.</summary>
-        public string Address { get; set; }
+        public string NetworkAddress { get; set; }
 
         /// <summary>xServer connection port.</summary>
-        public long Port { get; set; }
+        public long NetworkPort { get; set; }
 
         /// <summary>xServer priority.</summary>
         public long Priotiry { get; set; }

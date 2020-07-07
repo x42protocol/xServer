@@ -29,7 +29,7 @@ namespace x42.ServerNode
                 ),
                 new Tier(
                     Tier.TierLevel.Three,
-                    new Collateral {Amount = Money.Coins(100000)}
+                    new Collateral {Amount = Money.Coins(50000)}
                 )
             };
             this.Tiers = Tiers;

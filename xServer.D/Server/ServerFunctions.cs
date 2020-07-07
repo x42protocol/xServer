@@ -34,10 +34,9 @@ namespace x42.Server
                         server => result.XServers.Add(
                             new XServerConnectionInfo()
                             {
-                                Name = server.Name,
                                 NetworkProtocol = server.NetworkProtocol,
-                                Address = server.NetworkAddress,
-                                Port = server.NetworkPort,
+                                NetworkAddress = server.NetworkAddress,
+                                NetworkPort = server.NetworkPort,
                                 Priotiry = server.Priority,
                                 Tier = server.Tier
                             }
@@ -73,12 +72,11 @@ namespace x42.Server
                         server => result.Add(
                             new RegisterRequest()
                             {
-                                Name = server.Name,
                                 NetworkProtocol = server.NetworkProtocol,
                                 NetworkAddress = server.NetworkAddress,
                                 NetworkPort = server.NetworkPort,
                                 Signature = server.Signature,
-                                Address = server.PublicAddress,
+                                KeyAddress = server.KeyAddress,
                                 Tier = server.Tier
                             }
                     ));

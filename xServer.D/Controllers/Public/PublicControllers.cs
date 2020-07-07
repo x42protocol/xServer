@@ -5,6 +5,10 @@ using x42.Controllers.Requests;
 using x42.Feature.Database.Tables;
 using x42.Server;
 using x42.Server.Results;
+using x42.Feature.Profile;
+using x42.Utilities.JsonErrors;
+using System.Net;
+using x42.Feature.PriceLock;
 
 namespace x42.Controllers.Public
 {
@@ -17,10 +21,14 @@ namespace x42.Controllers.Public
     public class PublicController : Controller
     {
         private readonly XServer xServer;
+        private readonly ProfileFeature profileFeature;
+        private readonly PriceFeature priceFeature;
 
-        public PublicController(XServer xServer)
+        public PublicController(XServer xServer, ProfileFeature profileFeature, PriceFeature priceFeature)
         {
             this.xServer = xServer;
+            this.profileFeature = profileFeature;
+            this.priceFeature = priceFeature;
         }
 
         /// <summary>
@@ -66,11 +74,10 @@ namespace x42.Controllers.Public
             xServer.Stats.IncrementPublicRequest();
             ServerNodeData serverNode = new ServerNodeData()
             {
-                Name = registerRequest.Name,
                 NetworkAddress = registerRequest.NetworkAddress,
                 NetworkPort = registerRequest.NetworkPort,
                 Signature = registerRequest.Signature,
-                PublicAddress = registerRequest.Address,
+                KeyAddress = registerRequest.KeyAddress,
                 Tier = registerRequest.Tier,
                 NetworkProtocol = registerRequest.NetworkProtocol
             };
@@ -107,6 +114,42 @@ namespace x42.Controllers.Public
             xServer.Stats.IncrementPublicRequest();
             var allServers = xServer.GetAllActiveXServers();
             return Json(allServers);
+        }
+
+        /// <summary>
+        ///     Will lookup the profile, and return the profile data.
+        /// </summary>
+        /// <returns>A JSON object containing the profile requested.</returns>
+        [HttpGet]
+        [Route("getprofile")]
+        public IActionResult GetProfile()
+        {
+            //profileFeature.();
+            var allServers = xServer.GetAllActiveXServers();
+            return Json(allServers);
+        }
+
+        /// <summary>
+        ///     Get my avrage price.
+        /// </summary>
+        /// <returns>A JSON object containing price information.</returns>
+        [HttpGet]
+        [Route("getprice")]
+        public IActionResult GetPrice()
+        {
+            xServer.Stats.IncrementPublicRequest();
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            {
+                PriceResult priceResult = new PriceResult()
+                {
+                    Price = priceFeature.Price.GetMytPrice()
+                };
+                return Json(priceResult);
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
+            }
         }
     }
 }

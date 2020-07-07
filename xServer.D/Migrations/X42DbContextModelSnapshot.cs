@@ -19,28 +19,54 @@ namespace x42.Migrations
                 .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            modelBuilder.Entity("x42.Feature.Database.Tables.ProfileData", b =>
+                {
+                    b.Property<string>("KeyAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Signature")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("text");
+
+                    b.HasKey("KeyAddress");
+
+                    b.HasIndex("KeyAddress")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("profile");
+                });
+
             modelBuilder.Entity("x42.Feature.Database.Tables.ServerData", b =>
                 {
-                    b.Property<string>("PublicAddress")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("KeyAddress")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("KeyAddress")
+                    b.Property<string>("PublicAddress")
                         .HasColumnType("text");
 
-                    b.HasKey("PublicAddress");
+                    b.HasKey("KeyAddress");
+
+                    b.HasIndex("KeyAddress")
+                        .IsUnique();
 
                     b.ToTable("server");
                 });
 
             modelBuilder.Entity("x42.Feature.Database.Tables.ServerNodeData", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("KeyAddress")
+                        .HasColumnType("text");
 
                     b.Property<bool>("Active")
                         .HasColumnType("boolean");
@@ -50,9 +76,6 @@ namespace x42.Migrations
 
                     b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
 
                     b.Property<string>("NetworkAddress")
                         .HasColumnType("text");
@@ -66,9 +89,6 @@ namespace x42.Migrations
                     b.Property<long>("Priority")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("PublicAddress")
-                        .HasColumnType("text");
-
                     b.Property<bool>("Relayed")
                         .HasColumnType("boolean");
 
@@ -78,7 +98,10 @@ namespace x42.Migrations
                     b.Property<int>("Tier")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("KeyAddress");
+
+                    b.HasIndex("KeyAddress")
+                        .IsUnique();
 
                     b.ToTable("servernode");
                 });

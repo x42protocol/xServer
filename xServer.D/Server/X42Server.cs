@@ -50,8 +50,7 @@ namespace x42.Server
         private readonly DatabaseSettings databaseSettings;
 
         public RuntimeStats Stats { get; set; } = new RuntimeStats();
-
-
+        
         /// <summary>Creates new instance of the <see cref="XServer" />.</summary>
         public XServer(NetworkFeatures network,
             ServerSettings nodeSettings,
@@ -283,6 +282,24 @@ namespace x42.Server
                 serverLifetime.ApplicationStopping,
                 TimeSpans.FiveSeconds,
                 TimeSpans.FiveSeconds);
+        }
+
+        /// <summary>
+        ///     Starts a loop to periodically check tier level.
+        /// </summary>
+        private void StartPeriodicChecks()
+        {
+            periodicLogLoop = AsyncLoopFactory.Run("PeriodicChecks", cancellation =>
+            {
+                var serverSetupResult = GetServerSetupStatus();
+
+                Stats.UpdateTierLevel(serverSetupResult.TierLevel);
+
+                return Task.CompletedTask;
+            },
+                serverLifetime.ApplicationStopping,
+                TimeSpans.FiveSeconds,
+                TimeSpans.Second);
         }
 
         /// <inheritdoc />

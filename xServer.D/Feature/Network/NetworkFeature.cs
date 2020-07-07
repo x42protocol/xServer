@@ -149,9 +149,9 @@ namespace x42.Feature.Network
 
         public async Task<bool> IsServerKeyValid(ServerNodeData serverNode)
         {
-            string serverKey = $"{serverNode.Name}{serverNode.NetworkAddress}{serverNode.NetworkPort}";
+            string serverKey = $"{serverNode.NetworkAddress}{serverNode.NetworkPort}{serverNode.Tier}";
 
-            return await x42Client.VerifyMessageAsync(serverNode.PublicAddress, serverKey, serverNode.Signature);
+            return await x42Client.VerifyMessageAsync(serverNode.KeyAddress, serverKey, serverNode.Signature);
         }
 
         private string GetProtocolString(int networkProtocol)
@@ -216,9 +216,9 @@ namespace x42.Feature.Network
 
         public async Task<Money> GetServerCollateral(ServerNodeData serverNode)
         {
-            GetAddressesBalancesResponse addressBalance = await x42Client.GetAddressBalances(serverNode.PublicAddress);
+            GetAddressesBalancesResponse addressBalance = await x42Client.GetAddressBalances(serverNode.KeyAddress);
 
-            if (addressBalance.balances.Count() == 1 && addressBalance.balances.FirstOrDefault().address == serverNode.PublicAddress)
+            if (addressBalance.balances.Count() == 1 && addressBalance.balances.FirstOrDefault().address == serverNode.KeyAddress)
             {
                 return Money.FromUnit(addressBalance.balances.FirstOrDefault().balance, MoneyUnit.Satoshi);
             }
@@ -392,7 +392,7 @@ namespace x42.Feature.Network
                 {
                     string keyAddress = server.First().KeyAddress;
 
-                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.PublicAddress == keyAddress && s.Active);
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.KeyAddress == keyAddress && s.Active);
                     if (serverNode.Count() > 0)
                     {
                         activeKeyAddress = keyAddress;
@@ -415,7 +415,7 @@ namespace x42.Feature.Network
                 {
                     string keyAddress = server.First().KeyAddress;
 
-                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.PublicAddress == keyAddress && s.Active);
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.KeyAddress == keyAddress && s.Active);
                     if (serverNode.Count() > 0)
                     {
                         result = serverNode.First();
@@ -455,7 +455,7 @@ namespace x42.Feature.Network
     public static class NetworkBuilderExtension
     {
         /// <summary>
-        ///     Adds SQL components to the server.
+        ///     Adds network components to the server.
         /// </summary>
         /// <param name="serverBuilder">The object used to build the current node.</param>
         /// <returns>The server builder, enriched with the new component.</returns>

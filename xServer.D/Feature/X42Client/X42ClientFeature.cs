@@ -112,7 +112,7 @@ namespace x42.Feature.X42Client
     public static class X42ClientExtension
     {
         /// <summary>
-        ///     Adds SQL components to the server.
+        ///     Adds x42 Client components to the server.
         /// </summary>
         /// <param name="serverBuilder">The object used to build the current node.</param>
         /// <returns>The server builder, enriched with the new component.</returns>

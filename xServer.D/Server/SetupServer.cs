@@ -5,6 +5,7 @@ using x42.Controllers.Requests;
 using x42.Feature.Database.Context;
 using x42.Feature.Database.Tables;
 using x42.Server.Results;
+using x42.ServerNode;
 
 namespace x42.Server
 {
@@ -78,10 +79,11 @@ namespace x42.Server
 
                     string keyAddress = server.First().KeyAddress;
 
-                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.PublicAddress == keyAddress && s.Active);
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.KeyAddress == keyAddress && s.Active);
                     if (serverNode.Count() > 0)
                     {
                         result.ServerStatus = Status.Complete;
+                        result.TierLevel = (Tier.TierLevel)serverNode.First().Tier;
                     }
                 }
             }

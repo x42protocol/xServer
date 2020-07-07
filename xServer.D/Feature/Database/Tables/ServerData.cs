@@ -7,10 +7,9 @@ namespace x42.Feature.Database.Tables
     [Table("server")]
     public class ServerData
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public string PublicAddress { get; set; }
         public string KeyAddress { get; set; }
+        public string PublicAddress { get; set; }
         public DateTime DateAdded { get; set; }
     }
 }
