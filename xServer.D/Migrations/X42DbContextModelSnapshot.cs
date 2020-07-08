@@ -44,6 +44,35 @@ namespace x42.Migrations
                     b.ToTable("profile");
                 });
 
+            modelBuilder.Entity("x42.Feature.Database.Tables.ProfileLockData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DestinationAddress")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("DestinationAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("FeeAddress")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("FeeAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("PriceLockId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PriceLockSignature")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("profilelock");
+                });
+
             modelBuilder.Entity("x42.Feature.Database.Tables.ServerData", b =>
                 {
                     b.Property<string>("ProfileName")

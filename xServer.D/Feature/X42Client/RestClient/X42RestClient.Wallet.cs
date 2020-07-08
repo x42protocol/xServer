@@ -47,6 +47,26 @@ namespace x42.Feature.X42Client.RestClient
         /// Verify the signature of a message.
         /// </summary>
         /// <returns>If verification was successful it will return true.</returns>
+        public async Task<SignMessageResult> SignMessage(SignMessageRequest signMessageRequest)
+        {
+            try
+            {
+                Guard.Null(signMessageRequest, nameof(signMessageRequest), "Sign Message Request Cannot Be NULL/Empty!");
+
+                SignMessageResult response = await base.SendPostJSON<SignMessageResult>("/api/Wallet/signmessage", signMessageRequest);
+
+                return response;
+            }
+            catch (Exception)
+            {
+                return new SignMessageResult();
+            }
+        }
+
+        /// <summary>
+        /// Verify the signature of a message.
+        /// </summary>
+        /// <returns>If verification was successful it will return true.</returns>
         public async Task<bool> VerifySignedMessage(string externalAddress, string message, string signature)
         {
             try

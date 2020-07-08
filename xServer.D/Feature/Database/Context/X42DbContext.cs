@@ -8,6 +8,7 @@ namespace x42.Feature.Database.Context
         public virtual DbSet<ServerNodeData> ServerNodes { get; set; }
         public virtual DbSet<ServerData> Servers { get; set; }
         public virtual DbSet<ProfileData> Profiles { get; set; }
+        public virtual DbSet<ProfileLockData> ProfileLocks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

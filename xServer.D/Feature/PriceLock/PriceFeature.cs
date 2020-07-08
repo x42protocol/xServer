@@ -18,6 +18,7 @@ using RestSharp;
 using x42.Feature.Network;
 using System.Net;
 using x42.Feature.PriceLock.Results;
+using x42.Controllers.Requests;
 
 namespace x42.Feature.PriceLock
 {
@@ -130,6 +131,29 @@ namespace x42.Feature.PriceLock
             startAfter: TimeSpans.Second);
         }
 
+        public async Task<CreatePriceLockResult> CreatePriceLock(CreatePriceLockRequest priceLockRequest)
+        {
+            var tierThreeAddresses = new List<XServerConnectionInfo>();
+
+            // Remove any servers that have been unavailable past the grace period.
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var tierThreeServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).Take(takeTop);
+                foreach (ServerNodeData server in tierThreeServers)
+                {
+                    var xServerConnectionInfo = new XServerConnectionInfo()
+                    {
+                        NetworkAddress = server.NetworkAddress,
+                        NetworkProtocol = server.NetworkProtocol,
+                        NetworkPort = server.NetworkPort,
+                        Priotiry = server.Priority
+                    };
+                    tierThreeAddresses.Add(xServerConnectionInfo);
+                }
+                dbContext.SaveChanges();
+            }
+            return tierThreeAddresses;
+        }
 
         /// <summary>
         ///     Update my x42/usd price list

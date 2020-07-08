@@ -140,7 +140,7 @@ namespace x42.Controllers.Public
         ///     Registers a profile to the network.
         /// </summary>
         /// <param name="registerRequest">The object with all of the nessesary data to register a profile.</param>
-        /// <returns>A <see cref="RegisterResult" /> with registration result.</returns>
+        /// <returns>A <see cref="ProfileChangeResult" /> with registration result.</returns>
         [HttpPost]
         [Route("registerprofile")]
         public async Task<IActionResult> RegisterProfileAsync([FromBody] ProfileRegisterRequest registerRequest)
@@ -179,5 +179,27 @@ namespace x42.Controllers.Public
                 return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
             }
         }
+
+        /// <summary>
+        ///     Create a price lock.
+        /// </summary>
+        /// <param name="registerRequest">The object with all of the nessesary data to create a price lock.</param>
+        /// <returns>A <see cref="CreatePriceLockResult" /> with price lock results.</returns>
+        [HttpPost]
+        [Route("createpricelock")]
+        public async Task<IActionResult> CreatePriceLock([FromBody] CreatePriceLockRequest priceLockRequest)
+        {
+            xServer.Stats.IncrementPublicRequest();
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            {
+                var priceLockResult = await priceFeature.CreatePriceLock(priceLockRequest);
+                return Json(priceLockResult);
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
+            }
+        }
+
     }
 }

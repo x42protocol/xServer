@@ -24,6 +24,7 @@ using x42.Controllers.Results;
 using x42.Server.Results;
 using System.Collections.Generic;
 using x42.Feature.X42Client.Enums;
+using x42.Feature.X42Client.RestClient.Requests;
 
 namespace x42.Feature.Network
 {
@@ -50,6 +51,7 @@ namespace x42.Feature.Network
         private readonly X42ClientFeature x42FullNode;
         private readonly DatabaseFeatures database;
         private X42Node x42Client;
+        private CachedWalletInfo cachedWalletInfo;
 
         public NetworkFeatures(
             ServerNodeBase network,
@@ -72,6 +74,8 @@ namespace x42.Feature.Network
             this.x42ClientSettings = x42ClientSettings;
             this.x42FullNode = x42FullNode;
             this.database = database;
+
+            cachedWalletInfo = new CachedWalletInfo();
 
             x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
         }
@@ -153,6 +157,19 @@ namespace x42.Feature.Network
             string profileKeyAddress = GetKeyAddressFromProfileName(serverNode.ProfileName);
 
             return await x42Client.VerifyMessageAsync(profileKeyAddress, serverKey, serverNode.Signature);
+        }
+
+        public async Task<SignMessageResult> SignPriceLock(string priceLock)
+        {
+            var signRequest = new SignMessageRequest()
+            {
+                AccountName = cachedWalletInfo.AccountName,
+                ExternalAddress = cachedWalletInfo.KeyAddress,
+                Password = cachedWalletInfo.Password,
+                WalletName = cachedWalletInfo.WalletName,
+                Message = priceLock
+            };
+            return await x42Client.SignMessageAsync(signRequest);
         }
 
         private string GetProtocolString(int networkProtocol)

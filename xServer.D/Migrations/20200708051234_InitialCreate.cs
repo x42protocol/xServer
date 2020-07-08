@@ -22,6 +22,23 @@ namespace x42.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "profilelock",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    PriceLockId = table.Column<string>(nullable: true),
+                    FeeAmount = table.Column<decimal>(nullable: false),
+                    FeeAddress = table.Column<string>(nullable: true),
+                    DestinationAmount = table.Column<decimal>(nullable: false),
+                    DestinationAddress = table.Column<string>(nullable: true),
+                    PriceLockSignature = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_profilelock", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "server",
                 columns: table => new
                 {
@@ -84,6 +101,9 @@ namespace x42.Migrations
         {
             migrationBuilder.DropTable(
                 name: "profile");
+
+            migrationBuilder.DropTable(
+                name: "profilelock");
 
             migrationBuilder.DropTable(
                 name: "server");
