@@ -183,7 +183,7 @@ namespace x42.Controllers.Public
         /// <summary>
         ///     Create a price lock.
         /// </summary>
-        /// <param name="registerRequest">The object with all of the nessesary data to create a price lock.</param>
+        /// <param name="priceLockRequest">The object with all of the nessesary data to create a price lock.</param>
         /// <returns>A <see cref="CreatePriceLockResult" /> with price lock results.</returns>
         [HttpPost]
         [Route("createpricelock")]

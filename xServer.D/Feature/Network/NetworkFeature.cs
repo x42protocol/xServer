@@ -159,7 +159,7 @@ namespace x42.Feature.Network
             return await x42Client.VerifyMessageAsync(profileKeyAddress, serverKey, serverNode.Signature);
         }
 
-        public async Task<SignMessageResult> SignPriceLock(string priceLock)
+        public async Task<string> SignPriceLock(string priceLock)
         {
             var signRequest = new SignMessageRequest()
             {
@@ -169,7 +169,13 @@ namespace x42.Feature.Network
                 WalletName = cachedWalletInfo.WalletName,
                 Message = priceLock
             };
-            return await x42Client.SignMessageAsync(signRequest);
+            var signature = await x42Client.SignMessageAsync(signRequest);
+            return signature.Signature;
+        }
+
+        public string GetMyKeyAddress()
+        {
+            return cachedWalletInfo.KeyAddress;
         }
 
         private string GetProtocolString(int networkProtocol)

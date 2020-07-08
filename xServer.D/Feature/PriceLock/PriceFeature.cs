@@ -19,6 +19,7 @@ using x42.Feature.Network;
 using System.Net;
 using x42.Feature.PriceLock.Results;
 using x42.Controllers.Requests;
+using Microsoft.EntityFrameworkCore;
 
 namespace x42.Feature.PriceLock
 {
@@ -55,6 +56,9 @@ namespace x42.Feature.PriceLock
 
         /// <summary>Time in seconds between attempts to update network x42/usd price</summary>
         private readonly int updateNetworkPriceSeconds = 600;
+
+        /// <summary>Fee for the price lock. Default is 1%. TODO: Add this into configuration.</summary>
+        private readonly decimal priceLockFeePercent = 1;
 
         public USD Price { get; set; } = new USD();
 
@@ -133,26 +137,32 @@ namespace x42.Feature.PriceLock
 
         public async Task<CreatePriceLockResult> CreatePriceLock(CreatePriceLockRequest priceLockRequest)
         {
-            var tierThreeAddresses = new List<XServerConnectionInfo>();
+            var result = new CreatePriceLockResult();
 
-            // Remove any servers that have been unavailable past the grace period.
+            var price = Math.Round(priceLockRequest.InitialAmount / Price.GetPrice(), 8);
+            var fee = Math.Round(price * priceLockFeePercent / 100, 8);
+            var feeAddress = networkFeatures.GetMyKeyAddress();
+
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                var tierThreeServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).Take(takeTop);
-                foreach (ServerNodeData server in tierThreeServers)
+                var newPriceLock = new PriceLockData()
                 {
-                    var xServerConnectionInfo = new XServerConnectionInfo()
-                    {
-                        NetworkAddress = server.NetworkAddress,
-                        NetworkProtocol = server.NetworkProtocol,
-                        NetworkPort = server.NetworkPort,
-                        Priotiry = server.Priority
-                    };
-                    tierThreeAddresses.Add(xServerConnectionInfo);
+                    DestinationAddress = priceLockRequest.DestinationAddress,
+                    DestinationAmount = price,
+                    FeeAmount = fee,
+                    FeeAddress = feeAddress,
+                    ExpireBlock = priceLockRequest.ExpireBlock,
+                    InitialRequestAmount = priceLockRequest.InitialAmount
+                };
+                var newPriceLockRecord = dbContext.Add(newPriceLock);
+                if (newPriceLockRecord.State == EntityState.Added)
+                {
+                    string signature = await networkFeatures.SignPriceLock($"{newPriceLock.PriceLockId}{newPriceLock.DestinationAddress}{newPriceLock.DestinationAmount}{newPriceLock.FeeAddress}{newPriceLock.FeeAmount}");
+                    newPriceLock.PriceLockSignature = signature;
+                    dbContext.SaveChanges();
                 }
-                dbContext.SaveChanges();
             }
-            return tierThreeAddresses;
+            return result;
         }
 
         /// <summary>

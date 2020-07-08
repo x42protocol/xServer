@@ -4,13 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace x42.Feature.Database.Tables
 {
-    [Table("profilelock")]
-    public class ProfileLockData
+    [Table("pricelock")]
+    public class PriceLockData
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public Guid Id { get; set; }
-        public string PriceLockId { get; set; }
+        public Guid PriceLockId { get; set; }
 
         public decimal InitialRequestAmount { get; set; }
 
@@ -23,5 +22,7 @@ namespace x42.Feature.Database.Tables
         public string DestinationAddress { get; set; }
 
         public string PriceLockSignature { get; set; }
+
+        public long ExpireBlock { get; set; }
     }
 }

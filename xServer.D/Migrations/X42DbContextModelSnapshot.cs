@@ -19,6 +19,38 @@ namespace x42.Migrations
                 .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            modelBuilder.Entity("x42.Feature.Database.Tables.PriceLockData", b =>
+                {
+                    b.Property<Guid>("PriceLockId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DestinationAddress")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("DestinationAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<long>("ExpireBlock")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FeeAddress")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("FeeAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("InitialRequestAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("PriceLockSignature")
+                        .HasColumnType("text");
+
+                    b.HasKey("PriceLockId");
+
+                    b.ToTable("pricelock");
+                });
+
             modelBuilder.Entity("x42.Feature.Database.Tables.ProfileData", b =>
                 {
                     b.Property<string>("Name")
@@ -42,35 +74,6 @@ namespace x42.Migrations
                         .IsUnique();
 
                     b.ToTable("profile");
-                });
-
-            modelBuilder.Entity("x42.Feature.Database.Tables.ProfileLockData", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("DestinationAddress")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("DestinationAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("FeeAddress")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("FeeAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("PriceLockId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PriceLockSignature")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("profilelock");
                 });
 
             modelBuilder.Entity("x42.Feature.Database.Tables.ServerData", b =>

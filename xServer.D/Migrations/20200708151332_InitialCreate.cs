@@ -8,6 +8,24 @@ namespace x42.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "pricelock",
+                columns: table => new
+                {
+                    PriceLockId = table.Column<Guid>(nullable: false),
+                    InitialRequestAmount = table.Column<decimal>(nullable: false),
+                    FeeAmount = table.Column<decimal>(nullable: false),
+                    FeeAddress = table.Column<string>(nullable: true),
+                    DestinationAmount = table.Column<decimal>(nullable: false),
+                    DestinationAddress = table.Column<string>(nullable: true),
+                    PriceLockSignature = table.Column<string>(nullable: true),
+                    ExpireBlock = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_pricelock", x => x.PriceLockId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "profile",
                 columns: table => new
                 {
@@ -19,23 +37,6 @@ namespace x42.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_profile", x => x.Name);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "profilelock",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    PriceLockId = table.Column<string>(nullable: true),
-                    FeeAmount = table.Column<decimal>(nullable: false),
-                    FeeAddress = table.Column<string>(nullable: true),
-                    DestinationAmount = table.Column<decimal>(nullable: false),
-                    DestinationAddress = table.Column<string>(nullable: true),
-                    PriceLockSignature = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_profilelock", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -100,10 +101,10 @@ namespace x42.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "profile");
+                name: "pricelock");
 
             migrationBuilder.DropTable(
-                name: "profilelock");
+                name: "profile");
 
             migrationBuilder.DropTable(
                 name: "server");
