@@ -44,7 +44,7 @@ namespace x42.Server
         /// <summary>
         ///     Starts the x42 server.
         /// </summary>
-        void Start();
+        void Start(StartRequest startRequest);
 
         /// <summary>
         ///     Starts the xServer features.

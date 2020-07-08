@@ -104,9 +104,11 @@ namespace x42.Feature.Network
         /// <summary>
         ///     Connect to the network.
         /// </summary>
-        public void Connect()
+        public void Connect(CachedWalletInfo cachedWalletInfo)
         {
             logger.LogInformation("Connecting to network");
+            this.cachedWalletInfo = cachedWalletInfo;
+            logger.LogInformation("Network connected");
         }
 
         public void Disconnect()
@@ -145,7 +147,7 @@ namespace x42.Feature.Network
                 throw new ConfigurationException("x42Client Port setting must be set.");
             }
 
-            if (x42ClientSettings.Address.AddressFamily == System.Net.Sockets.AddressFamily.Unknown)
+            if (x42ClientSettings.Address.AddressFamily == AddressFamily.Unknown)
             {
                 throw new ConfigurationException("x42Client Address setting must be set, and a valid IP address.");
             }
@@ -153,7 +155,7 @@ namespace x42.Feature.Network
 
         public async Task<bool> IsServerKeyValid(ServerNodeData serverNode)
         {
-            string serverKey = $"{serverNode.NetworkAddress}{serverNode.NetworkPort}{serverNode.Tier}";
+            string serverKey = $"{serverNode.NetworkAddress}{serverNode.NetworkPort}{serverNode.ServerKeyAddress}{serverNode.Tier}";
             string profileKeyAddress = GetKeyAddressFromProfileName(serverNode.ProfileName);
 
             return await x42Client.VerifyMessageAsync(profileKeyAddress, serverKey, serverNode.Signature);

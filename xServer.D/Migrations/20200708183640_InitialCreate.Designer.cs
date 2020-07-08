@@ -10,7 +10,7 @@ using x42.Feature.Database.Context;
 namespace x42.Migrations
 {
     [DbContext(typeof(X42DbContext))]
-    [Migration("20200708151332_InitialCreate")]
+    [Migration("20200708183640_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -125,6 +125,9 @@ namespace x42.Migrations
 
                     b.Property<bool>("Relayed")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("ServerKeyAddress")
+                        .HasColumnType("text");
 
                     b.Property<string>("Signature")
                         .HasColumnType("text");

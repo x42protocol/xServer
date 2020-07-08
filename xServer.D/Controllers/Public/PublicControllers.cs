@@ -77,13 +77,13 @@ namespace x42.Controllers.Public
                 ProfileName = registerRequest.ProfileName,
                 NetworkAddress = registerRequest.NetworkAddress,
                 NetworkPort = registerRequest.NetworkPort,
+                ServerKeyAddress = registerRequest.ServerKeyAddress,
                 Signature = registerRequest.Signature,
                 Tier = registerRequest.Tier,
                 NetworkProtocol = registerRequest.NetworkProtocol
             };
 
             RegisterResult registerResult = await xServer.Register(serverNode);
-
             return Json(registerResult);
         }
 

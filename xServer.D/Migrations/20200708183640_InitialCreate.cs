@@ -60,6 +60,7 @@ namespace x42.Migrations
                     NetworkProtocol = table.Column<int>(nullable: false),
                     NetworkAddress = table.Column<string>(nullable: true),
                     NetworkPort = table.Column<long>(nullable: false),
+                    ServerKeyAddress = table.Column<string>(nullable: true),
                     Tier = table.Column<int>(nullable: false),
                     Signature = table.Column<string>(nullable: true),
                     DateAdded = table.Column<DateTime>(nullable: false),

@@ -124,6 +124,9 @@ namespace x42.Migrations
                     b.Property<bool>("Relayed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("ServerKeyAddress")
+                        .HasColumnType("text");
+
                     b.Property<string>("Signature")
                         .HasColumnType("text");
 

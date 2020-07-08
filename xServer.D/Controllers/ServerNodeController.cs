@@ -21,7 +21,6 @@ using x42.Utilities.ModelStateErrors;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using LogLevel = NLog.LogLevel;
 using x42.Feature.Database;
-using x42.Feature.Database.Tables;
 using x42.Server.Results;
 using System.Threading.Tasks;
 
@@ -42,9 +41,6 @@ namespace x42.Controllers
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
 
-        /// <summary>ServerNode.</summary>
-        private readonly ServerNodeBase serverNodeBase;
-
         /// <summary>The settings for the node.</summary>
         private readonly ServerSettings nodeSettings;
 
@@ -57,11 +53,9 @@ namespace x42.Controllers
         public ServerNodeContoller(IxServer xServer, ILoggerFactory loggerFactory,
             IDateTimeProvider dateTimeProvider,
             ServerSettings serverSettings,
-            ServerNodeBase serverNode,
             DatabaseFeatures databaseFeatures)
         {
             Guard.NotNull(xServer, nameof(xServer));
-            Guard.NotNull(serverNode, nameof(serverNode));
             Guard.NotNull(loggerFactory, nameof(loggerFactory));
             Guard.NotNull(serverSettings, nameof(serverSettings));
             Guard.NotNull(dateTimeProvider, nameof(dateTimeProvider));
@@ -71,7 +65,6 @@ namespace x42.Controllers
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.dateTimeProvider = dateTimeProvider;
             nodeSettings = serverSettings;
-            this.serverNodeBase = serverNode;
             this.databaseFeatures = databaseFeatures;
         }
 
@@ -163,13 +156,40 @@ namespace x42.Controllers
         /// </returns>
         [HttpPost]
         [Route("shutdown")]
-        [Route("stop")]
         public IActionResult Shutdown([FromBody] bool corsProtection = true)
         {
             // Start the node shutdown process, by calling StopApplication, which will signal to
             // the xServer RunAsync to continue processing, which calls Dispose on the node.
             xServer?.xServerLifetime.StopApplication();
 
+            return Ok();
+        }
+
+        /// <summary>
+        ///     Starts the xServer
+        /// </summary>
+        /// <returns>
+        ///     <see cref="OkResult" />
+        /// </returns>
+        [HttpPost]
+        [Route("start")]
+        public IActionResult Start([FromBody] StartRequest startRequest)
+        {
+            xServer.Start(startRequest);
+            return Ok();
+        }
+
+        /// <summary>
+        ///     Stops the xServer
+        /// </summary>
+        /// <returns>
+        ///     <see cref="OkResult" />
+        /// </returns>
+        [HttpPost]
+        [Route("stop")]
+        public IActionResult Stop()
+        {
+            xServer.Stop();
             return Ok();
         }
 

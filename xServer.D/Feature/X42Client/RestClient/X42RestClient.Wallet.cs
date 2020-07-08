@@ -57,8 +57,9 @@ namespace x42.Feature.X42Client.RestClient
 
                 return response;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                string message = ex.Message;
                 return new SignMessageResult();
             }
         }

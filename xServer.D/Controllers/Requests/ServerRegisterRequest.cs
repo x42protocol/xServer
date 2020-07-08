@@ -34,6 +34,13 @@ namespace x42.Controllers.Requests
         public long NetworkPort { get; set; }
 
         /// <summary>
+        ///     The Public Server Key Address of the server requesting to be registered.
+        /// </summary>
+        [Required(ErrorMessage = "The server key address is missing.")]
+        [StringLength(128, ErrorMessage = "The server key address cannot exceed 128 characters.")]
+        public string ServerKeyAddress { get; set; }
+
+        /// <summary>
         ///     The Signature of the server requesting to be registered.
         /// </summary>
         [Required(ErrorMessage = "The signature is missing.")]

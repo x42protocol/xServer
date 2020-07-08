@@ -47,7 +47,7 @@ namespace x42.Server
         private readonly DatabaseSettings databaseSettings;
 
         public RuntimeStats Stats { get; set; } = new RuntimeStats();
-        
+
         /// <summary>Creates new instance of the <see cref="XServer" />.</summary>
         public XServer(NetworkFeatures network,
             ServerSettings nodeSettings,
@@ -148,9 +148,18 @@ namespace x42.Server
             return await network.Register(serverNode);
         }
 
-        public void Start()
+        public void Start(StartRequest startRequest)
         {
             Stats = new RuntimeStats();
+            var connectionInfo = new CachedWalletInfo()
+            {
+                AccountName = startRequest.AccountName,
+                KeyAddress = startRequest.KeyAddress,
+                Password = startRequest.Password,
+                WalletName = startRequest.WalletName
+            };
+            network.Connect(connectionInfo);
+
             // TODO: Start serving apps.
         }
 

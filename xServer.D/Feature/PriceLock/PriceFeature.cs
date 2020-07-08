@@ -158,8 +158,25 @@ namespace x42.Feature.PriceLock
                 if (newPriceLockRecord.State == EntityState.Added)
                 {
                     string signature = await networkFeatures.SignPriceLock($"{newPriceLock.PriceLockId}{newPriceLock.DestinationAddress}{newPriceLock.DestinationAmount}{newPriceLock.FeeAddress}{newPriceLock.FeeAmount}");
-                    newPriceLock.PriceLockSignature = signature;
-                    dbContext.SaveChanges();
+                    if (!string.IsNullOrEmpty(signature))
+                    {
+                        newPriceLock.PriceLockSignature = signature;
+                        dbContext.SaveChanges();
+
+                        result.DestinationAddress = newPriceLock.DestinationAddress;
+                        result.DestinationAmount = newPriceLock.DestinationAmount;
+                        result.FeeAddress = newPriceLock.FeeAddress;
+                        result.FeeAmount = newPriceLock.FeeAmount;
+                        result.InitialAmount = newPriceLock.InitialRequestAmount;
+                        result.PriceLockId = newPriceLock.PriceLockId.ToString();
+                        result.PriceLockSignature = newPriceLock.PriceLockSignature;
+                        result.Success = true;
+                    }
+                    else
+                    {
+                        result.ResultMessage = "Problem with node, Failed to sign price lock.";
+                        result.Success = false;
+                    }
                 }
             }
             return result;
