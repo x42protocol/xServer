@@ -122,11 +122,17 @@ namespace x42.Controllers.Public
         /// <returns>A JSON object containing the profile requested.</returns>
         [HttpGet]
         [Route("getprofile")]
-        public IActionResult GetProfile()
+        public IActionResult GetProfile(ProfileRequest profileRequest)
         {
-            //profileFeature.();
-            var allServers = xServer.GetAllActiveXServers();
-            return Json(allServers);
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
+            {
+                var profile = profileFeature.GetProfile(profileRequest);
+                return Json(profile);
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 2 requirement not meet", "The node you requested is not a tier 2 node.");
+            }
         }
 
         /// <summary>

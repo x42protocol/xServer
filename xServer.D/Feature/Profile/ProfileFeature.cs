@@ -159,7 +159,13 @@ namespace x42.Feature.Profile
                     var profile = dbContext.Profiles.Where(n => n.Name == profileRequest.Name).FirstOrDefault();
                     if (profile != null)
                     {
-
+                        result = new ProfileResult()
+                        {
+                            KeyAddress = profile.KeyAddress,
+                            Name = profile.Name,
+                            Signature = profile.Signature,
+                            TransactionId = profile.TransactionId
+                        };
                     }
                 }
             }
