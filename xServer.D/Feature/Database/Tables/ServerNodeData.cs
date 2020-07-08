@@ -8,7 +8,7 @@ namespace x42.Feature.Database.Tables
     public class ServerNodeData
     {
         [Key]
-        public string KeyAddress { get; set; }
+        public string ProfileName { get; set; }
         public int NetworkProtocol { get; set; }
         public string NetworkAddress { get; set; }
         public long NetworkPort { get; set; }

@@ -150,8 +150,9 @@ namespace x42.Feature.Network
         public async Task<bool> IsServerKeyValid(ServerNodeData serverNode)
         {
             string serverKey = $"{serverNode.NetworkAddress}{serverNode.NetworkPort}{serverNode.Tier}";
+            string profileKeyAddress = GetKeyAddressFromProfileName(serverNode.ProfileName);
 
-            return await x42Client.VerifyMessageAsync(serverNode.KeyAddress, serverKey, serverNode.Signature);
+            return await x42Client.VerifyMessageAsync(profileKeyAddress, serverKey, serverNode.Signature);
         }
 
         private string GetProtocolString(int networkProtocol)
@@ -216,14 +217,29 @@ namespace x42.Feature.Network
 
         public async Task<Money> GetServerCollateral(ServerNodeData serverNode)
         {
-            GetAddressesBalancesResponse addressBalance = await x42Client.GetAddressBalances(serverNode.KeyAddress);
+            string profileKeyAddress = GetKeyAddressFromProfileName(serverNode.ProfileName);
+            GetAddressesBalancesResponse addressBalance = await x42Client.GetAddressBalances(profileKeyAddress);
 
-            if (addressBalance.balances.Count() == 1 && addressBalance.balances.FirstOrDefault().address == serverNode.KeyAddress)
+            if (addressBalance.balances.Count() == 1 && addressBalance.balances.FirstOrDefault().address == profileKeyAddress)
             {
                 return Money.FromUnit(addressBalance.balances.FirstOrDefault().balance, MoneyUnit.Satoshi);
             }
 
             return Money.Zero;
+        }
+
+        public string GetKeyAddressFromProfileName(string profileName)
+        {
+            string profileKeyAddress = string.Empty;
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<ProfileData> serverNodes = dbContext.Profiles.Where(s => s.Name == profileName);
+                if (serverNodes.Count() > 0)
+                {
+                    profileKeyAddress = serverNodes.First().KeyAddress;
+                }
+            }
+            return profileKeyAddress;
         }
 
         public async Task<string> GetServerAddress(string walletName)
@@ -381,25 +397,25 @@ namespace x42.Feature.Network
         /// <summary>
         ///     The key address <see cref="string" /> if key address is available, if not empty string is returned.
         /// </summary>
-        public string GetServerKeyAddress()
+        public string GetServerProfile()
         {
-            string activeKeyAddress = string.Empty;
+            string activeServerProfile = string.Empty;
 
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
                 IQueryable<ServerData> server = dbContext.Servers;
                 if (server.Count() > 0)
                 {
-                    string keyAddress = server.First().KeyAddress;
+                    string profileName = server.First().ProfileName;
 
-                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.KeyAddress == keyAddress && s.Active);
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == profileName && s.Active);
                     if (serverNode.Count() > 0)
                     {
-                        activeKeyAddress = keyAddress;
+                        activeServerProfile = profileName;
                     }
                 }
             }
-            return activeKeyAddress;
+            return activeServerProfile;
         }
 
         /// <summary>
@@ -413,9 +429,9 @@ namespace x42.Feature.Network
                 IQueryable<ServerData> server = dbContext.Servers;
                 if (server.Count() > 0)
                 {
-                    string keyAddress = server.First().KeyAddress;
+                    string profileName = server.First().ProfileName;
 
-                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.KeyAddress == keyAddress && s.Active);
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == profileName && s.Active);
                     if (serverNode.Count() > 0)
                     {
                         result = serverNode.First();

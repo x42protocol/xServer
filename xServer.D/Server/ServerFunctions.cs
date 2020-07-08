@@ -59,9 +59,9 @@ namespace x42.Server
             return result;
         }
 
-        public List<RegisterRequest> GetAllActiveXServers()
+        public List<ServerRegisterRequest> GetAllActiveXServers()
         {
-            List<RegisterRequest> result = new List<RegisterRequest>();
+            List<ServerRegisterRequest> result = new List<ServerRegisterRequest>();
 
             using (X42DbContext dbContext = new X42DbContext(ConnectionString))
             {
@@ -70,13 +70,13 @@ namespace x42.Server
                 {
                     servers.ToList().ForEach(
                         server => result.Add(
-                            new RegisterRequest()
+                            new ServerRegisterRequest()
                             {
+                                ProfileName = server.ProfileName,
                                 NetworkProtocol = server.NetworkProtocol,
                                 NetworkAddress = server.NetworkAddress,
                                 NetworkPort = server.NetworkPort,
                                 Signature = server.Signature,
-                                KeyAddress = server.KeyAddress,
                                 Tier = server.Tier
                             }
                     ));

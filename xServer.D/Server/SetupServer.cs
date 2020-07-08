@@ -37,7 +37,7 @@ namespace x42.Server
                     ServerData serverData = new ServerData()
                     {
                         PublicAddress = setupRequest.Address,
-                        KeyAddress = setupRequest.KeyAddress,
+                        ProfileName = setupRequest.ProfileName,
                         DateAdded = DateTime.UtcNow
                     };
 
@@ -52,14 +52,14 @@ namespace x42.Server
             return result;
         }
 
-        public void UpdateServerKey(string KeyAddress)
+        public void UpdateServerProfile(string profileName)
         {
             using (X42DbContext dbContext = new X42DbContext(ConnectionString))
             {
                 ServerData serverNode = dbContext.Servers.FirstOrDefault();
                 if (serverNode != null)
                 {
-                    serverNode.KeyAddress = KeyAddress;
+                    serverNode.ProfileName = profileName;
 
                     dbContext.SaveChanges();
                 }
@@ -77,9 +77,9 @@ namespace x42.Server
                 {
                     result.ServerStatus = Status.Started;
 
-                    string keyAddress = server.First().KeyAddress;
+                    string profileName = server.First().ProfileName;
 
-                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.KeyAddress == keyAddress && s.Active);
+                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == profileName && s.Active);
                     if (serverNode.Count() > 0)
                     {
                         result.ServerStatus = Status.Complete;

@@ -2,14 +2,14 @@
 
 namespace x42.Controllers.Requests
 {
-    public class RegisterRequest
+    public class ServerRegisterRequest
     {
         /// <summary>
-        ///     User defined name of server requesting to be registered.
+        ///     The profile name of the server requesting to be registered.
         /// </summary>
-        [Required(ErrorMessage = "A name for the server is missing")]
-        [StringLength(32, ErrorMessage = "The server node cannot exceed 32 characters.")]
-        public string Name { get; set; }
+        [Required(ErrorMessage = "The profile name is missing.")]
+        [StringLength(64, ErrorMessage = "The profile name cannot exceed 64 characters.")]
+        public string ProfileName { get; set; }
 
         /// <summary>
         ///     Public Network Protocol of the server requesting to be registered.
@@ -39,13 +39,6 @@ namespace x42.Controllers.Requests
         [Required(ErrorMessage = "The signature is missing.")]
         [StringLength(1024, ErrorMessage = "The signature cannot exceed 1024 characters.")]
         public string Signature { get; set; }
-
-        /// <summary>
-        ///     The Public Key Address of the server requesting to be registered.
-        /// </summary>
-        [Required(ErrorMessage = "The Address is missing.")]
-        [StringLength(128, ErrorMessage = "The Address cannot exceed 128 characters.")]
-        public string KeyAddress { get; set; }
 
         /// <summary>
         ///     The Tier the server is requesting to register as.

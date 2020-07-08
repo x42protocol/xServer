@@ -18,10 +18,10 @@ namespace x42.Feature.Database.Context
                 .HasIndex(p => new { p.KeyAddress })
                 .IsUnique();
             builder.Entity<ServerNodeData>()
-                .HasIndex(p => new { p.KeyAddress })
+                .HasIndex(p => new { p.ProfileName })
                 .IsUnique();
             builder.Entity<ServerData>()
-                .HasIndex(p => new { p.KeyAddress })
+                .HasIndex(p => new { p.ProfileName })
                 .IsUnique();
         }
 

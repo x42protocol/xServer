@@ -14,13 +14,10 @@ using x42.Feature.Database.Tables;
 using x42.Feature.Network;
 using x42.Feature.X42Client;
 using x42.Feature.Database;
-using x42.Feature.X42Client.Enums;
 using System.Collections.Generic;
 using x42.Properties;
-using x42.Server;
 using x42.Controllers.Requests;
 using x42.Controllers.Results;
-using System.Threading;
 
 namespace x42.Server
 {
@@ -319,7 +316,7 @@ namespace x42.Server
                 else
                 {
                     result = serverPublicAddress;
-                    setupServer.UpdateServerKey(setupRequest.KeyAddress);
+                    setupServer.UpdateServerProfile(setupRequest.ProfileName);
                 }
             }
             else
@@ -369,7 +366,7 @@ namespace x42.Server
         }
 
         /// <inheritdoc />
-        public List<RegisterRequest> GetAllActiveXServers()
+        public List<ServerRegisterRequest> GetAllActiveXServers()
         {
             ServerFunctions serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
             return serverFunctions.GetAllActiveXServers();

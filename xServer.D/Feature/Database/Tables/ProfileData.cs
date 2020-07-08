@@ -7,9 +7,9 @@ namespace x42.Feature.Database.Tables
     public class ProfileData
     {
         [Key]
-        public string KeyAddress { get; set; }
         public string Name { get; set; }
+        public string KeyAddress { get; set; }
         public string Signature { get; set; }
-        public string TransactionId { get; set; }
+        public string PriceLockId { get; set; }
     }
 }

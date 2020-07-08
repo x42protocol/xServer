@@ -11,34 +11,34 @@ namespace x42.Migrations
                 name: "profile",
                 columns: table => new
                 {
-                    KeyAddress = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
+                    KeyAddress = table.Column<string>(nullable: true),
                     Signature = table.Column<string>(nullable: true),
-                    TransactionId = table.Column<string>(nullable: true)
+                    PriceLockId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_profile", x => x.KeyAddress);
+                    table.PrimaryKey("PK_profile", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
                 name: "server",
                 columns: table => new
                 {
-                    KeyAddress = table.Column<string>(nullable: false),
+                    ProfileName = table.Column<string>(nullable: false),
                     PublicAddress = table.Column<string>(nullable: true),
                     DateAdded = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_server", x => x.KeyAddress);
+                    table.PrimaryKey("PK_server", x => x.ProfileName);
                 });
 
             migrationBuilder.CreateTable(
                 name: "servernode",
                 columns: table => new
                 {
-                    KeyAddress = table.Column<string>(nullable: false),
+                    ProfileName = table.Column<string>(nullable: false),
                     NetworkProtocol = table.Column<int>(nullable: false),
                     NetworkAddress = table.Column<string>(nullable: true),
                     NetworkPort = table.Column<long>(nullable: false),
@@ -52,7 +52,7 @@ namespace x42.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_servernode", x => x.KeyAddress);
+                    table.PrimaryKey("PK_servernode", x => x.ProfileName);
                 });
 
             migrationBuilder.CreateIndex(
@@ -68,15 +68,15 @@ namespace x42.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_server_KeyAddress",
+                name: "IX_server_ProfileName",
                 table: "server",
-                column: "KeyAddress",
+                column: "ProfileName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_servernode_KeyAddress",
+                name: "IX_servernode_ProfileName",
                 table: "servernode",
-                column: "KeyAddress",
+                column: "ProfileName",
                 unique: true);
         }
 

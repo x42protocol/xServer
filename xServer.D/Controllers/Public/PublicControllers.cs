@@ -68,16 +68,16 @@ namespace x42.Controllers.Public
         /// <param name="registerRequest">The object with all of the nessesary data to register a xServer.</param>
         /// <returns>A <see cref="RegisterResult" /> with registration result.</returns>
         [HttpPost]
-        [Route("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest registerRequest)
+        [Route("registerserver")]
+        public async Task<IActionResult> RegisterServerAsync([FromBody] ServerRegisterRequest registerRequest)
         {
             xServer.Stats.IncrementPublicRequest();
             ServerNodeData serverNode = new ServerNodeData()
             {
+                ProfileName = registerRequest.ProfileName,
                 NetworkAddress = registerRequest.NetworkAddress,
                 NetworkPort = registerRequest.NetworkPort,
                 Signature = registerRequest.Signature,
-                KeyAddress = registerRequest.KeyAddress,
                 Tier = registerRequest.Tier,
                 NetworkProtocol = registerRequest.NetworkProtocol
             };
@@ -124,10 +124,32 @@ namespace x42.Controllers.Public
         [Route("getprofile")]
         public IActionResult GetProfile(ProfileRequest profileRequest)
         {
+            xServer.Stats.IncrementPublicRequest();
             if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
             {
                 var profile = profileFeature.GetProfile(profileRequest);
                 return Json(profile);
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 2 requirement not meet", "The node you requested is not a tier 2 node.");
+            }
+        }
+
+        /// <summary>
+        ///     Registers a profile to the network.
+        /// </summary>
+        /// <param name="registerRequest">The object with all of the nessesary data to register a profile.</param>
+        /// <returns>A <see cref="RegisterResult" /> with registration result.</returns>
+        [HttpPost]
+        [Route("registerprofile")]
+        public async Task<IActionResult> RegisterProfileAsync([FromBody] ProfileRegisterRequest registerRequest)
+        {
+            xServer.Stats.IncrementPublicRequest();
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
+            {
+                var registerResult = await profileFeature.RegisterProfile(registerRequest);
+                return Json(registerResult);
             }
             else
             {

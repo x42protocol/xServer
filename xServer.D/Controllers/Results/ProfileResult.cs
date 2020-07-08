@@ -10,7 +10,7 @@ namespace x42.Controllers.Results
 
         public string Signature { get; set; }
 
-        public string TransactionId { get; set; }
+        public string PriceLockId { get; set; }
 
         public List<ProfileField> ProfileFields { get; set; }
     }

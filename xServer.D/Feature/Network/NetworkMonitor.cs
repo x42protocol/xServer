@@ -233,9 +233,9 @@ namespace x42.Feature.Network
 
         public async Task RelayXServerAsync(ServerNodeData newServer, List<ServerNodeData> activeXServers, CancellationToken cancellationToken)
         {
-            RegisterRequest registerRequest = new RegisterRequest()
+            ServerRegisterRequest registerRequest = new ServerRegisterRequest()
             {
-                KeyAddress = newServer.KeyAddress,
+                ProfileName = newServer.ProfileName,
                 NetworkAddress = newServer.NetworkAddress,
                 NetworkPort = newServer.NetworkPort,
                 NetworkProtocol = newServer.NetworkProtocol,
@@ -296,9 +296,9 @@ namespace x42.Feature.Network
             var selfNode = networkFeatures.GetSelfServerNode();
             if (selfNode.Active)
             {
-                RegisterRequest registerRequest = new RegisterRequest()
+                ServerRegisterRequest registerRequest = new ServerRegisterRequest()
                 {
-                    KeyAddress = selfNode.KeyAddress,
+                    ProfileName = selfNode.ProfileName,
                     NetworkProtocol = selfNode.NetworkProtocol,
                     NetworkAddress = selfNode.NetworkAddress,
                     NetworkPort = selfNode.NetworkPort,
@@ -325,7 +325,7 @@ namespace x42.Feature.Network
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
                 List<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.Active).ToList();
-                string selfKeyAddress = networkFeatures.GetServerKeyAddress();
+                string selfProfile = networkFeatures.GetServerProfile();
                 int localActiveCount = serverNodes.Count();
                 var xServerStats = await networkFeatures.GetXServerStats();
                 if (xServerStats == null)
@@ -364,13 +364,13 @@ namespace x42.Feature.Network
                                 if (remoteCountResult.Count > localActiveCount) // TODO: Need a better way to do this, both servers can have the same count with diffrent set of active servers, perhaps a hash of all of the active server signatures.
                                 {
                                     var allActiveXServersRequest = new RestRequest("/getallactivexservers/", Method.GET);
-                                    var allActiveXServersResult = await client.ExecuteAsync<List<RegisterRequest>>(allActiveXServersRequest, cancellationToken).ConfigureAwait(false);
+                                    var allActiveXServersResult = await client.ExecuteAsync<List<ServerRegisterRequest>>(allActiveXServersRequest, cancellationToken).ConfigureAwait(false);
                                     if (allActiveXServersResult.StatusCode == HttpStatusCode.OK)
                                     {
                                         var activeXServersList = allActiveXServersResult.Data;
                                         foreach (var serverResult in activeXServersList)
                                         {
-                                            if (serverResult.KeyAddress == selfKeyAddress)
+                                            if (serverResult.ProfileName == selfProfile)
                                             {
                                                 foundSelf = true;
                                             }
@@ -380,7 +380,7 @@ namespace x42.Feature.Network
                                                 // Local Registration of new nodes we don't know about.
                                                 await networkFeatures.Register(new ServerNodeData()
                                                 {
-                                                    KeyAddress = serverResult.KeyAddress,
+                                                    ProfileName = serverResult.ProfileName,
                                                     NetworkAddress = serverResult.NetworkAddress,
                                                     NetworkPort = serverResult.NetworkPort,
                                                     NetworkProtocol = serverResult.NetworkProtocol,

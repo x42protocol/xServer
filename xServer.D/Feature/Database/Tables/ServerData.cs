@@ -8,7 +8,7 @@ namespace x42.Feature.Database.Tables
     public class ServerData
     {
         [Key]
-        public string KeyAddress { get; set; }
+        public string ProfileName { get; set; }
         public string PublicAddress { get; set; }
         public DateTime DateAdded { get; set; }
     }

@@ -94,7 +94,7 @@ namespace x42.Server
         ///     Return all active xServers available
         /// </summary>
         /// <returns>Will return all of active servers.</returns>
-        List<RegisterRequest> GetAllActiveXServers();
+        List<ServerRegisterRequest> GetAllActiveXServers();
     }
 
     /// <summary>Represents <see cref="IServer" /> state.</summary>

@@ -21,19 +21,19 @@ namespace x42.Migrations
 
             modelBuilder.Entity("x42.Feature.Database.Tables.ProfileData", b =>
                 {
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.Property<string>("KeyAddress")
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("PriceLockId")
                         .HasColumnType("text");
 
                     b.Property<string>("Signature")
                         .HasColumnType("text");
 
-                    b.Property<string>("TransactionId")
-                        .HasColumnType("text");
-
-                    b.HasKey("KeyAddress");
+                    b.HasKey("Name");
 
                     b.HasIndex("KeyAddress")
                         .IsUnique();
@@ -46,7 +46,7 @@ namespace x42.Migrations
 
             modelBuilder.Entity("x42.Feature.Database.Tables.ServerData", b =>
                 {
-                    b.Property<string>("KeyAddress")
+                    b.Property<string>("ProfileName")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("DateAdded")
@@ -55,9 +55,9 @@ namespace x42.Migrations
                     b.Property<string>("PublicAddress")
                         .HasColumnType("text");
 
-                    b.HasKey("KeyAddress");
+                    b.HasKey("ProfileName");
 
-                    b.HasIndex("KeyAddress")
+                    b.HasIndex("ProfileName")
                         .IsUnique();
 
                     b.ToTable("server");
@@ -65,7 +65,7 @@ namespace x42.Migrations
 
             modelBuilder.Entity("x42.Feature.Database.Tables.ServerNodeData", b =>
                 {
-                    b.Property<string>("KeyAddress")
+                    b.Property<string>("ProfileName")
                         .HasColumnType("text");
 
                     b.Property<bool>("Active")
@@ -98,9 +98,9 @@ namespace x42.Migrations
                     b.Property<int>("Tier")
                         .HasColumnType("integer");
 
-                    b.HasKey("KeyAddress");
+                    b.HasKey("ProfileName");
 
-                    b.HasIndex("KeyAddress")
+                    b.HasIndex("ProfileName")
                         .IsUnique();
 
                     b.ToTable("servernode");

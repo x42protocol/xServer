@@ -98,7 +98,7 @@ namespace x42.Feature.Profile
         /// <summary>
         ///     Register a new profile.
         /// </summary>
-        public ProfileChangeResult RegisterProfile(ProfileRegisterRequest profileRegisterRequest)
+        public async Task<ProfileChangeResult> RegisterProfile(ProfileRegisterRequest profileRegisterRequest)
         {
             ProfileChangeResult result = new ProfileChangeResult();
 
@@ -111,7 +111,7 @@ namespace x42.Feature.Profile
                     {
                         Name = profileRegisterRequest.Name,
                         KeyAddress = profileRegisterRequest.KeyAddress,
-                        TransactionId = profileRegisterRequest.TransactionId
+                        PriceLockId = profileRegisterRequest.PriceLockId
                     };
 
                     var newRecord = dbContext.Profiles.Add(newProfile);
@@ -150,7 +150,7 @@ namespace x42.Feature.Profile
                             KeyAddress = profile.KeyAddress,
                             Name = profile.Name,
                             Signature = profile.Signature,
-                            TransactionId = profile.TransactionId
+                            PriceLockId = profile.PriceLockId
                         };
                     }
                 }
@@ -164,7 +164,7 @@ namespace x42.Feature.Profile
                             KeyAddress = profile.KeyAddress,
                             Name = profile.Name,
                             Signature = profile.Signature,
-                            TransactionId = profile.TransactionId
+                            PriceLockId = profile.PriceLockId
                         };
                     }
                 }
