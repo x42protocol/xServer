@@ -52,10 +52,10 @@ namespace x42.Feature.PriceLock
         private readonly NetworkFeatures networkFeatures;
 
         /// <summary>Time in seconds between attempts to update my x42/pair price</summary>
-        private readonly int updateMyPriceSeconds = 60;
+        private readonly int updateMyPriceSeconds = 600;
 
         /// <summary>Time in seconds between attempts to update network x42/pair price</summary>
-        private readonly int updateNetworkPriceSeconds = 600;
+        private readonly int updateNetworkPriceSeconds = 1800;
 
         /// <summary>Fee for the price lock. Default is 1%. TODO: Add this into configuration.</summary>
         private readonly decimal priceLockFeePercent = 1;
