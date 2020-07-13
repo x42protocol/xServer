@@ -202,15 +202,76 @@ namespace x42.Feature.PriceLock
             return result;
         }
 
-        public async Task<ValidatePriceLockPayeeResult> ValidatePriceLockPayee(string rawHex, string pricelockId, string signature)
+        public async Task<ValidatePriceLockPayeeResult> ValidateNewPriceLockPayee(string rawHex, string pricelockId, string signature)
         {
             var result = new ValidatePriceLockPayeeResult();
 
             var paymentTransaction = await networkFeatures.DecodeRawTransaction(rawHex);
+            if (paymentTransaction != null)
+            {
+                if (TransactionAlreadyExists(paymentTransaction.TxId))
+                {
+                    var isPayeeValid = await priceLockValidation.IsPayeeSignatureValid(paymentTransaction, pricelockId, signature);
+                    if (isPayeeValid)
+                    {
+                        bool updated = UpdatePriceLockWithPayee(paymentTransaction.TxId, pricelockId, signature);
+                        if (updated)
+                        {
+                            result.Success = true;
+                        }
+                        else
+                        {
+                            result.Success = false;
+                            result.ResultMessage = "Failed to update price lock";
+                        }
+                    }
+                    else
+                    {
+                        result.Success = false;
+                        result.ResultMessage = "Failed to validate payee";
+                    }
+                }
+                else
+                {
+                    result.Success = false;
+                    result.ResultMessage = "Failed because transaction already exists.";
+                }
+            }
+            else
+            {
+                result.Success = false;
+                result.ResultMessage = "Failed to validate raw transaction";
+            }
+            return result;
+        }
 
+        private bool UpdatePriceLockWithPayee(string txId, string pricelockId, string payeeSignature)
+        {
+            bool result = false;
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
+                var transaction = dbContext.PriceLocks.Where(p => p.PriceLockId == new Guid(pricelockId)).FirstOrDefault();
+                if (transaction != null)
+                {
+                    transaction.TransacrionId = txId;
+                    transaction.PayeeSignature = payeeSignature;
+                    dbContext.SaveChanges();
+                    result = true;
+                }
+            }
+            return result;
+        }
 
+        private bool TransactionAlreadyExists(string txId)
+        {
+            bool result = false;
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var transaction = dbContext.PriceLocks.Where(p => p.TransacrionId == txId);
+                if (transaction.Count() > 0)
+                {
+                    result = true;
+                }
             }
             return result;
         }
