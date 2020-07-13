@@ -1,13 +1,17 @@
 ﻿namespace x42.Controllers.Results
 {
-    public class CreatePriceLockResult
+    public class PriceLockResult
     {
         public bool Success { get; set; }
 
+        public string ResultMessage { get; set; }
+
         public string PriceLockId { get; set; }
 
+        public int Status { get; set; }
+
         public decimal RequestAmount { get; set; }
-        
+
         public int RequestAmountPair { get; set; }
 
         public decimal FeeAmount { get; set; }
@@ -18,8 +22,12 @@
 
         public string DestinationAddress { get; set; }
 
+        public string TransacrionId { get; set; }
+
         public string PriceLockSignature { get; set; }
 
-        public string ResultMessage { get; set; }
+        public string PayeeSignature { get; set; }
+
+        public long ExpireBlock { get; set; }
     }
 }

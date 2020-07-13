@@ -143,9 +143,9 @@ namespace x42.Feature.PriceLock
             startAfter: TimeSpans.Second);
         }
 
-        public async Task<CreatePriceLockResult> CreatePriceLock(CreatePriceLockRequest priceLockRequest)
+        public async Task<PriceLockResult> CreatePriceLock(CreatePriceLockRequest priceLockRequest)
         {
-            var result = new CreatePriceLockResult();
+            var result = new PriceLockResult();
             var fiatPair = FiatPairs.Where(f => (int)f.Currency == priceLockRequest.RequestAmountPair).FirstOrDefault();
             if (fiatPair != null)
             {
@@ -163,7 +163,8 @@ namespace x42.Feature.PriceLock
                         FeeAddress = feeAddress,
                         ExpireBlock = priceLockRequest.ExpireBlock,
                         RequestAmount = priceLockRequest.RequestAmount,
-                        RequestAmountPair = priceLockRequest.RequestAmountPair
+                        RequestAmountPair = priceLockRequest.RequestAmountPair,
+                        Status = (int)Status.New
                     };
                     var newPriceLockRecord = dbContext.Add(newPriceLock);
                     if (newPriceLockRecord.State == EntityState.Added)
@@ -182,6 +183,7 @@ namespace x42.Feature.PriceLock
                             result.RequestAmountPair = newPriceLock.RequestAmountPair;
                             result.PriceLockId = newPriceLock.PriceLockId.ToString();
                             result.PriceLockSignature = newPriceLock.PriceLockSignature;
+                            result.Status = (int)Status.New;
                             result.Success = true;
                         }
                         else

@@ -11,6 +11,8 @@ namespace x42.Feature.Database.Tables
         [Key]
         public Guid PriceLockId { get; set; }
 
+        public int Status { get; set; }
+
         public decimal RequestAmount { get; set; }
 
         public int RequestAmountPair { get; set; }

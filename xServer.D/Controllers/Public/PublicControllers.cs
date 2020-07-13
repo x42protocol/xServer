@@ -223,7 +223,7 @@ namespace x42.Controllers.Public
         ///     Create a price lock.
         /// </summary>
         /// <param name="priceLockRequest">The object with all of the nessesary data to create a price lock.</param>
-        /// <returns>A <see cref="CreatePriceLockResult" /> with price lock results.</returns>
+        /// <returns>A <see cref="PriceLockResult" /> with price lock results.</returns>
         [HttpPost]
         [Route("createpricelock")]
         public async Task<IActionResult> CreatePriceLock([FromBody] CreatePriceLockRequest priceLockRequest)
