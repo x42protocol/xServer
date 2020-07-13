@@ -598,7 +598,64 @@ namespace x42.Feature.X42Client.RestClient
                     $"An Error '{ex.Message}' Occured When Building A TX! [Wallet: '{walletName.Trim()}', Account: '{account.Trim()}', To: '{destinationAddress.Trim()}', Amount: '{amount}'",
                     ex);
                 throw;
-            } //end of try-catch
-        } //end of public async Task<BuildTXResponse> BuildTransaction(string walletName, string account, string destinationAddress, decimal amount, bool allowUnconfirmed = false, bool shuffleCoins = true)
-    } //end of class
+            }
+        }
+
+        /// <summary>
+        ///     Gets a raw transaction that is present on this full node.
+        ///     This method first searches the transaction pool and then tries the block store.
+        /// </summary>
+        /// <param name="trxid">The transaction ID (a hash of the trancaction).</param>
+        /// <param name="verbose">A flag that specifies whether to return verbose information about the transaction.</param>
+        /// <returns>Json formatted <see cref="RawTransactionResponse"/> or <see cref="RawTransactionResponse"/>. <c>null</c> if transaction not found. Returns a formatted error if otherwise fails.</returns>
+        public async Task<RawTransactionResponse> GetRawTransaction(string trxid, bool verbose)
+        {
+            try
+            {
+                Guard.Null(trxid, nameof(trxid), "Unable to get raw tx, Provided transaction id Is NULL/Empty!");
+
+                StringBuilder queryURL = new StringBuilder($"api/Node/getrawtransaction?trxid={trxid}&verbose={verbose}");
+
+                RawTransactionResponse response = await base.SendGet<RawTransactionResponse>(queryURL.ToString());
+
+                Guard.Null(response, nameof(response), "'api/Node/getrawtransaction' API Response Was Null!");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting raw transaction For '{trxid}'!", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        ///     Gets a JSON representation for a given transaction in hex format.
+        /// </summary>
+        /// <param name="rawHex">A string containing the necessary parameters for a block search request.</param>
+        /// <returns>The raw transaction result of the transaction.</returns>
+        public async Task<RawTransactionResponse> DecodeRawTransaction(string rawHex)
+        {
+            try
+            {
+                Guard.Null(rawHex, nameof(rawHex), "Unable to decode raw tx, Provided raw hex Is NULL/Empty!");
+
+                DecodeRawTransactionRequest decodeTxRequest = new DecodeRawTransactionRequest
+                {
+                    RawHex = rawHex
+                };
+
+                RawTransactionResponse response = await base.SendPostJSON<RawTransactionResponse>("api/Node/decoderawtransaction", decodeTxRequest);
+
+                Guard.Null(response, nameof(response), "'api/Node/decoderawtransaction' API Response Was Null!");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting raw transaction For '{rawHex}'!", ex);
+                throw;
+            }
+        }
+    }
 }

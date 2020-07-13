@@ -18,10 +18,10 @@ namespace x42.Controllers.Requests
         public string Signature { get; set; }
 
         /// <summary>
-        ///     The Transaction ID of the payment for the addition of the field.
+        ///     The Price Lock ID of the payment for the addition of the field.
         /// </summary>
-        [Required(ErrorMessage = "The transaction id is missing.")]
-        [StringLength(128, ErrorMessage = "The transaction id cannot exceed 128 characters.")]
-        public string TransactionId { get; set; }
+        [Required(ErrorMessage = "The price lock id is missing.")]
+        [StringLength(128, ErrorMessage = "The price lock id cannot exceed 128 characters.")]
+        public string PriceLockId { get; set; }
     }
 }

@@ -9,6 +9,8 @@ using x42.Feature.Profile;
 using x42.Utilities.JsonErrors;
 using System.Net;
 using x42.Feature.PriceLock;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace x42.Controllers.Public
 {
@@ -158,21 +160,58 @@ namespace x42.Controllers.Public
         }
 
         /// <summary>
-        ///     Get my avrage price.
+        ///     Get my average price.
         /// </summary>
         /// <returns>A JSON object containing price information.</returns>
         [HttpGet]
         [Route("getprice")]
-        public IActionResult GetPrice()
+        public IActionResult GetPrice(int fiatPairId)
         {
             xServer.Stats.IncrementPublicRequest();
             if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
             {
-                PriceResult priceResult = new PriceResult()
+                var fiatPair = priceFeature.FiatPairs.Where(f => (int)f.Currency == fiatPairId).FirstOrDefault();
+                if (fiatPair != null)
                 {
-                    Price = priceFeature.Price.GetMytPrice()
-                };
-                return Json(priceResult);
+                    PriceResult priceResult = new PriceResult()
+                    {
+                        Price = fiatPair.GetMytPrice()
+                    };
+                    return Json(priceResult);
+                }
+                else
+                {
+                    return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Invalid Pair", "The pair supplied does not exist.");
+                }
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
+            }
+        }
+
+        /// <summary>
+        ///     Get my average price list.
+        /// </summary>
+        /// <returns>A JSON object containing price information.</returns>
+        [HttpGet]
+        [Route("getprices")]
+        public IActionResult GetPrices()
+        {
+            xServer.Stats.IncrementPublicRequest();
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            {
+                var priceResults = new List<PriceResult>();
+                foreach (var pair in priceFeature.FiatPairs)
+                {
+                    PriceResult priceResult = new PriceResult()
+                    {
+                        Price = pair.GetMytPrice(),
+                        Pair = (int)pair.Currency
+                    };
+                    priceResults.Add(priceResult);
+                }
+                return Json(priceResults);
             }
             else
             {

@@ -175,6 +175,12 @@ namespace x42.Feature.Network
             return signature.Signature;
         }
 
+        public async Task<bool> VerifySenderPriceLockSignature(string address, string priceLockId, string signature)
+        {
+            var valid = await x42Client.VerifyMessageAsync(address, priceLockId, signature);
+            return valid;
+        }
+
         public string GetMyKeyAddress()
         {
             return cachedWalletInfo.KeyAddress;
@@ -251,6 +257,18 @@ namespace x42.Feature.Network
             }
 
             return Money.Zero;
+        }
+
+        public async Task<RawTransactionResponse> GetRawTransaction(string trxid, bool verbose)
+        {
+            RawTransactionResponse rawTranscation = await x42Client.GetRawTransaction(trxid, verbose);
+            return rawTranscation;
+        }
+
+        public async Task<RawTransactionResponse> DecodeRawTransaction(string rawHex)
+        {
+            RawTransactionResponse rawTranscation = await x42Client.DecodeRawTransaction(rawHex);
+            return rawTranscation;
         }
 
         public string GetKeyAddressFromProfileName(string profileName)

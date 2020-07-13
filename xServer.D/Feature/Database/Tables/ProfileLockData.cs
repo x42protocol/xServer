@@ -11,7 +11,9 @@ namespace x42.Feature.Database.Tables
         [Key]
         public Guid PriceLockId { get; set; }
 
-        public decimal InitialRequestAmount { get; set; }
+        public decimal RequestAmount { get; set; }
+
+        public int RequestAmountPair { get; set; }
 
         public decimal FeeAmount { get; set; }
 
@@ -21,7 +23,11 @@ namespace x42.Feature.Database.Tables
 
         public string DestinationAddress { get; set; }
 
+        public string TransacrionId { get; set; }
+
         public string PriceLockSignature { get; set; }
+
+        public string PayeeSignature { get; set; }
 
         public long ExpireBlock { get; set; }
     }

@@ -5,11 +5,18 @@ namespace x42.Controllers.Requests
     public class CreatePriceLockRequest
     {
         /// <summary>
-        ///     The inital amount to create the price lock on.
+        ///     The request amount to create the price lock on.
         /// </summary>
-        [Required(ErrorMessage = "Initial amount is missing")]
+        [Required(ErrorMessage = "Request amount is missing")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Value for {0} cannot be below {1} and not exceed {2}.")]
-        public decimal InitialAmount { get; set; }
+        public decimal RequestAmount { get; set; }
+
+        /// <summary>
+        ///     The currency pair ID.
+        /// </summary>
+        [Required(ErrorMessage = "Request Amount Pair is missing")]
+        [Range(1, int.MaxValue, ErrorMessage = "Value for {0} cannot be below {1} and not exceed {2}.")]
+        public int RequestAmountPair { get; set; }
 
         /// <summary>
         ///     The destination address of the profile requesting to be registered.

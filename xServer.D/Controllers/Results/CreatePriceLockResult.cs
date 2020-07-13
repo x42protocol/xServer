@@ -6,7 +6,9 @@
 
         public string PriceLockId { get; set; }
 
-        public decimal InitialAmount { get; set; }
+        public decimal RequestAmount { get; set; }
+        
+        public int RequestAmountPair { get; set; }
 
         public decimal FeeAmount { get; set; }
 

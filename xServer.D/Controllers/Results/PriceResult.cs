@@ -12,5 +12,8 @@
 
         /// <summary>The node's price average.</summary>
         public decimal Price { get; set; } = 0;
+
+        /// <summary>The related pair.</summary>
+        public int Pair { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace x42.Feature.PriceLock
 {
-    public class USD
+    public class FiatPair
     {
         /// <summary>
         ///     How many of my prices to hold to average out.
@@ -16,14 +16,20 @@ namespace x42.Feature.PriceLock
         /// </summary>
         public int NetworkPriceListSize { get; internal set; } = 100;
 
+        /// <summary>
+        ///     The currency for this pair.
+        /// </summary>
+        public FiatCurrency Currency { get; internal set; }
+
         public PriceList<decimal> MyPrices { get; internal set; }
         private readonly object LOCK_MY_PRICES = new object();
 
         public PriceList<decimal> NetworkPrices { get; internal set; }
         private readonly object LOCK_NETWORK_PRICES = new object();
 
-        public USD()
+        public FiatPair(FiatCurrency currency)
         {
+            Currency = currency;
             MyPrices = new PriceList<decimal>(myPriceListSize);
             NetworkPrices = new PriceList<decimal>(NetworkPriceListSize);
         }

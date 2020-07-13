@@ -38,11 +38,11 @@ namespace x42.Feature.X42Client
                         {
                             logger.LogInformation(
                                 $"An Error Occured Getting Account '{account}' TX History For Wallet '{wallet}', API Response Was NULL!");
-                        } //end of if-else if(accountHistory != null)
-                    } //end of foreach(string account in WalletAccounts[wallet])
-                } //end of foreach(string wallet in WalletAccounts.Keys)
-            } //end of if (!_Error_FS_Info)
-        } //end of private async void UpdateWalletTXs()
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         ///     Processes the TX History For a Given Account
@@ -71,7 +71,7 @@ namespace x42.Feature.X42Client
                     case "send":
                         txType = TXType.Sent;
                         break;
-                } //end of switch (tx.type)
+                }
 
                 //add the TX
                 accountTXs.Add(new Transaction
@@ -83,7 +83,7 @@ namespace x42.Feature.X42Client
                     Timestamp = tx.timestamp,
                     Type = txType
                 });
-            } //end of foreach(WalletTransactionshistory tx in txs)
+            }
 
             if (AccountTXs.ContainsKey(walletAccountKey))
             {
@@ -102,8 +102,8 @@ namespace x42.Feature.X42Client
 
                 //fire off a 'new TX' event
                 OnNewTX(wallet, account, accountTXs);
-            } //end of if-else if (AccountTXs.ContainsKey(walletAccountKey))
-        } //end of private void ProcessAccountTX(string wallet, string account)
+            }
+        }
 
 
         /// <summary>
@@ -125,9 +125,35 @@ namespace x42.Feature.X42Client
             {
                 confirmedBalance += accountBalence.amountConfirmed.ParseApiAmount();
                 unConfirmedBalance += accountBalence.amountUnconfirmed.ParseApiAmount();
-            } //end of foreach (AccountBalance accountBalence in walletBalence.balances)
+            }
 
             return new Tuple<decimal, decimal>(confirmedBalance, unConfirmedBalance);
-        } //end of public decimal GetWalletBalence(string WalletName, string accountName)
-    } //end of X42Node.Transactions
+        }
+
+        /// <summary>
+        ///     Gets a raw transaction that is present on this full node.
+        ///     This method first searches the transaction pool and then tries the block store.
+        /// </summary>
+        /// <param name="trxid">The transaction ID (a hash of the trancaction).</param>
+        /// <param name="verbose">A flag that specifies whether to return verbose information about the transaction.</param>
+        /// <returns>Json formatted <see cref="RawTransactionResponse"/> or <see cref="RawTransactionResponse"/>. <c>null</c> if transaction not found. Returns a formatted error if otherwise fails.</returns>
+        public async Task<RawTransactionResponse> GetRawTransaction(string trxid, bool verbose)
+        {
+            RawTransactionResponse rawTransactionResult = await restClient.GetRawTransaction(trxid, verbose);
+            Guard.Null(rawTransactionResult, nameof(rawTransactionResult), $"An Error Occured When Trying To Get The Raw Transaction for '{trxid}' with verbose '{verbose}'");
+            return rawTransactionResult;
+        }
+
+        /// <summary>
+        ///     Gets a JSON representation for a given transaction in hex format.
+        /// </summary>
+        /// <param name="rawHex">A string containing the necessary parameters for a block search request.</param>
+        /// <returns>The raw transaction result of the transaction.</returns>
+        public async Task<RawTransactionResponse> DecodeRawTransaction(string rawHex)
+        {
+            RawTransactionResponse rawTransactionResult = await restClient.DecodeRawTransaction(rawHex);
+            Guard.Null(rawTransactionResult, nameof(rawTransactionResult), $"An Error Occured When Trying To decode the Transaction for '{rawHex}'");
+            return rawTransactionResult;
+        }
+    }
 }

@@ -51,16 +51,17 @@ namespace x42.Feature.PriceLock
         private readonly DatabaseFeatures database;
         private readonly NetworkFeatures networkFeatures;
 
-        /// <summary>Time in seconds between attempts to update my x42/usd price</summary>
+        /// <summary>Time in seconds between attempts to update my x42/pair price</summary>
         private readonly int updateMyPriceSeconds = 60;
 
-        /// <summary>Time in seconds between attempts to update network x42/usd price</summary>
+        /// <summary>Time in seconds between attempts to update network x42/pair price</summary>
         private readonly int updateNetworkPriceSeconds = 600;
 
         /// <summary>Fee for the price lock. Default is 1%. TODO: Add this into configuration.</summary>
         private readonly decimal priceLockFeePercent = 1;
 
-        public USD Price { get; set; } = new USD();
+        public List<FiatPair> FiatPairs { get; set; } = new List<FiatPair>();
+        private PriceLockValidation priceLockValidation;
 
         public PriceFeature(
             ServerNodeBase network,
@@ -84,7 +85,14 @@ namespace x42.Feature.PriceLock
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
+            var pairs = EnumUtil.GetValues<FiatCurrency>();
+            foreach (var pair in pairs)
+            {
+                FiatPairs.Add(new FiatPair(pair));
+            }
+
             MonitorPrice();
+            priceLockValidation = new PriceLockValidation(networkFeatures);
 
             logger.LogInformation("Price Initialized");
 
@@ -138,84 +146,117 @@ namespace x42.Feature.PriceLock
         public async Task<CreatePriceLockResult> CreatePriceLock(CreatePriceLockRequest priceLockRequest)
         {
             var result = new CreatePriceLockResult();
+            var fiatPair = FiatPairs.Where(f => (int)f.Currency == priceLockRequest.RequestAmountPair).FirstOrDefault();
+            if (fiatPair != null)
+            {
+                var price = Math.Round(priceLockRequest.RequestAmount / fiatPair.GetPrice(), 8);
+                var fee = Math.Round(price * priceLockFeePercent / 100, 8);
+                var feeAddress = networkFeatures.GetMyKeyAddress();
 
-            var price = Math.Round(priceLockRequest.InitialAmount / Price.GetPrice(), 8);
-            var fee = Math.Round(price * priceLockFeePercent / 100, 8);
-            var feeAddress = networkFeatures.GetMyKeyAddress();
+                using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                {
+                    var newPriceLock = new PriceLockData()
+                    {
+                        DestinationAddress = priceLockRequest.DestinationAddress,
+                        DestinationAmount = price,
+                        FeeAmount = fee,
+                        FeeAddress = feeAddress,
+                        ExpireBlock = priceLockRequest.ExpireBlock,
+                        RequestAmount = priceLockRequest.RequestAmount,
+                        RequestAmountPair = priceLockRequest.RequestAmountPair
+                    };
+                    var newPriceLockRecord = dbContext.Add(newPriceLock);
+                    if (newPriceLockRecord.State == EntityState.Added)
+                    {
+                        string signature = await networkFeatures.SignPriceLock($"{newPriceLock.PriceLockId}{newPriceLock.DestinationAddress}{newPriceLock.DestinationAmount}{newPriceLock.FeeAddress}{newPriceLock.FeeAmount}");
+                        if (!string.IsNullOrEmpty(signature))
+                        {
+                            newPriceLock.PriceLockSignature = signature;
+                            dbContext.SaveChanges();
+
+                            result.DestinationAddress = newPriceLock.DestinationAddress;
+                            result.DestinationAmount = newPriceLock.DestinationAmount;
+                            result.FeeAddress = newPriceLock.FeeAddress;
+                            result.FeeAmount = newPriceLock.FeeAmount;
+                            result.RequestAmount = newPriceLock.RequestAmount;
+                            result.RequestAmountPair = newPriceLock.RequestAmountPair;
+                            result.PriceLockId = newPriceLock.PriceLockId.ToString();
+                            result.PriceLockSignature = newPriceLock.PriceLockSignature;
+                            result.Success = true;
+                        }
+                        else
+                        {
+                            result.ResultMessage = "Problem with node, Failed to sign price lock.";
+                            result.Success = false;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                result.ResultMessage = "The pair supplied does not exist.";
+                result.Success = false;
+            }
+            return result;
+        }
+
+        public async Task<ValidatePriceLockPayeeResult> ValidatePriceLockPayee(string rawHex, string pricelockId, string signature)
+        {
+            var result = new ValidatePriceLockPayeeResult();
+
+            var paymentTransaction = await networkFeatures.DecodeRawTransaction(rawHex);
 
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                var newPriceLock = new PriceLockData()
-                {
-                    DestinationAddress = priceLockRequest.DestinationAddress,
-                    DestinationAmount = price,
-                    FeeAmount = fee,
-                    FeeAddress = feeAddress,
-                    ExpireBlock = priceLockRequest.ExpireBlock,
-                    InitialRequestAmount = priceLockRequest.InitialAmount
-                };
-                var newPriceLockRecord = dbContext.Add(newPriceLock);
-                if (newPriceLockRecord.State == EntityState.Added)
-                {
-                    string signature = await networkFeatures.SignPriceLock($"{newPriceLock.PriceLockId}{newPriceLock.DestinationAddress}{newPriceLock.DestinationAmount}{newPriceLock.FeeAddress}{newPriceLock.FeeAmount}");
-                    if (!string.IsNullOrEmpty(signature))
-                    {
-                        newPriceLock.PriceLockSignature = signature;
-                        dbContext.SaveChanges();
 
-                        result.DestinationAddress = newPriceLock.DestinationAddress;
-                        result.DestinationAmount = newPriceLock.DestinationAmount;
-                        result.FeeAddress = newPriceLock.FeeAddress;
-                        result.FeeAmount = newPriceLock.FeeAmount;
-                        result.InitialAmount = newPriceLock.InitialRequestAmount;
-                        result.PriceLockId = newPriceLock.PriceLockId.ToString();
-                        result.PriceLockSignature = newPriceLock.PriceLockSignature;
-                        result.Success = true;
-                    }
-                    else
-                    {
-                        result.ResultMessage = "Problem with node, Failed to sign price lock.";
-                        result.Success = false;
-                    }
-                }
             }
             return result;
         }
 
         /// <summary>
-        ///     Update my x42/usd price list
+        ///     Update my x42/pair price list
         /// </summary>
         private async Task UpdateMyPriceList(CancellationToken cancellationToken)
         {
             // TODO: Add a configuration option for the users to add thier own API to get the prices.
-
-            var coinGeckoPriceResult = await GetCoinGeckoPrice(cancellationToken);
-            Price.AddMyPrice(coinGeckoPriceResult.X42Protocol.Usd);
+            foreach (var fiatPair in FiatPairs)
+            {
+                var coinGeckoPriceResult = await GetCoinGeckoPrice(cancellationToken, fiatPair.Currency);
+                fiatPair.AddMyPrice(coinGeckoPriceResult.X42Protocol.Price);
+            }
         }
 
         /// <summary>
-        ///     Update the network x42/usd price list
+        ///     Update the network x42/pair price list
         /// </summary>
         private async Task UpdateNetworkPriceList(CancellationToken cancellationToken)
         {
-            var tierThreeServerConnections = GetTierThreeConnectionInfo(Price.NetworkPriceListSize);
+            var networkPriceListSize = FiatPairs.FirstOrDefault().NetworkPriceListSize;
+            var tierThreeServerConnections = GetTierThreeConnectionInfo(networkPriceListSize);
             foreach (var serverConnectionInfo in tierThreeServerConnections)
             {
-                var priceResult = await GetPriceFromTierThree(cancellationToken, serverConnectionInfo);
-                if (priceResult.Price > 0)
+                var nodePriceResults = await GetPriceFromTierThree(cancellationToken, serverConnectionInfo);
+                foreach (var nodeResult in nodePriceResults)
                 {
-                    Price.AddNetworkPrice(priceResult.Price);
+                    if (nodeResult.Price > 0)
+                    {
+                        var fiatPair = FiatPairs.Where(f => (int)f.Currency == nodeResult.Pair).FirstOrDefault();
+                        if (fiatPair != null)
+                        {
+                            fiatPair.AddNetworkPrice(nodeResult.Price);
+                        }
+                    }
                 }
             }
         }
 
-        private async Task<PriceResult> GetPriceFromTierThree(CancellationToken cancellationToken, XServerConnectionInfo xServerConnectionInfo)
+        private async Task<List<PriceResult>> GetPriceFromTierThree(CancellationToken cancellationToken, XServerConnectionInfo xServerConnectionInfo)
         {
-            PriceResult priceResult = new PriceResult();
+            List<PriceResult> priceResult = new List<PriceResult>();
             string xServerURL = networkFeatures.GetServerUrl(xServerConnectionInfo.NetworkProtocol, xServerConnectionInfo.NetworkAddress, xServerConnectionInfo.NetworkPort);
             var client = new RestClient(xServerURL);
-            var activeServerCountRequest = new RestRequest("/getprice/", Method.GET);
-            var getPriceResult = await client.ExecuteAsync<PriceResult>(activeServerCountRequest, cancellationToken).ConfigureAwait(false);
+            var activeServerCountRequest = new RestRequest("/getprices/", Method.GET);
+            var getPriceResult = await client.ExecuteAsync<List<PriceResult>>(activeServerCountRequest, cancellationToken).ConfigureAwait(false);
             if (getPriceResult.StatusCode == HttpStatusCode.OK)
             {
                 priceResult = getPriceResult.Data;
@@ -247,10 +288,10 @@ namespace x42.Feature.PriceLock
             return tierThreeAddresses;
         }
 
-        private async Task<CoinGeckoPriceResult> GetCoinGeckoPrice(CancellationToken cancellationToken)
+        private async Task<CoinGeckoPriceResult> GetCoinGeckoPrice(CancellationToken cancellationToken, FiatCurrency currency)
         {
             var client = new RestClient("https://api.coingecko.com/api/v3/simple/");
-            var request = new RestRequest("price?ids=x42-protocol&vs_currencies=USD", Method.GET);
+            var request = new RestRequest($"price?ids=x42-protocol&vs_currencies={currency}", Method.GET);
             var response = await client.ExecuteAsync<CoinGeckoPriceResult>(request, cancellationToken);
             if (response.ErrorException != null)
             {
