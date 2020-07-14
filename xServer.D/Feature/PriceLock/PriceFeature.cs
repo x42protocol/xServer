@@ -196,8 +196,38 @@ namespace x42.Feature.PriceLock
             }
             else
             {
-                result.ResultMessage = "The pair supplied does not exist.";
+                result.ResultMessage = "The supplied pair does not exist.";
                 result.Success = false;
+            }
+            return result;
+        }
+
+        public PriceLockResult GetPriceLock(Guid priceLockId)
+        {
+            var result = new PriceLockResult();
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var priceLock = dbContext.PriceLocks.Where(p => p.PriceLockId == priceLockId).FirstOrDefault();
+                if (priceLock != null)
+                {
+                    result.DestinationAddress = priceLock.DestinationAddress;
+                    result.DestinationAmount = priceLock.DestinationAmount;
+                    result.FeeAddress = priceLock.FeeAddress;
+                    result.FeeAmount = priceLock.FeeAmount;
+                    result.RequestAmount = priceLock.RequestAmount;
+                    result.RequestAmountPair = priceLock.RequestAmountPair;
+                    result.PriceLockId = priceLock.PriceLockId.ToString();
+                    result.PriceLockSignature = priceLock.PriceLockSignature;
+                    result.Status = priceLock.Status;
+                    result.PayeeSignature = priceLock.PayeeSignature;
+                    result.TransacrionId = priceLock.TransacrionId;
+                    result.Success = true;
+                }
+                else
+                {
+                    result.ResultMessage = "Problem with node, Failed to sign price lock.";
+                    result.Success = false;
+                }
             }
             return result;
         }
@@ -255,6 +285,7 @@ namespace x42.Feature.PriceLock
                 {
                     transaction.TransacrionId = txId;
                     transaction.PayeeSignature = payeeSignature;
+                    transaction.Status = (int)Status.WaitingForConfirmation;
                     dbContext.SaveChanges();
                     result = true;
                 }

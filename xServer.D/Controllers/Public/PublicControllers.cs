@@ -11,6 +11,7 @@ using System.Net;
 using x42.Feature.PriceLock;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace x42.Controllers.Public
 {
@@ -227,6 +228,55 @@ namespace x42.Controllers.Public
         [HttpPost]
         [Route("createpricelock")]
         public async Task<IActionResult> CreatePriceLock([FromBody] CreatePriceLockRequest priceLockRequest)
+        {
+            xServer.Stats.IncrementPublicRequest();
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            {
+                var priceLockResult = await priceFeature.CreatePriceLock(priceLockRequest);
+                return Json(priceLockResult);
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
+            }
+        }
+
+        /// <summary>
+        ///     Get a price lock.
+        /// </summary>
+        /// <param name="priceLock">The ID of the price lock.</param>
+        /// <returns>A <see cref="PriceLockResult" /> with price lock information.</returns>
+        [HttpGet]
+        [Route("getpricelock")]
+        public IActionResult GetPriceLock(string priceLockId)
+        {
+            xServer.Stats.IncrementPublicRequest();
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            {
+                if (Guid.TryParse(priceLockId, out Guid validPriceLockId))
+                {
+                    var priceLockResult = priceFeature.GetPriceLock(validPriceLockId);
+                    return Json(priceLockResult);
+                }
+                else
+                {
+                    return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Invalid pricelock id", "The price lock id is not a valid Guid");
+                }
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
+            }
+        }
+
+        /// <summary>
+        ///     Submit the payment for a price lock.
+        /// </summary>
+        /// <param name="priceLockRequest">The object with all of the nessesary data to submit a price lock.</param>
+        /// <returns>A <see cref="PriceLockResult" /> with price lock results.</returns>
+        [HttpPost]
+        [Route("submitpricelockpayment")]
+        public async Task<IActionResult> SubmitPriceLockPayment([FromBody] CreatePriceLockRequest priceLockRequest)
         {
             xServer.Stats.IncrementPublicRequest();
             if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
