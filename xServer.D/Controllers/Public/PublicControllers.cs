@@ -125,11 +125,16 @@ namespace x42.Controllers.Public
         /// <returns>A JSON object containing the profile requested.</returns>
         [HttpGet]
         [Route("getprofile")]
-        public IActionResult GetProfile(ProfileRequest profileRequest)
+        public IActionResult GetProfile(string name = "", string keyAddress = "")
         {
             xServer.Stats.IncrementPublicRequest();
             if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
             {
+                var profileRequest = new ProfileRequest()
+                {
+                    Name = name,
+                    KeyAddress = keyAddress
+                };
                 var profile = profileFeature.GetProfile(profileRequest);
                 return Json(profile);
             }

@@ -50,6 +50,7 @@ namespace x42.Feature.PriceLock
         private readonly DatabaseSettings databaseSettings;
         private readonly DatabaseFeatures database;
         private readonly NetworkFeatures networkFeatures;
+        private readonly XServer xServer;
 
         /// <summary>Time in seconds between attempts to update my x42/pair price</summary>
         private readonly int updateMyPriceSeconds = 600;
@@ -70,7 +71,8 @@ namespace x42.Feature.PriceLock
             IxServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory,
             DatabaseFeatures database,
-            NetworkFeatures networkFeatures
+            NetworkFeatures networkFeatures,
+            XServer xServer
             )
         {
             this.network = network;
@@ -80,6 +82,7 @@ namespace x42.Feature.PriceLock
             this.asyncLoopFactory = asyncLoopFactory;
             this.database = database;
             this.networkFeatures = networkFeatures;
+            this.xServer = xServer;
         }
 
         /// <inheritdoc />
@@ -112,7 +115,10 @@ namespace x42.Feature.PriceLock
             {
                 try
                 {
-                    await UpdateMyPriceList(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    if (xServer.Stats.TierLevel == Tier.TierLevel.Three)
+                    {
+                        await UpdateMyPriceList(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -129,7 +135,10 @@ namespace x42.Feature.PriceLock
             {
                 try
                 {
-                    await UpdateNetworkPriceList(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    if (xServer.Stats.TierLevel == Tier.TierLevel.Three)
+                    {
+                        await UpdateNetworkPriceList(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -316,7 +325,10 @@ namespace x42.Feature.PriceLock
             foreach (var fiatPair in FiatPairs)
             {
                 var coinGeckoPriceResult = await GetCoinGeckoPrice(cancellationToken, fiatPair.Currency);
-                fiatPair.AddMyPrice(coinGeckoPriceResult.X42Protocol.Price);
+                if (coinGeckoPriceResult != null)
+                {
+                    fiatPair.AddMyPrice(coinGeckoPriceResult.X42Protocol.Price);
+                }
             }
         }
 

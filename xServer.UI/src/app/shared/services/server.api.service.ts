@@ -11,6 +11,7 @@ import { ServerStatus } from '../models/server-status';
 import { ServerSetupStatusResponse } from '../models/server-setupstatusresponse';
 import { ServerSetupRequest } from '../models/server-setuprequest';
 import { ColdStakingCreateAddressResponse } from '../models/coldstakingcreateaddressresponse';
+import { ProfileResult } from '../models/profileresult';
 
 @Injectable({
   providedIn: 'root'
@@ -62,6 +63,29 @@ export class ServerApiService {
       catchError(err => this.handleHttpError(err))
     );
   }
+
+  /**
+  * Get profile information by profile name
+  */
+  getProfileByName(name: string): Observable<ProfileResult> {
+    let params = new HttpParams()
+      .set('name', name);
+    return this.http.get<ProfileResult>(this.x42ApiUrl + '/getprofile', { params }).pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
+  /**
+  * Get profile information by profile key address
+  */
+  getProfileByKeyAddress(keyAddress: string): Observable<ProfileResult> {
+    let params = new HttpParams()
+      .set('keyAddress', keyAddress);
+    return this.http.get<ProfileResult>(this.x42ApiUrl + '/getprofile', { params }).pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
 
   private handleHttpError(error: HttpErrorResponse, silent?: boolean) {
     console.log(error);

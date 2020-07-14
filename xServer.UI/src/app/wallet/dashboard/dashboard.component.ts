@@ -55,6 +55,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public hasBalance: boolean = false;
   public hotStakingAccount: string = "coldStakingHotAddresses";
   public installedApps: Application[];
+  public xServerProfileName: string;
 
   private walletBalanceSubscription: Subscription;
   private walletHistorySubscription: Subscription;
