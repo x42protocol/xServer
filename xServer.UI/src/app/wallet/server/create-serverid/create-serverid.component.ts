@@ -28,6 +28,7 @@ export class CreateServerIDComponent implements OnInit {
   public keyAddressAdded: boolean;
   public elementType: string;
   public addressNotValid: boolean;
+  public profileNotFound: boolean;
   public keySaving: boolean;
 
   server: ServerIDResponse = new ServerIDResponse();
@@ -45,9 +46,14 @@ export class CreateServerIDComponent implements OnInit {
     let setup = new ServerSetupRequest("", this.keyAddress);
     this.serverApiService.setSetupAddress(setup).subscribe(
       response => {
-        this.server.setServerId(response.address);
-        this.keyAddressAdded = true;
-        this.keySaving = false;
+        if (response.address == "") {
+          this.profileNotFound = true;
+          this.keySaving = false;
+        } else {
+          this.server.setServerId(response.address);
+          this.keyAddressAdded = true;
+          this.keySaving = false;
+        }
       }
     );
   }

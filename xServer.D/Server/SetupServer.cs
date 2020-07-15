@@ -25,7 +25,7 @@ namespace x42.Server
             ConnectionString = connectionString;
         }
 
-        public bool AddServerToSetup(SetupRequest setupRequest)
+        public bool AddServerToSetup(SetupRequest setupRequest, string profileName)
         {
             bool result = false;
 
@@ -36,8 +36,8 @@ namespace x42.Server
                 {
                     ServerData serverData = new ServerData()
                     {
-                        PublicAddress = setupRequest.Address,
-                        ProfileName = setupRequest.ProfileName,
+                        PublicAddress = setupRequest.KeyAddress,
+                        ProfileName = profileName,
                         DateAdded = DateTime.UtcNow
                     };
 

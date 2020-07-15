@@ -9,6 +9,7 @@
       </div>
       <div class='col blockText'>
         <p-message *ngIf="addressNotValid" severity="error" text="The address is invalid"></p-message>
+        <p-message *ngIf="profileNotFound" severity="error" text="Could not find profile"></p-message>
       </div>
     </div>
     <div class="form-group">

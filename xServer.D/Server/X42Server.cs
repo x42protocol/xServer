@@ -312,37 +312,43 @@ namespace x42.Server
         public async Task<string> SetupServer(SetupRequest setupRequest = null)
         {
             string result = string.Empty;
-            SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
-            if (string.IsNullOrEmpty(setupRequest.Address))
+
+            ProfileFunctions ProfileFunc = new ProfileFunctions(databaseSettings.ConnectionString);
+            var profile = ProfileFunc.GetProfileByKeyAddress(setupRequest.KeyAddress);
+            if (profile != null)
             {
-                string serverPublicAddress = setupServer.GetServerAddress();
-                if (string.IsNullOrEmpty(serverPublicAddress))
+                SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
+
+                if (string.IsNullOrEmpty(setupRequest.KeyAddress))
                 {
-                    setupRequest.Address = await network.GetServerAddress("x42ServerMain");
-                    AddServerAddress(setupServer, setupRequest);
-                    result = setupRequest.Address;
+                    string serverPublicAddress = setupServer.GetServerAddress();
+                    if (string.IsNullOrEmpty(serverPublicAddress))
+                    {
+                        setupRequest.KeyAddress = await network.GetServerAddress("x42ServerMain");
+                        AddServerAddress(setupServer, setupRequest, profile.Name);
+                        result = setupRequest.KeyAddress;
+                    }
+                    else
+                    {
+                        result = serverPublicAddress;
+                        setupServer.UpdateServerProfile(profile.Name);
+                    }
                 }
                 else
                 {
-                    result = serverPublicAddress;
-                    setupServer.UpdateServerProfile(setupRequest.ProfileName);
+                    AddServerAddress(setupServer, setupRequest, profile.Name);
                 }
             }
-            else
-            {
-                AddServerAddress(setupServer, setupRequest);
-            }
-
             return result;
         }
 
-        private string AddServerAddress(SetupServer setupServer, SetupRequest setupRequest)
+        private string AddServerAddress(SetupServer setupServer, SetupRequest setupRequest, string profileName)
         {
             string result = string.Empty;
-            bool success = setupServer.AddServerToSetup(setupRequest);
+            bool success = setupServer.AddServerToSetup(setupRequest, profileName);
             if (success)
             {
-                result = setupRequest.Address;
+                result = setupRequest.KeyAddress;
             }
             return result;
         }

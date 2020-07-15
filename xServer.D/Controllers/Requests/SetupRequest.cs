@@ -10,9 +10,9 @@ namespace x42.Controllers.Requests
         public string Address { get; set; }
 
         /// <summary>
-        ///     The profile namethe server will be registered with.
+        ///     The key address the server will be registered with.
         /// </summary>
-        [Required(ErrorMessage = "The profile name is required.")]
-        public string ProfileName { get; set; }
+        [Required(ErrorMessage = "The key address is required.")]
+        public string KeyAddress { get; set; }
     }
 }

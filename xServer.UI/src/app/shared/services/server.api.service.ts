@@ -52,14 +52,14 @@ export class ServerApiService {
     )
   }
 
-  setSetupAddress(data: ServerSetupRequest): Observable<ColdStakingCreateAddressResponse> {
-    return this.http.post<ColdStakingCreateAddressResponse>(this.x42ApiUrl + '/set-server-address', JSON.stringify(data)).pipe(
+  setSetupAddress(data: ServerSetupRequest): Observable<ServerSetupResponse> {
+    return this.http.post<ServerSetupResponse>(this.x42ApiUrl + '/set-server-address', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
-  getSetupAddress(): Observable<ColdStakingCreateAddressResponse> {
-    return this.http.get<ColdStakingCreateAddressResponse>(this.x42ApiUrl + '/setup').pipe(
+  getSetupAddress(): Observable<ServerSetupResponse> {
+    return this.http.get<ServerSetupResponse>(this.x42ApiUrl + '/setup').pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
