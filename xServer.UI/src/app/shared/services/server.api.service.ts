@@ -10,8 +10,8 @@ import { ModalService } from './modal.service';
 import { ServerStatus } from '../models/server-status';
 import { ServerSetupStatusResponse } from '../models/server-setupstatusresponse';
 import { ServerSetupRequest } from '../models/server-setuprequest';
-import { ColdStakingCreateAddressResponse } from '../models/coldstakingcreateaddressresponse';
 import { ProfileResult } from '../models/profileresult';
+import { ServerSetupResponse } from '../models/server-setupresponse';
 
 @Injectable({
   providedIn: 'root'

@@ -155,7 +155,7 @@ namespace x42.Feature.Network
 
         public async Task<bool> IsServerKeyValid(ServerNodeData serverNode)
         {
-            string serverKey = $"{serverNode.NetworkAddress}{serverNode.NetworkPort}{serverNode.ServerKeyAddress}{serverNode.Tier}";
+            string serverKey = $"{serverNode.NetworkAddress}{serverNode.NetworkPort}{serverNode.ServerKeyAddress}{serverNode.Tier}{serverNode.ProfileName}";
             string profileKeyAddress = GetKeyAddressFromProfileName(serverNode.ProfileName);
 
             return await x42Client.VerifyMessageAsync(profileKeyAddress, serverKey, serverNode.Signature);
