@@ -404,6 +404,8 @@ namespace x42.Feature.Network
                 IQueryable<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.Signature == serverNodeData.Signature);
                 if (serverNodes.Count() == 0)
                 {
+                    serverNodeData.DateAdded = DateTime.UtcNow;
+                    serverNodeData.LastSeen = DateTime.UtcNow;
                     var newRecord = dbContext.Add(serverNodeData);
                     if (newRecord.State == EntityState.Added)
                     {
