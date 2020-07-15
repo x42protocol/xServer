@@ -155,7 +155,7 @@ namespace x42.Feature.Network
 
         public async Task<bool> IsServerKeyValid(ServerNodeData serverNode)
         {
-            string serverKey = $"{serverNode.NetworkAddress}{serverNode.NetworkPort}{serverNode.ServerKeyAddress}{serverNode.Tier}{serverNode.ProfileName}";
+            string serverKey = $"{serverNode.NetworkAddress}{serverNode.NetworkPort}{serverNode.KeyAddress}{serverNode.SignAddress}{serverNode.FeeAddress}{serverNode.Tier}{serverNode.ProfileName}";
             string profileKeyAddress = GetKeyAddressFromProfileName(serverNode.ProfileName);
 
             return await x42Client.VerifyMessageAsync(profileKeyAddress, serverKey, serverNode.Signature);
@@ -166,13 +166,13 @@ namespace x42.Feature.Network
             var signRequest = new SignMessageRequest()
             {
                 AccountName = cachedWalletInfo.AccountName,
-                ExternalAddress = cachedWalletInfo.KeyAddress,
+                ExternalAddress = cachedWalletInfo.SignAddress,
                 Password = cachedWalletInfo.Password,
                 WalletName = cachedWalletInfo.WalletName,
                 Message = priceLock
             };
-            var signature = await x42Client.SignMessageAsync(signRequest);
-            return signature.Signature;
+            var signMessageResult = await x42Client.SignMessageAsync(signRequest);
+            return signMessageResult.Signature;
         }
 
         public async Task<bool> VerifySenderPriceLockSignature(string address, string priceLockId, string signature)
@@ -181,9 +181,9 @@ namespace x42.Feature.Network
             return valid;
         }
 
-        public string GetMyKeyAddress()
+        public string GetMySignAddress()
         {
-            return cachedWalletInfo.KeyAddress;
+            return cachedWalletInfo.SignAddress;
         }
 
         private string GetProtocolString(int networkProtocol)
@@ -259,9 +259,9 @@ namespace x42.Feature.Network
             return Money.Zero;
         }
 
-        public async Task<RawTransactionResponse> GetRawTransaction(string trxid, bool verbose)
+        public async Task<RawTransactionResponse> GetRawTransaction(string txid, bool verbose)
         {
-            RawTransactionResponse rawTranscation = await x42Client.GetRawTransaction(trxid, verbose);
+            RawTransactionResponse rawTranscation = await x42Client.GetRawTransaction(txid, verbose);
             return rawTranscation;
         }
 

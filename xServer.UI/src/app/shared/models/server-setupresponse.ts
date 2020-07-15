@@ -1,8 +1,8 @@
 export class ServerSetupResponse {
   constructor(
-    address: string
+    signAddress: string
   ) {
-    this.address = address;
+    this.signAddress = signAddress;
   }
-  public address: string;
+  public signAddress: string;
 }

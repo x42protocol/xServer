@@ -19,7 +19,6 @@ namespace x42.Feature.PriceLock
 
         public async Task<bool> IsPayeeSignatureValid(RawTransactionResponse rawTransaction, string pricelockId, string signature)
         {
-            bool result = false;
             foreach (var tx in rawTransaction.VIn)
             {
                 var inputTransaction = await network.GetRawTransaction(tx.TxId, true);
@@ -35,7 +34,7 @@ namespace x42.Feature.PriceLock
                     }
                 }
             }
-            return result;
+            return false;
         }
 
     }

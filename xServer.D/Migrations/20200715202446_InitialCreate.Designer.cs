@@ -10,7 +10,7 @@ using x42.Feature.Database.Context;
 namespace x42.Migrations
 {
     [DbContext(typeof(X42DbContext))]
-    [Migration("20200713224957_InitialCreate")]
+    [Migration("20200715202446_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -98,7 +98,7 @@ namespace x42.Migrations
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("PublicAddress")
+                    b.Property<string>("SignAddress")
                         .HasColumnType("text");
 
                     b.HasKey("ProfileName");
@@ -120,6 +120,12 @@ namespace x42.Migrations
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("FeeAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("KeyAddress")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp without time zone");
 
@@ -138,7 +144,7 @@ namespace x42.Migrations
                     b.Property<bool>("Relayed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("ServerKeyAddress")
+                    b.Property<string>("SignAddress")
                         .HasColumnType("text");
 
                     b.Property<string>("Signature")

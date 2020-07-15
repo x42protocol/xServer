@@ -6,7 +6,7 @@
     /// </summary>
     public class SetupResponse
     {
-        /// <summary>A Base58 cold staking address from the hot or cold wallet accounts.</summary>
-        public string Address { get; set; }
+        /// <summary>A Base58 address from the wallet used to sign.</summary>
+        public string SignAddress { get; set; }
     }
 }

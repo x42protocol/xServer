@@ -160,7 +160,7 @@ namespace x42.Feature.PriceLock
             {
                 var price = Math.Round(priceLockRequest.RequestAmount / fiatPair.GetPrice(), 8);
                 var fee = Math.Round(price * priceLockFeePercent / 100, 8);
-                var feeAddress = networkFeatures.GetMyKeyAddress();
+                var feeAddress = networkFeatures.GetMySignAddress();
 
                 using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
                 {
@@ -248,7 +248,7 @@ namespace x42.Feature.PriceLock
             var paymentTransaction = await networkFeatures.DecodeRawTransaction(rawHex);
             if (paymentTransaction != null)
             {
-                if (TransactionAlreadyExists(paymentTransaction.TxId))
+                if (!TransactionExists(paymentTransaction.TxId))
                 {
                     var isPayeeValid = await priceLockValidation.IsPayeeSignatureValid(paymentTransaction, pricelockId, signature);
                     if (isPayeeValid)
@@ -302,7 +302,7 @@ namespace x42.Feature.PriceLock
             return result;
         }
 
-        private bool TransactionAlreadyExists(string txId)
+        private bool TransactionExists(string txId)
         {
             bool result = false;
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))

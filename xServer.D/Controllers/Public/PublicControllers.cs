@@ -80,7 +80,9 @@ namespace x42.Controllers.Public
                 ProfileName = registerRequest.ProfileName,
                 NetworkAddress = registerRequest.NetworkAddress,
                 NetworkPort = registerRequest.NetworkPort,
-                ServerKeyAddress = registerRequest.ServerKeyAddress,
+                KeyAddress = registerRequest.KeyAddress,
+                SignAddress = registerRequest.SignAddress,
+                FeeAddress = registerRequest.FeeAddress,
                 Signature = registerRequest.Signature,
                 Tier = registerRequest.Tier,
                 NetworkProtocol = registerRequest.NetworkProtocol

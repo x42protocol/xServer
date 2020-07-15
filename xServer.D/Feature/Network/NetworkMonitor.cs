@@ -37,7 +37,7 @@ namespace x42.Feature.Network
         private readonly IAsyncLoopFactory asyncLoopFactory;
 
         /// <summary>Time in seconds between attempts run the network health monitor</summary>
-        private readonly int monitorSleep = 10;
+        private readonly int heckCheckSleepSeconds = 180;
 
         /// <summary>Time in seconds between attempts run the relay monitor</summary>
         private readonly int relaySleepSeconds = 10;
@@ -86,7 +86,7 @@ namespace x42.Feature.Network
                 }
             },
             this.networkCancellationTokenSource.Token,
-            repeatEvery: TimeSpan.FromSeconds(this.monitorSleep),
+            repeatEvery: TimeSpan.FromSeconds(this.heckCheckSleepSeconds),
             startAfter: TimeSpans.Second);
 
             this.networkMonitorLoop = asyncLoopFactory.Run("NetworkManager.RelayWorker", async token =>

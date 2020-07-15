@@ -1,9 +1,9 @@
 export class ServerSetupRequest {
-  constructor(address: string, keyAddress: string) {
-    this.address = address;
+  constructor(signAddress: string, keyAddress: string) {
+    this.signAddress = signAddress;
     this.keyAddress = keyAddress;
   }
 
-  public address: string;
+  public signAddress: string;
   public keyAddress: string;
 }

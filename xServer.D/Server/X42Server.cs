@@ -45,6 +45,9 @@ namespace x42.Server
         private readonly X42ClientFeature x42FullNode;
         private readonly DatabaseFeatures database;
         private readonly DatabaseSettings databaseSettings;
+        private readonly SetupServer setupServer;
+        private readonly ServerFunctions serverFunctions;
+        private readonly ProfileFunctions profileFunctions;
 
         public RuntimeStats Stats { get; set; } = new RuntimeStats();
 
@@ -60,6 +63,10 @@ namespace x42.Server
             this.x42FullNode = x42FullNode;
             this.database = database;
             this.databaseSettings = databaseSettings;
+            
+            setupServer = new SetupServer(databaseSettings.ConnectionString);
+            serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
+            profileFunctions = new ProfileFunctions(databaseSettings.ConnectionString);
 
             State = XServerState.Created;
         }
@@ -154,7 +161,7 @@ namespace x42.Server
             var connectionInfo = new CachedWalletInfo()
             {
                 AccountName = startRequest.AccountName,
-                KeyAddress = startRequest.KeyAddress,
+                SignAddress = startRequest.SignAddress,
                 Password = startRequest.Password,
                 WalletName = startRequest.WalletName
             };
@@ -313,50 +320,41 @@ namespace x42.Server
         {
             string result = string.Empty;
 
-            ProfileFunctions ProfileFunc = new ProfileFunctions(databaseSettings.ConnectionString);
-            var profile = ProfileFunc.GetProfileByKeyAddress(setupRequest.KeyAddress);
+            var profile = profileFunctions.GetProfileByKeyAddress(setupRequest.KeyAddress);
             if (profile != null)
             {
-                SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
-
-                if (string.IsNullOrEmpty(setupRequest.KeyAddress))
+                if (string.IsNullOrEmpty(setupRequest.SignAddress))
                 {
-                    string serverPublicAddress = setupServer.GetServerAddress();
-                    if (string.IsNullOrEmpty(serverPublicAddress))
+                    string signAddress = setupServer.GetSignAddress();
+                    if (string.IsNullOrEmpty(signAddress))
                     {
-                        setupRequest.KeyAddress = await network.GetServerAddress("x42ServerMain");
-                        AddServerAddress(setupServer, setupRequest, profile.Name);
-                        result = setupRequest.KeyAddress;
+                        setupRequest.SignAddress = await network.GetServerAddress("x42ServerMain");
+                        AddServerAddress(setupRequest, profile.Name);
+                        result = setupRequest.SignAddress;
                     }
                     else
                     {
-                        result = serverPublicAddress;
+                        result = signAddress;
                         setupServer.UpdateServerProfile(profile.Name);
                     }
                 }
                 else
                 {
-                    AddServerAddress(setupServer, setupRequest, profile.Name);
+                    AddServerAddress(setupRequest, profile.Name);
                 }
             }
             return result;
         }
 
-        private string AddServerAddress(SetupServer setupServer, SetupRequest setupRequest, string profileName)
+        private bool AddServerAddress(SetupRequest setupRequest, string profileName)
         {
-            string result = string.Empty;
-            bool success = setupServer.AddServerToSetup(setupRequest, profileName);
-            if (success)
-            {
-                result = setupRequest.KeyAddress;
-            }
+            bool result = setupServer.AddServerToSetup(setupRequest, profileName);
             return result;
         }
 
         /// <inheritdoc />
         public SetupStatusResult GetServerSetupStatus()
         {
-            SetupServer setupServer = new SetupServer(databaseSettings.ConnectionString);
             return setupServer.GetServerSetupStatus();
         }
 
@@ -368,22 +366,18 @@ namespace x42.Server
             {
                 top = maxResults;
             }
-
-            ServerFunctions serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
             return serverFunctions.GetTopXServers(top);
         }
 
         /// <inheritdoc />
         public int GetActiveServerCount()
         {
-            ServerFunctions serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
             return serverFunctions.GetActiveServerCount();
         }
 
         /// <inheritdoc />
         public List<ServerRegisterRequest> GetAllActiveXServers()
         {
-            ServerFunctions serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
             return serverFunctions.GetAllActiveXServers();
         }
     }

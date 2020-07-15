@@ -36,7 +36,7 @@ namespace x42.Server
                 {
                     ServerData serverData = new ServerData()
                     {
-                        PublicAddress = setupRequest.KeyAddress,
+                        SignAddress = setupRequest.SignAddress,
                         ProfileName = profileName,
                         DateAdded = DateTime.UtcNow
                     };
@@ -90,7 +90,7 @@ namespace x42.Server
             return result;
         }
 
-        public string GetServerAddress()
+        public string GetSignAddress()
         {
             string result = string.Empty;
             using (X42DbContext dbContext = new X42DbContext(ConnectionString))
@@ -98,7 +98,7 @@ namespace x42.Server
                 IQueryable<ServerData> server = dbContext.Servers;
                 if (server.Count() > 0)
                 {
-                    result = server.First().PublicAddress;
+                    result = server.First().SignAddress;
                 }
             }
             return result;

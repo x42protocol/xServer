@@ -5,9 +5,9 @@ namespace x42.Controllers.Requests
     public class SetupRequest
     {
         /// <summary>
-        ///     The address the server will be registered with.
+        ///     The sign address the server will be registered with.
         /// </summary>
-        public string Address { get; set; }
+        public string SignAddress { get; set; }
 
         /// <summary>
         ///     The key address the server will be registered with.

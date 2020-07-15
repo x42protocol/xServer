@@ -48,7 +48,7 @@ namespace x42.Migrations
                 columns: table => new
                 {
                     ProfileName = table.Column<string>(nullable: false),
-                    PublicAddress = table.Column<string>(nullable: true),
+                    SignAddress = table.Column<string>(nullable: true),
                     DateAdded = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -64,7 +64,9 @@ namespace x42.Migrations
                     NetworkProtocol = table.Column<int>(nullable: false),
                     NetworkAddress = table.Column<string>(nullable: true),
                     NetworkPort = table.Column<long>(nullable: false),
-                    ServerKeyAddress = table.Column<string>(nullable: true),
+                    KeyAddress = table.Column<string>(nullable: true),
+                    SignAddress = table.Column<string>(nullable: true),
+                    FeeAddress = table.Column<string>(nullable: true),
                     Tier = table.Column<int>(nullable: false),
                     Signature = table.Column<string>(nullable: true),
                     DateAdded = table.Column<DateTime>(nullable: false),

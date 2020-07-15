@@ -96,7 +96,7 @@ namespace x42.Migrations
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("PublicAddress")
+                    b.Property<string>("SignAddress")
                         .HasColumnType("text");
 
                     b.HasKey("ProfileName");
@@ -118,6 +118,12 @@ namespace x42.Migrations
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("FeeAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("KeyAddress")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp without time zone");
 
@@ -136,7 +142,7 @@ namespace x42.Migrations
                     b.Property<bool>("Relayed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("ServerKeyAddress")
+                    b.Property<string>("SignAddress")
                         .HasColumnType("text");
 
                     b.Property<string>("Signature")

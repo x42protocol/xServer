@@ -46,11 +46,11 @@ export class CreateServerIDComponent implements OnInit {
     let setup = new ServerSetupRequest("", this.keyAddress);
     this.serverApiService.setSetupAddress(setup).subscribe(
       response => {
-        if (response.address == "") {
+        if (response.signAddress == "") {
           this.profileNotFound = true;
           this.keySaving = false;
         } else {
-          this.server.setServerId(response.address);
+          this.server.setServerId(response.signAddress);
           this.keyAddressAdded = true;
           this.keySaving = false;
         }

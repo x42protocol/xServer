@@ -605,16 +605,16 @@ namespace x42.Feature.X42Client.RestClient
         ///     Gets a raw transaction that is present on this full node.
         ///     This method first searches the transaction pool and then tries the block store.
         /// </summary>
-        /// <param name="trxid">The transaction ID (a hash of the trancaction).</param>
+        /// <param name="txid">The transaction ID (a hash of the trancaction).</param>
         /// <param name="verbose">A flag that specifies whether to return verbose information about the transaction.</param>
         /// <returns>Json formatted <see cref="RawTransactionResponse"/> or <see cref="RawTransactionResponse"/>. <c>null</c> if transaction not found. Returns a formatted error if otherwise fails.</returns>
-        public async Task<RawTransactionResponse> GetRawTransaction(string trxid, bool verbose)
+        public async Task<RawTransactionResponse> GetRawTransaction(string txid, bool verbose)
         {
             try
             {
-                Guard.Null(trxid, nameof(trxid), "Unable to get raw tx, Provided transaction id Is NULL/Empty!");
+                Guard.Null(txid, nameof(txid), "Unable to get raw tx, Provided transaction id Is NULL/Empty!");
 
-                StringBuilder queryURL = new StringBuilder($"api/Node/getrawtransaction?trxid={trxid}&verbose={verbose}");
+                StringBuilder queryURL = new StringBuilder($"api/Node/getrawtransaction?txid={txid}&verbose={verbose}");
 
                 RawTransactionResponse response = await base.SendGet<RawTransactionResponse>(queryURL.ToString());
 
@@ -624,7 +624,7 @@ namespace x42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting raw transaction For '{trxid}'!", ex);
+                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting raw transaction For '{txid}'!", ex);
                 throw;
             }
         }

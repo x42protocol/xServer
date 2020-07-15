@@ -108,7 +108,7 @@ namespace x42.Controllers
             string address = await xServer.SetupServer();
             var setupResult = new SetupResponse()
             {
-                Address = address
+                SignAddress = address
             };
             return Json(setupResult);
         }
@@ -126,7 +126,7 @@ namespace x42.Controllers
             string result = await xServer.SetupServer(setupRequest);
             var setupResult = new SetupResponse()
             {
-                Address = result
+                SignAddress = result
             };
             return Json(setupResult);
         }
@@ -140,7 +140,6 @@ namespace x42.Controllers
         public IActionResult GetServerSetupStatus()
         {
             SetupStatusResult result = xServer.GetServerSetupStatus();
-
             return Json(result);
         }
 

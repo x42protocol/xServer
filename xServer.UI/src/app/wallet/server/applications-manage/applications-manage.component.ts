@@ -45,7 +45,7 @@ export class CreateServerIDComponent implements OnInit {
     let setup = new ServerSetupRequest("", this.keyAddress);
     this.serverApiService.setSetupAddress(setup).subscribe(
       response => {
-        this.server.setServerId(response.address);
+        this.server.setServerId(response.signAddress);
         this.keyAddressAdded = true;
         this.keySaving = false;
       }

@@ -9,7 +9,7 @@ namespace x42.Feature.Database.Tables
     {
         [Key]
         public string ProfileName { get; set; }
-        public string PublicAddress { get; set; }
+        public string SignAddress { get; set; }
         public DateTime DateAdded { get; set; }
     }
 }

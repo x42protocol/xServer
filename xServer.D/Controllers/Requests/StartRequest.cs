@@ -26,9 +26,9 @@ namespace x42.Controllers.Requests
         public string AccountName { get; set; }
 
         /// <summary>
-        ///     xServer Key Address.
+        ///     xServer sign address.
         /// </summary>
-        [Required(ErrorMessage = "The key address is required.")]
-        public string KeyAddress { get; set; }
+        [Required(ErrorMessage = "The sign address is required.")]
+        public string SignAddress { get; set; }
     }
 }

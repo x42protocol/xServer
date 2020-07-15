@@ -11,6 +11,6 @@
 
         public string AccountName { get; set; }
 
-        public string KeyAddress { get; set; }
+        public string SignAddress { get; set; }
     }
 }

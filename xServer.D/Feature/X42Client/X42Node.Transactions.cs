@@ -134,13 +134,13 @@ namespace x42.Feature.X42Client
         ///     Gets a raw transaction that is present on this full node.
         ///     This method first searches the transaction pool and then tries the block store.
         /// </summary>
-        /// <param name="trxid">The transaction ID (a hash of the trancaction).</param>
+        /// <param name="txid">The transaction ID (a hash of the trancaction).</param>
         /// <param name="verbose">A flag that specifies whether to return verbose information about the transaction.</param>
         /// <returns>Json formatted <see cref="RawTransactionResponse"/> or <see cref="RawTransactionResponse"/>. <c>null</c> if transaction not found. Returns a formatted error if otherwise fails.</returns>
-        public async Task<RawTransactionResponse> GetRawTransaction(string trxid, bool verbose)
+        public async Task<RawTransactionResponse> GetRawTransaction(string txid, bool verbose)
         {
-            RawTransactionResponse rawTransactionResult = await restClient.GetRawTransaction(trxid, verbose);
-            Guard.Null(rawTransactionResult, nameof(rawTransactionResult), $"An Error Occured When Trying To Get The Raw Transaction for '{trxid}' with verbose '{verbose}'");
+            RawTransactionResponse rawTransactionResult = await restClient.GetRawTransaction(txid, verbose);
+            Guard.Null(rawTransactionResult, nameof(rawTransactionResult), $"An Error Occured When Trying To Get The Raw Transaction for '{txid}' with verbose '{verbose}'");
             return rawTransactionResult;
         }
 
