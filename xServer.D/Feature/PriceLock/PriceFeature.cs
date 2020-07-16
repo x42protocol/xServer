@@ -129,7 +129,7 @@ namespace x42.Feature.PriceLock
             },
             this.networkCancellationTokenSource.Token,
             repeatEvery: TimeSpan.FromSeconds(this.updateMyPriceSeconds),
-            startAfter: TimeSpans.Second);
+            startAfter: TimeSpans.TenSeconds);
 
             this.networkPriceLoop = asyncLoopFactory.Run("Price.NetworkMonitor", async token =>
             {
@@ -149,7 +149,7 @@ namespace x42.Feature.PriceLock
             },
             this.networkCancellationTokenSource.Token,
             repeatEvery: TimeSpan.FromSeconds(this.updateNetworkPriceSeconds),
-            startAfter: TimeSpans.Second);
+            startAfter: TimeSpans.TenSeconds);
         }
 
         public async Task<PriceLockResult> CreatePriceLock(CreatePriceLockRequest priceLockRequest)
@@ -158,55 +158,80 @@ namespace x42.Feature.PriceLock
             var fiatPair = FiatPairs.Where(f => (int)f.Currency == priceLockRequest.RequestAmountPair).FirstOrDefault();
             if (fiatPair != null)
             {
-                var price = Math.Round(priceLockRequest.RequestAmount / fiatPair.GetPrice(), 8);
-                var fee = Math.Round(price * priceLockFeePercent / 100, 8);
-                var feeAddress = networkFeatures.GetMySignAddress();
-
-                using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                var averagePrice = fiatPair.GetPrice();
+                if (averagePrice != -1)
                 {
-                    var newPriceLock = new PriceLockData()
-                    {
-                        DestinationAddress = priceLockRequest.DestinationAddress,
-                        DestinationAmount = price,
-                        FeeAmount = fee,
-                        FeeAddress = feeAddress,
-                        ExpireBlock = priceLockRequest.ExpireBlock,
-                        RequestAmount = priceLockRequest.RequestAmount,
-                        RequestAmountPair = priceLockRequest.RequestAmountPair,
-                        Status = (int)Status.New
-                    };
-                    var newPriceLockRecord = dbContext.Add(newPriceLock);
-                    if (newPriceLockRecord.State == EntityState.Added)
-                    {
-                        string signature = await networkFeatures.SignPriceLock($"{newPriceLock.PriceLockId}{newPriceLock.DestinationAddress}{newPriceLock.DestinationAmount}{newPriceLock.FeeAddress}{newPriceLock.FeeAmount}");
-                        if (!string.IsNullOrEmpty(signature))
-                        {
-                            newPriceLock.PriceLockSignature = signature;
-                            dbContext.SaveChanges();
+                    var price = Math.Round(priceLockRequest.RequestAmount / averagePrice, 8);
+                    var fee = Math.Round(price * priceLockFeePercent / 100, 8);
+                    var feeAddress = networkFeatures.GetMySignAddress();
 
-                            result.DestinationAddress = newPriceLock.DestinationAddress;
-                            result.DestinationAmount = newPriceLock.DestinationAmount;
-                            result.FeeAddress = newPriceLock.FeeAddress;
-                            result.FeeAmount = newPriceLock.FeeAmount;
-                            result.RequestAmount = newPriceLock.RequestAmount;
-                            result.RequestAmountPair = newPriceLock.RequestAmountPair;
-                            result.PriceLockId = newPriceLock.PriceLockId.ToString();
-                            result.PriceLockSignature = newPriceLock.PriceLockSignature;
-                            result.Status = (int)Status.New;
-                            result.Success = true;
-                        }
-                        else
+                    using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                    {
+                        var newPriceLock = new PriceLockData()
                         {
-                            result.ResultMessage = "Problem with node, Failed to sign price lock.";
-                            result.Success = false;
+                            DestinationAddress = priceLockRequest.DestinationAddress,
+                            DestinationAmount = price,
+                            FeeAmount = fee,
+                            FeeAddress = feeAddress,
+                            ExpireBlock = priceLockRequest.ExpireBlock,
+                            RequestAmount = priceLockRequest.RequestAmount,
+                            RequestAmountPair = priceLockRequest.RequestAmountPair,
+                            Status = (int)Status.New
+                        };
+                        var newPriceLockRecord = dbContext.Add(newPriceLock);
+                        if (newPriceLockRecord.State == EntityState.Added)
+                        {
+                            string signature = await networkFeatures.SignPriceLock($"{newPriceLock.PriceLockId}{newPriceLock.DestinationAddress}{newPriceLock.DestinationAmount}{newPriceLock.FeeAddress}{newPriceLock.FeeAmount}");
+                            if (!string.IsNullOrEmpty(signature))
+                            {
+                                newPriceLock.PriceLockSignature = signature;
+                                dbContext.SaveChanges();
+
+                                result.DestinationAddress = newPriceLock.DestinationAddress;
+                                result.DestinationAmount = newPriceLock.DestinationAmount;
+                                result.FeeAddress = newPriceLock.FeeAddress;
+                                result.FeeAmount = newPriceLock.FeeAmount;
+                                result.RequestAmount = newPriceLock.RequestAmount;
+                                result.RequestAmountPair = newPriceLock.RequestAmountPair;
+                                result.PriceLockId = newPriceLock.PriceLockId.ToString();
+                                result.PriceLockSignature = newPriceLock.PriceLockSignature;
+                                result.Status = (int)Status.New;
+                                result.Success = true;
+                            }
+                            else
+                            {
+                                result.ResultMessage = "Problem with node, Failed to sign price lock.";
+                                result.Success = false;
+                            }
                         }
                     }
+                }
+                else
+                {
+                    result.ResultMessage = "Node could not create price lock because insufficient price data.";
+                    result.Success = false;
                 }
             }
             else
             {
                 result.ResultMessage = "The supplied pair does not exist.";
                 result.Success = false;
+            }
+            return result;
+        }
+
+        public List<PairResult> GetPairList()
+        {
+            var result = new List<PairResult>();
+            var pairs = EnumUtil.GetValues<FiatCurrency>();
+            foreach (var pair in pairs)
+            {
+                var pairResult = new PairResult()
+                {
+                    Id = (int)pair,
+                    Symbol = pair.ToString()
+                };
+                result.Add(pairResult);
             }
             return result;
         }

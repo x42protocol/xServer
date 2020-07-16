@@ -249,6 +249,26 @@ namespace x42.Controllers.Public
         }
 
         /// <summary>
+        ///     Get available price lock pairs
+        /// </summary>
+        /// <returns>A list with all of the available pairs for a price lock.</returns>
+        [HttpGet]
+        [Route("getavailablepairs")]
+        public IActionResult GetAvailablePairs()
+        {
+            xServer.Stats.IncrementPublicRequest();
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            {
+                var pairList = priceFeature.GetPairList();
+                return Json(pairList);
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
+            }
+        }
+
+        /// <summary>
         ///     Get a price lock.
         /// </summary>
         /// <param name="priceLock">The ID of the price lock.</param>

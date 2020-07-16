@@ -166,7 +166,6 @@ namespace x42.Server
                 WalletName = startRequest.WalletName
             };
             network.Connect(connectionInfo);
-
             // TODO: Start serving apps.
         }
 
@@ -201,6 +200,7 @@ namespace x42.Server
             serverLifetime.NotifyStarted();
 
             StartPeriodicLog();
+            StartPeriodicChecks();
 
             State = XServerState.Started;
         }
@@ -272,6 +272,7 @@ namespace x42.Server
 
             State = XServerState.Initialized;
             StartTime = DateTimeProvider.GetUtcNow();
+            
             return this;
         }
 

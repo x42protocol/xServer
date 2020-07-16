@@ -57,6 +57,10 @@ namespace x42.Feature.PriceLock
             {
                 priceList.AddRange(MyPrices);
             }
+            if (priceList.Count == 0)
+            {
+                return -1;
+            }
             return priceList.Average();
         }
 
@@ -72,6 +76,10 @@ namespace x42.Feature.PriceLock
                 priceList.AddRange(NetworkPrices);
             }
             RemoveOutliers(priceList);
+            if (priceList.Count == 0)
+            {
+                return -1;
+            }
             return priceList.Average();
         }
 
