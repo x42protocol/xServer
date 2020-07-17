@@ -27,6 +27,8 @@ namespace x42.Feature.Database.Tables
 
         public string TransacrionId { get; set; }
 
+        public string SignAddress { get; set; }
+
         public string PriceLockSignature { get; set; }
 
         public string PayeeSignature { get; set; }

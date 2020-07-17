@@ -158,7 +158,7 @@ namespace x42.Server
         public void Start(StartRequest startRequest)
         {
             Stats = new RuntimeStats();
-            var connectionInfo = new CachedWalletInfo()
+            var connectionInfo = new CachedServerInfo()
             {
                 AccountName = startRequest.AccountName,
                 SignAddress = startRequest.SignAddress,

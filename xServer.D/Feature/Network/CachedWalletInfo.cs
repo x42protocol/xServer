@@ -3,7 +3,7 @@
     /// <summary>
     ///     Provides an ability to sign requests
     /// </summary>
-    public class CachedWalletInfo
+    public class CachedServerInfo
     {
         public string WalletName { get; set; }
 
@@ -12,5 +12,7 @@
         public string AccountName { get; set; }
 
         public string SignAddress { get; set; }
+
+        public string FeeAddress { get; set; }
     }
 }

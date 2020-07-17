@@ -20,6 +20,7 @@ using System.Net;
 using x42.Feature.PriceLock.Results;
 using x42.Controllers.Requests;
 using Microsoft.EntityFrameworkCore;
+using x42.Utilities.Extensions;
 
 namespace x42.Feature.PriceLock
 {
@@ -161,49 +162,64 @@ namespace x42.Feature.PriceLock
                 var averagePrice = fiatPair.GetPrice();
                 if (averagePrice != -1)
                 {
-                    var price = Math.Round(priceLockRequest.RequestAmount / averagePrice, 8);
-                    var fee = Math.Round(price * priceLockFeePercent / 100, 8);
-                    var feeAddress = networkFeatures.GetMySignAddress();
+                    var price = Math.Round(priceLockRequest.RequestAmount / averagePrice, 8).Normalize();
+                    var fee = Math.Round(price * priceLockFeePercent / 100, 8).Normalize();
+                    
+                    var feeAddress = networkFeatures.GetMyFeeAddress();
+                    var signAddress = networkFeatures.GetMySignAddress();
 
-                    using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                    if (price < 42000000)
                     {
-                        var newPriceLock = new PriceLockData()
-                        {
-                            DestinationAddress = priceLockRequest.DestinationAddress,
-                            DestinationAmount = price,
-                            FeeAmount = fee,
-                            FeeAddress = feeAddress,
-                            ExpireBlock = priceLockRequest.ExpireBlock,
-                            RequestAmount = priceLockRequest.RequestAmount,
-                            RequestAmountPair = priceLockRequest.RequestAmountPair,
-                            Status = (int)Status.New
-                        };
-                        var newPriceLockRecord = dbContext.Add(newPriceLock);
-                        if (newPriceLockRecord.State == EntityState.Added)
-                        {
-                            string signature = await networkFeatures.SignPriceLock($"{newPriceLock.PriceLockId}{newPriceLock.DestinationAddress}{newPriceLock.DestinationAmount}{newPriceLock.FeeAddress}{newPriceLock.FeeAmount}");
-                            if (!string.IsNullOrEmpty(signature))
-                            {
-                                newPriceLock.PriceLockSignature = signature;
-                                dbContext.SaveChanges();
+                        var expirationBlock = Convert.ToInt64(networkFeatures.BestBlockHeight + Convert.ToUInt64(priceLockRequest.ExpireBlock));
 
-                                result.DestinationAddress = newPriceLock.DestinationAddress;
-                                result.DestinationAmount = newPriceLock.DestinationAmount;
-                                result.FeeAddress = newPriceLock.FeeAddress;
-                                result.FeeAmount = newPriceLock.FeeAmount;
-                                result.RequestAmount = newPriceLock.RequestAmount;
-                                result.RequestAmountPair = newPriceLock.RequestAmountPair;
-                                result.PriceLockId = newPriceLock.PriceLockId.ToString();
-                                result.PriceLockSignature = newPriceLock.PriceLockSignature;
-                                result.Status = (int)Status.New;
-                                result.Success = true;
-                            }
-                            else
+                        using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                        {
+                            var newPriceLock = new PriceLockData()
                             {
-                                result.ResultMessage = "Problem with node, Failed to sign price lock.";
-                                result.Success = false;
+                                DestinationAddress = priceLockRequest.DestinationAddress,
+                                DestinationAmount = price,
+                                FeeAmount = fee,
+                                SignAddress = signAddress,
+                                FeeAddress = feeAddress,
+                                ExpireBlock = expirationBlock,
+                                RequestAmount = priceLockRequest.RequestAmount,
+                                RequestAmountPair = priceLockRequest.RequestAmountPair,
+                                Status = (int)Status.New
+                            };
+                            var newPriceLockRecord = dbContext.Add(newPriceLock);
+                            if (newPriceLockRecord.State == EntityState.Added)
+                            {
+                                string signature = await networkFeatures.SignPriceLock($"{newPriceLock.PriceLockId}{newPriceLock.DestinationAddress}{newPriceLock.DestinationAmount}{newPriceLock.FeeAddress}{newPriceLock.FeeAmount}");
+                                if (!string.IsNullOrEmpty(signature))
+                                {
+                                    newPriceLock.PriceLockSignature = signature;
+                                    dbContext.SaveChanges();
+
+                                    result.DestinationAddress = newPriceLock.DestinationAddress;
+                                    result.DestinationAmount = newPriceLock.DestinationAmount;
+                                    result.FeeAddress = newPriceLock.FeeAddress;
+                                    result.SignAddress = newPriceLock.SignAddress;
+                                    result.FeeAmount = newPriceLock.FeeAmount;
+                                    result.RequestAmount = newPriceLock.RequestAmount;
+                                    result.RequestAmountPair = newPriceLock.RequestAmountPair;
+                                    result.PriceLockId = newPriceLock.PriceLockId.ToString();
+                                    result.PriceLockSignature = newPriceLock.PriceLockSignature;
+                                    result.ExpireBlock = newPriceLock.ExpireBlock;
+                                    result.Status = (int)Status.New;
+                                    result.Success = true;
+                                }
+                                else
+                                {
+                                    result.ResultMessage = "Problem with node, Failed to sign price lock.";
+                                    result.Success = false;
+                                }
                             }
                         }
+                    }
+                    else
+                    {
+                        result.ResultMessage = "Price not valid, max cap exceeded.";
+                        result.Success = false;
                     }
                 }
                 else

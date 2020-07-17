@@ -51,7 +51,7 @@ namespace x42.Feature.Network
         private readonly X42ClientFeature x42FullNode;
         private readonly DatabaseFeatures database;
         private X42Node x42Client;
-        private CachedWalletInfo cachedWalletInfo;
+        private CachedServerInfo cachedServerInfo;
 
         public NetworkFeatures(
             ServerNodeBase network,
@@ -75,7 +75,7 @@ namespace x42.Feature.Network
             this.x42FullNode = x42FullNode;
             this.database = database;
 
-            cachedWalletInfo = new CachedWalletInfo();
+            cachedServerInfo = new CachedServerInfo();
 
             x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
         }
@@ -104,10 +104,11 @@ namespace x42.Feature.Network
         /// <summary>
         ///     Connect to the network.
         /// </summary>
-        public void Connect(CachedWalletInfo cachedWalletInfo)
+        public void Connect(CachedServerInfo cachedWalletInfo)
         {
             logger.LogInformation("Connecting to network");
-            this.cachedWalletInfo = cachedWalletInfo;
+            this.cachedServerInfo = cachedWalletInfo;
+            this.cachedServerInfo.FeeAddress = GetFeeAddressFromSignAddress(cachedWalletInfo.SignAddress);
             logger.LogInformation("Network connected");
         }
 
@@ -165,10 +166,10 @@ namespace x42.Feature.Network
         {
             var signRequest = new SignMessageRequest()
             {
-                AccountName = cachedWalletInfo.AccountName,
-                ExternalAddress = cachedWalletInfo.SignAddress,
-                Password = cachedWalletInfo.Password,
-                WalletName = cachedWalletInfo.WalletName,
+                AccountName = cachedServerInfo.AccountName,
+                ExternalAddress = cachedServerInfo.SignAddress,
+                Password = cachedServerInfo.Password,
+                WalletName = cachedServerInfo.WalletName,
                 Message = priceLock
             };
             var signMessageResult = await x42Client.SignMessageAsync(signRequest);
@@ -183,7 +184,12 @@ namespace x42.Feature.Network
 
         public string GetMySignAddress()
         {
-            return cachedWalletInfo.SignAddress;
+            return cachedServerInfo.SignAddress;
+        }
+
+        public string GetMyFeeAddress()
+        {
+            return cachedServerInfo.FeeAddress;
         }
 
         private string GetProtocolString(int networkProtocol)
@@ -283,6 +289,20 @@ namespace x42.Feature.Network
                 }
             }
             return profileKeyAddress;
+        }
+
+        private string GetFeeAddressFromSignAddress(string signAddress)
+        {
+            string feeAddress = string.Empty;
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<ServerNodeData> serverNodes = dbContext.ServerNodes.Where(s => s.SignAddress == signAddress);
+                if (serverNodes.Count() > 0)
+                {
+                    feeAddress = serverNodes.First().FeeAddress;
+                }
+            }
+            return feeAddress;
         }
 
         public async Task<string> GetServerAddress(string walletName)
