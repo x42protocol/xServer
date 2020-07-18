@@ -155,5 +155,18 @@ namespace x42.Feature.X42Client
             Guard.Null(rawTransactionResult, nameof(rawTransactionResult), $"An Error Occured When Trying To decode the Transaction for '{rawHex}'");
             return rawTransactionResult;
         }
+
+        /// <summary>
+        ///     Sends a transaction that has already been built.
+        ///     Use the /api/Wallet/build-transaction call to create transactions.
+        /// </summary>
+        /// <param name="request">An object containing the necessary parameters used to a send transaction request.</param>
+        /// <returns>A JSON object containing information about the sent transaction.</returns>
+        public async Task<WalletSendTransactionModel> SendTransaction(string rawHex)
+        {
+            WalletSendTransactionModel sendTransactionResult = await restClient.SendTransaction(rawHex);
+            Guard.Null(sendTransactionResult, nameof(sendTransactionResult), $"An Error Occured When Trying To Get The sent transaction for '{rawHex}'");
+            return sendTransactionResult;
+        }
     }
 }

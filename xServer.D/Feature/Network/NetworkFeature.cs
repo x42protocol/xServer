@@ -271,6 +271,12 @@ namespace x42.Feature.Network
             return rawTranscation;
         }
 
+        public async Task<WalletSendTransactionModel> SendTransaction(string txhex)
+        {
+            WalletSendTransactionModel sentTransaction = await x42Client.SendTransaction(txhex);
+            return sentTransaction;
+        }
+
         public async Task<RawTransactionResponse> DecodeRawTransaction(string rawHex)
         {
             RawTransactionResponse rawTranscation = await x42Client.DecodeRawTransaction(rawHex);

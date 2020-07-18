@@ -320,7 +320,7 @@ namespace x42.Controllers.Public
         /// <summary>
         ///     Submit the payment for a price lock.
         /// </summary>
-        /// <param name="priceLockRequest">The object with all of the nessesary data to submit payment.</param>
+        /// <param name="submitPaymentRequest">The object with all of the nessesary data to submit payment.</param>
         /// <returns>A <see cref="SubmitPaymentResult" /> with submission results.</returns>
         [HttpPost]
         [Route("submitpayment")]

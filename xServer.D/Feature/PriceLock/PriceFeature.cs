@@ -181,6 +181,10 @@ namespace x42.Feature.PriceLock
                                 priceLock.TransactionID = submitPaymentRequest.TransactionId;
                                 priceLock.Status = (int)Status.WaitingForConfirmation;
                                 dbContext.SaveChanges();
+                                if (!string.IsNullOrEmpty(submitPaymentRequest.TransactionHex))
+                                {
+                                    await networkFeatures.SendTransaction(submitPaymentRequest.TransactionHex);
+                                }
                                 result.Success = true;
                             }
                             else

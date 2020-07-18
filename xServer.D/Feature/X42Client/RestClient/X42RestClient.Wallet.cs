@@ -657,5 +657,35 @@ namespace x42.Feature.X42Client.RestClient
                 throw;
             }
         }
+
+        /// <summary>
+        ///     Sends a transaction that has already been built.
+        ///     Use the /api/Wallet/build-transaction call to create transactions.
+        /// </summary>
+        /// <param name="request">An object containing the necessary parameters used to a send transaction request.</param>
+        /// <returns>A JSON object containing information about the sent transaction.</returns>
+        public async Task<WalletSendTransactionModel> SendTransaction(string rawHex)
+        {
+            try
+            {
+                Guard.Null(rawHex, nameof(rawHex), "Unable to send transaction, Provided rawHex Is NULL/Empty!");
+
+                SendTransactionRequest decodeTxRequest = new SendTransactionRequest
+                {
+                    Hex = rawHex
+                };
+
+                WalletSendTransactionModel response = await base.SendPostJSON<WalletSendTransactionModel>("/api/Wallet/send-transaction", decodeTxRequest);
+
+                Guard.Null(response, nameof(response), "'api/Wallet/send-transaction' API Response Was Null!");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting raw transaction For '{rawHex}'!", ex);
+                throw;
+            }
+        }
     }
 }
