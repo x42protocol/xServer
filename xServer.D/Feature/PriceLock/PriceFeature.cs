@@ -21,6 +21,7 @@ using x42.Feature.PriceLock.Results;
 using x42.Controllers.Requests;
 using Microsoft.EntityFrameworkCore;
 using x42.Utilities.Extensions;
+using x42.Feature.X42Client.RestClient.Responses;
 
 namespace x42.Feature.PriceLock
 {
@@ -153,7 +154,55 @@ namespace x42.Feature.PriceLock
             startAfter: TimeSpans.TenSeconds);
         }
 
-        public async Task<PriceLockResult> CreatePriceLock(CreatePriceLockRequest priceLockRequest)
+        private PriceLockData GetPriceLockData(Guid priceLockId)
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                return dbContext.PriceLocks.Where(p => p.PriceLockId == priceLockId).FirstOrDefault();
+            }
+        }
+
+        public async Task<SubmitPaymentResult> SubmitPayment(SubmitPaymentRequest submitPaymentRequest)
+        {
+            var result = new SubmitPaymentResult();
+            if (Guid.TryParse(submitPaymentRequest.PriceLockId, out Guid validPriceLockId))
+            {
+                var payeeValidationResult = await ValidateNewPriceLockPayee(submitPaymentRequest);
+                if (payeeValidationResult == PaymentErrorCodes.None)
+                {
+                    using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                    {
+                        var priceLock = dbContext.PriceLocks.Where(p => p.PriceLockId == validPriceLockId).FirstOrDefault();
+                        if (priceLock != null)
+                        {
+                            if (priceLock.Status == (int)Status.New)
+                            {
+                                priceLock.PayeeSignature = submitPaymentRequest.PayeeSignature;
+                                priceLock.TransactionID = submitPaymentRequest.TransactionId;
+                                priceLock.Status = (int)Status.WaitingForConfirmation;
+                                dbContext.SaveChanges();
+                                result.Success = true;
+                            }
+                            else
+                            {
+                                result.ErrorCode = (int)PaymentErrorCodes.NotNew;
+                            }
+                        }
+                        else
+                        {
+                            result.ErrorCode = (int)PaymentErrorCodes.PriceLockNotFound;
+                        }
+                    }
+                }
+                else
+                {
+                    result.ErrorCode = (int)payeeValidationResult;
+                }
+            }
+            return result;
+        }
+
+        public async Task<PriceLockResult> CreatePriceLock(CreatePriceLockRequest priceLockRequest, string validPriceLockId = "")
         {
             var result = new PriceLockResult();
             var fiatPair = FiatPairs.Where(f => (int)f.Currency == priceLockRequest.RequestAmountPair).FirstOrDefault();
@@ -164,7 +213,7 @@ namespace x42.Feature.PriceLock
                 {
                     var price = Math.Round(priceLockRequest.RequestAmount / averagePrice, 8).Normalize();
                     var fee = Math.Round(price * priceLockFeePercent / 100, 8).Normalize();
-                    
+
                     var feeAddress = networkFeatures.GetMyFeeAddress();
                     var signAddress = networkFeatures.GetMySignAddress();
 
@@ -186,6 +235,10 @@ namespace x42.Feature.PriceLock
                                 RequestAmountPair = priceLockRequest.RequestAmountPair,
                                 Status = (int)Status.New
                             };
+                            if (!string.IsNullOrEmpty(validPriceLockId))
+                            {
+                                newPriceLock.PriceLockId = new Guid(validPriceLockId);
+                            }
                             var newPriceLockRecord = dbContext.Add(newPriceLock);
                             if (newPriceLockRecord.State == EntityState.Added)
                             {
@@ -236,6 +289,48 @@ namespace x42.Feature.PriceLock
             return result;
         }
 
+        public async Task<bool> UpdatePriceLock(PriceLockResult priceLockData)
+        {
+            bool result = false;
+            if (Guid.TryParse(priceLockData.PriceLockId, out Guid validPriceLockId))
+            {
+                // Create price lock if it doesn't exist.
+                var priceLock = GetPriceLockData(validPriceLockId);
+                if (priceLock == null)
+                {
+                    var priceLockCreateRequest = new CreatePriceLockRequest()
+                    {
+                        DestinationAddress = priceLockData.DestinationAddress,
+                        ExpireBlock = priceLockData.ExpireBlock,
+                        RequestAmount = priceLockData.RequestAmount,
+                        RequestAmountPair = priceLockData.RequestAmountPair
+                    };
+                    var createResult = await CreatePriceLock(priceLockCreateRequest, validPriceLockId.ToString());
+                    if (!createResult.Success)
+                    {
+                        return false;
+                    }
+                }
+
+                // Update payment information.
+                if (!string.IsNullOrEmpty(priceLockData.TransactionID) && !string.IsNullOrEmpty(priceLockData.PayeeSignature))
+                {
+                    var paymentSubmit = new SubmitPaymentRequest()
+                    {
+                        PayeeSignature = priceLockData.PayeeSignature,
+                        PriceLockId = priceLockData.PriceLockId,
+                        TransactionId = priceLockData.TransactionID
+                    };
+                    var submitPaymentResult = await SubmitPayment(paymentSubmit);
+                    if (!submitPaymentResult.Success)
+                    {
+                        result = true;
+                    }
+                }
+            }
+            return result;
+        }
+
         public List<PairResult> GetPairList()
         {
             var result = new List<PairResult>();
@@ -270,7 +365,8 @@ namespace x42.Feature.PriceLock
                     result.PriceLockSignature = priceLock.PriceLockSignature;
                     result.Status = priceLock.Status;
                     result.PayeeSignature = priceLock.PayeeSignature;
-                    result.TransacrionId = priceLock.TransacrionId;
+                    result.TransactionID = priceLock.TransactionID;
+                    result.ExpireBlock = priceLock.ExpireBlock;
                     result.Success = true;
                 }
                 else
@@ -282,77 +378,73 @@ namespace x42.Feature.PriceLock
             return result;
         }
 
-        public async Task<ValidatePriceLockPayeeResult> ValidateNewPriceLockPayee(string rawHex, string pricelockId, string signature)
+        public async Task<PaymentErrorCodes> ValidateNewPriceLockPayee(SubmitPaymentRequest submitPaymentRequest)
         {
-            var result = new ValidatePriceLockPayeeResult();
+            PaymentErrorCodes result;
 
-            var paymentTransaction = await networkFeatures.DecodeRawTransaction(rawHex);
-            if (paymentTransaction != null)
+            var priceLockData = GetPriceLockData(new Guid(submitPaymentRequest.PriceLockId));
+
+            if (priceLockData != null)
             {
-                if (!TransactionExists(paymentTransaction.TxId))
+                if (priceLockData.TransactionID == null && priceLockData.PayeeSignature == null)
                 {
-                    var isPayeeValid = await priceLockValidation.IsPayeeSignatureValid(paymentTransaction, pricelockId, signature);
-                    if (isPayeeValid)
+                    RawTransactionResponse paymentTransaction;
+                    if (string.IsNullOrEmpty(submitPaymentRequest.TransactionHex))
                     {
-                        bool updated = UpdatePriceLockWithPayee(paymentTransaction.TxId, pricelockId, signature);
-                        if (updated)
+                        paymentTransaction = await networkFeatures.GetRawTransaction(submitPaymentRequest.TransactionId, true);
+                    }
+                    else
+                    {
+                        paymentTransaction = await networkFeatures.DecodeRawTransaction(submitPaymentRequest.TransactionHex);
+                    }
+                    if (paymentTransaction != null)
+                    {
+                        bool validDestinationFound = false;
+                        bool validFeeFound = false;
+
+                        foreach (var output in paymentTransaction.VOut)
                         {
-                            result.Success = true;
+                            if (output.ScriptPubKey.Addresses.Count() == 1 && output.ScriptPubKey.Addresses[0] == priceLockData.DestinationAddress && output.Value == priceLockData.DestinationAmount)
+                            {
+                                validDestinationFound = true;
+                            }
+                            else if (output.ScriptPubKey.Addresses.Count() == 1 && output.ScriptPubKey.Addresses[0] == priceLockData.FeeAddress && output.Value == priceLockData.FeeAmount)
+                            {
+                                validFeeFound = true;
+                            }
+                        }
+                        if (!validDestinationFound)
+                        {
+                            return PaymentErrorCodes.TransactionDestNotFound;
+                        }
+                        if (!validFeeFound)
+                        {
+                            return PaymentErrorCodes.TransactionFeeNotFound;
+                        }
+
+                        var isPayeeValid = await priceLockValidation.IsPayeeSignatureValid(paymentTransaction, submitPaymentRequest.PriceLockId, submitPaymentRequest.PayeeSignature);
+                        if (isPayeeValid)
+                        {
+                            result = PaymentErrorCodes.None;
                         }
                         else
                         {
-                            result.Success = false;
-                            result.ResultMessage = "Failed to update price lock";
+                            result = PaymentErrorCodes.InvalidSignature;
                         }
                     }
                     else
                     {
-                        result.Success = false;
-                        result.ResultMessage = "Failed to validate payee";
+                        result = PaymentErrorCodes.TransactionError;
                     }
                 }
                 else
                 {
-                    result.Success = false;
-                    result.ResultMessage = "Failed because transaction already exists.";
+                    result = PaymentErrorCodes.AlreadyExists;
                 }
             }
             else
             {
-                result.Success = false;
-                result.ResultMessage = "Failed to validate raw transaction";
-            }
-            return result;
-        }
-
-        private bool UpdatePriceLockWithPayee(string txId, string pricelockId, string payeeSignature)
-        {
-            bool result = false;
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-            {
-                var transaction = dbContext.PriceLocks.Where(p => p.PriceLockId == new Guid(pricelockId)).FirstOrDefault();
-                if (transaction != null)
-                {
-                    transaction.TransacrionId = txId;
-                    transaction.PayeeSignature = payeeSignature;
-                    transaction.Status = (int)Status.WaitingForConfirmation;
-                    dbContext.SaveChanges();
-                    result = true;
-                }
-            }
-            return result;
-        }
-
-        private bool TransactionExists(string txId)
-        {
-            bool result = false;
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-            {
-                var transaction = dbContext.PriceLocks.Where(p => p.TransacrionId == txId);
-                if (transaction.Count() > 0)
-                {
-                    result = true;
-                }
+                result = PaymentErrorCodes.PriceLockNotFound;
             }
             return result;
         }

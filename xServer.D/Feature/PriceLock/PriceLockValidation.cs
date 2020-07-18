@@ -24,12 +24,15 @@ namespace x42.Feature.PriceLock
                 var inputTransaction = await network.GetRawTransaction(tx.TxId, true);
                 foreach (var transactionOutputs in inputTransaction.VOut)
                 {
-                    foreach (string address in transactionOutputs.ScriptPubKey.Addresses)
+                    if (transactionOutputs != null && transactionOutputs.ScriptPubKey != null && transactionOutputs.ScriptPubKey.Addresses != null)
                     {
-                        bool foundValidAddress = await network.VerifySenderPriceLockSignature(address, pricelockId, signature);
-                        if (foundValidAddress)
+                        foreach (string address in transactionOutputs.ScriptPubKey.Addresses)
                         {
-                            return true;
+                            bool foundValidAddress = await network.VerifySenderPriceLockSignature(address, pricelockId, signature);
+                            if (foundValidAddress)
+                            {
+                                return true;
+                            }
                         }
                     }
                 }

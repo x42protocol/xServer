@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using System.Net;
 using x42.Controllers.Results;
 using x42.ServerNode;
+using static x42.ServerNode.Tier;
 
 namespace x42.Feature.Network
 {
@@ -72,7 +73,7 @@ namespace x42.Feature.Network
         {
             this.networkCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { serverLifetime.ApplicationStopping });
 
-            this.networkMonitorLoop = asyncLoopFactory.Run("NetworkManager.NetworkWorker", async token =>
+            asyncLoopFactory.Run("NetworkManager.NetworkWorker", async token =>
             {
                 try
                 {
@@ -89,16 +90,16 @@ namespace x42.Feature.Network
             repeatEvery: TimeSpan.FromSeconds(this.heckCheckSleepSeconds),
             startAfter: TimeSpans.Second);
 
-            this.networkMonitorLoop = asyncLoopFactory.Run("NetworkManager.RelayWorker", async token =>
+            asyncLoopFactory.Run("NetworkManager.NewxServer", async token =>
             {
                 try
                 {
-                    await RelayService(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    await RelayNewxServerAsync(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     this.logger.LogError("Exception: {0}", ex);
-                    this.logger.LogTrace("(-)[UNHANDLED_EXCEPTION_RELAY]");
+                    this.logger.LogTrace("(-)[UNHANDLED_EXCEPTION_XS_RELAY]");
                     throw;
                 }
             },
@@ -106,7 +107,7 @@ namespace x42.Feature.Network
             repeatEvery: TimeSpan.FromSeconds(this.relaySleepSeconds),
             startAfter: TimeSpans.Second);
 
-            this.networkMonitorLoop = asyncLoopFactory.Run("NetworkManager.Reconciliation", async token =>
+            asyncLoopFactory.Run("NetworkManager.Reconciliation", async token =>
             {
                 try
                 {
@@ -121,6 +122,23 @@ namespace x42.Feature.Network
             },
             this.networkCancellationTokenSource.Token,
             repeatEvery: TimeSpan.FromSeconds(this.serverRecoSleepSeconds),
+            startAfter: TimeSpans.Second);
+
+            asyncLoopFactory.Run("NetworkManager.NewPriceLock", async token =>
+            {
+                try
+                {
+                    await RelayNewPayLocks(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Exception: {0}", ex);
+                    this.logger.LogTrace("(-)[UNHANDLED_EXCEPTION_PL_RELAY]");
+                    throw;
+                }
+            },
+            this.networkCancellationTokenSource.Token,
+            repeatEvery: TimeSpan.FromSeconds(this.relaySleepSeconds),
             startAfter: TimeSpans.Second);
         }
 
@@ -184,22 +202,10 @@ namespace x42.Feature.Network
             }
         }
 
-        public async Task RelayService(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await CheckRelayAsync(cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                logger.LogDebug($"Error in Relay Service", ex);
-            }
-        }
-
         /// <summary>
         ///     Check for new xServers to relay to active xServers.
         /// </summary>
-        private async Task CheckRelayAsync(CancellationToken cancellationToken)
+        private async Task RelayNewxServerAsync(CancellationToken cancellationToken)
         {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
@@ -223,11 +229,55 @@ namespace x42.Feature.Network
                     }
                     foreach (ServerNodeData newServer in newServerNodes)
                     {
-                        await RelayXServerAsync(newServer, serverNodes, cancellationToken);
-                        newServer.Relayed = true;
+                        try
+                        {
+                            await RelayXServerAsync(newServer, serverNodes, cancellationToken);
+                            newServer.Relayed = true;
+                        }
+                        catch (Exception) { }
                     }
                     dbContext.SaveChanges();
                 }
+            }
+        }
+
+        /// <summary>
+        ///     Check for new paylocks and relay the information.
+        /// </summary>
+        private async Task RelayNewPayLocks(CancellationToken cancellationToken)
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<PriceLockData> newPriceLocks = dbContext.PriceLocks.Where(p => !p.Relayed);
+                if (newPriceLocks.Count() > 0)
+                {
+                    List<ServerNodeData> tier3Nodes = dbContext.ServerNodes.Where(s => s.Active && s.Tier == (int)TierLevel.Three).ToList();
+                    foreach (var newPriceLock in newPriceLocks)
+                    {
+                        try
+                        {
+                            await RelayPriceLocks(newPriceLock, tier3Nodes, cancellationToken);
+                            newPriceLock.Relayed = true;
+                        }
+                        catch (Exception) { }
+                    }
+                    dbContext.SaveChanges();
+                }
+            }
+        }
+
+        public async Task RelayPriceLocks(PriceLockData priceLockData, List<ServerNodeData> activeXServers, CancellationToken cancellationToken)
+        {
+            foreach (var activeServer in activeXServers)
+            {
+                string xServerURL = networkFeatures.GetServerUrl(activeServer.NetworkProtocol, activeServer.NetworkAddress, activeServer.NetworkPort);
+                var client = new RestClient(xServerURL);
+                var registerRestRequest = new RestRequest("/updatepricelock", Method.POST);
+                var request = JsonConvert.SerializeObject(priceLockData);
+                registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
+                registerRestRequest.RequestFormat = DataFormat.Json;
+
+                await client.ExecuteAsync(registerRestRequest, cancellationToken);
             }
         }
 

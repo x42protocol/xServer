@@ -6,6 +6,7 @@
         Rejected = 0,
         New = 1,
         WaitingForConfirmation = 2,
-        Confirmed = 3
+        Confirmed = 3,
+        Mature = 4
     }
 }

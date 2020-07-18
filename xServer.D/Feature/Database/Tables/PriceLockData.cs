@@ -25,7 +25,7 @@ namespace x42.Feature.Database.Tables
 
         public string DestinationAddress { get; set; }
 
-        public string TransacrionId { get; set; }
+        public string TransactionID { get; set; }
 
         public string SignAddress { get; set; }
 
@@ -34,5 +34,7 @@ namespace x42.Feature.Database.Tables
         public string PayeeSignature { get; set; }
 
         public long ExpireBlock { get; set; }
+
+        public bool Relayed { get; set; }
     }
 }

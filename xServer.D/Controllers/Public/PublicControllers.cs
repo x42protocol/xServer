@@ -249,6 +249,27 @@ namespace x42.Controllers.Public
         }
 
         /// <summary>
+        ///     Update a price lock.
+        /// </summary>
+        /// <param name="priceLockData">The object with all of the nessesary data to update a price lock.</param>
+        /// <returns>A <see cref="bool" /> with the result.</returns>
+        [HttpPost]
+        [Route("updatepricelock")]
+        public async Task<IActionResult> UpdatePriceLock([FromBody] PriceLockResult priceLockData)
+        {
+            xServer.Stats.IncrementPublicRequest();
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            {
+                var priceLockResult = await priceFeature.UpdatePriceLock(priceLockData);
+                return Json(priceLockResult);
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
+            }
+        }
+
+        /// <summary>
         ///     Get available price lock pairs
         /// </summary>
         /// <returns>A list with all of the available pairs for a price lock.</returns>
@@ -271,7 +292,7 @@ namespace x42.Controllers.Public
         /// <summary>
         ///     Get a price lock.
         /// </summary>
-        /// <param name="priceLock">The ID of the price lock.</param>
+        /// <param name="priceLockId">The ID of the price lock.</param>
         /// <returns>A <see cref="PriceLockResult" /> with price lock information.</returns>
         [HttpGet]
         [Route("getpricelock")]
@@ -299,17 +320,17 @@ namespace x42.Controllers.Public
         /// <summary>
         ///     Submit the payment for a price lock.
         /// </summary>
-        /// <param name="priceLockRequest">The object with all of the nessesary data to submit a price lock.</param>
-        /// <returns>A <see cref="PriceLockResult" /> with price lock results.</returns>
+        /// <param name="priceLockRequest">The object with all of the nessesary data to submit payment.</param>
+        /// <returns>A <see cref="SubmitPaymentResult" /> with submission results.</returns>
         [HttpPost]
-        [Route("submitpricelockpayment")]
-        public async Task<IActionResult> SubmitPriceLockPayment([FromBody] CreatePriceLockRequest priceLockRequest)
+        [Route("submitpayment")]
+        public async Task<IActionResult> SubmitPayment([FromBody] SubmitPaymentRequest submitPaymentRequest)
         {
             xServer.Stats.IncrementPublicRequest();
             if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
             {
-                var priceLockResult = await priceFeature.CreatePriceLock(priceLockRequest);
-                return Json(priceLockResult);
+                var submitPaymentResult = await priceFeature.SubmitPayment(submitPaymentRequest);
+                return Json(submitPaymentResult);
             }
             else
             {
