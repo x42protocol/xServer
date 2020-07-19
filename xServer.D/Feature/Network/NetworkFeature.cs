@@ -255,13 +255,15 @@ namespace x42.Feature.Network
         public async Task<Money> GetServerCollateral(ServerNodeData serverNode)
         {
             string profileKeyAddress = GetKeyAddressFromProfileName(serverNode.ProfileName);
-            GetAddressesBalancesResponse addressBalance = await x42Client.GetAddressBalances(profileKeyAddress);
-
-            if (addressBalance.balances.Count() == 1 && addressBalance.balances.FirstOrDefault().address == profileKeyAddress)
+            if (!string.IsNullOrEmpty(profileKeyAddress))
             {
-                return Money.FromUnit(addressBalance.balances.FirstOrDefault().balance, MoneyUnit.Satoshi);
-            }
+                GetAddressesBalancesResponse addressBalance = await x42Client.GetAddressBalances(profileKeyAddress);
 
+                if (addressBalance.balances.Count() == 1 && addressBalance.balances.FirstOrDefault().address == profileKeyAddress)
+                {
+                    return Money.FromUnit(addressBalance.balances.FirstOrDefault().balance, MoneyUnit.Satoshi);
+                }
+            }
             return Money.Zero;
         }
 
