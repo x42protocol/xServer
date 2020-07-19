@@ -19,10 +19,12 @@ namespace x42.Migrations
                     FeeAddress = table.Column<string>(nullable: true),
                     DestinationAmount = table.Column<decimal>(nullable: false),
                     DestinationAddress = table.Column<string>(nullable: true),
-                    TransacrionId = table.Column<string>(nullable: true),
+                    TransactionID = table.Column<string>(nullable: true),
+                    SignAddress = table.Column<string>(nullable: true),
                     PriceLockSignature = table.Column<string>(nullable: true),
                     PayeeSignature = table.Column<string>(nullable: true),
-                    ExpireBlock = table.Column<long>(nullable: false)
+                    ExpireBlock = table.Column<long>(nullable: false),
+                    Relayed = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

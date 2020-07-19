@@ -10,7 +10,7 @@ using x42.Feature.Database.Context;
 namespace x42.Migrations
 {
     [DbContext(typeof(X42DbContext))]
-    [Migration("20200715202446_InitialCreate")]
+    [Migration("20200719145321_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,16 +48,22 @@ namespace x42.Migrations
                     b.Property<string>("PriceLockSignature")
                         .HasColumnType("text");
 
+                    b.Property<bool>("Relayed")
+                        .HasColumnType("boolean");
+
                     b.Property<decimal>("RequestAmount")
                         .HasColumnType("numeric");
 
                     b.Property<int>("RequestAmountPair")
                         .HasColumnType("integer");
 
+                    b.Property<string>("SignAddress")
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TransacrionId")
+                    b.Property<string>("TransactionID")
                         .HasColumnType("text");
 
                     b.HasKey("PriceLockId");

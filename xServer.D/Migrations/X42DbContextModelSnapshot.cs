@@ -46,16 +46,22 @@ namespace x42.Migrations
                     b.Property<string>("PriceLockSignature")
                         .HasColumnType("text");
 
+                    b.Property<bool>("Relayed")
+                        .HasColumnType("boolean");
+
                     b.Property<decimal>("RequestAmount")
                         .HasColumnType("numeric");
 
                     b.Property<int>("RequestAmountPair")
                         .HasColumnType("integer");
 
+                    b.Property<string>("SignAddress")
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TransacrionId")
+                    b.Property<string>("TransactionID")
                         .HasColumnType("text");
 
                     b.HasKey("PriceLockId");
