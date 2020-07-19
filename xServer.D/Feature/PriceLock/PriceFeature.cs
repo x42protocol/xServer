@@ -96,7 +96,7 @@ namespace x42.Feature.PriceLock
                 FiatPairs.Add(new FiatPair(pair));
             }
 
-            MonitorPrice();
+            PriceLockServices();
             priceLockValidation = new PriceLockValidation(networkFeatures);
 
             logger.LogInformation("Price Initialized");
@@ -109,11 +109,11 @@ namespace x42.Feature.PriceLock
         {
         }
 
-        private void MonitorPrice()
+        private void PriceLockServices()
         {
             this.networkCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { serverLifetime.ApplicationStopping });
 
-            this.networkPriceLoop = asyncLoopFactory.Run("Price.MyMonitor", async token =>
+            asyncLoopFactory.Run("Price.MyMonitor", async token =>
             {
                 try
                 {
@@ -133,7 +133,7 @@ namespace x42.Feature.PriceLock
             repeatEvery: TimeSpan.FromSeconds(this.updateMyPriceSeconds),
             startAfter: TimeSpans.TenSeconds);
 
-            this.networkPriceLoop = asyncLoopFactory.Run("Price.NetworkMonitor", async token =>
+            asyncLoopFactory.Run("Price.NetworkMonitor", async token =>
             {
                 try
                 {
@@ -151,6 +151,26 @@ namespace x42.Feature.PriceLock
             },
             this.networkCancellationTokenSource.Token,
             repeatEvery: TimeSpan.FromSeconds(this.updateNetworkPriceSeconds),
+            startAfter: TimeSpans.TenSeconds);
+
+            asyncLoopFactory.Run("Price.PriceLockMonitor", async token =>
+            {
+                try
+                {
+                    if (xServer.Stats.TierLevel == Tier.TierLevel.Three && networkFeatures.IsServerReady())
+                    {
+                        await PriceLockChecks(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Exception: {0}", ex);
+                    this.logger.LogTrace("(-)[UNHANDLED_EXCEPTION_NETWORK_PRICE]");
+                    throw;
+                }
+            },
+            this.networkCancellationTokenSource.Token,
+            repeatEvery: TimeSpans.Minute,
             startAfter: TimeSpans.TenSeconds);
         }
 
@@ -490,6 +510,34 @@ namespace x42.Feature.PriceLock
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        ///     Monitor active price locks to mature state.
+        /// </summary>
+        private async Task PriceLockChecks(CancellationToken cancellationToken)
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var priceLocks = dbContext.PriceLocks.Where(p => p.Status > (int)Status.New && p.Status < (int)Status.Mature);
+                foreach (var priceLock in priceLocks)
+                {
+                    try
+                    {
+                        var plTransaction = await networkFeatures.GetRawTransaction(priceLock.TransactionID, true);
+                        if (plTransaction.Confirmations >= 500)
+                        {
+                            priceLock.Status = (int)Status.Mature;
+                        }
+                        else if (plTransaction.Confirmations >= 1)
+                        {
+                            priceLock.Status = (int)Status.Confirmed;
+                        }
+                    }
+                    catch (Exception) { }
+                }
+                dbContext.SaveChanges();
             }
         }
 
