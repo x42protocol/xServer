@@ -34,6 +34,7 @@ namespace x42.Server
                         server => result.XServers.Add(
                             new XServerConnectionInfo()
                             {
+                                Name = server.ProfileName,
                                 NetworkProtocol = server.NetworkProtocol,
                                 NetworkAddress = server.NetworkAddress,
                                 NetworkPort = server.NetworkPort,
