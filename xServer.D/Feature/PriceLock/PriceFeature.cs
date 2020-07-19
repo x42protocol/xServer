@@ -198,7 +198,7 @@ namespace x42.Feature.PriceLock
                             if (priceLock.Status == (int)Status.New)
                             {
                                 priceLock.PayeeSignature = submitPaymentRequest.PayeeSignature;
-                                priceLock.TransactionID = submitPaymentRequest.TransactionId;
+                                priceLock.TransactionId = submitPaymentRequest.TransactionId;
                                 priceLock.Status = (int)Status.WaitingForConfirmation;
                                 priceLock.Relayed = false;
                                 dbContext.SaveChanges();
@@ -390,7 +390,7 @@ namespace x42.Feature.PriceLock
                     result.PriceLockSignature = priceLock.PriceLockSignature;
                     result.Status = priceLock.Status;
                     result.PayeeSignature = priceLock.PayeeSignature;
-                    result.TransactionID = priceLock.TransactionID;
+                    result.TransactionID = priceLock.TransactionId;
                     result.ExpireBlock = priceLock.ExpireBlock;
                     result.Success = true;
                 }
@@ -411,7 +411,7 @@ namespace x42.Feature.PriceLock
 
             if (priceLockData != null)
             {
-                if (priceLockData.TransactionID == null && priceLockData.PayeeSignature == null)
+                if (priceLockData.TransactionId == null && priceLockData.PayeeSignature == null)
                 {
                     RawTransactionResponse paymentTransaction;
                     if (string.IsNullOrEmpty(submitPaymentRequest.TransactionHex))
@@ -526,7 +526,7 @@ namespace x42.Feature.PriceLock
                 {
                     try
                     {
-                        var plTransaction = await networkFeatures.GetRawTransaction(priceLock.TransactionID, true);
+                        var plTransaction = await networkFeatures.GetRawTransaction(priceLock.TransactionId, true);
                         if (plTransaction.Confirmations >= 500)
                         {
                             priceLock.Status = (int)Status.Mature;

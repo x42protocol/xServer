@@ -25,7 +25,7 @@ namespace x42.Feature.Database.Tables
 
         public string DestinationAddress { get; set; }
 
-        public string TransactionID { get; set; }
+        public string TransactionId { get; set; }
 
         public string SignAddress { get; set; }
 
