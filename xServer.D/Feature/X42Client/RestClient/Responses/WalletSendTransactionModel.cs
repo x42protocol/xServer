@@ -11,12 +11,12 @@ namespace x42.Feature.X42Client.RestClient.Responses
         /// <summary>
         /// The transaction id.
         /// </summary>
-        public uint256 TransactionId { get; set; }
+        public string TransactionId { get; set; }
 
         /// <summary>
         /// The list of outputs in this transaction.
         /// </summary>
-        public ICollection<TransactionOutputModel> Outputs { get; set; }
+        public List<TransactionOutputModel> Outputs { get; set; }
     }
 
     /// <summary>
@@ -32,7 +32,7 @@ namespace x42.Feature.X42Client.RestClient.Responses
         /// <summary>
         /// The amount associated with the output.
         /// </summary>
-        public Money Amount { get; set; }
+        public decimal Amount { get; set; }
 
         /// <summary>
         /// The data encoded in the OP_RETURN script
