@@ -216,13 +216,13 @@ namespace x42.Feature.Network
                     var xServerStats = await networkFeatures.GetXServerStats();
                     foreach (var connectedXServer in xServerStats.Nodes)
                     {
-                        var xServer = serverNodes.Where(x => x.NetworkAddress == connectedXServer.Address);
+                        var xServer = serverNodes.Where(x => x.NetworkAddress == connectedXServer.NetworkAddress);
                         if (xServer.Count() == 0)
                         {
                             serverNodes.Add(new ServerNodeData()
                             {
-                                NetworkAddress = connectedXServer.Address,
-                                NetworkPort = connectedXServer.Port,
+                                NetworkAddress = connectedXServer.NetworkAddress,
+                                NetworkPort = connectedXServer.NetworkPort,
                                 NetworkProtocol = connectedXServer.NetworkProtocol
                             });
                         }
@@ -387,13 +387,13 @@ namespace x42.Feature.Network
                 }
                 foreach (var connectedXServer in xServerStats.Nodes)
                 {
-                    var xServer = serverNodes.Where(x => x.NetworkAddress == connectedXServer.Address);
+                    var xServer = serverNodes.Where(x => x.NetworkAddress == connectedXServer.NetworkAddress);
                     if (xServer.Count() == 0)
                     {
                         serverNodes.Add(new ServerNodeData()
                         {
-                            NetworkAddress = connectedXServer.Address,
-                            NetworkPort = connectedXServer.Port,
+                            NetworkAddress = connectedXServer.NetworkAddress,
+                            NetworkPort = connectedXServer.NetworkPort,
                             NetworkProtocol = connectedXServer.NetworkProtocol
                         });
                     }
