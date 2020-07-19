@@ -200,6 +200,7 @@ namespace x42.Feature.PriceLock
                                 priceLock.PayeeSignature = submitPaymentRequest.PayeeSignature;
                                 priceLock.TransactionID = submitPaymentRequest.TransactionId;
                                 priceLock.Status = (int)Status.WaitingForConfirmation;
+                                priceLock.Relayed = false;
                                 dbContext.SaveChanges();
                                 if (!string.IsNullOrEmpty(submitPaymentRequest.TransactionHex))
                                 {
