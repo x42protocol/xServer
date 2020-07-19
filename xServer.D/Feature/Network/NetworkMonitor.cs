@@ -290,14 +290,17 @@ namespace x42.Feature.Network
                 NetworkPort = newServer.NetworkPort,
                 NetworkProtocol = newServer.NetworkProtocol,
                 Signature = newServer.Signature,
-                Tier = newServer.Tier
+                Tier = newServer.Tier,
+                FeeAddress = newServer.FeeAddress,
+                KeyAddress = newServer.KeyAddress,
+                SignAddress = newServer.SignAddress
             };
 
             foreach (var activeServer in activeXServers)
             {
                 string xServerURL = networkFeatures.GetServerUrl(activeServer.NetworkProtocol, activeServer.NetworkAddress, activeServer.NetworkPort);
                 var client = new RestClient(xServerURL);
-                var registerRestRequest = new RestRequest("/register", Method.POST);
+                var registerRestRequest = new RestRequest("/registerserver", Method.POST);
                 var request = JsonConvert.SerializeObject(registerRequest);
                 registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
                 registerRestRequest.RequestFormat = DataFormat.Json;
