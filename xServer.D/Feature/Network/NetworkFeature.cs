@@ -25,6 +25,8 @@ using x42.Server.Results;
 using System.Collections.Generic;
 using x42.Feature.X42Client.Enums;
 using x42.Feature.X42Client.RestClient.Requests;
+using Newtonsoft.Json;
+using x42.Controllers.Requests;
 
 namespace x42.Feature.Network
 {
@@ -162,6 +164,12 @@ namespace x42.Feature.Network
             return await x42Client.VerifyMessageAsync(profileKeyAddress, serverKey, serverNode.Signature);
         }
 
+        public async Task<bool> IsProfileKeyValid(string name, string keyAddress, string returnAddress, string signature)
+        {
+            string profileKey = $"{name}{returnAddress}";
+            return await x42Client.VerifyMessageAsync(keyAddress, profileKey, signature);
+        }
+
         public async Task<string> SignPriceLock(string priceLock)
         {
             var signRequest = new SignMessageRequest()
@@ -266,6 +274,83 @@ namespace x42.Feature.Network
             }
             return Money.Zero;
         }
+
+        public async Task<PriceLockResult> GetPriceLockFromT3(string priceLockId)
+        {
+            PriceLockResult result = null;
+            var tierThreeServerConnections = GetTierThreeConnectionInfo();
+            foreach (var xServerConnectionInfo in tierThreeServerConnections)
+            {
+                try
+                {
+                    string xServerURL = GetServerUrl(xServerConnectionInfo.NetworkProtocol, xServerConnectionInfo.NetworkAddress, xServerConnectionInfo.NetworkPort);
+                    logger.LogDebug($"Attempting validate connection to {xServerURL}.");
+
+                    var client = new RestClient(xServerURL);
+                    var getPriceLockRequest = new RestRequest("/getpricelock", Method.GET);
+                    getPriceLockRequest.AddParameter("priceLockId", priceLockId);
+                    var priceLockResult = await client.ExecuteAsync<PriceLockResult>(getPriceLockRequest).ConfigureAwait(false);
+                    if (priceLockResult.StatusCode == HttpStatusCode.OK)
+                    {
+                        return priceLockResult.Data;
+                    }
+                }
+                catch (Exception) { }
+            }
+            return result;
+        }
+
+        public async Task<PriceLockResult> CreateNewPriceLock(CreatePriceLockRequest priceLockRequest)
+        {
+            PriceLockResult result = null;
+            var tierThreeServerConnections = GetTierThreeConnectionInfo();
+            foreach (var xServerConnectionInfo in tierThreeServerConnections)
+            {
+                try
+                {
+                    string xServerURL = GetServerUrl(xServerConnectionInfo.NetworkProtocol, xServerConnectionInfo.NetworkAddress, xServerConnectionInfo.NetworkPort);
+                    logger.LogDebug($"Attempting validate connection to {xServerURL}.");
+
+                    var client = new RestClient(xServerURL);
+                    var createPriceLockRequest = new RestRequest("/createpricelock", Method.POST);
+                    var request = JsonConvert.SerializeObject(priceLockRequest);
+                    createPriceLockRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
+                    createPriceLockRequest.RequestFormat = DataFormat.Json;
+                    var createPLResult = await client.ExecuteAsync<PriceLockResult>(createPriceLockRequest);
+                    if (createPLResult.StatusCode == HttpStatusCode.OK)
+                    {
+                        return createPLResult.Data;
+                    }
+                }
+                catch (Exception) { }
+            }
+            return result;
+        }
+
+        public List<XServerConnectionInfo> GetTierThreeConnectionInfo(int takeTop = 100)
+        {
+            var tierThreeAddresses = new List<XServerConnectionInfo>();
+
+            // Remove any servers that have been unavailable past the grace period.
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var tierThreeServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).Take(takeTop);
+                foreach (ServerNodeData server in tierThreeServers)
+                {
+                    var xServerConnectionInfo = new XServerConnectionInfo()
+                    {
+                        NetworkAddress = server.NetworkAddress,
+                        NetworkProtocol = server.NetworkProtocol,
+                        NetworkPort = server.NetworkPort,
+                        Priotiry = server.Priority
+                    };
+                    tierThreeAddresses.Add(xServerConnectionInfo);
+                }
+                dbContext.SaveChanges();
+            }
+            return tierThreeAddresses;
+        }
+
 
         public async Task<RawTransactionResponse> GetRawTransaction(string txid, bool verbose)
         {

@@ -17,6 +17,7 @@ using x42.Feature.Database.Tables;
 using x42.Controllers.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using x42.Feature.Network;
 
 namespace x42.Feature.Profile
 {
@@ -41,6 +42,7 @@ namespace x42.Feature.Profile
         private X42ClientSettings x42ClientSettings;
         private readonly X42ClientFeature x42FullNode;
         private readonly DatabaseFeatures database;
+        private readonly NetworkFeatures networkFeatures;
         private X42Node x42Client;
 
         public ProfileFeature(
@@ -52,7 +54,8 @@ namespace x42.Feature.Profile
             IxServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory,
             X42ClientFeature x42FullNode,
-            DatabaseFeatures database
+            DatabaseFeatures database,
+            NetworkFeatures networkFeatures
             )
         {
             this.network = network;
@@ -64,6 +67,7 @@ namespace x42.Feature.Profile
             this.x42ClientSettings = x42ClientSettings;
             this.x42FullNode = x42FullNode;
             this.database = database;
+            this.networkFeatures = networkFeatures;
 
             x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
         }
@@ -95,37 +99,97 @@ namespace x42.Feature.Profile
             }
         }
 
-        /// <summary>
-        ///     Register a new profile.
-        /// </summary>
-        public async Task<ProfileChangeResult> RegisterProfile(ProfileRegisterRequest profileRegisterRequest)
+        private bool ProfileExists(string name = "", string keyAddress = "")
         {
-            ProfileChangeResult result = new ProfileChangeResult();
-
+            bool result = false;
+            int profileCount = 0;
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                var profiles = dbContext.Profiles.Where(n => n.Name == profileRegisterRequest.Name || n.KeyAddress == profileRegisterRequest.KeyAddress).ToList();
-                if (profiles.Count() == 0)
+                if (string.IsNullOrEmpty(keyAddress))
                 {
-                    var newProfile = new ProfileData()
-                    {
-                        Name = profileRegisterRequest.Name,
-                        KeyAddress = profileRegisterRequest.KeyAddress,
-                        PriceLockId = profileRegisterRequest.PriceLockId
-                    };
-
-                    var newRecord = dbContext.Profiles.Add(newProfile);
-                    if (newRecord.State == EntityState.Added)
-                    {
-                        dbContext.SaveChanges();
-                        result.Success = true;
-                    }
+                    profileCount = dbContext.ProfileReservations.Where(p => p.Name == name).Count();
+                    profileCount += dbContext.Profiles.Where(p => p.Name == name).Count();
+                }
+                else if (string.IsNullOrEmpty(name))
+                {
+                    profileCount = dbContext.ProfileReservations.Where(p => p.KeyAddress == keyAddress).Count();
+                    profileCount += dbContext.Profiles.Where(p => p.KeyAddress == keyAddress).Count();
                 }
                 else
                 {
-                    result.Success = false;
-                    result.ResultMessage = "Profile already exists.";
+                    profileCount = dbContext.ProfileReservations.Where(p => p.Name == name || p.KeyAddress == keyAddress).Count();
+                    profileCount += dbContext.Profiles.Where(p => p.Name == name || p.KeyAddress == keyAddress).Count();
                 }
+
+                result = profileCount > 0;
+            }
+            return result;
+        }
+
+        /// <summary>
+        ///     Register a new profile.
+        /// </summary>
+        public async Task<ReserveProfileResult> ReserveProfile(ProfileReserveRequest profileRegisterRequest)
+        {
+            ReserveProfileResult result = new ReserveProfileResult();
+
+            if (!ProfileExists(profileRegisterRequest.Name, profileRegisterRequest.KeyAddress))
+            {
+                bool isProfileKeyValid = await networkFeatures.IsProfileKeyValid(profileRegisterRequest.Name, profileRegisterRequest.KeyAddress, profileRegisterRequest.ReturnAddress, profileRegisterRequest.Signature);
+                if (!isProfileKeyValid)
+                {
+                    result.Success = false;
+                    result.ResultMessage = "Profile validation failed.";
+                    return result;
+                }
+
+                // Price Lock ID does not exist, this is a new request, so let's create a price lock ID for it, and reserve the name.
+                var profilePriceLockRequest = new CreatePriceLockRequest()
+                {
+                    DestinationAddress = networkFeatures.GetMyFeeAddress(),
+                    RequestAmount = 5,      // $5
+                    RequestAmountPair = 1,  // USD
+                    ExpireBlock = 15
+                };
+                var newPriceLock = await networkFeatures.CreateNewPriceLock(profilePriceLockRequest);
+                if (newPriceLock == null)
+                {
+                    result.Success = false;
+                    result.ResultMessage = "Failed to acquire a price lock";
+                    return result;
+                }
+                int status = (int)Status.Reserved;
+                var newProfile = new ProfileReservationData()
+                {
+                    Name = profileRegisterRequest.Name,
+                    KeyAddress = profileRegisterRequest.KeyAddress,
+                    ReturnAddress = profileRegisterRequest.ReturnAddress,
+                    PriceLockId = newPriceLock.PriceLockId,
+                    Signature = profileRegisterRequest.Signature,
+                    Status = status,
+                    ReservationExpirationBlock = newPriceLock.ExpireBlock
+                };
+                using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                {
+                    var newRecord = dbContext.ProfileReservations.Add(newProfile);
+                    if (newRecord.State == EntityState.Added)
+                    {
+                        dbContext.SaveChanges();
+                        result.PriceLockId = newPriceLock.PriceLockId;
+                        result.Status = (int)Status.Reserved;
+                        result.Success = true;
+                    }
+                    else
+                    {
+                        result.ResultMessage = "Failed to add profile.";
+                        result.Success = false;
+                    }
+                }
+            }
+            else
+            {
+                result.Success = false;
+                result.ResultMessage = "Profile already exists.";
             }
 
             return result;

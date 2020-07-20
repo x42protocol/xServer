@@ -496,7 +496,7 @@ namespace x42.Feature.PriceLock
         private async Task UpdateNetworkPriceList(CancellationToken cancellationToken)
         {
             var networkPriceListSize = FiatPairs.FirstOrDefault().NetworkPriceListSize;
-            var tierThreeServerConnections = GetTierThreeConnectionInfo(networkPriceListSize);
+            var tierThreeServerConnections = networkFeatures.GetTierThreeConnectionInfo(networkPriceListSize);
             foreach (var serverConnectionInfo in tierThreeServerConnections)
             {
                 var nodePriceResults = await GetPriceFromTierThree(cancellationToken, serverConnectionInfo);
@@ -554,30 +554,6 @@ namespace x42.Feature.PriceLock
                 priceResult = getPriceResult.Data;
             }
             return priceResult;
-        }
-
-        private List<XServerConnectionInfo> GetTierThreeConnectionInfo(int takeTop)
-        {
-            var tierThreeAddresses = new List<XServerConnectionInfo>();
-
-            // Remove any servers that have been unavailable past the grace period.
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-            {
-                var tierThreeServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).Take(takeTop);
-                foreach (ServerNodeData server in tierThreeServers)
-                {
-                    var xServerConnectionInfo = new XServerConnectionInfo()
-                    {
-                        NetworkAddress = server.NetworkAddress,
-                        NetworkProtocol = server.NetworkProtocol,
-                        NetworkPort = server.NetworkPort,
-                        Priotiry = server.Priority
-                    };
-                    tierThreeAddresses.Add(xServerConnectionInfo);
-                }
-                dbContext.SaveChanges();
-            }
-            return tierThreeAddresses;
         }
 
         private async Task<CoinGeckoPriceResult> GetCoinGeckoPrice(CancellationToken cancellationToken, FiatCurrency currency)

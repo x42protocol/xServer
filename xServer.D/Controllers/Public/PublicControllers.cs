@@ -150,15 +150,15 @@ namespace x42.Controllers.Public
         ///     Registers a profile to the network.
         /// </summary>
         /// <param name="registerRequest">The object with all of the nessesary data to register a profile.</param>
-        /// <returns>A <see cref="ProfileChangeResult" /> with registration result.</returns>
+        /// <returns>A <see cref="ReserveProfileResult" /> with registration result.</returns>
         [HttpPost]
         [Route("registerprofile")]
-        public async Task<IActionResult> RegisterProfileAsync([FromBody] ProfileRegisterRequest registerRequest)
+        public async Task<IActionResult> ReserveProfile([FromBody] ProfileReserveRequest registerRequest)
         {
             xServer.Stats.IncrementPublicRequest();
             if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
             {
-                var registerResult = await profileFeature.RegisterProfile(registerRequest);
+                var registerResult = await profileFeature.ReserveProfile(registerRequest);
                 return Json(registerResult);
             }
             else
