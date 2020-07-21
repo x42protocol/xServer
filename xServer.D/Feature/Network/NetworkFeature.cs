@@ -27,6 +27,7 @@ using x42.Feature.X42Client.Enums;
 using x42.Feature.X42Client.RestClient.Requests;
 using Newtonsoft.Json;
 using x42.Controllers.Requests;
+using System.Threading;
 
 namespace x42.Feature.Network
 {
@@ -275,10 +276,10 @@ namespace x42.Feature.Network
             return Money.Zero;
         }
 
-        public async Task<PriceLockResult> GetPriceLockFromT3(string priceLockId)
+        public async Task<PriceLockResult> GetPriceLockFromT3(CancellationToken cancellationToken, string priceLockId)
         {
             PriceLockResult result = null;
-            var tierThreeServerConnections = GetTierThreeConnectionInfo();
+            var tierThreeServerConnections = GetAllTier3ConnectionInfo();
             foreach (var xServerConnectionInfo in tierThreeServerConnections)
             {
                 try
@@ -289,7 +290,7 @@ namespace x42.Feature.Network
                     var client = new RestClient(xServerURL);
                     var getPriceLockRequest = new RestRequest("/getpricelock", Method.GET);
                     getPriceLockRequest.AddParameter("priceLockId", priceLockId);
-                    var priceLockResult = await client.ExecuteAsync<PriceLockResult>(getPriceLockRequest).ConfigureAwait(false);
+                    var priceLockResult = await client.ExecuteAsync<PriceLockResult>(getPriceLockRequest, cancellationToken).ConfigureAwait(false);
                     if (priceLockResult.StatusCode == HttpStatusCode.OK)
                     {
                         return priceLockResult.Data;
@@ -300,10 +301,39 @@ namespace x42.Feature.Network
             return result;
         }
 
+        public async Task RelayProfileReservation(CancellationToken cancellationToken, ProfileReservationData profileReservationData, XServerConnectionInfo xServerConnectionInfo)
+        {
+            string xServerURL = GetServerUrl(xServerConnectionInfo.NetworkProtocol, xServerConnectionInfo.NetworkAddress, xServerConnectionInfo.NetworkPort);
+            try
+            {
+                var reserveRequest = new ProfileReserveRequest()
+                {
+                    KeyAddress = profileReservationData.KeyAddress,
+                    Name = profileReservationData.Name,
+                    ReturnAddress = profileReservationData.ReturnAddress,
+                    Signature = profileReservationData.Signature
+                };
+
+                logger.LogDebug($"Attempting relay profile reservation to {xServerURL}.");
+
+                var client = new RestClient(xServerURL);
+                var reserveProfileRequest = new RestRequest("/reserveprofile", Method.POST);
+                var request = JsonConvert.SerializeObject(reserveRequest);
+                reserveProfileRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
+                reserveProfileRequest.RequestFormat = DataFormat.Json;
+
+                await client.ExecuteAsync<ReserveProfileResult>(reserveProfileRequest, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                logger.LogDebug($"Relay profile reservation failed for {xServerURL}.");
+            }
+        }
+
         public async Task<PriceLockResult> CreateNewPriceLock(CreatePriceLockRequest priceLockRequest)
         {
             PriceLockResult result = null;
-            var tierThreeServerConnections = GetTierThreeConnectionInfo();
+            var tierThreeServerConnections = GetAllTier3ConnectionInfo();
             foreach (var xServerConnectionInfo in tierThreeServerConnections)
             {
                 try
@@ -327,30 +357,57 @@ namespace x42.Feature.Network
             return result;
         }
 
-        public List<XServerConnectionInfo> GetTierThreeConnectionInfo(int takeTop = 100)
+        public List<XServerConnectionInfo> GetAllTier3ConnectionInfo(int top = 0)
         {
             var tierThreeAddresses = new List<XServerConnectionInfo>();
 
-            // Remove any servers that have been unavailable past the grace period.
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                var tierThreeServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).Take(takeTop);
-                foreach (ServerNodeData server in tierThreeServers)
+                // Remove any servers that have been unavailable past the grace period.
+                List<ServerNodeData> tierThreeServers;
+                if (top > 0)
                 {
-                    var xServerConnectionInfo = new XServerConnectionInfo()
-                    {
-                        NetworkAddress = server.NetworkAddress,
-                        NetworkProtocol = server.NetworkProtocol,
-                        NetworkPort = server.NetworkPort,
-                        Priotiry = server.Priority
-                    };
-                    tierThreeAddresses.Add(xServerConnectionInfo);
+                    tierThreeServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).ToList();
                 }
-                dbContext.SaveChanges();
+                else
+                {
+                    tierThreeServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).Take(top).ToList();
+                }
+                tierThreeAddresses = GetServerConnectionInfoList(tierThreeServers);
             }
             return tierThreeAddresses;
         }
 
+        public List<XServerConnectionInfo> GetAllTier2ConnectionInfo()
+        {
+            var tierTwoAddresses = new List<XServerConnectionInfo>();
+
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                // Remove any servers that have been unavailable past the grace period.
+                var tierTwoServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).ToList();
+                tierTwoAddresses = GetServerConnectionInfoList(tierTwoServers);
+            }
+            return tierTwoAddresses;
+        }
+
+
+        private List<XServerConnectionInfo> GetServerConnectionInfoList(List<ServerNodeData> servers)
+        {
+            var serverAddresses = new List<XServerConnectionInfo>();
+            foreach (ServerNodeData server in servers)
+            {
+                var xServerConnectionInfo = new XServerConnectionInfo()
+                {
+                    NetworkAddress = server.NetworkAddress,
+                    NetworkProtocol = server.NetworkProtocol,
+                    NetworkPort = server.NetworkPort,
+                    Priotiry = server.Priority
+                };
+                serverAddresses.Add(xServerConnectionInfo);
+            }
+            return serverAddresses;
+        }
 
         public async Task<RawTransactionResponse> GetRawTransaction(string txid, bool verbose)
         {

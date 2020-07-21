@@ -13,5 +13,6 @@ namespace x42.Feature.Database.Tables
         public string Signature { get; set; }
         public int Status { get; set; }
         public string PriceLockId { get; set; }
+        public bool Relayed { get; set; }
     }
 }

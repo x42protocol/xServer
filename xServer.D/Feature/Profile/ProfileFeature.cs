@@ -18,6 +18,8 @@ using x42.Controllers.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using x42.Feature.Network;
+using System.Threading;
+using System;
 
 namespace x42.Feature.Profile
 {
@@ -30,11 +32,22 @@ namespace x42.Feature.Profile
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
 
+        /// <summary>
+        ///     A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IxServerLifetime.ApplicationStopping"/>.
+        /// </summary>
+        private CancellationTokenSource networkCancellationTokenSource;
+
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
         private readonly IxServerLifetime serverLifetime;
 
         /// <summary>Factory for creating background async loop tasks.</summary>
         private readonly IAsyncLoopFactory asyncLoopFactory;
+
+        /// <summary>Time in seconds between attempts to check the profile reservations.</summary>
+        private readonly int updateProfileReservationsSeconds = 60;
+
+        /// <summary>Time in seconds between attempts to relay profile information.</summary>
+        private readonly int relayProfileSeconds = 2;
 
         private readonly ServerNodeBase network;
         private readonly DatabaseSettings databaseSettings;
@@ -43,6 +56,7 @@ namespace x42.Feature.Profile
         private readonly X42ClientFeature x42FullNode;
         private readonly DatabaseFeatures database;
         private readonly NetworkFeatures networkFeatures;
+        private readonly XServer xServer;
         private X42Node x42Client;
 
         public ProfileFeature(
@@ -55,7 +69,8 @@ namespace x42.Feature.Profile
             IAsyncLoopFactory asyncLoopFactory,
             X42ClientFeature x42FullNode,
             DatabaseFeatures database,
-            NetworkFeatures networkFeatures
+            NetworkFeatures networkFeatures,
+            XServer xServer
             )
         {
             this.network = network;
@@ -68,6 +83,7 @@ namespace x42.Feature.Profile
             this.x42FullNode = x42FullNode;
             this.database = database;
             this.networkFeatures = networkFeatures;
+            this.xServer = xServer;
 
             x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
         }
@@ -75,6 +91,8 @@ namespace x42.Feature.Profile
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
+            ProfileServices();
+
             logger.LogInformation("Profile Initialized");
 
             return Task.CompletedTask;
@@ -99,7 +117,139 @@ namespace x42.Feature.Profile
             }
         }
 
-        private bool ProfileExists(string name = "", string keyAddress = "")
+        private void ProfileServices()
+        {
+            this.networkCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { serverLifetime.ApplicationStopping });
+
+            asyncLoopFactory.Run("Price.ProfileCheckService", async token =>
+            {
+                try
+                {
+                    if (xServer.Stats.TierLevel == Tier.TierLevel.Two && networkFeatures.IsServerReady())
+                    {
+                        await CheckReservedProfiles(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Exception: {0}", ex);
+                    this.logger.LogTrace("(-)[UNHANDLED_EXCEPTION_PROFILE_CHECK]");
+                    throw;
+                }
+            },
+            this.networkCancellationTokenSource.Token,
+            repeatEvery: TimeSpan.FromSeconds(this.updateProfileReservationsSeconds),
+            startAfter: TimeSpans.TenSeconds);
+
+            asyncLoopFactory.Run("Price.ProfileRelayService", async token =>
+            {
+                try
+                {
+                    if (xServer.Stats.TierLevel == Tier.TierLevel.Two && networkFeatures.IsServerReady())
+                    {
+                        await RelayProfiles(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Exception: {0}", ex);
+                    this.logger.LogTrace("(-)[UNHANDLED_EXCEPTION_PROFILE_RELAY]");
+                    throw;
+                }
+            },
+            this.networkCancellationTokenSource.Token,
+            repeatEvery: TimeSpan.FromSeconds(this.relayProfileSeconds),
+            startAfter: TimeSpans.TenSeconds);
+
+        }
+
+
+        /// <summary>
+        ///     Relay profiles and reservations that have not been processed.
+        /// </summary>
+        private async Task RelayProfiles(CancellationToken cancellationToken)
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var t2Servers = networkFeatures.GetAllTier2ConnectionInfo();
+                var profileReservationsToRelay = dbContext.ProfileReservations.Where(pr => pr.Relayed == true);
+                foreach (var profileReservation in profileReservationsToRelay)
+                {
+                    foreach (var server in t2Servers)
+                    {
+                        await networkFeatures.RelayProfileReservation(cancellationToken, profileReservation, server);
+                    }
+                    profileReservation.Relayed = true;
+                }
+                dbContext.SaveChanges();
+            }
+        }
+
+
+        /// <summary>
+        ///     Check the reserved profiles, and process the paid ones, and remove the expired ones.
+        /// </summary>
+        private async Task CheckReservedProfiles(CancellationToken cancellationToken)
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var profileReservations = dbContext.ProfileReservations;
+                foreach (var profileReservation in profileReservations)
+                {
+                    if (Convert.ToInt64(networkFeatures.BestBlockHeight) <= profileReservation.ReservationExpirationBlock)
+                    {
+                        if (!ProfileExists(profileReservation.Name, profileReservation.KeyAddress, true))
+                        {
+                            await RegisterProfile(cancellationToken, profileReservation);
+                        }
+                    }
+                    else
+                    {
+                        dbContext.ProfileReservations.Remove(profileReservation);
+                    }
+                }
+                dbContext.SaveChanges();
+            }
+        }
+
+        private async Task RegisterProfile(CancellationToken cancellationToken, ProfileReservationData profileReservationData)
+        {
+            try
+            {
+                var priceLock = await networkFeatures.GetPriceLockFromT3(cancellationToken, profileReservationData.PriceLockId);
+                if (priceLock.Status == (int)PriceLock.Status.Confirmed)
+                {
+                    using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                    {
+                        var profileCount = dbContext.Profiles.Where(p => p.Name == profileReservationData.Name || p.KeyAddress == profileReservationData.KeyAddress).Count();
+                        if (profileCount == 0)
+                        {
+                            var newProfile = new ProfileData()
+                            {
+                                KeyAddress = profileReservationData.KeyAddress,
+                                Name = profileReservationData.Name,
+                                PriceLockId = profileReservationData.PriceLockId,
+                                ReturnAddress = profileReservationData.ReturnAddress,
+                                Signature = profileReservationData.Signature,
+                                Relayed = profileReservationData.Relayed,
+                                Status = (int)Status.Created
+                            };
+                            var newRecord = dbContext.Profiles.Add(newProfile);
+                            if (newRecord.State == EntityState.Added)
+                            {
+                                dbContext.SaveChanges();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Error During Profile Registration", ex);
+            }
+        }
+
+        private bool ProfileExists(string name = "", string keyAddress = "", bool skipReservations = false)
         {
             bool result = false;
             int profileCount = 0;
@@ -107,17 +257,26 @@ namespace x42.Feature.Profile
             {
                 if (string.IsNullOrEmpty(keyAddress))
                 {
-                    profileCount = dbContext.ProfileReservations.Where(p => p.Name == name).Count();
+                    if (skipReservations)
+                    {
+                        profileCount = dbContext.ProfileReservations.Where(p => p.Name == name).Count();
+                    }
                     profileCount += dbContext.Profiles.Where(p => p.Name == name).Count();
                 }
                 else if (string.IsNullOrEmpty(name))
                 {
-                    profileCount = dbContext.ProfileReservations.Where(p => p.KeyAddress == keyAddress).Count();
+                    if (skipReservations)
+                    {
+                        profileCount = dbContext.ProfileReservations.Where(p => p.KeyAddress == keyAddress).Count();
+                    }
                     profileCount += dbContext.Profiles.Where(p => p.KeyAddress == keyAddress).Count();
                 }
                 else
                 {
-                    profileCount = dbContext.ProfileReservations.Where(p => p.Name == name || p.KeyAddress == keyAddress).Count();
+                    if (skipReservations)
+                    {
+                        profileCount = dbContext.ProfileReservations.Where(p => p.Name == name || p.KeyAddress == keyAddress).Count();
+                    }
                     profileCount += dbContext.Profiles.Where(p => p.Name == name || p.KeyAddress == keyAddress).Count();
                 }
 
@@ -152,7 +311,7 @@ namespace x42.Feature.Profile
                     ExpireBlock = 15
                 };
                 var newPriceLock = await networkFeatures.CreateNewPriceLock(profilePriceLockRequest);
-                if (newPriceLock == null)
+                if (newPriceLock == null || string.IsNullOrEmpty(newPriceLock?.PriceLockId) || newPriceLock?.ExpireBlock <= 0)
                 {
                     result.Success = false;
                     result.ResultMessage = "Failed to acquire a price lock";
@@ -167,7 +326,8 @@ namespace x42.Feature.Profile
                     PriceLockId = newPriceLock.PriceLockId,
                     Signature = profileRegisterRequest.Signature,
                     Status = status,
-                    ReservationExpirationBlock = newPriceLock.ExpireBlock
+                    ReservationExpirationBlock = newPriceLock.ExpireBlock,
+                    Relayed = false
                 };
                 using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
                 {
@@ -176,11 +336,12 @@ namespace x42.Feature.Profile
                     {
                         dbContext.SaveChanges();
                         result.PriceLockId = newPriceLock.PriceLockId;
-                        result.Status = (int)Status.Reserved;
+                        result.Status = status;
                         result.Success = true;
                     }
                     else
                     {
+                        result.Status = (int)Status.Rejected;
                         result.ResultMessage = "Failed to add profile.";
                         result.Success = false;
                     }
@@ -188,10 +349,45 @@ namespace x42.Feature.Profile
             }
             else
             {
+                result.Status = (int)Status.Rejected;
                 result.Success = false;
                 result.ResultMessage = "Profile already exists.";
             }
 
+            return result;
+        }
+
+        public async Task<bool> SyncProfileReservation(ProfileReserveSyncRequest profileReserveSyncRequest)
+        {
+            bool result = false;
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var profileCount = dbContext.ProfileReservations.Where(p => p.Name == profileReserveSyncRequest.Name || p.KeyAddress == profileReserveSyncRequest.KeyAddress).Count();
+                if (profileCount == 0)
+                {
+                    bool isProfileKeyValid = await networkFeatures.IsProfileKeyValid(profileReserveSyncRequest.Name, profileReserveSyncRequest.KeyAddress, profileReserveSyncRequest.ReturnAddress, profileReserveSyncRequest.Signature);
+                    if (isProfileKeyValid)
+                    {
+                        var newProfile = new ProfileReservationData()
+                        {
+                            KeyAddress = profileReserveSyncRequest.KeyAddress,
+                            Name = profileReserveSyncRequest.Name,
+                            PriceLockId = profileReserveSyncRequest.PriceLockId,
+                            ReturnAddress = profileReserveSyncRequest.ReturnAddress,
+                            Signature = profileReserveSyncRequest.Signature,
+                            Relayed = false,
+                            Status = (int)Status.Created,
+                            ReservationExpirationBlock = profileReserveSyncRequest.ReservationExpirationBlock
+                        };
+                        var newRecord = dbContext.ProfileReservations.Add(newProfile);
+                        if (newRecord.State == EntityState.Added)
+                        {
+                            dbContext.SaveChanges();
+                            result = true;
+                        }
+                    }
+                }
+            }
             return result;
         }
 
@@ -214,8 +410,25 @@ namespace x42.Feature.Profile
                             KeyAddress = profile.KeyAddress,
                             Name = profile.Name,
                             Signature = profile.Signature,
-                            PriceLockId = profile.PriceLockId
+                            PriceLockId = profile.PriceLockId,
+                            Status = profile.Status
                         };
+                    }
+                    else
+                    {
+                        var profileReservation = dbContext.ProfileReservations.Where(n => n.KeyAddress == profileRequest.KeyAddress).FirstOrDefault();
+                        if (profileReservation != null)
+                        {
+                            result = new ProfileResult()
+                            {
+                                KeyAddress = profileReservation.KeyAddress,
+                                Name = profileReservation.Name,
+                                Signature = profileReservation.Signature,
+                                PriceLockId = profileReservation.PriceLockId,
+                                Status = profileReservation.Status,
+                                ReservationExpirationBlock = profileReservation.ReservationExpirationBlock
+                            };
+                        }
                     }
                 }
                 else if (!string.IsNullOrWhiteSpace(profileRequest.Name))
@@ -228,8 +441,25 @@ namespace x42.Feature.Profile
                             KeyAddress = profile.KeyAddress,
                             Name = profile.Name,
                             Signature = profile.Signature,
-                            PriceLockId = profile.PriceLockId
+                            PriceLockId = profile.PriceLockId,
+                            Status = profile.Status,
                         };
+                    }
+                    else
+                    {
+                        var profileReservation = dbContext.ProfileReservations.Where(n => n.Name == profileRequest.Name).FirstOrDefault();
+                        if (profileReservation != null)
+                        {
+                            result = new ProfileResult()
+                            {
+                                KeyAddress = profileReservation.KeyAddress,
+                                Name = profileReservation.Name,
+                                Signature = profileReservation.Signature,
+                                PriceLockId = profileReservation.PriceLockId,
+                                Status = profileReservation.Status,
+                                ReservationExpirationBlock = profileReservation.ReservationExpirationBlock
+                            };
+                        }
                     }
                 }
             }

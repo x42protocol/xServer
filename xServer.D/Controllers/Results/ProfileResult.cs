@@ -12,6 +12,10 @@ namespace x42.Controllers.Results
 
         public string PriceLockId { get; set; }
 
+        public int Status { get; set; }
+
+        public long ReservationExpirationBlock { get; set; }
+
         public List<ProfileField> ProfileFields { get; set; }
     }
 }

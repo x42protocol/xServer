@@ -496,7 +496,7 @@ namespace x42.Feature.PriceLock
         private async Task UpdateNetworkPriceList(CancellationToken cancellationToken)
         {
             var networkPriceListSize = FiatPairs.FirstOrDefault().NetworkPriceListSize;
-            var tierThreeServerConnections = networkFeatures.GetTierThreeConnectionInfo(networkPriceListSize);
+            var tierThreeServerConnections = networkFeatures.GetAllTier3ConnectionInfo(networkPriceListSize);
             foreach (var serverConnectionInfo in tierThreeServerConnections)
             {
                 var nodePriceResults = await GetPriceFromTierThree(cancellationToken, serverConnectionInfo);

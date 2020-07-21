@@ -2,7 +2,7 @@
 
 namespace x42.Controllers.Requests
 {
-    public class ProfileReserveRequest
+    public class ProfileReserveSyncRequest
     {
         /// <summary>
         ///     User defined name of profile to be registered.
@@ -31,6 +31,20 @@ namespace x42.Controllers.Requests
         [Required(ErrorMessage = "The signature is missing.")]
         [StringLength(1024, ErrorMessage = "The signature cannot exceed 1024 characters.")]
         public string Signature { get; set; }
+
+        /// <summary>
+        ///     The Pricelock Id for the profile.
+        /// </summary>
+        [Required(ErrorMessage = "The PriceLockId is missing.")]
+        [StringLength(64, ErrorMessage = "The PriceLockId cannot exceed 1024 characters.")]
+        public string PriceLockId { get; set; }
+
+        /// <summary>
+        ///     The reservation expire block
+        /// </summary>
+        [Required(ErrorMessage = "The ReservationExpirationBlock is missing.")]
+        [Range(1, long.MaxValue, ErrorMessage = "The ReservationExpirationBlock cannot be below {1} and not exceed {2}.")]
+        public long ReservationExpirationBlock { get; set; }
 
     }
 }

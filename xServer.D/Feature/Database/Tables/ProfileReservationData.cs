@@ -17,5 +17,6 @@ namespace x42.Feature.Database.Tables
         public int Status { get; set; }
         public string PriceLockId { get; set; }
         public long ReservationExpirationBlock { get; set; }
+        public bool Relayed { get; set; }
     }
 }

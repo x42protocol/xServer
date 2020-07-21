@@ -147,19 +147,40 @@ namespace x42.Controllers.Public
         }
 
         /// <summary>
-        ///     Registers a profile to the network.
+        ///     Reserves a profile to the network.
         /// </summary>
-        /// <param name="registerRequest">The object with all of the nessesary data to register a profile.</param>
-        /// <returns>A <see cref="ReserveProfileResult" /> with registration result.</returns>
+        /// <param name="reserveRequest">The object with all of the nessesary data to reserve a profile.</param>
+        /// <returns>A <see cref="ReserveProfileResult" /> with reservation result.</returns>
         [HttpPost]
-        [Route("registerprofile")]
-        public async Task<IActionResult> ReserveProfile([FromBody] ProfileReserveRequest registerRequest)
+        [Route("reserveprofile")]
+        public async Task<IActionResult> ReserveProfile([FromBody] ProfileReserveRequest reserveRequest)
         {
             xServer.Stats.IncrementPublicRequest();
             if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
             {
-                var registerResult = await profileFeature.ReserveProfile(registerRequest);
-                return Json(registerResult);
+                var reserveResult = await profileFeature.ReserveProfile(reserveRequest);
+                return Json(reserveResult);
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 2 requirement not meet", "The node you requested is not a tier 2 node.");
+            }
+        }
+
+        /// <summary>
+        ///     Used for syncing the profile reservations.
+        /// </summary>
+        /// <param name="reserveRequest">The object with all of the nessesary data to sync a profile reservation.</param>
+        /// <returns>A <see cref="bool" /> with reservation result.</returns>
+        [HttpPost]
+        [Route("syncprofilereservation")]
+        public async Task<IActionResult> SyncProfileReservation([FromBody] ProfileReserveSyncRequest profileReserveSyncRequest)
+        {
+            xServer.Stats.IncrementPublicRequest();
+            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
+            {
+                var reserveResult = await profileFeature.SyncProfileReservation(profileReserveSyncRequest);
+                return Json(reserveResult);
             }
             else
             {
