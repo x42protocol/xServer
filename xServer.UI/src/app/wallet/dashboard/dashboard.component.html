@@ -121,7 +121,7 @@
             <div class="form-group" style="width: 100%;">
               <div class="ui-g-12 ui-md-4" style="width: 100%;">
                 <div class="ui-inputgroup" style="width: 100%;">
-                  <input type="password" style="width: 250px;" formControlName="walletPassword" class="form-control" id="inputPassword" placeholder="Password" (keyup.enter)="startStaking()" pInputText>
+                  <input type="password" style="width: 250px;" formControlName="walletPassword" class="form-control" id="inputPassword" placeholder="Password" (keyup.enter)="startServer()" pInputText>
                   <button pButton type="button" icon="pi pi-lock" class="ui-button-warn" label="Start xServer" (click)="startServer()" [disabled]="isStarting || !stakingForm.valid"></button>
                 </div>
               </div>

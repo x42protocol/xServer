@@ -5,7 +5,7 @@
         Key address:
       </div>
       <div class='col blockText'>
-        <input type="text" class="form-control" [(ngModel)]="keyAddress" [disabled]="keySaving" placeholder="Key address from xCore" pInputText>
+        <input type="text" class="form-control" [(ngModel)]="keyAddress" [disabled]="keySaving" placeholder="Key address from xCore" (keyup.enter)="onKeyAddressAdded()" pInputText>
       </div>
       <div class='col blockText'>
         <p-message *ngIf="addressNotValid" severity="error" text="The address is invalid"></p-message>
