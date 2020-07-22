@@ -95,6 +95,18 @@ namespace x42.Server
         /// </summary>
         /// <returns>Will return all of active servers.</returns>
         List<ServerRegisterRequest> GetAllActiveXServers();
+
+        /// <summary>
+        ///     Get the nodes fee address.
+        /// </summary>
+        /// <returns>Will return a the fee address as a string</returns>
+        string GetMyFeeAddress();
+
+        /// <summary>
+        ///     Get the nodes profile name.
+        /// </summary>
+        /// <returns>Will return the profile name as a string.</returns>
+        string GetServerProfileName();
     }
 
     /// <summary>Represents <see cref="IServer" /> state.</summary>

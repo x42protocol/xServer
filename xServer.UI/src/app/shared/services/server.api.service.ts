@@ -12,6 +12,7 @@ import { ServerSetupStatusResponse } from '../models/server-setupstatusresponse'
 import { ServerSetupRequest } from '../models/server-setuprequest';
 import { ProfileResult } from '../models/profileresult';
 import { ServerSetupResponse } from '../models/server-setupresponse';
+import { ServerStartRequest } from '../models/server-start-request';
 
 @Injectable({
   providedIn: 'root'
@@ -86,6 +87,23 @@ export class ServerApiService {
     );
   }
 
+  /**
+ * Start the xServer
+ */
+  startxServer(serverStartRequest: ServerStartRequest): Observable<any> {
+    return this.http.post(this.x42ApiUrl + '/start', JSON.stringify(serverStartRequest)).pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
+  /**
+ * Stop the xServer
+ */
+  stopxServer(): Observable<any> {
+    return this.http.post(this.x42ApiUrl + '/stop', 'true').pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
 
   private handleHttpError(error: HttpErrorResponse, silent?: boolean) {
     console.log(error);

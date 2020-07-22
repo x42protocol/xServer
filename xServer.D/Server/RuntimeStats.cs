@@ -6,17 +6,51 @@ namespace x42.Server
 {
     public class RuntimeStats
     {
-        private readonly object LOCK_PUBLIC_REQUEST = new object();
-        private Tier.TierLevel _tier;
         private readonly object LOCK_TIER_LEVEL = new object();
+        private Tier.TierLevel _tier;
+
         private DateTime _timeStart = DateTime.MinValue;
+
+        private readonly object LOCK_STATE = new object();
+        private int _state;
+
+        private readonly object LOCK_PUBLIC_REQUEST = new object();
         private long _publicRequestCount;
+
+        private enum state
+        {
+            Started = 1,
+            Stopped = 2
+        }
 
         public RuntimeStats()
         {
             _timeStart = DateTime.Now;
             _tier = Tier.TierLevel.Seed;
+            _state = (int)state.Stopped;
         }
+
+        public void Reset(bool start)
+        {
+            _timeStart = DateTime.Now;
+            lock (LOCK_STATE)
+            {
+                if (start)
+                {
+                    _state = (int)state.Started;
+                }
+                else
+                {
+                    _state = (int)state.Stopped;
+                }
+
+            }
+            lock (LOCK_PUBLIC_REQUEST)
+            {
+                _publicRequestCount = 0;
+            }
+        }
+
 
         public long PublicRequestCount
         {
@@ -55,6 +89,18 @@ namespace x42.Server
                 _tier = tier;
             }
         }
+
+        public int State
+        {
+            get
+            {
+                lock (LOCK_STATE)
+                {
+                    return _state;
+                }
+            }
+        }
+
 
         public Tier.TierLevel TierLevel
         {

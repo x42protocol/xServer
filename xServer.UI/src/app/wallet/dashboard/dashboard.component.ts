@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 
 import { Router } from '@angular/router';
 import { Application } from '../../shared/models/application';
+import { ServerStartRequest } from '../../shared/models/server-start-request';
 
 @Component({
   selector: 'dashboard-component',
@@ -48,6 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public netStakingWeight: number;
   public expectedTime: number;
   public serverSetupStatus: number;
+  public signAddress: string;
   public dateTime: string;
   public isStarting: boolean;
   public isStopping: boolean;
@@ -56,12 +58,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public hotStakingAccount: string = "coldStakingHotAddresses";
   public installedApps: Application[];
   public xServerProfileName: string;
+  public serverStatus: any;
 
   private walletBalanceSubscription: Subscription;
   private walletHistorySubscription: Subscription;
   private walletHotHistorySubscription: Subscription;
   private stakingInfoSubscription: Subscription;
   private serverSetupStatusSubscription: Subscription;
+  private serverStatusStatusSubscription: Subscription;
 
   ngOnInit() {
     this.sidechainEnabled = this.globalService.getSidechainEnabled();
@@ -122,6 +126,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   }
 
+  private getServerStatus() {
+    this.serverStatusStatusSubscription = this.serverApiService.getServerStatusInterval()
+      .subscribe(
+        statusResponse => {
+          this.serverStatus = statusResponse;
+        },
+        error => {
+          this.cancelSubscriptions();
+          this.startSubscriptions();
+        }
+      );
+  }
+
+  public formatSeconds(seconds) {
+    seconds = Number(seconds);
+    var d = Math.floor(seconds / (3600 * 24));
+    var h = Math.floor(seconds % (3600 * 24) / 3600);
+    var m = Math.floor(seconds % 3600 / 60);
+    var s = Math.floor(seconds % 60);
+
+    var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
+    var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+    var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    return dDisplay + hDisplay + mDisplay + sDisplay;
+  }
+
+
   private getWalletBalance() {
     let walletInfo = new WalletInfo(this.globalService.getWalletName());
     walletInfo.accountName = this.hotStakingAccount;
@@ -166,6 +198,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe(
         response => {
           this.serverSetupStatus = response.serverStatus;
+          this.signAddress = response.signAddress;
         },
         error => {
           this.cancelSubscriptions();
@@ -224,7 +257,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  public startStaking() {
+  public startServer() {
     this.isStarting = true;
     this.isStopping = false;
     const walletData = {
@@ -234,10 +267,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.apiService.startStaking(walletData)
       .subscribe(
         response => {
-          this.makeLatestTxListSmall();
-          this.stakingEnabled = true;
-          this.stakingForm.patchValue({ walletPassword: "" });
-          this.getStakingInfo();
+          let serverStartRequest = new ServerStartRequest(
+            walletData.name,
+            walletData.password,
+            this.hotStakingAccount,
+            this.signAddress
+          );
+          this.serverApiService.startxServer(serverStartRequest)
+            .subscribe(
+              response => {
+                this.makeLatestTxListSmall();
+                this.stakingEnabled = true;
+                this.stakingForm.patchValue({ walletPassword: "" });
+                this.getStakingInfo();
+              }
+            );
         },
         error => {
           this.isStarting = false;
@@ -254,6 +298,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe(
         response => {
           this.stakingEnabled = false;
+        }
+    );
+    this.serverApiService.stopxServer()
+      .subscribe(
+        response => {
         }
       );
   }
@@ -341,12 +390,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.serverSetupStatusSubscription) {
       this.serverSetupStatusSubscription.unsubscribe();
     }
+
+    if (this.serverStatusStatusSubscription) {
+      this.serverStatusStatusSubscription.unsubscribe();
+    }
   }
 
   private startSubscriptions() {
     this.getServerSetupStatus();
     this.getWalletBalance();
     this.getHotHistory();
+    this.getServerStatus();
     if (!this.sidechainEnabled) {
       this.getStakingInfo();
     }

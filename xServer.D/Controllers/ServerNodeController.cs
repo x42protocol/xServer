@@ -82,10 +82,12 @@ namespace x42.Controllers
                 ProtocolVersion = (uint)nodeSettings.ProtocolVersion,
                 ProcessId = Process.GetCurrentProcess().Id,
                 DataDirectoryPath = nodeSettings.DataDir,
-                RunningTime = dateTimeProvider.GetUtcNow() - xServer.StartTime,
+                RunningTimeSeconds = (dateTimeProvider.GetUtcNow() - xServer.StartTime).TotalSeconds,
                 State = xServer.State.ToString(),
                 DatabaseConnected = databaseFeatures.DatabaseConnected,
-                Stats = xServer.Stats
+                Stats = xServer.Stats,
+                FeeAddress = xServer.GetMyFeeAddress(),
+                Name = xServer.GetServerProfileName()
             };
 
             // Add the list of features that are enabled.

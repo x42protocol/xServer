@@ -41,7 +41,7 @@ namespace x42.Server
         private XServerLifetime serverLifetime;
 
         private readonly ServerSettings nodeSettings;
-        private readonly NetworkFeatures network;
+        private readonly NetworkFeatures networkFeatures;
         private readonly X42ClientFeature x42FullNode;
         private readonly DatabaseFeatures database;
         private readonly DatabaseSettings databaseSettings;
@@ -52,13 +52,13 @@ namespace x42.Server
         public RuntimeStats Stats { get; set; } = new RuntimeStats();
 
         /// <summary>Creates new instance of the <see cref="XServer" />.</summary>
-        public XServer(NetworkFeatures network,
+        public XServer(NetworkFeatures networkFeatures,
             ServerSettings nodeSettings,
             X42ClientFeature x42FullNode,
             DatabaseFeatures database,
             DatabaseSettings databaseSettings)
         {
-            this.network = network;
+            this.networkFeatures = networkFeatures;
             this.nodeSettings = nodeSettings;
             this.x42FullNode = x42FullNode;
             this.database = database;
@@ -69,6 +69,7 @@ namespace x42.Server
             profileFunctions = new ProfileFunctions(databaseSettings.ConnectionString);
 
             State = XServerState.Created;
+            Stats = new RuntimeStats();
         }
 
         /// <summary>Server command line and configuration file settings.</summary>
@@ -152,12 +153,12 @@ namespace x42.Server
 
         public async Task<RegisterResult> Register(ServerNodeData serverNode)
         {
-            return await network.Register(serverNode);
+            return await networkFeatures.Register(serverNode);
         }
 
         public void Start(StartRequest startRequest)
         {
-            Stats = new RuntimeStats();
+            Stats.Reset(true);
             var connectionInfo = new CachedServerInfo()
             {
                 AccountName = startRequest.AccountName,
@@ -165,12 +166,13 @@ namespace x42.Server
                 Password = startRequest.Password,
                 WalletName = startRequest.WalletName
             };
-            network.Connect(connectionInfo);
+            networkFeatures.Connect(connectionInfo);
             // TODO: Start serving apps.
         }
 
         public void Stop()
         {
+            Stats.Reset(false);
             // TODO: Stop serving apps.
         }
 
@@ -329,7 +331,7 @@ namespace x42.Server
                     string signAddress = setupServer.GetSignAddress();
                     if (string.IsNullOrEmpty(signAddress))
                     {
-                        setupRequest.SignAddress = await network.GetServerAddress("x42ServerMain");
+                        setupRequest.SignAddress = await networkFeatures.GetServerAddress("x42ServerMain");
                         AddServerAddress(setupRequest, profile.Name);
                         result = setupRequest.SignAddress;
                     }
@@ -380,6 +382,16 @@ namespace x42.Server
         public List<ServerRegisterRequest> GetAllActiveXServers()
         {
             return serverFunctions.GetAllActiveXServers();
+        }
+
+        public string GetMyFeeAddress()
+        {
+            return networkFeatures.GetMyFeeAddress();
+        }
+
+        public string GetServerProfileName()
+        {
+            return networkFeatures.GetServerProfile();
         }
     }
 }

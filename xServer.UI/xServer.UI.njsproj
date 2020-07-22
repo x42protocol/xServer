@@ -254,6 +254,7 @@
     <TypeScriptCompile Include="src\app\shared\models\application.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaccountrequest.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaccountresponse.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\server-start-request.ts" />
     <TypeScriptCompile Include="src\app\shared\models\server-setuprequest.ts" />
     <TypeScriptCompile Include="src\app\shared\models\server-setupstatusresponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\serveridresponse.ts" />

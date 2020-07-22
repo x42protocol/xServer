@@ -72,18 +72,21 @@ namespace x42.Server
 
             using (X42DbContext dbContext = new X42DbContext(ConnectionString))
             {
-                IQueryable<ServerData> server = dbContext.Servers;
-                if (server.Count() > 0)
+                IQueryable<ServerData> servers = dbContext.Servers;
+                if (servers.Count() > 0)
                 {
                     result.ServerStatus = Status.Started;
 
-                    string profileName = server.First().ProfileName;
+                    var serverInfo = servers.FirstOrDefault();
 
-                    IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == profileName && s.Active);
-                    if (serverNode.Count() > 0)
-                    {
-                        result.ServerStatus = Status.Complete;
-                        result.TierLevel = (Tier.TierLevel)serverNode.First().Tier;
+                    if (serverInfo != null) {
+                        IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == serverInfo.ProfileName && s.Active);
+                        if (serverNode.Count() > 0)
+                        {
+                            result.SignAddress = serverInfo.SignAddress;
+                            result.ServerStatus = Status.Complete;
+                            result.TierLevel = (Tier.TierLevel)serverNode.First().Tier;
+                        }
                     }
                 }
             }
