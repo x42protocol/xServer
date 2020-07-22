@@ -63,11 +63,11 @@ namespace x42.Server
             }
         }
 
-        public TimeSpan RuntimeTime
+        public double SessionRunTimeSeconds
         {
             get
             {
-                return DateTime.Now - _timeStart;
+                return (DateTime.Now - _timeStart).TotalSeconds;
             }
         }
 
