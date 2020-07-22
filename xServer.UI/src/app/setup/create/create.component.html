@@ -4,7 +4,7 @@
 <div class="formrow">
   <!-- /col -->
   <div class="col-12">
-    <p-messages [value]="resultMessage"></p-messages>
+    <p-messages [value]="resultMessage" [escape]="false"></p-messages>
   </div>
   <p-panel #createWallet header="{{name}} wallet">
     <form class="mx-auto d-flex align-content-center flex-wrap" [formGroup]="createWalletForm">

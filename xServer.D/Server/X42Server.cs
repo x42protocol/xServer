@@ -63,7 +63,7 @@ namespace x42.Server
             this.x42FullNode = x42FullNode;
             this.database = database;
             this.databaseSettings = databaseSettings;
-            
+
             setupServer = new SetupServer(databaseSettings.ConnectionString);
             serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
             profileFunctions = new ProfileFunctions(databaseSettings.ConnectionString);
@@ -274,7 +274,7 @@ namespace x42.Server
 
             State = XServerState.Initialized;
             StartTime = DateTimeProvider.GetUtcNow();
-            
+
             return this;
         }
 
@@ -391,7 +391,12 @@ namespace x42.Server
 
         public string GetServerProfileName()
         {
-            return networkFeatures.GetServerProfile();
+            string result = string.Empty;
+            if (networkFeatures.IsServerReady())
+            {
+                result = networkFeatures.GetServerProfile();
+            }
+            return result;
         }
     }
 }

@@ -111,7 +111,10 @@ namespace x42.Feature.Network
             {
                 try
                 {
-                    await RecoServiceAsync(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    if (networkFeatures.IsServerReady())
+                    {
+                        await RecoServiceAsync(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    }
                 }
                 catch (Exception ex)
                 {
