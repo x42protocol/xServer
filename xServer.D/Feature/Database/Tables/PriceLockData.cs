@@ -33,7 +33,7 @@ namespace x42.Feature.Database.Tables
 
         public string PayeeSignature { get; set; }
 
-        public long ExpireBlock { get; set; }
+        public int ExpireBlock { get; set; }
 
         public bool Relayed { get; set; }
     }

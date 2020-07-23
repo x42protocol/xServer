@@ -30,6 +30,6 @@
 
         public string PayeeSignature { get; set; }
 
-        public long ExpireBlock { get; set; }
+        public int ExpireBlock { get; set; }
     }
 }

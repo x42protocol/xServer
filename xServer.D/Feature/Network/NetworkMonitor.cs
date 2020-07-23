@@ -77,7 +77,10 @@ namespace x42.Feature.Network
             {
                 try
                 {
-                    await UpdateNetworkHealth().ConfigureAwait(false);
+                    if (networkFeatures.IsServerReady())
+                    {
+                        await UpdateNetworkHealth().ConfigureAwait(false);
+                    }
                 }
                 catch (Exception ex)
                 {

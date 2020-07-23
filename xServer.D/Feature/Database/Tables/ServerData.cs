@@ -10,6 +10,7 @@ namespace x42.Feature.Database.Tables
         [Key]
         public string ProfileName { get; set; }
         public string SignAddress { get; set; }
+        public int ProfileHeight { get; set; }
         public DateTime DateAdded { get; set; }
     }
 }

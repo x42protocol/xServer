@@ -396,6 +396,57 @@ namespace x42.Feature.Profile
             return result;
         }
 
+        public List<ProfilesResult> GetProfiles(int fromBlock)
+        {
+            var result = new List<ProfilesResult>();
+            var selfServer = networkFeatures.GetSelfServer();
+            if (fromBlock < selfServer.ProfileHeight)
+            {
+                using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                {
+                    var profiles = dbContext.Profiles.Where(p => p.Status == (int)Status.Created && p.BlockConfirmed > fromBlock).OrderByDescending(p => p.BlockConfirmed).Take(10);
+                    foreach (var profile in profiles)
+                    {
+                        var profileResult = new ProfilesResult()
+                        {
+                            KeyAddress = profile.KeyAddress,
+                            Name = profile.Name,
+                            PriceLockId = profile.PriceLockId,
+                            BlockConfirmed = profile.BlockConfirmed,
+                            Signature = profile.Signature,
+                            Status = profile.Status
+                        };
+                        result.Add(profileResult);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public async Task<List<ProfileResult>> SyncProfiles(CancellationToken cancellationToken)
+        {
+            var result = new List<ProfileResult>();
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var selfServer = networkFeatures.GetSelfServer();
+                if (selfServer != null)
+                {
+                    var t2Servers = networkFeatures.GetAllTier2ConnectionInfo();
+                    var profileReservationsToRelay = dbContext.ProfileReservations.Where(pr => pr.Relayed == true);
+                    foreach (var profileReservation in profileReservationsToRelay)
+                    {
+                        foreach (var server in t2Servers)
+                        {
+                            await networkFeatures.RelayProfileReservation(cancellationToken, profileReservation, server);
+                        }
+                        profileReservation.Relayed = true;
+                    }
+                    dbContext.SaveChanges();
+                }
+            }
+            return result;
+        }
+
         /// <summary>
         ///     Get profile.
         /// </summary>

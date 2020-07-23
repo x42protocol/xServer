@@ -44,7 +44,7 @@ namespace x42.Controllers.Requests
         /// </summary>
         [Required(ErrorMessage = "The ReservationExpirationBlock is missing.")]
         [Range(1, long.MaxValue, ErrorMessage = "The ReservationExpirationBlock cannot be below {1} and not exceed {2}.")]
-        public long ReservationExpirationBlock { get; set; }
+        public int ReservationExpirationBlock { get; set; }
 
     }
 }

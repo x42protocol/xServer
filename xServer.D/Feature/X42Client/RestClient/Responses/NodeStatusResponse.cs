@@ -7,7 +7,7 @@
         public string network { get; set; }
         public string coinTicker { get; set; }
         public int processId { get; set; }
-        public ulong consensusHeight { get; set; }
+        public uint consensusHeight { get; set; }
         public ulong blockStoreHeight { get; set; }
         public Outboundpeer[] inboundPeers { get; set; }
         public Outboundpeer[] outboundPeers { get; set; }

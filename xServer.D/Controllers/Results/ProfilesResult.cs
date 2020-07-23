@@ -2,7 +2,7 @@
 
 namespace x42.Controllers.Results
 {
-    public class ProfileResult
+    public class ProfilesResult
     {
         public string Name { get; set; }
 
@@ -14,7 +14,7 @@ namespace x42.Controllers.Results
 
         public int Status { get; set; }
 
-        public int ReservationExpirationBlock { get; set; }
+        public int BlockConfirmed { get; set; }
 
         public List<ProfileField> ProfileFields { get; set; }
     }

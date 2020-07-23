@@ -83,7 +83,7 @@ namespace x42.Feature.Network
             x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
         }
 
-        public ulong BestBlockHeight { get => x42FullNode.BlockTIP; }
+        public uint BestBlockHeight { get => x42FullNode.BlockTIP; }
 
         /// <summary>
         ///     Prints command-line help.
@@ -183,6 +183,20 @@ namespace x42.Feature.Network
             };
             var signMessageResult = await x42Client.SignMessageAsync(signRequest);
             return signMessageResult.Signature;
+        }
+
+        public ServerData GetSelfServer()
+        {
+            ServerData result = null;
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var selfServer = dbContext.Servers.FirstOrDefault();
+                if (selfServer != null)
+                {
+                    return selfServer;
+                }
+            }
+            return result;
         }
 
         public async Task<bool> VerifySenderPriceLockSignature(string address, string priceLockId, string signature)

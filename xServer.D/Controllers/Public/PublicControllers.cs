@@ -170,7 +170,7 @@ namespace x42.Controllers.Public
         /// <summary>
         ///     Used for syncing the profile reservations.
         /// </summary>
-        /// <param name="reserveRequest">The object with all of the nessesary data to sync a profile reservation.</param>
+        /// <param name="profileReserveSyncRequest">The object with all of the nessesary data to sync a profile reservation.</param>
         /// <returns>A <see cref="bool" /> with reservation result.</returns>
         [HttpPost]
         [Route("syncprofilereservation")]
@@ -186,6 +186,20 @@ namespace x42.Controllers.Public
             {
                 return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 2 requirement not meet", "The node you requested is not a tier 2 node.");
             }
+        }
+
+        /// <summary>
+        ///     Will get next 10 profiles from the last confirmed block requested.
+        /// </summary>
+        /// <param name="fromBlock">A number to specificy what block to get the list of profiles.</param>
+        /// <returns>A <see cref="List{ProfileResult}" /> with list of profiles from specified block.</returns>
+        [HttpGet]
+        [Route("getnextprofiles")]
+        public IActionResult GetNextProfiles(int fromBlock)
+        {
+            xServer.Stats.IncrementPublicRequest();
+            var reserveResult = profileFeature.GetProfiles(fromBlock);
+            return Json(reserveResult);
         }
 
         /// <summary>

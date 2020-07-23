@@ -19,7 +19,7 @@ namespace x42.Feature.X42Client
         /// <summary>
         ///     Current Block Height of The Node
         /// </summary>
-        public ulong BlockTIP { private set; get; }
+        public uint BlockTIP { private set; get; }
 
         /// <summary>
         ///     Peers The Node Is Connected To

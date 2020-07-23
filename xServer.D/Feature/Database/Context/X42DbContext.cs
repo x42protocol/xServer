@@ -19,6 +19,9 @@ namespace x42.Feature.Database.Context
             builder.Entity<ProfileData>()
                 .HasIndex(p => new { p.KeyAddress })
                 .IsUnique();
+            builder.Entity<ProfileData>()
+                .HasIndex(p => new { p.BlockConfirmed })
+                .IsUnique();
             builder.Entity<ServerNodeData>()
                 .HasIndex(p => new { p.ProfileName })
                 .IsUnique();

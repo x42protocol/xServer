@@ -244,7 +244,7 @@ namespace x42.Feature.PriceLock
 
                     if (price < 42000000)
                     {
-                        var expirationBlock = Convert.ToInt64(networkFeatures.BestBlockHeight + Convert.ToUInt64(priceLockRequest.ExpireBlock));
+                        var expirationBlock = Convert.ToInt16(networkFeatures.BestBlockHeight + Convert.ToInt16(priceLockRequest.ExpireBlock));
 
                         using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
                         {
