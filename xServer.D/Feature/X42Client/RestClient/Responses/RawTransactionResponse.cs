@@ -63,6 +63,10 @@ namespace x42.Feature.X42Client.RestClient.Responses
         /// <summary>The time the block was confirmed.</summary>
         [JsonProperty(Order = 13, PropertyName = "blocktime", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public uint? BlockTime { get; set; }
+
+        /// <summary>The height of the block was confirmed.</summary>
+        [JsonProperty(Order = 14, PropertyName = "blockheight", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int? BlockHeight { get; set; }
     }
 
     /// <summary>

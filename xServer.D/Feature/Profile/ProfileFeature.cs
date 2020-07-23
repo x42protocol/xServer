@@ -219,25 +219,30 @@ namespace x42.Feature.Profile
                 var priceLock = await networkFeatures.GetPriceLockFromT3(cancellationToken, profileReservationData.PriceLockId);
                 if (priceLock.Status == (int)PriceLock.Status.Confirmed)
                 {
-                    using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                    var transaction = await networkFeatures.GetRawTransaction(priceLock.TransactionID, true);
+                    if (transaction != null && transaction.BlockHeight > 0)
                     {
-                        var profileCount = dbContext.Profiles.Where(p => p.Name == profileReservationData.Name || p.KeyAddress == profileReservationData.KeyAddress).Count();
-                        if (profileCount == 0)
+                        using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
                         {
-                            var newProfile = new ProfileData()
+                            var profileCount = dbContext.Profiles.Where(p => p.Name == profileReservationData.Name || p.KeyAddress == profileReservationData.KeyAddress).Count();
+                            if (profileCount == 0)
                             {
-                                KeyAddress = profileReservationData.KeyAddress,
-                                Name = profileReservationData.Name,
-                                PriceLockId = profileReservationData.PriceLockId,
-                                ReturnAddress = profileReservationData.ReturnAddress,
-                                Signature = profileReservationData.Signature,
-                                Relayed = profileReservationData.Relayed,
-                                Status = (int)Status.Created
-                            };
-                            var newRecord = dbContext.Profiles.Add(newProfile);
-                            if (newRecord.State == EntityState.Added)
-                            {
-                                dbContext.SaveChanges();
+                                var newProfile = new ProfileData()
+                                {
+                                    KeyAddress = profileReservationData.KeyAddress,
+                                    Name = profileReservationData.Name,
+                                    PriceLockId = profileReservationData.PriceLockId,
+                                    ReturnAddress = profileReservationData.ReturnAddress,
+                                    Signature = profileReservationData.Signature,
+                                    Relayed = profileReservationData.Relayed,
+                                    BlockConfirmed = (int)transaction.BlockHeight,
+                                    Status = (int)Status.Created
+                                };
+                                var newRecord = dbContext.Profiles.Add(newProfile);
+                                if (newRecord.State == EntityState.Added)
+                                {
+                                    dbContext.SaveChanges();
+                                }
                             }
                         }
                     }
