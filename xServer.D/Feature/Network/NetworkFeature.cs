@@ -379,7 +379,7 @@ namespace x42.Feature.Network
             {
                 // Remove any servers that have been unavailable past the grace period.
                 List<ServerNodeData> tierThreeServers;
-                if (top > 0)
+                if (top == 0)
                 {
                     tierThreeServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).ToList();
                 }
