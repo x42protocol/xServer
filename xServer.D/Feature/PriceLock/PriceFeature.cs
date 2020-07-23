@@ -338,13 +338,13 @@ namespace x42.Feature.PriceLock
                 }
 
                 // Update payment information.
-                if (!string.IsNullOrEmpty(priceLockData.TransactionID) && !string.IsNullOrEmpty(priceLockData.PayeeSignature))
+                if (!string.IsNullOrEmpty(priceLockData.TransactionId) && !string.IsNullOrEmpty(priceLockData.PayeeSignature))
                 {
                     var paymentSubmit = new SubmitPaymentRequest()
                     {
                         PayeeSignature = priceLockData.PayeeSignature,
                         PriceLockId = priceLockData.PriceLockId,
-                        TransactionId = priceLockData.TransactionID
+                        TransactionId = priceLockData.TransactionId
                     };
                     var submitPaymentResult = await SubmitPayment(paymentSubmit);
                     if (!submitPaymentResult.Success)
@@ -390,7 +390,7 @@ namespace x42.Feature.PriceLock
                     result.PriceLockSignature = priceLock.PriceLockSignature;
                     result.Status = priceLock.Status;
                     result.PayeeSignature = priceLock.PayeeSignature;
-                    result.TransactionID = priceLock.TransactionId;
+                    result.TransactionId = priceLock.TransactionId;
                     result.ExpireBlock = priceLock.ExpireBlock;
                     result.Success = true;
                 }

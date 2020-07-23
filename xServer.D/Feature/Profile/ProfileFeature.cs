@@ -219,7 +219,7 @@ namespace x42.Feature.Profile
                 var priceLock = await networkFeatures.GetPriceLockFromT3(cancellationToken, profileReservationData.PriceLockId);
                 if (priceLock.Status == (int)PriceLock.Status.Confirmed)
                 {
-                    var transaction = await networkFeatures.GetRawTransaction(priceLock.TransactionID, true);
+                    var transaction = await networkFeatures.GetRawTransaction(priceLock.TransactionId, true);
                     if (transaction != null && transaction.BlockHeight > 0)
                     {
                         using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
@@ -262,7 +262,7 @@ namespace x42.Feature.Profile
             {
                 if (string.IsNullOrEmpty(keyAddress))
                 {
-                    if (skipReservations)
+                    if (!skipReservations)
                     {
                         profileCount = dbContext.ProfileReservations.Where(p => p.Name == name).Count();
                     }
@@ -270,7 +270,7 @@ namespace x42.Feature.Profile
                 }
                 else if (string.IsNullOrEmpty(name))
                 {
-                    if (skipReservations)
+                    if (!skipReservations)
                     {
                         profileCount = dbContext.ProfileReservations.Where(p => p.KeyAddress == keyAddress).Count();
                     }
@@ -278,7 +278,7 @@ namespace x42.Feature.Profile
                 }
                 else
                 {
-                    if (skipReservations)
+                    if (!skipReservations)
                     {
                         profileCount = dbContext.ProfileReservations.Where(p => p.Name == name || p.KeyAddress == keyAddress).Count();
                     }

@@ -28,6 +28,7 @@ using x42.Feature.X42Client.RestClient.Requests;
 using Newtonsoft.Json;
 using x42.Controllers.Requests;
 using System.Threading;
+using RestSharp.Serializers.NewtonsoftJson;
 
 namespace x42.Feature.Network
 {
@@ -302,6 +303,7 @@ namespace x42.Feature.Network
                     logger.LogDebug($"Attempting validate connection to {xServerURL}.");
 
                     var client = new RestClient(xServerURL);
+                    client.UseNewtonsoftJson();
                     var getPriceLockRequest = new RestRequest("/getpricelock", Method.GET);
                     getPriceLockRequest.AddParameter("priceLockId", priceLockId);
                     var priceLockResult = await client.ExecuteAsync<PriceLockResult>(getPriceLockRequest, cancellationToken).ConfigureAwait(false);
