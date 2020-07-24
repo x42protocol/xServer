@@ -200,6 +200,19 @@ namespace x42.Feature.Network
             return result;
         }
 
+        public void SetProfileHeightOnSelf(int height)
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var selfServer = dbContext.Servers.FirstOrDefault();
+                if (selfServer != null)
+                {
+                    selfServer.ProfileHeight = height;
+                    dbContext.SaveChanges();
+                }
+            }
+        }
+
         public async Task<bool> VerifySenderPriceLockSignature(string address, string priceLockId, string signature)
         {
             var valid = await x42Client.VerifyMessageAsync(address, priceLockId, signature);
@@ -340,10 +353,35 @@ namespace x42.Feature.Network
 
                 await client.ExecuteAsync<ReserveProfileResult>(reserveProfileRequest, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                logger.LogDebug($"Relay profile reservation failed for {xServerURL}.");
+                logger.LogDebug($"Relay profile reservation failed for {xServerURL}.", ex);
             }
+        }
+
+        public async Task<List<ProfilesResult>> GetProfiles(CancellationToken cancellationToken, XServerConnectionInfo xServerConnectionInfo, int fromBlock)
+        {
+            var result = new List<ProfilesResult>();
+            string xServerURL = GetServerUrl(xServerConnectionInfo.NetworkProtocol, xServerConnectionInfo.NetworkAddress, xServerConnectionInfo.NetworkPort);
+            try
+            {
+                logger.LogDebug($"Attempting GetProfiles from {xServerURL}.");
+
+                var client = new RestClient(xServerURL);
+                client.UseNewtonsoftJson();
+                var nextProfileRequest = new RestRequest("/getnextprofiles", Method.GET);
+                nextProfileRequest.AddParameter("fromBlock", fromBlock);
+                var priceLockResult = await client.ExecuteAsync<List<ProfilesResult>>(nextProfileRequest, cancellationToken).ConfigureAwait(false);
+                if (priceLockResult.StatusCode == HttpStatusCode.OK)
+                {
+                    result = priceLockResult.Data;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug($"GetProfiles failed from {xServerURL}.", ex);
+            }
+            return result;
         }
 
         public async Task<PriceLockResult> CreateNewPriceLock(CreatePriceLockRequest priceLockRequest)
@@ -401,7 +439,7 @@ namespace x42.Feature.Network
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
                 // Remove any servers that have been unavailable past the grace period.
-                var tierTwoServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).ToList();
+                var tierTwoServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Two && s.Active).OrderBy(s => s.Priority).ToList();
                 tierTwoAddresses = GetServerConnectionInfoList(tierTwoServers);
             }
             return tierTwoAddresses;

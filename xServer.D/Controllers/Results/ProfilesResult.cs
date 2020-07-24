@@ -8,6 +8,8 @@ namespace x42.Controllers.Results
 
         public string KeyAddress { get; set; }
 
+        public string ReturnAddress { get; set; }
+
         public string Signature { get; set; }
 
         public string PriceLockId { get; set; }

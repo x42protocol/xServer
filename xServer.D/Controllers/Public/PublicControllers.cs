@@ -192,7 +192,7 @@ namespace x42.Controllers.Public
         ///     Will get next 10 profiles from the last confirmed block requested.
         /// </summary>
         /// <param name="fromBlock">A number to specificy what block to get the list of profiles.</param>
-        /// <returns>A <see cref="List{ProfileResult}" /> with list of profiles from specified block.</returns>
+        /// <returns>A <see cref="List{ProfilesResult}" /> with list of profiles from specified block.</returns>
         [HttpGet]
         [Route("getnextprofiles")]
         public IActionResult GetNextProfiles(int fromBlock)
