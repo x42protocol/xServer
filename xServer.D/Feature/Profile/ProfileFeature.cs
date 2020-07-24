@@ -449,6 +449,7 @@ namespace x42.Feature.Profile
                             PriceLockId = profile.PriceLockId,
                             BlockConfirmed = profile.BlockConfirmed,
                             Signature = profile.Signature,
+                            ReturnAddress = profile.ReturnAddress,
                             Status = profile.Status
                         };
                         result.Add(profileResult);
