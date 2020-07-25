@@ -387,7 +387,7 @@ namespace x42.Feature.Profile
             return result;
         }
 
-        public async Task<bool> SyncProfileReservation(ProfileReserveSyncRequest profileReserveSyncRequest)
+        public async Task<bool> ReceiveProfileReservation(ReceiveProfileReserveRequest profileReserveSyncRequest)
         {
             bool result = false;
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
@@ -395,36 +395,48 @@ namespace x42.Feature.Profile
                 var profileCount = dbContext.ProfileReservations.Where(p => p.Name == profileReserveSyncRequest.Name || p.KeyAddress == profileReserveSyncRequest.KeyAddress).Count();
                 if (profileCount == 0)
                 {
-                    result = await AddProfile(profileReserveSyncRequest);
+                    bool isProfileKeyValid = await networkFeatures.IsProfileKeyValid(profileReserveSyncRequest.Name, profileReserveSyncRequest.KeyAddress, profileReserveSyncRequest.ReturnAddress, profileReserveSyncRequest.Signature);
+                    if (isProfileKeyValid)
+                    {
+                        var newProfile = new ProfileReservationData()
+                        {
+                            KeyAddress = profileReserveSyncRequest.KeyAddress,
+                            Name = profileReserveSyncRequest.Name,
+                            PriceLockId = profileReserveSyncRequest.PriceLockId,
+                            ReturnAddress = profileReserveSyncRequest.ReturnAddress,
+                            Signature = profileReserveSyncRequest.Signature,
+                            Relayed = false,
+                            Status = (int)Status.Created,
+                            ReservationExpirationBlock = profileReserveSyncRequest.ReservationExpirationBlock
+                        };
+                        var newRecord = dbContext.ProfileReservations.Add(newProfile);
+                        if (newRecord.State == EntityState.Added)
+                        {
+                            dbContext.SaveChanges();
+                            result = true;
+                        }
+                    }
                 }
             }
             return result;
         }
 
-        private async Task<bool> AddProfile(ProfileReserveSyncRequest profileReserveSyncRequest)
+        private async Task<bool> AddProfile(ProfileData profileData)
         {
             bool result = false;
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                bool isProfileKeyValid = await networkFeatures.IsProfileKeyValid(profileReserveSyncRequest.Name, profileReserveSyncRequest.KeyAddress, profileReserveSyncRequest.ReturnAddress, profileReserveSyncRequest.Signature);
+                bool isProfileKeyValid = await networkFeatures.IsProfileKeyValid(profileData.Name, profileData.KeyAddress, profileData.ReturnAddress, profileData.Signature);
                 if (isProfileKeyValid)
                 {
-                    var newProfile = new ProfileReservationData()
-                    {
-                        KeyAddress = profileReserveSyncRequest.KeyAddress,
-                        Name = profileReserveSyncRequest.Name,
-                        PriceLockId = profileReserveSyncRequest.PriceLockId,
-                        ReturnAddress = profileReserveSyncRequest.ReturnAddress,
-                        Signature = profileReserveSyncRequest.Signature,
-                        Relayed = false,
-                        Status = (int)Status.Created,
-                        ReservationExpirationBlock = profileReserveSyncRequest.ReservationExpirationBlock
-                    };
-                    var newRecord = dbContext.ProfileReservations.Add(newProfile);
+                    var newRecord = dbContext.Profiles.Add(profileData);
                     if (newRecord.State == EntityState.Added)
                     {
-                        dbContext.SaveChanges();
-                        result = true;
+                        var saved = dbContext.SaveChanges();
+                        if (saved > 0)
+                        {
+                            result = true;
+                        }
                     }
                 }
             }
@@ -480,25 +492,79 @@ namespace x42.Feature.Profile
                                 {
                                     newHeight = profile.BlockConfirmed;
                                 }
-                                var newProfile = new ProfileReserveSyncRequest()
+                                var newProfile = new ProfileData()
                                 {
                                     KeyAddress = profile.KeyAddress,
                                     Name = profile.Name,
                                     ReturnAddress = profile.ReturnAddress,
-                                    Signature = profile.Signature
+                                    Signature = profile.Signature,
+                                    BlockConfirmed = profile.BlockConfirmed,
+                                    PriceLockId = profile.PriceLockId,
+                                    Relayed = true,
+                                    Status = (int)Status.Created
                                 };
                                 if (!ProfileExists(newProfile.Name, newProfile.KeyAddress, true))
                                 {
-                                    await AddProfile(newProfile);
+                                    var priceLock = await networkFeatures.GetPriceLockFromT3(cancellationToken, newProfile.PriceLockId);
+                                    var priceLockExists = AddCompletePriceLock(priceLock);
+                                    if (priceLockExists)
+                                    {
+                                        await AddProfile(newProfile);
+                                    }
                                 }
                             }
                             profiles = await networkFeatures.GetProfiles(cancellationToken, server, newHeight);
                         }
                     }
-                    dbContext.SaveChanges();
                     if (newHeight > selfServer.ProfileHeight)
                     {
                         networkFeatures.SetProfileHeightOnSelf(newHeight);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public bool AddCompletePriceLock(PriceLockResult priceLockResult)
+        {
+            bool result = false;
+            if (Guid.TryParse(priceLockResult.PriceLockId, out Guid validPriceLockId))
+            {
+                var priceLock = networkFeatures.GetPriceLockData(validPriceLockId);
+                if (priceLock != null && !string.IsNullOrEmpty(priceLock?.TransactionId)) // TODO: Validate transaction ID, and amounts.
+                {
+                    return true;
+                }
+                var newPriceLock = new PriceLockData()
+                {
+                    DestinationAddress = priceLockResult.DestinationAddress,
+                    DestinationAmount = priceLockResult.DestinationAmount,
+                    ExpireBlock = priceLockResult.ExpireBlock,
+                    FeeAddress = priceLockResult.FeeAddress,
+                    FeeAmount = priceLockResult.FeeAmount,
+                    PayeeSignature = priceLockResult.PayeeSignature,
+                    PriceLockId = validPriceLockId,
+                    PriceLockSignature = priceLockResult.PriceLockSignature,
+                    Relayed = true,
+                    RequestAmount = priceLockResult.RequestAmount,
+                    RequestAmountPair = priceLockResult.RequestAmountPair,
+                    SignAddress = priceLockResult.SignAddress,
+                    Status = priceLockResult.Status,
+                    TransactionId = priceLockResult.TransactionId
+                };
+                using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                {
+                    var newPriceLockRecord = dbContext.PriceLocks.Add(newPriceLock);
+                    if (newPriceLockRecord.State == EntityState.Added)
+                    {
+                        var saved = dbContext.SaveChanges();
+                        if (saved > 0)
+                        {
+                            if (!string.IsNullOrEmpty(newPriceLock?.TransactionId)) // TODO: Validate transaction ID, and amounts.
+                            {
+                                result = true;
+                            }
+                        }
                     }
                 }
             }

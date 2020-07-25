@@ -330,6 +330,14 @@ namespace x42.Feature.Network
             return result;
         }
 
+        public PriceLockData GetPriceLockData(Guid priceLockId)
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                return dbContext.PriceLocks.Where(p => p.PriceLockId == priceLockId).FirstOrDefault();
+            }
+        }
+
         public async Task RelayProfileReservation(CancellationToken cancellationToken, ProfileReservationData profileReservationData, XServerConnectionInfo xServerConnectionInfo)
         {
             string xServerURL = GetServerUrl(xServerConnectionInfo.NetworkProtocol, xServerConnectionInfo.NetworkAddress, xServerConnectionInfo.NetworkPort);

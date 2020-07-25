@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using x42.Controllers.Results;
 
 namespace x42.Controllers.Requests
 {
-    public class ProfileReserveSyncRequest
+    public class ReceiveProfileReserveRequest
     {
         /// <summary>
         ///     User defined name of profile to be registered.
@@ -45,6 +46,5 @@ namespace x42.Controllers.Requests
         [Required(ErrorMessage = "The ReservationExpirationBlock is missing.")]
         [Range(1, long.MaxValue, ErrorMessage = "The ReservationExpirationBlock cannot be below {1} and not exceed {2}.")]
         public int ReservationExpirationBlock { get; set; }
-
     }
 }

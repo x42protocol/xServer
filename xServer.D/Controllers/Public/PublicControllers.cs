@@ -173,13 +173,13 @@ namespace x42.Controllers.Public
         /// <param name="profileReserveSyncRequest">The object with all of the nessesary data to sync a profile reservation.</param>
         /// <returns>A <see cref="bool" /> with reservation result.</returns>
         [HttpPost]
-        [Route("syncprofilereservation")]
-        public async Task<IActionResult> SyncProfileReservation([FromBody] ProfileReserveSyncRequest profileReserveSyncRequest)
+        [Route("receiveprofilereservation")]
+        public async Task<IActionResult> ReceiveProfileReservation([FromBody] ReceiveProfileReserveRequest receiveProfileReserveRequest)
         {
             xServer.Stats.IncrementPublicRequest();
             if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
             {
-                var reserveResult = await profileFeature.SyncProfileReservation(profileReserveSyncRequest);
+                var reserveResult = await profileFeature.ReceiveProfileReservation(receiveProfileReserveRequest);
                 return Json(reserveResult);
             }
             else

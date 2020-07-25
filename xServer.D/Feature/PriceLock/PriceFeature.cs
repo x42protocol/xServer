@@ -174,14 +174,6 @@ namespace x42.Feature.PriceLock
             startAfter: TimeSpans.TenSeconds);
         }
 
-        private PriceLockData GetPriceLockData(Guid priceLockId)
-        {
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-            {
-                return dbContext.PriceLocks.Where(p => p.PriceLockId == priceLockId).FirstOrDefault();
-            }
-        }
-
         public async Task<SubmitPaymentResult> SubmitPayment(SubmitPaymentRequest submitPaymentRequest)
         {
             var result = new SubmitPaymentResult();
@@ -320,7 +312,7 @@ namespace x42.Feature.PriceLock
             if (Guid.TryParse(priceLockData.PriceLockId, out Guid validPriceLockId))
             {
                 // Create price lock if it doesn't exist.
-                var priceLock = GetPriceLockData(validPriceLockId);
+                var priceLock = networkFeatures.GetPriceLockData(validPriceLockId);
                 if (priceLock == null)
                 {
                     var priceLockCreateRequest = new CreatePriceLockRequest()
@@ -407,7 +399,7 @@ namespace x42.Feature.PriceLock
         {
             PaymentErrorCodes result;
 
-            var priceLockData = GetPriceLockData(new Guid(submitPaymentRequest.PriceLockId));
+            var priceLockData = networkFeatures.GetPriceLockData(new Guid(submitPaymentRequest.PriceLockId));
 
             if (priceLockData != null)
             {
