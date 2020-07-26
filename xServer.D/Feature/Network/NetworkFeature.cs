@@ -29,6 +29,7 @@ using Newtonsoft.Json;
 using x42.Controllers.Requests;
 using System.Threading;
 using RestSharp.Serializers.NewtonsoftJson;
+using x42.Feature.X42Client.Models;
 
 namespace x42.Feature.Network
 {
@@ -436,6 +437,12 @@ namespace x42.Feature.Network
                     tierThreeServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Three && s.Active).OrderBy(s => s.Priority).Take(top).ToList();
                 }
                 tierThreeAddresses = GetServerConnectionInfoList(tierThreeServers);
+                if (tierThreeAddresses.Count == 0)
+                {
+                    var serverList = GetXServerStats().Result;
+                    var tier2NodeList = serverList.Nodes.Where(n => n.Tier == (int)Tier.TierLevel.Two).ToList();
+                    tierThreeAddresses = GetServerConnectionInfoList(tier2NodeList);
+                }   
             }
             return tierThreeAddresses;
         }
@@ -449,6 +456,12 @@ namespace x42.Feature.Network
                 // Remove any servers that have been unavailable past the grace period.
                 var tierTwoServers = dbContext.ServerNodes.Where(s => s.Tier == (int)Tier.TierLevel.Two && s.Active).OrderBy(s => s.Priority).ToList();
                 tierTwoAddresses = GetServerConnectionInfoList(tierTwoServers);
+                if (tierTwoAddresses.Count == 0)
+                {
+                    var serverList = GetXServerStats().Result;
+                    var tier2NodeList = serverList.Nodes.Where(n => n.Tier == (int)Tier.TierLevel.Two).ToList();
+                    tierTwoAddresses = GetServerConnectionInfoList(tier2NodeList);
+                }
             }
             return tierTwoAddresses;
         }
@@ -465,6 +478,23 @@ namespace x42.Feature.Network
                     NetworkProtocol = server.NetworkProtocol,
                     NetworkPort = server.NetworkPort,
                     Priotiry = server.Priority
+                };
+                serverAddresses.Add(xServerConnectionInfo);
+            }
+            return serverAddresses;
+        }
+
+        private List<XServerConnectionInfo> GetServerConnectionInfoList(List<xServerPeer> peers)
+        {
+            var serverAddresses = new List<XServerConnectionInfo>();
+            foreach (var peer in peers)
+            {
+                var xServerConnectionInfo = new XServerConnectionInfo()
+                {
+                    NetworkAddress = peer.NetworkAddress,
+                    NetworkProtocol = peer.NetworkProtocol,
+                    NetworkPort = peer.NetworkPort,
+                    Priotiry = peer.Priority
                 };
                 serverAddresses.Add(xServerConnectionInfo);
             }
