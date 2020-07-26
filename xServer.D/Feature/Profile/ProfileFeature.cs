@@ -479,11 +479,13 @@ namespace x42.Feature.Profile
                 var selfServer = networkFeatures.GetSelfServer();
                 if (selfServer != null)
                 {
-                    int newHeight = 0;
+                    var currentProfileHeight = selfServer.ProfileHeight;
+
                     var t2Servers = networkFeatures.GetAllTier2ConnectionInfo();
                     foreach (var server in t2Servers)
                     {
-                        var profiles = await networkFeatures.GetProfiles(cancellationToken, server, selfServer.ProfileHeight);
+                        int newHeight = 0;
+                        var profiles = await networkFeatures.GetProfiles(cancellationToken, server, currentProfileHeight);
                         while (profiles.Count > 0)
                         {
                             foreach (var profile in profiles)
@@ -515,10 +517,10 @@ namespace x42.Feature.Profile
                             }
                             profiles = await networkFeatures.GetProfiles(cancellationToken, server, newHeight);
                         }
-                    }
-                    if (newHeight > selfServer.ProfileHeight)
-                    {
-                        networkFeatures.SetProfileHeightOnSelf(newHeight);
+                        if (newHeight > currentProfileHeight)
+                        {
+                            networkFeatures.SetProfileHeightOnSelf(newHeight);
+                        }
                     }
                 }
             }

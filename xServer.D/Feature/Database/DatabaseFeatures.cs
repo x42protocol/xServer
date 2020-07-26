@@ -10,6 +10,8 @@ using x42.Configuration.Logging;
 using x42.Feature.Setup;
 using x42.ServerNode;
 using x42.Server;
+using System.Linq;
+using x42.Feature.Database.Tables;
 
 namespace x42.Feature.Database
 {
@@ -77,10 +79,12 @@ namespace x42.Feature.Database
                 using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
                 {
                     logger.LogInformation("Connecting to database");
-                    
+
                     dbContext.Database.Migrate();
 
                     DatabaseConnected = true;
+
+                    InitializeServer();
 
                     logger.LogInformation("Database Feature Initialized");
                 }
@@ -92,6 +96,30 @@ namespace x42.Feature.Database
             }
 
             return Task.CompletedTask;
+        }
+
+        public void InitializeServer()
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                IQueryable<ServerData> serverNodes = dbContext.Servers;
+                if (serverNodes.Count() == 0)
+                {
+                    ServerData serverData = new ServerData()
+                    {
+                        SignAddress = "",
+                        ProfileName = "",
+                        DateAdded = DateTime.UtcNow,
+                        ProfileHeight = 0
+                    };
+
+                    var newServerRecord = dbContext.Add(serverData);
+                    if (newServerRecord.State == EntityState.Added)
+                    {
+                        dbContext.SaveChanges();
+                    }
+                }
+            }
         }
 
         /// <inheritdoc />
