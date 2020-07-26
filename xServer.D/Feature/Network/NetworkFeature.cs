@@ -440,8 +440,8 @@ namespace x42.Feature.Network
                 if (tierThreeAddresses.Count == 0)
                 {
                     var serverList = GetXServerStats().Result;
-                    var tier2NodeList = serverList.Nodes.Where(n => n.Tier == (int)Tier.TierLevel.Two).ToList();
-                    tierThreeAddresses = GetServerConnectionInfoList(tier2NodeList);
+                    var tier3NodeList = serverList.Nodes.Where(n => n.Tier == (int)Tier.TierLevel.Three).ToList();
+                    tierThreeAddresses = GetServerConnectionInfoList(tier3NodeList);
                 }   
             }
             return tierThreeAddresses;
