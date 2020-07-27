@@ -344,18 +344,20 @@ namespace x42.Feature.Network
             string xServerURL = GetServerUrl(xServerConnectionInfo.NetworkProtocol, xServerConnectionInfo.NetworkAddress, xServerConnectionInfo.NetworkPort);
             try
             {
-                var reserveRequest = new ProfileReserveRequest()
+                var reserveRequest = new ReceiveProfileReserveRequest()
                 {
                     KeyAddress = profileReservationData.KeyAddress,
                     Name = profileReservationData.Name,
                     ReturnAddress = profileReservationData.ReturnAddress,
-                    Signature = profileReservationData.Signature
+                    Signature = profileReservationData.Signature,
+                    PriceLockId = profileReservationData.PriceLockId,
+                    ReservationExpirationBlock = profileReservationData.ReservationExpirationBlock
                 };
 
                 logger.LogDebug($"Attempting relay profile reservation to {xServerURL}.");
 
                 var client = new RestClient(xServerURL);
-                var reserveProfileRequest = new RestRequest("/reserveprofile", Method.POST);
+                var reserveProfileRequest = new RestRequest("/receiveprofilereservation", Method.POST);
                 var request = JsonConvert.SerializeObject(reserveRequest);
                 reserveProfileRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
                 reserveProfileRequest.RequestFormat = DataFormat.Json;
@@ -442,7 +444,7 @@ namespace x42.Feature.Network
                     var serverList = GetXServerStats().Result;
                     var tier3NodeList = serverList.Nodes.Where(n => n.Tier == (int)Tier.TierLevel.Three).ToList();
                     tierThreeAddresses = GetServerConnectionInfoList(tier3NodeList);
-                }   
+                }
             }
             return tierThreeAddresses;
         }

@@ -434,16 +434,26 @@ namespace x42.Feature.Network
                                             var registeredServer = serverNodes.Where(s => s.Signature == serverResult.Signature).FirstOrDefault();
                                             if (registeredServer == null)
                                             {
-                                                // Local Registration of new nodes we don't know about.
-                                                await networkFeatures.Register(new ServerNodeData()
+                                                var newServer = new ServerNodeData()
                                                 {
                                                     ProfileName = serverResult.ProfileName,
                                                     NetworkAddress = serverResult.NetworkAddress,
                                                     NetworkPort = serverResult.NetworkPort,
                                                     NetworkProtocol = serverResult.NetworkProtocol,
                                                     Signature = serverResult.Signature,
-                                                    Tier = serverResult.Tier
-                                                });
+                                                    Tier = serverResult.Tier,
+                                                    FeeAddress = serverResult.FeeAddress,
+                                                    SignAddress = serverResult.SignAddress,
+                                                    KeyAddress = serverResult.KeyAddress,
+                                                    Active = true,
+                                                    DateAdded = DateTime.UtcNow,
+                                                    LastSeen = DateTime.UtcNow,
+                                                    Priority = 0,
+                                                    Relayed = true
+                                                };
+
+                                                // Local Registration of new nodes we don't know about.
+                                                await networkFeatures.Register(newServer);
                                             }
                                         }
                                         if (!foundSelf)

@@ -192,7 +192,7 @@ namespace x42.Feature.Profile
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
                 var t2Servers = networkFeatures.GetAllTier2ConnectionInfo();
-                var profileReservationsToRelay = dbContext.ProfileReservations.Where(pr => pr.Relayed == true);
+                var profileReservationsToRelay = dbContext.ProfileReservations.Where(pr => !pr.Relayed);
                 foreach (var profileReservation in profileReservationsToRelay)
                 {
                     foreach (var server in t2Servers)
