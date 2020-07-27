@@ -384,6 +384,7 @@ namespace x42.Feature.PriceLock
                     result.PayeeSignature = priceLock.PayeeSignature;
                     result.TransactionId = priceLock.TransactionId;
                     result.ExpireBlock = priceLock.ExpireBlock;
+                    result.SignAddress = priceLock.SignAddress;
                     result.Success = true;
                 }
                 else
