@@ -8,6 +8,8 @@ namespace x42.Feature.Database.Tables
     public class ServerData
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public string ProfileName { get; set; }
         public string SignAddress { get; set; }
         public int ProfileHeight { get; set; }

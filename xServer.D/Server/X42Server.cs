@@ -351,7 +351,16 @@ namespace x42.Server
 
         private bool AddServerAddress(SetupRequest setupRequest, string profileName)
         {
-            bool result = setupServer.AddServerToSetup(setupRequest, profileName);
+            bool result = false;
+            try
+            {
+                result = setupServer.AddServerToSetup(setupRequest, profileName);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("ERROR Adding server address", ex);
+            }
+
             return result;
         }
 

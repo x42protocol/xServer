@@ -508,10 +508,13 @@ namespace x42.Feature.Profile
                                 if (!ProfileExists(newProfile.Name, newProfile.KeyAddress, true))
                                 {
                                     var priceLock = await networkFeatures.GetPriceLockFromT3(cancellationToken, newProfile.PriceLockId);
-                                    var priceLockExists = AddCompletePriceLock(priceLock);
-                                    if (priceLockExists)
+                                    if (priceLock != null)
                                     {
-                                        await AddProfile(newProfile);
+                                        var priceLockExists = AddCompletePriceLock(priceLock);
+                                        if (priceLockExists)
+                                        {
+                                            await AddProfile(newProfile);
+                                        }
                                     }
                                 }
                             }

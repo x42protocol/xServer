@@ -31,8 +31,8 @@ namespace x42.Server
 
             using (X42DbContext dbContext = new X42DbContext(ConnectionString))
             {
-                IQueryable<ServerData> serverNodes = dbContext.Servers;
-                if (serverNodes.Count() == 0)
+                var serverNode = dbContext.Servers.FirstOrDefault();
+                if (serverNode == null)
                 {
                     ServerData serverData = new ServerData()
                     {
@@ -47,6 +47,14 @@ namespace x42.Server
                         dbContext.SaveChanges();
                         result = true;
                     }
+                }
+                else
+                {
+                    serverNode.SignAddress = setupRequest.SignAddress;
+                    serverNode.ProfileName = profileName;
+                    serverNode.DateAdded = DateTime.UtcNow;
+                    dbContext.SaveChanges();
+                    result = true;
                 }
             }
             return result;
@@ -79,7 +87,8 @@ namespace x42.Server
 
                     var serverInfo = servers.FirstOrDefault();
 
-                    if (serverInfo != null) {
+                    if (serverInfo != null)
+                    {
                         IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == serverInfo.ProfileName && s.Active);
                         if (serverNode.Count() > 0)
                         {
