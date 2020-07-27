@@ -170,7 +170,7 @@ namespace x42.Controllers.Public
         /// <summary>
         ///     Used for syncing the profile reservations.
         /// </summary>
-        /// <param name="profileReserveSyncRequest">The object with all of the nessesary data to sync a profile reservation.</param>
+        /// <param name="receiveProfileReserveRequest">The object with all of the nessesary data to sync a profile reservation.</param>
         /// <returns>A <see cref="bool" /> with reservation result.</returns>
         [HttpPost]
         [Route("receiveprofilereservation")]

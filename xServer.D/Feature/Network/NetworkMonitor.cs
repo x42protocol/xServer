@@ -309,7 +309,7 @@ namespace x42.Feature.Network
                 registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
                 registerRestRequest.RequestFormat = DataFormat.Json;
 
-                await client.ExecuteAsync(registerRestRequest, cancellationToken);
+                var result = await client.ExecuteAsync(registerRestRequest, cancellationToken);
             }
         }
 

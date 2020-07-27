@@ -451,7 +451,7 @@ namespace x42.Feature.Profile
             {
                 using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
                 {
-                    var profiles = dbContext.Profiles.Where(p => p.Status == (int)Status.Created && p.BlockConfirmed > fromBlock).OrderByDescending(p => p.BlockConfirmed).Take(10);
+                    var profiles = dbContext.Profiles.Where(p => p.Status == (int)Status.Created && p.BlockConfirmed > fromBlock).OrderBy(p => p.BlockConfirmed).Take(10);
                     foreach (var profile in profiles)
                     {
                         var profileResult = new ProfilesResult()

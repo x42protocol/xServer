@@ -362,7 +362,7 @@ namespace x42.Feature.Network
                 reserveProfileRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
                 reserveProfileRequest.RequestFormat = DataFormat.Json;
 
-                await client.ExecuteAsync<ReserveProfileResult>(reserveProfileRequest, cancellationToken).ConfigureAwait(false);
+                var result = await client.ExecuteAsync<ReserveProfileResult>(reserveProfileRequest, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
