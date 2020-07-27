@@ -78,7 +78,10 @@ namespace x42.Server
                                 NetworkAddress = server.NetworkAddress,
                                 NetworkPort = server.NetworkPort,
                                 Signature = server.Signature,
-                                Tier = server.Tier
+                                Tier = server.Tier,
+                                FeeAddress = server.FeeAddress,
+                                KeyAddress = server.KeyAddress,
+                                SignAddress = server.SignAddress
                             }
                     ));
                 }

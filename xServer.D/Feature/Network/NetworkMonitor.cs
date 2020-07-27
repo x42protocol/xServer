@@ -161,10 +161,8 @@ namespace x42.Feature.Network
         }
 
         /// <summary>
-        ///     Once a new block is staked, this method is used to verify that it
+        ///     Check for active servers, and remove any inactive servers.
         /// </summary>
-        /// <param name="block">The new block.</param>
-        /// <param name="chainTip">Block that was considered as a chain tip when the block staking started.</param>
         private async Task CheckActiveServersAsync()
         {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
@@ -180,7 +178,7 @@ namespace x42.Feature.Network
                 await Task.WhenAll(nodeTasks);
                 dbContext.SaveChanges();
 
-                // Remove any servers that have been available past the grace period.
+                // Remove any servers that have not been available past the grace period.
                 var inactiveServers = allServerNodes.Where(n => n.Active == false);
                 foreach (ServerNodeData serverNode in inactiveServers)
                 {
