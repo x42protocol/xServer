@@ -290,12 +290,12 @@ namespace x42.Feature.Network
             return result;
         }
 
-        public async Task<Money> GetServerCollateral(ServerNodeData serverNode)
+        public async Task<Money> GetServerCollateral(ServerNodeData serverNode, uint blockGracePeriod)
         {
             string profileKeyAddress = GetKeyAddressFromProfileName(serverNode.ProfileName);
             if (!string.IsNullOrEmpty(profileKeyAddress))
             {
-                GetAddressesBalancesResponse addressBalance = await x42Client.GetAddressBalances(profileKeyAddress);
+                GetAddressesBalancesResponse addressBalance = await x42Client.GetAddressBalances(profileKeyAddress, (int)blockGracePeriod);
 
                 if (addressBalance.balances.Count() == 1 && addressBalance.balances.FirstOrDefault().address == profileKeyAddress)
                 {
@@ -566,7 +566,15 @@ namespace x42.Feature.Network
             return x42FullNode.Status == ConnectionStatus.Online && database.DatabaseConnected;
         }
 
-        public async Task<RegisterResult> Register(ServerNodeData serverNode, bool serverCheckOnly = false)
+        public async Task<Tier> GetServerTier(ServerNodeData serverNode, uint blockGracePeriod)
+        {
+            var collateral = await GetServerCollateral(serverNode, blockGracePeriod);
+            IEnumerable<Tier> availableTiers = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount <= collateral);
+            Tier serverTier = availableTiers.Where(t => t.Level == (Tier.TierLevel)serverNode.Tier).FirstOrDefault();
+            return serverTier;
+        }
+
+        public async Task<RegisterResult> Register(ServerNodeData serverNode, bool serverCheckOnly = false, uint blockGracePeriod = 1)
         {
             RegisterResult registerResult = new RegisterResult
             {
@@ -577,10 +585,7 @@ namespace x42.Feature.Network
             {
                 if ((IsServerReady() && !ServerExists(serverNode)) || serverCheckOnly)
                 {
-                    var collateral = await GetServerCollateral(serverNode);
-                    IEnumerable<Tier> availableTiers = nodeSettings.ServerNode.Tiers.Where(t => t.Collateral.Amount <= collateral);
-                    Tier serverTier = availableTiers.Where(t => t.Level == (Tier.TierLevel)serverNode.Tier).FirstOrDefault();
-
+                    var serverTier = await GetServerTier(serverNode, blockGracePeriod);
                     if (serverTier != null)
                     {
                         bool serverKeysAreValid = await IsServerKeyValid(serverNode);
@@ -625,7 +630,7 @@ namespace x42.Feature.Network
                             registerResult.ResultMessage = "Could not verify server keys";
                         }
                     }
-                    else if (serverTier == null || availableTiers.Count() != 1)
+                    else if (serverTier == null)
                     {
                         registerResult.ResultMessage = "Requested Tier is not available or collateral amount is invalid.";
                     }

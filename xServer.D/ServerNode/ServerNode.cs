@@ -51,7 +51,7 @@ namespace x42.ServerNode
         /// <summary>
         ///     The Block Grade period (In Block amount) when the node can be behind before inactive.
         /// </summary>
-        public ulong BlockGracePeriod { get; protected set; }
+        public uint BlockGracePeriod { get; protected set; }
 
         protected IEnumerable<NetworkAddress> ConvertToNetworkAddresses(string[] seeds, int defaultPort)
         {

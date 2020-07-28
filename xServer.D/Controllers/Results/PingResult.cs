@@ -14,6 +14,6 @@
         public string Version { get; set; }
 
         /// <summary>The nodes best block height.</summary>
-        public ulong BestBlockHeight { get; set; }
+        public uint BestBlockHeight { get; set; }
     }
 }

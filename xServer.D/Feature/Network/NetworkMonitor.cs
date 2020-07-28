@@ -177,17 +177,6 @@ namespace x42.Feature.Network
                 }
                 await Task.WhenAll(nodeTasks);
                 dbContext.SaveChanges();
-
-                // Remove any servers that have not been available past the grace period.
-                var inactiveServers = allServerNodes.Where(n => n.Active == false);
-                foreach (ServerNodeData serverNode in inactiveServers)
-                {
-                    var lastSeen = serverNode.LastSeen.AddMinutes(network.DowntimeGracePeriod);
-                    if (DateTime.UtcNow > lastSeen)
-                    {
-                        dbContext.ServerNodes.Remove(serverNode);
-                    }
-                }
             }
 
             // Remove any servers that have been unavailable past the grace period.
@@ -200,6 +189,14 @@ namespace x42.Feature.Network
                     if (DateTime.UtcNow > lastSeen)
                     {
                         dbContext.ServerNodes.Remove(serverNode);
+                    }
+                    else
+                    {
+                        var serverTier = await networkFeatures.GetServerTier(serverNode, network.BlockGracePeriod);
+                        if (serverTier == null)
+                        {
+                            dbContext.ServerNodes.Remove(serverNode);
+                        }
                     }
                 }
                 dbContext.SaveChanges();

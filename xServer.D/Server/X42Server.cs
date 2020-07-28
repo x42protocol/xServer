@@ -149,7 +149,7 @@ namespace x42.Server
             }
         }
 
-        public ulong BestBlockHeight { get => x42FullNode.BlockTIP; }
+        public uint BestBlockHeight { get => x42FullNode.BlockTIP; }
 
         public async Task<RegisterResult> Register(ServerNodeData serverNode)
         {

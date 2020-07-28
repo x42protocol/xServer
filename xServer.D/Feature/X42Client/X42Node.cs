@@ -228,9 +228,9 @@ namespace x42.Feature.X42Client
             return await restClient.GetTXOut(txid, vout.ToString());
         }
 
-        public async Task<GetAddressesBalancesResponse> GetAddressBalances(string address)
+        public async Task<GetAddressesBalancesResponse> GetAddressBalances(string address, int minConfirmations = 1)
         {
-            return await restClient.GetAddressBalances(address);
+            return await restClient.GetAddressBalances(address, minConfirmations);
         }
 
         public async Task<GetColdStakingAddressResponse> GetColdStakingAddress(string walletName, bool isColdWalletAddress, bool segwit)
