@@ -323,7 +323,10 @@ namespace x42.Feature.Network
                     var priceLockResult = await client.ExecuteAsync<PriceLockResult>(getPriceLockRequest, cancellationToken).ConfigureAwait(false);
                     if (priceLockResult.StatusCode == HttpStatusCode.OK)
                     {
-                        return priceLockResult.Data;
+                        if (priceLockResult.Data.Success)
+                        {
+                            return priceLockResult.Data;
+                        }
                     }
                 }
                 catch (Exception) { }

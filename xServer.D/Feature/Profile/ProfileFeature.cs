@@ -224,7 +224,11 @@ namespace x42.Feature.Profile
                     }
                     else
                     {
-                        dbContext.ProfileReservations.Remove(profileReservation);
+                        var priceLock = await networkFeatures.GetPriceLockFromT3(cancellationToken, profileReservation.PriceLockId);
+                        if (priceLock.Status <= (int)PriceLock.Status.New)
+                        {
+                            dbContext.ProfileReservations.Remove(profileReservation);
+                        }
                     }
                 }
                 dbContext.SaveChanges();

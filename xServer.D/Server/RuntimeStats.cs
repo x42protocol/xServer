@@ -43,7 +43,6 @@ namespace x42.Server
                 {
                     _state = (int)state.Stopped;
                 }
-
             }
             lock (LOCK_PUBLIC_REQUEST)
             {

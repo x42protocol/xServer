@@ -173,6 +173,7 @@ namespace x42.Server
         public void Stop()
         {
             Stats.Reset(false);
+            Stats.UpdateTierLevel(Tier.TierLevel.Seed);
             // TODO: Stop serving apps.
         }
 
@@ -308,9 +309,11 @@ namespace x42.Server
             periodicLogLoop = AsyncLoopFactory.Run("PeriodicChecks", cancellation =>
             {
                 var serverSetupResult = GetServerSetupStatus();
-
-                Stats.UpdateTierLevel(serverSetupResult.TierLevel);
-
+                if (Stats.State == 1)
+                {
+                    // Only update tier level when running.
+                    Stats.UpdateTierLevel(serverSetupResult.TierLevel);
+                }
                 return Task.CompletedTask;
             },
                 serverLifetime.ApplicationStopping,
