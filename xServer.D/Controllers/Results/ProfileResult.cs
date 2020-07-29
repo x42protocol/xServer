@@ -18,6 +18,8 @@ namespace x42.Controllers.Results
 
         public int ReservationExpirationBlock { get; set; }
 
+        public int BlockConfirmed { get; set; }
+
         public List<ProfileField> ProfileFields { get; set; }
     }
 }

@@ -406,7 +406,7 @@ namespace x42.Feature.Profile
                             ReturnAddress = profileReserveSyncRequest.ReturnAddress,
                             Signature = profileReserveSyncRequest.Signature,
                             Relayed = false,
-                            Status = (int)Status.Created,
+                            Status = (int)Status.Reserved,
                             ReservationExpirationBlock = profileReserveSyncRequest.ReservationExpirationBlock
                         };
                         var newRecord = dbContext.ProfileReservations.Add(newProfile);
@@ -471,9 +471,8 @@ namespace x42.Feature.Profile
             return result;
         }
 
-        public async Task<List<ProfileResult>> SyncProfiles(CancellationToken cancellationToken)
+        public async Task SyncProfiles(CancellationToken cancellationToken)
         {
-            var result = new List<ProfileResult>();
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
                 var selfServer = networkFeatures.GetSelfServer();
@@ -527,7 +526,6 @@ namespace x42.Feature.Profile
                     }
                 }
             }
-            return result;
         }
 
         public bool AddCompletePriceLock(PriceLockResult priceLockResult)
@@ -597,7 +595,8 @@ namespace x42.Feature.Profile
                             Signature = profile.Signature,
                             PriceLockId = profile.PriceLockId,
                             Status = profile.Status,
-                            ReturnAddress = profile.ReturnAddress
+                            ReturnAddress = profile.ReturnAddress,
+                            BlockConfirmed = profile.BlockConfirmed
                         };
                     }
                     else
@@ -629,6 +628,7 @@ namespace x42.Feature.Profile
                             Signature = profile.Signature,
                             PriceLockId = profile.PriceLockId,
                             Status = profile.Status,
+                            BlockConfirmed = profile.BlockConfirmed
                         };
                     }
                     else
