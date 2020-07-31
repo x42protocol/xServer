@@ -1,24 +1,30 @@
 <!-- STATUSBAR -->
-<div class="status">
-  <ul class="list-inline align-self-center row">
-    <li *ngIf="!(percentSynced == '100%')" class="list-inline-item mx-1" placement="top" ngbTooltip="{{toolTip}}">
-      <i class="lnr lnr-cloud-sync text-warning"></i>
-      <small class="text-warning">{{ percentSynced }}</small>
-    </li>
-    <li *ngIf="percentSynced == '100%'" class="list-inline-item mx-1" placement="top" ngbTooltip="{{toolTip}}">
-      <i class="lnr lnr-cloud-check text-success"></i>
-      <small class="text-success">{{ percentSynced }}</small>
-    </li>
-    <li class="list-inline-item mx-1" placement="top" ngbTooltip="{{ connectedNodesTooltip }}">
-      <i class="lnr lnr-earth text-black"></i>
-      <small class="text-black">{{ connectedNodes }}</small>
-    </li>
-    <li *ngIf="!stakingEnabled && !sidechainsEnabled" class="list-inline-item mx-1" placement="top" ngbTooltip="Not staking">
-      <i class="lnr lnr-lock text-danger"></i>
-    </li>
-    <li *ngIf="stakingEnabled && !sidechainsEnabled" class="list-inline-item mx-1" placement="top" ngbTooltip="Staking">
-      <i class="lnr lnr-lock text-success"></i>
-    </li>
-  </ul>
-</div>
+<ul class="status-custom">
+  <li *ngIf="!(percentSynced == '100%')" class="list-inline-item mx-1" placement="top" pTooltip="{{toolTip}}">
+    <i class="lnr lnr-cloud-sync text-warning"></i>
+    <small class="text-warning">{{ percentSynced }}</small>
+  </li>
+  <li *ngIf="percentSynced == '100%'" class="list-inline-item mx-1" placement="top" pTooltip="{{toolTip}}">
+    <i class="lnr lnr-cloud-check text-success"></i>
+    <small class="text-success">{{ percentSynced }}</small>
+  </li>
+  <li *ngIf="connectedNodes == 0 && connectedXServers == 0" class="list-inline-item mx-1" placement="top" pTooltip="{{ connectionsTooltip }}">
+    <i class="lnr lnr-earth text-black"></i>
+    <small class="text-black">0</small>
+  </li>
+  <li *ngIf="(connectedNodes == 0 && connectedXServers > 0) || (connectedNodes > 0 && connectedXServers == 0)" class="list-inline-item mx-1" placement="top" pTooltip="{{ connectionsTooltip }}">
+    <i class="lnr lnr-earth text-warning"></i>
+    <small class="text-warning">Partial</small>
+  </li>
+  <li *ngIf="connectedNodes >= 1 && connectedXServers >= 1" class="list-inline-item mx-1" placement="top" pTooltip="{{ connectionsTooltip }}">
+    <i class="lnr lnr-earth text-success"></i>
+    <small class="text-success">Full</small>
+  </li>
+  <li *ngIf="!stakingEnabled && !sidechainsEnabled && isUnLocked" class="list-inline-item mx-1" placement="top" pTooltip="Not staking">
+    <i class="lnr lnr-lock text-danger"></i>
+  </li>
+  <li *ngIf="stakingEnabled && !sidechainsEnabled && isUnLocked" class="list-inline-item mx-1" placement="top" pTooltip="Staking">
+    <i class="lnr lnr-lock text-success"></i>
+  </li>
+</ul>
 <!-- /STATUSBAR -->

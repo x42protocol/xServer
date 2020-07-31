@@ -22,6 +22,7 @@ import { SignMessageRequest } from '../models/wallet-signmessagerequest';
 import { VerifyRequest } from '../models/wallet-verifyrequest';
 import { SplitCoins } from '../models/split-coins';
 import { ValidateAddressResponse } from '../models/validateaddressresponse';
+import { XServerStatus } from '../models/xserver-status';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +52,14 @@ export class FullNodeApiService {
     return this.pollingInterval.pipe(
       startWith(0),
       switchMap(() => this.http.get<NodeStatus>(this.x42ApiUrl + '/node/status')),
+      catchError(err => this.handleHttpError(err))
+    )
+  }
+
+  getxServerStatusInterval(): Observable<XServerStatus> {
+    return this.pollingInterval.pipe(
+      startWith(0),
+      switchMap(() => this.http.get<XServerStatus>(this.x42ApiUrl + '/xServer/getxserverstats')),
       catchError(err => this.handleHttpError(err))
     )
   }

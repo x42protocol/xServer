@@ -8,7 +8,6 @@ import { WalletComponent } from './wallet.component';
 import { MenuComponent } from './menu/menu.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HistoryComponent } from './history/history.component';
-import { StatusBarComponent } from './status-bar/status-bar.component';
 import { AdvancedComponent } from './advanced/advanced.component';
 import { AddressBookComponent } from './address-book/address-book.component';
 import { AddNewAddressComponent } from './address-book/modals/add-new-address/add-new-address.component';
@@ -84,7 +83,6 @@ import { CalendarModule } from 'primeng/calendar';
     TransactionDetailsComponent,
     LogoutConfirmationComponent,
     HistoryComponent,
-    StatusBarComponent,
     AdvancedComponent,
     AddressBookComponent,
     AddNewAddressComponent,

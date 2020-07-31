@@ -1,29 +1,24 @@
 <p-menubar [model]="menuItems">
   <img id="logo" src="./assets/images/{{logoFileName}}" style="height:32px;" />
-  <button pButton icon="pi pi-cog" type="button" (click)="settingsMenu = true"></button>
+  <div class="row mr-0">
+    <div class="col-9 mt-2">
+      <status-bar [isUnLocked]="isUnLocked"></status-bar>
+    </div>
+    <div class="col-2">
+      <button pButton icon="pi pi-cog" type="button" (click)="settingsMenu = true" *ngIf="!isUnLocked"></button>
+      <button pButton icon="pi pi-cog" type="button" (click)="openAdvanced()" *ngIf="isUnLocked"></button>
+    </div>
+  </div>
 </p-menubar>
 
-<p-sidebar [(visible)]="settingsMenu" position="right" [baseZIndex]="10000">
-  <h1 style="font-weight:normal">Server Settings</h1>
+<p-sidebar [(visible)]="settingsMenu" position="right" [baseZIndex]="10000" *ngIf="!isUnLocked">
+  <h1 style="font-weight:normal">Settings</h1>
   <br /><br />
 
-
-  <h3 style="font-weight:normal">Connection Info</h3>
-  Node Connections: {{ connectedNodes }}
+  <h3 style="font-weight:normal">Network</h3>
+  <span *ngIf="!isTestnet">Mainnet</span>
+  <span *ngIf="isTestnet">Testnet</span>
   <br />
-
-  <div *ngIf="isChainSynced" class="text-success">Block: {{ lastBlockSyncedHeight }}</div>
-  <div *ngIf="!isChainSynced" class="text-success">
-    Block: {{ lastBlockSyncedHeight }}
-  </div>
-  <br />
-  <div *ngIf="stakingEnabled" class="lnr lnr-lock text-success">Staking</div>
-  <div *ngIf="!stakingEnabled" class="lnr lnr-lock text-danger">Not staking</div>
-
-  <br />
-  Server Connections: 3
-  <br />
-
 
   <br /><br />
   <h3 style="font-weight:normal">Look and feel</h3>
@@ -33,6 +28,4 @@
       <span style="margin-left:.25em">{{group.label}}</span>
     </ng-template>
   </p-dropdown>
-  <br /><br />
-  <button pButton type="button" class="btn-block" label="Advanced" (click)="openAdvanced()"></button>
 </p-sidebar>
