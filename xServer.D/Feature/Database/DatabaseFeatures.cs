@@ -27,6 +27,8 @@ namespace x42.Feature.Database
         /// <summary>Instance logger.</summary>
         private readonly DatabaseSettings databaseSettings;
 
+        public IDataStore dataStore { get; set; }
+
         public bool DatabaseConnected { get; set; } = false;
 
         public DatabaseFeatures(
@@ -37,6 +39,7 @@ namespace x42.Feature.Database
         {
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.databaseSettings = databaseSettings;
+            dataStore = new DataStore(loggerFactory, databaseSettings);
         }
 
         /// <summary>

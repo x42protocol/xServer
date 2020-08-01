@@ -15,7 +15,6 @@ using System.Linq;
 using x42.Controllers.Results;
 using x42.Feature.Database.Tables;
 using x42.Controllers.Requests;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using x42.Feature.Network;
 using System.Threading;
@@ -266,7 +265,7 @@ namespace x42.Feature.Profile
                                 if (newRecord.State == EntityState.Added)
                                 {
                                     dbContext.SaveChanges();
-                                    var selfServer = networkFeatures.GetSelfServer();
+                                    var selfServer = database.dataStore.GetSelfServer();
                                     if (blockConfirmed > selfServer.ProfileHeight)
                                     {
                                         networkFeatures.SetProfileHeightOnSelf(blockConfirmed);
@@ -285,38 +284,33 @@ namespace x42.Feature.Profile
 
         private bool ProfileExists(string name = "", string keyAddress = "", bool skipReservations = false)
         {
-            bool result = false;
             int profileCount = 0;
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(keyAddress))
             {
-                if (string.IsNullOrEmpty(keyAddress))
+                if (!skipReservations)
                 {
-                    if (!skipReservations)
-                    {
-                        profileCount = dbContext.ProfileReservations.Where(p => p.Name == name).Count();
-                    }
-                    profileCount += dbContext.Profiles.Where(p => p.Name == name).Count();
+                    profileCount = database.dataStore.GetProfileReservationCountSearch(name, keyAddress);
                 }
-                else if (string.IsNullOrEmpty(name))
-                {
-                    if (!skipReservations)
-                    {
-                        profileCount = dbContext.ProfileReservations.Where(p => p.KeyAddress == keyAddress).Count();
-                    }
-                    profileCount += dbContext.Profiles.Where(p => p.KeyAddress == keyAddress).Count();
-                }
-                else
-                {
-                    if (!skipReservations)
-                    {
-                        profileCount = dbContext.ProfileReservations.Where(p => p.Name == name || p.KeyAddress == keyAddress).Count();
-                    }
-                    profileCount += dbContext.Profiles.Where(p => p.Name == name || p.KeyAddress == keyAddress).Count();
-                }
-
-                result = profileCount > 0;
+                profileCount += database.dataStore.GetProfileCountSearch(name, keyAddress);
             }
-            return result;
+            else if (!string.IsNullOrEmpty(name))
+            {
+                if (!skipReservations)
+                {
+                    profileCount = database.dataStore.GetProfileReservationCountByName(name);
+                }
+                profileCount += database.dataStore.GetProfileCountByName(name);
+            }
+            else if (!string.IsNullOrEmpty(keyAddress))
+            {
+                if (!skipReservations)
+                {
+                    profileCount = database.dataStore.GetProfileReservationCountByKeyAddress(keyAddress);
+                }
+                profileCount += database.dataStore.GetProfileCountByKeyAddress(keyAddress);
+            }
+
+            return profileCount > 0;
         }
 
         /// <summary>
@@ -450,26 +444,23 @@ namespace x42.Feature.Profile
         public List<ProfilesResult> GetProfiles(int fromBlock)
         {
             var result = new List<ProfilesResult>();
-            var selfServer = networkFeatures.GetSelfServer();
+            var selfServer = database.dataStore.GetSelfServer();
             if (fromBlock < selfServer.ProfileHeight)
             {
-                using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+                var profiles = database.dataStore.GetFirstProfilesFromBlock(fromBlock, 10);
+                foreach (var profile in profiles)
                 {
-                    var profiles = dbContext.Profiles.Where(p => p.Status == (int)Status.Created && p.BlockConfirmed > fromBlock).OrderBy(p => p.BlockConfirmed).Take(10);
-                    foreach (var profile in profiles)
+                    var profileResult = new ProfilesResult()
                     {
-                        var profileResult = new ProfilesResult()
-                        {
-                            KeyAddress = profile.KeyAddress,
-                            Name = profile.Name,
-                            PriceLockId = profile.PriceLockId,
-                            BlockConfirmed = profile.BlockConfirmed,
-                            Signature = profile.Signature,
-                            ReturnAddress = profile.ReturnAddress,
-                            Status = profile.Status
-                        };
-                        result.Add(profileResult);
-                    }
+                        KeyAddress = profile.KeyAddress,
+                        Name = profile.Name,
+                        PriceLockId = profile.PriceLockId,
+                        BlockConfirmed = profile.BlockConfirmed,
+                        Signature = profile.Signature,
+                        ReturnAddress = profile.ReturnAddress,
+                        Status = profile.Status
+                    };
+                    result.Add(profileResult);
                 }
             }
             return result;
@@ -477,56 +468,53 @@ namespace x42.Feature.Profile
 
         public async Task SyncProfiles(CancellationToken cancellationToken)
         {
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            var selfServer = database.dataStore.GetSelfServer();
+            if (selfServer != null)
             {
-                var selfServer = networkFeatures.GetSelfServer();
-                if (selfServer != null)
-                {
-                    var currentProfileHeight = selfServer.ProfileHeight;
+                var currentProfileHeight = selfServer.ProfileHeight;
 
-                    var t2Servers = networkFeatures.GetAllTier2ConnectionInfo();
-                    foreach (var server in t2Servers)
+                var t2Servers = networkFeatures.GetAllTier2ConnectionInfo();
+                foreach (var server in t2Servers)
+                {
+                    int newHeight = 0;
+                    var profiles = await networkFeatures.GetProfiles(cancellationToken, server, currentProfileHeight);
+                    while (profiles.Count > 0)
                     {
-                        int newHeight = 0;
-                        var profiles = await networkFeatures.GetProfiles(cancellationToken, server, currentProfileHeight);
-                        while (profiles.Count > 0)
+                        foreach (var profile in profiles)
                         {
-                            foreach (var profile in profiles)
+                            if (profile.BlockConfirmed > newHeight)
                             {
-                                if (profile.BlockConfirmed > newHeight)
+                                newHeight = profile.BlockConfirmed;
+                            }
+                            var newProfile = new ProfileData()
+                            {
+                                KeyAddress = profile.KeyAddress,
+                                Name = profile.Name,
+                                ReturnAddress = profile.ReturnAddress,
+                                Signature = profile.Signature,
+                                BlockConfirmed = profile.BlockConfirmed,
+                                PriceLockId = profile.PriceLockId,
+                                Relayed = true,
+                                Status = (int)Status.Created
+                            };
+                            if (!ProfileExists(newProfile.Name, newProfile.KeyAddress, true))
+                            {
+                                var priceLock = await networkFeatures.GetPriceLockFromT3(cancellationToken, newProfile.PriceLockId);
+                                if (priceLock != null)
                                 {
-                                    newHeight = profile.BlockConfirmed;
-                                }
-                                var newProfile = new ProfileData()
-                                {
-                                    KeyAddress = profile.KeyAddress,
-                                    Name = profile.Name,
-                                    ReturnAddress = profile.ReturnAddress,
-                                    Signature = profile.Signature,
-                                    BlockConfirmed = profile.BlockConfirmed,
-                                    PriceLockId = profile.PriceLockId,
-                                    Relayed = true,
-                                    Status = (int)Status.Created
-                                };
-                                if (!ProfileExists(newProfile.Name, newProfile.KeyAddress, true))
-                                {
-                                    var priceLock = await networkFeatures.GetPriceLockFromT3(cancellationToken, newProfile.PriceLockId);
-                                    if (priceLock != null)
+                                    var priceLockExists = AddCompletePriceLock(priceLock);
+                                    if (priceLockExists)
                                     {
-                                        var priceLockExists = AddCompletePriceLock(priceLock);
-                                        if (priceLockExists)
-                                        {
-                                            await AddProfile(newProfile);
-                                        }
+                                        await AddProfile(newProfile);
                                     }
                                 }
                             }
-                            profiles = await networkFeatures.GetProfiles(cancellationToken, server, newHeight);
                         }
-                        if (newHeight > currentProfileHeight)
-                        {
-                            networkFeatures.SetProfileHeightOnSelf(newHeight);
-                        }
+                        profiles = await networkFeatures.GetProfiles(cancellationToken, server, newHeight);
+                    }
+                    if (newHeight > currentProfileHeight)
+                    {
+                        networkFeatures.SetProfileHeightOnSelf(newHeight);
                     }
                 }
             }
@@ -585,71 +573,68 @@ namespace x42.Feature.Profile
         {
             ProfileResult result = null;
 
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            if (!string.IsNullOrWhiteSpace(profileRequest.KeyAddress))
             {
-                if (!string.IsNullOrWhiteSpace(profileRequest.KeyAddress))
+                var profile = database.dataStore.GetProfileByKeyAddress(profileRequest.KeyAddress);
+                if (profile != null)
                 {
-                    var profile = dbContext.Profiles.Where(n => n.KeyAddress == profileRequest.KeyAddress).FirstOrDefault();
-                    if (profile != null)
+                    result = new ProfileResult()
+                    {
+                        KeyAddress = profile.KeyAddress,
+                        Name = profile.Name,
+                        Signature = profile.Signature,
+                        PriceLockId = profile.PriceLockId,
+                        Status = profile.Status,
+                        ReturnAddress = profile.ReturnAddress,
+                        BlockConfirmed = profile.BlockConfirmed
+                    };
+                }
+                else
+                {
+                    var profileReservation = database.dataStore.GetProfileReservationByKeyAddress(profileRequest.KeyAddress);
+                    if (profileReservation != null)
                     {
                         result = new ProfileResult()
                         {
-                            KeyAddress = profile.KeyAddress,
-                            Name = profile.Name,
-                            Signature = profile.Signature,
-                            PriceLockId = profile.PriceLockId,
-                            Status = profile.Status,
-                            ReturnAddress = profile.ReturnAddress,
-                            BlockConfirmed = profile.BlockConfirmed
+                            KeyAddress = profileReservation.KeyAddress,
+                            Name = profileReservation.Name,
+                            Signature = profileReservation.Signature,
+                            PriceLockId = profileReservation.PriceLockId,
+                            Status = profileReservation.Status,
+                            ReservationExpirationBlock = profileReservation.ReservationExpirationBlock
                         };
-                    }
-                    else
-                    {
-                        var profileReservation = dbContext.ProfileReservations.Where(n => n.KeyAddress == profileRequest.KeyAddress).FirstOrDefault();
-                        if (profileReservation != null)
-                        {
-                            result = new ProfileResult()
-                            {
-                                KeyAddress = profileReservation.KeyAddress,
-                                Name = profileReservation.Name,
-                                Signature = profileReservation.Signature,
-                                PriceLockId = profileReservation.PriceLockId,
-                                Status = profileReservation.Status,
-                                ReservationExpirationBlock = profileReservation.ReservationExpirationBlock
-                            };
-                        }
                     }
                 }
-                else if (!string.IsNullOrWhiteSpace(profileRequest.Name))
+            }
+            else if (!string.IsNullOrWhiteSpace(profileRequest.Name))
+            {
+                var profile = database.dataStore.GetProfileByName(profileRequest.Name);
+                if (profile != null)
                 {
-                    var profile = dbContext.Profiles.Where(n => n.Name == profileRequest.Name).FirstOrDefault();
-                    if (profile != null)
+                    result = new ProfileResult()
+                    {
+                        KeyAddress = profile.KeyAddress,
+                        Name = profile.Name,
+                        Signature = profile.Signature,
+                        PriceLockId = profile.PriceLockId,
+                        Status = profile.Status,
+                        BlockConfirmed = profile.BlockConfirmed
+                    };
+                }
+                else
+                {
+                    var profileReservation = database.dataStore.GetProfileReservationByName(profileRequest.Name);
+                    if (profileReservation != null)
                     {
                         result = new ProfileResult()
                         {
-                            KeyAddress = profile.KeyAddress,
-                            Name = profile.Name,
-                            Signature = profile.Signature,
-                            PriceLockId = profile.PriceLockId,
-                            Status = profile.Status,
-                            BlockConfirmed = profile.BlockConfirmed
+                            KeyAddress = profileReservation.KeyAddress,
+                            Name = profileReservation.Name,
+                            Signature = profileReservation.Signature,
+                            PriceLockId = profileReservation.PriceLockId,
+                            Status = profileReservation.Status,
+                            ReservationExpirationBlock = profileReservation.ReservationExpirationBlock
                         };
-                    }
-                    else
-                    {
-                        var profileReservation = dbContext.ProfileReservations.Where(n => n.Name == profileRequest.Name).FirstOrDefault();
-                        if (profileReservation != null)
-                        {
-                            result = new ProfileResult()
-                            {
-                                KeyAddress = profileReservation.KeyAddress,
-                                Name = profileReservation.Name,
-                                Signature = profileReservation.Signature,
-                                PriceLockId = profileReservation.PriceLockId,
-                                Status = profileReservation.Status,
-                                ReservationExpirationBlock = profileReservation.ReservationExpirationBlock
-                            };
-                        }
                     }
                 }
             }

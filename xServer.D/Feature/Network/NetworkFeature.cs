@@ -187,20 +187,6 @@ namespace x42.Feature.Network
             return signMessageResult.Signature;
         }
 
-        public ServerData GetSelfServer()
-        {
-            ServerData result = null;
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-            {
-                var selfServer = dbContext.Servers.FirstOrDefault();
-                if (selfServer != null)
-                {
-                    return selfServer;
-                }
-            }
-            return result;
-        }
-
         public void SetProfileHeightOnSelf(int height)
         {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
