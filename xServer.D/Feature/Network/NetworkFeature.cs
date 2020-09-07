@@ -218,7 +218,7 @@ namespace x42.Feature.Network
                     string xServerURL = GetServerUrl(activeServer.NetworkProtocol, activeServer.NetworkAddress, activeServer.NetworkPort);
                     var client = new RestClient(xServerURL)
                     {
-                        Timeout = 10 // We don't really need to wait for the result.
+                        Timeout = 10000 // We don't really need to wait for the result.
                     };
                     var registerRestRequest = new RestRequest("/updatepricelock", Method.POST);
                     var request = JsonConvert.SerializeObject(priceLockData);

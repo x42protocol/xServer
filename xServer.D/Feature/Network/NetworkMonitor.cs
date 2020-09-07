@@ -128,7 +128,7 @@ namespace x42.Feature.Network
             },
             this.networkCancellationTokenSource.Token,
             repeatEvery: TimeSpan.FromSeconds(this.serverRecoSleepSeconds),
-            startAfter: TimeSpans.Second);
+            startAfter: TimeSpans.TenSeconds);
 
             asyncLoopFactory.Run("NetworkManager.NewPriceLock", async token =>
             {
