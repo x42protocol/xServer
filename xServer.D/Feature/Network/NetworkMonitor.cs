@@ -257,28 +257,13 @@ namespace x42.Feature.Network
                     {
                         try
                         {
-                            await RelayPriceLocks(newPriceLock, tier3Nodes, cancellationToken);
+                            await networkFeatures.RelayPriceLock(newPriceLock, tier3Nodes, cancellationToken);
                             newPriceLock.Relayed = true;
                         }
                         catch (Exception) { }
                     }
                     dbContext.SaveChanges();
                 }
-            }
-        }
-
-        public async Task RelayPriceLocks(PriceLockData priceLockData, List<ServerNodeData> activeXServers, CancellationToken cancellationToken)
-        {
-            foreach (var activeServer in activeXServers)
-            {
-                string xServerURL = networkFeatures.GetServerUrl(activeServer.NetworkProtocol, activeServer.NetworkAddress, activeServer.NetworkPort);
-                var client = new RestClient(xServerURL);
-                var registerRestRequest = new RestRequest("/updatepricelock", Method.POST);
-                var request = JsonConvert.SerializeObject(priceLockData);
-                registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
-                registerRestRequest.RequestFormat = DataFormat.Json;
-
-                await client.ExecuteAsync(registerRestRequest, cancellationToken);
             }
         }
 

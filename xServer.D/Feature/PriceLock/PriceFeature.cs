@@ -22,6 +22,7 @@ using x42.Controllers.Requests;
 using Microsoft.EntityFrameworkCore;
 using x42.Utilities.Extensions;
 using x42.Feature.X42Client.RestClient.Responses;
+using static x42.ServerNode.Tier;
 
 namespace x42.Feature.PriceLock
 {
@@ -277,6 +278,9 @@ namespace x42.Feature.PriceLock
                                     result.ExpireBlock = newPriceLock.ExpireBlock;
                                     result.Status = (int)Status.New;
                                     result.Success = true;
+
+                                    List<ServerNodeData> tier3Nodes = dbContext.ServerNodes.Where(s => s.Active && s.Tier == (int)TierLevel.Three).ToList();
+                                    await networkFeatures.RelayPriceLock(newPriceLock, tier3Nodes, networkCancellationTokenSource.Token);
                                 }
                                 else
                                 {

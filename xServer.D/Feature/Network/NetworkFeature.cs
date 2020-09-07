@@ -30,6 +30,7 @@ using x42.Controllers.Requests;
 using System.Threading;
 using RestSharp.Serializers.NewtonsoftJson;
 using x42.Feature.X42Client.Models;
+using static x42.ServerNode.Tier;
 
 namespace x42.Feature.Network
 {
@@ -206,6 +207,28 @@ namespace x42.Feature.Network
         public string GetMyFeeAddress()
         {
             return cachedServerInfo.FeeAddress;
+        }
+
+        public async Task RelayPriceLock(PriceLockData priceLockData, List<ServerNodeData> activeXServers, CancellationToken cancellationToken)
+        {
+            foreach (var activeServer in activeXServers)
+            {
+                try
+                {
+                    string xServerURL = GetServerUrl(activeServer.NetworkProtocol, activeServer.NetworkAddress, activeServer.NetworkPort);
+                    var client = new RestClient(xServerURL)
+                    {
+                        Timeout = 10 // We don't really need to wait for the result.
+                    };
+                    var registerRestRequest = new RestRequest("/updatepricelock", Method.POST);
+                    var request = JsonConvert.SerializeObject(priceLockData);
+                    registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
+                    registerRestRequest.RequestFormat = DataFormat.Json;
+
+                    await client.ExecuteAsync(registerRestRequest, cancellationToken);
+                }
+                catch (Exception) { }
+            }
         }
 
         private string GetProtocolString(int networkProtocol)
