@@ -39,6 +39,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
   public stakingEnabled: boolean;
   public sidechainsEnabled: boolean;
   public settingsMenu: boolean;
+  public isTestnet: boolean;
 
   toolTip = '';
   connectedNodesTooltip = '';
@@ -79,6 +80,8 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     } else {
       this.setDefaultMenuItems();
     }
+
+    this.isTestnet = this.globalService.getTestnetEnabled();
 
     this.sidechainsEnabled = this.globalService.getSidechainEnabled();
     this.startSubscriptions();
