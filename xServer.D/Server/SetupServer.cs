@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Linq;
 using x42.Controllers.Requests;
+using x42.Feature.Database;
 using x42.Feature.Database.Context;
 using x42.Feature.Database.Tables;
 using x42.Server.Results;
@@ -12,66 +12,38 @@ namespace x42.Server
     public class SetupServer
     {
         private string ConnectionString { get; set; }
+        private readonly DatabaseFeatures database;
 
         public enum Status
         {
             NotStarted = 1,
             Started = 2,
-            Complete = 3
+            Complete = 3,
+            InvalidSignAddress = 4
         }
 
-        public SetupServer(string connectionString)
+        public SetupServer(string connectionString, DatabaseFeatures database)
         {
             ConnectionString = connectionString;
+            this.database = database;
         }
 
         public bool AddServerToSetup(SetupRequest setupRequest, string profileName)
         {
             bool result = false;
-
-            using (X42DbContext dbContext = new X42DbContext(ConnectionString))
+            var profileNameSet = database.dataStore.SetDictionaryValue("ProfileName", profileName);
+            var signAddressSet = database.dataStore.SetDictionaryValue("SignAddress", setupRequest.SignAddress);
+            var dateAddedSet = database.dataStore.SetDictionaryValue("DateAdded", DateTime.UtcNow);
+            if (profileNameSet && signAddressSet && dateAddedSet)
             {
-                var serverNode = dbContext.Servers.FirstOrDefault();
-                if (serverNode == null)
-                {
-                    ServerData serverData = new ServerData()
-                    {
-                        SignAddress = setupRequest.SignAddress,
-                        ProfileName = profileName,
-                        DateAdded = DateTime.UtcNow
-                    };
-
-                    var newRecord = dbContext.Add(serverData);
-                    if (newRecord.State == EntityState.Added)
-                    {
-                        dbContext.SaveChanges();
-                        result = true;
-                    }
-                }
-                else
-                {
-                    serverNode.SignAddress = setupRequest.SignAddress;
-                    serverNode.ProfileName = profileName;
-                    serverNode.DateAdded = DateTime.UtcNow;
-                    dbContext.SaveChanges();
-                    result = true;
-                }
+                result = true;
             }
             return result;
         }
 
-        public void UpdateServerProfile(string profileName)
+        public void UpdateServerProfileName(string profileName)
         {
-            using (X42DbContext dbContext = new X42DbContext(ConnectionString))
-            {
-                ServerData serverNode = dbContext.Servers.FirstOrDefault();
-                if (serverNode != null)
-                {
-                    serverNode.ProfileName = profileName;
-
-                    dbContext.SaveChanges();
-                }
-            }
+            database.dataStore.SetDictionaryValue("ProfileName", profileName);
         }
 
         public SetupStatusResult GetServerSetupStatus()
@@ -80,21 +52,27 @@ namespace x42.Server
 
             using (X42DbContext dbContext = new X42DbContext(ConnectionString))
             {
-                IQueryable<ServerData> servers = dbContext.Servers;
-                if (servers.Count() > 0)
+                var profileName = database.dataStore.GetStringFromDictionary("ProfileName");
+                if (!string.IsNullOrEmpty(profileName))
                 {
                     result.ServerStatus = Status.Started;
 
-                    var serverInfo = servers.FirstOrDefault();
-
-                    if (serverInfo != null)
+                    var signAddress = database.dataStore.GetStringFromDictionary("SignAddress");
+                    if (!string.IsNullOrEmpty(signAddress))
                     {
-                        IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == serverInfo.ProfileName && s.Active);
+                        IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == profileName && s.Active);
                         if (serverNode.Count() > 0)
                         {
-                            result.SignAddress = serverInfo.SignAddress;
-                            result.ServerStatus = Status.Complete;
-                            result.TierLevel = (Tier.TierLevel)serverNode.First().Tier;
+                            if (serverNode.FirstOrDefault().SignAddress == signAddress)
+                            {
+                                result.SignAddress = signAddress;
+                                result.ServerStatus = Status.Complete;
+                                result.TierLevel = (Tier.TierLevel)serverNode.First().Tier;
+                            }
+                            else
+                            {
+                                result.ServerStatus = Status.InvalidSignAddress;
+                            }
                         }
                     }
                 }
@@ -104,16 +82,7 @@ namespace x42.Server
 
         public string GetSignAddress()
         {
-            string result = string.Empty;
-            using (X42DbContext dbContext = new X42DbContext(ConnectionString))
-            {
-                IQueryable<ServerData> server = dbContext.Servers;
-                if (server.Count() > 0)
-                {
-                    result = server.First().SignAddress;
-                }
-            }
-            return result;
+            return database.dataStore.GetStringFromDictionary("SignAddress");
         }
     }
 }

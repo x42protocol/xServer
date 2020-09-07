@@ -8,7 +8,10 @@ namespace x42.Feature.Database
     /// </summary>
     public interface IDataStore
     {
-        ServerData GetSelfServer();
+        int GetIntFromDictionary(string key);
+        long GetLongFromDictionary(string key);
+        string GetStringFromDictionary(string key);
+        bool SetDictionaryValue(string key, object value);
         int GetProfileReservationCountSearch(string name, string keyAddress);
         int GetProfileReservationCountByName(string name);
         int GetProfileReservationCountByKeyAddress(string keyAddress);

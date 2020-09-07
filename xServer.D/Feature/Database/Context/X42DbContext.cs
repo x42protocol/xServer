@@ -6,7 +6,7 @@ namespace x42.Feature.Database.Context
     class X42DbContext : DbContext
     {
         public virtual DbSet<ServerNodeData> ServerNodes { get; set; }
-        public virtual DbSet<ServerData> Servers { get; set; }
+        public virtual DbSet<DictionaryData> DictionaryItems { get; set; }
         public virtual DbSet<ProfileData> Profiles { get; set; }
         public virtual DbSet<ProfileReservationData> ProfileReservations { get; set; }
         public virtual DbSet<PriceLockData> PriceLocks { get; set; }
@@ -26,8 +26,8 @@ namespace x42.Feature.Database.Context
                 .HasIndex(p => new { p.ProfileName })
                 .IsUnique();
 
-            builder.Entity<ServerData>()
-                .HasIndex(p => new { p.ProfileName })
+            builder.Entity<DictionaryData>()
+                .HasIndex(d => new { d.Key })
                 .IsUnique();
         }
 

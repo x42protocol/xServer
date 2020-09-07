@@ -21,6 +21,8 @@ namespace x42.Feature.Database
 
         public bool DatabaseConnected { get; set; } = false;
 
+        public Dictionary xServerDictionary;
+
         public DataStore(
             ILoggerFactory loggerFactory,
             DatabaseSettings databaseSettings
@@ -28,20 +30,27 @@ namespace x42.Feature.Database
         {
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.databaseSettings = databaseSettings;
+            xServerDictionary = new Dictionary(loggerFactory, databaseSettings);
         }
 
-        public ServerData GetSelfServer()
+        public int GetIntFromDictionary(string key)
         {
-            ServerData result = null;
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-            {
-                var selfServer = dbContext.Servers.FirstOrDefault();
-                if (selfServer != null)
-                {
-                    return selfServer;
-                }
-            }
-            return result;
+            return xServerDictionary.Get<int>(key);
+        }
+
+        public long GetLongFromDictionary(string key)
+        {
+            return xServerDictionary.Get<long>(key);
+        }
+
+        public string GetStringFromDictionary(string key)
+        {
+            return xServerDictionary.Get<string>(key);
+        }
+
+        public bool SetDictionaryValue(string key, object value)
+        {
+            return xServerDictionary.Set(key, value);
         }
 
         public int GetProfileReservationCountSearch(string name, string keyAddress)

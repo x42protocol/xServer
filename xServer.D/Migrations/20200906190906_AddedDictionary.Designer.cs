@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using x42.Feature.Database.Context;
@@ -9,9 +10,10 @@ using x42.Feature.Database.Context;
 namespace x42.Migrations
 {
     [DbContext(typeof(X42DbContext))]
-    partial class X42DbContextModelSnapshot : ModelSnapshot
+    [Migration("20200906190906_AddedDictionary")]
+    partial class AddedDictionary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

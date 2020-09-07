@@ -189,15 +189,7 @@ namespace x42.Feature.Network
 
         public void SetProfileHeightOnSelf(int height)
         {
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-            {
-                var selfServer = dbContext.Servers.FirstOrDefault();
-                if (selfServer != null)
-                {
-                    selfServer.ProfileHeight = height;
-                    dbContext.SaveChanges();
-                }
-            }
+            database.dataStore.SetDictionaryValue("ProfileHeight", height);
         }
 
         public async Task<bool> VerifySenderPriceLockSignature(string address, string priceLockId, string signature)
@@ -706,11 +698,9 @@ namespace x42.Feature.Network
 
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                IQueryable<ServerData> server = dbContext.Servers;
-                if (server.Count() > 0)
+                var profileName = database.dataStore.GetStringFromDictionary("ProfileName");
+                if (!string.IsNullOrEmpty(profileName))
                 {
-                    string profileName = server.First().ProfileName;
-
                     IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == profileName && s.Active);
                     if (serverNode.Count() > 0)
                     {
@@ -729,11 +719,9 @@ namespace x42.Feature.Network
             ServerNodeData result = new ServerNodeData();
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
-                IQueryable<ServerData> server = dbContext.Servers;
-                if (server.Count() > 0)
+                var profileName = database.dataStore.GetStringFromDictionary("ProfileName");
+                if (!string.IsNullOrEmpty(profileName))
                 {
-                    string profileName = server.First().ProfileName;
-
                     IQueryable<ServerNodeData> serverNode = dbContext.ServerNodes.Where(s => s.ProfileName == profileName && s.Active);
                     if (serverNode.Count() > 0)
                     {

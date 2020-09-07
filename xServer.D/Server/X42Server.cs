@@ -64,7 +64,7 @@ namespace x42.Server
             this.database = database;
             this.databaseSettings = databaseSettings;
 
-            setupServer = new SetupServer(databaseSettings.ConnectionString);
+            setupServer = new SetupServer(databaseSettings.ConnectionString, database);
             serverFunctions = new ServerFunctions(databaseSettings.ConnectionString);
             profileFunctions = new ProfileFunctions(databaseSettings.ConnectionString);
 
@@ -341,7 +341,7 @@ namespace x42.Server
                     else
                     {
                         result = signAddress;
-                        setupServer.UpdateServerProfile(profile.Name);
+                        setupServer.UpdateServerProfileName(profile.Name);
                     }
                 }
                 else

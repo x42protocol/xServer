@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace x42.Feature.Database.Tables
 {
     [Table("server")]
-    public class ServerData
+    public class ServerDataaazzz
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
