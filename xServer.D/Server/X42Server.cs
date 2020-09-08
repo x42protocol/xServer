@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using x42.Properties;
 using x42.Controllers.Requests;
 using x42.Controllers.Results;
+using static x42.Server.RuntimeStats;
 
 namespace x42.Server
 {
@@ -309,7 +310,7 @@ namespace x42.Server
             periodicLogLoop = AsyncLoopFactory.Run("PeriodicChecks", cancellation =>
             {
                 var serverSetupResult = GetServerSetupStatus();
-                if (Stats.State == 1)
+                if (Stats.State == (int)RuntimeState.Started)
                 {
                     // Only update tier level when running.
                     Stats.UpdateTierLevel(serverSetupResult.TierLevel);

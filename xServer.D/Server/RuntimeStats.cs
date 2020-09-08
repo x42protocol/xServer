@@ -17,7 +17,7 @@ namespace x42.Server
         private readonly object LOCK_PUBLIC_REQUEST = new object();
         private long _publicRequestCount;
 
-        private enum state
+        public enum RuntimeState
         {
             Started = 1,
             Stopped = 2
@@ -27,7 +27,7 @@ namespace x42.Server
         {
             _timeStart = DateTime.Now;
             _tier = Tier.TierLevel.Seed;
-            _state = (int)state.Stopped;
+            _state = (int)RuntimeState.Stopped;
         }
 
         public void Reset(bool start)
@@ -37,11 +37,11 @@ namespace x42.Server
             {
                 if (start)
                 {
-                    _state = (int)state.Started;
+                    _state = (int)RuntimeState.Started;
                 }
                 else
                 {
-                    _state = (int)state.Stopped;
+                    _state = (int)RuntimeState.Stopped;
                 }
             }
             lock (LOCK_PUBLIC_REQUEST)
