@@ -395,9 +395,9 @@ namespace x42.Server
         }
 
         /// <inheritdoc />
-        public List<ServerRegisterRequest> GetAllActiveXServers()
+        public List<ServerRegisterResult> GetActiveXServers(int fromId)
         {
-            return serverFunctions.GetAllActiveXServers();
+            return serverFunctions.GetActiveXServers(fromId);
         }
 
         public string GetMyFeeAddress()

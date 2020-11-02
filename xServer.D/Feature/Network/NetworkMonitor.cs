@@ -435,59 +435,78 @@ namespace x42.Feature.Network
                     foreach (ServerNodeData server in serverNodes)
                     {
                         bool foundSelf = false;
+                        bool xServerSyncComplete = false;
+                        long lastId = 0;
                         try
                         {
                             string xServerURL = networkFeatures.GetServerUrl(server.NetworkProtocol, server.NetworkAddress, server.NetworkPort);
-                            var client = new RestClient(xServerURL);
-                            var activeServerCountRequest = new RestRequest("/getactivecount/", Method.GET);
-                            var topXServerResult = await client.ExecuteAsync<CountResult>(activeServerCountRequest, cancellationToken).ConfigureAwait(false);
-                            if (topXServerResult.StatusCode == HttpStatusCode.OK)
+                            while (!xServerSyncComplete)
                             {
-                                var remoteCountResult = topXServerResult.Data;
-                                if (remoteCountResult.Count > localActiveCount) // TODO: Need a better way to do this, both servers can have the same count with diffrent set of active servers, perhaps a hash of all of the active server signatures.
+                                try
                                 {
-                                    var allActiveXServersRequest = new RestRequest("/getallactivexservers/", Method.GET);
-                                    var allActiveXServersResult = await client.ExecuteAsync<List<ServerRegisterRequest>>(allActiveXServersRequest, cancellationToken).ConfigureAwait(false);
+                                    var client = new RestClient(xServerURL);
+                                    var allActiveXServersRequest = new RestRequest("/getactivexservers/", Method.GET);
+                                    allActiveXServersRequest.AddParameter("fromId", lastId);
+                                    var allActiveXServersResult = await client.ExecuteAsync<List<ServerRegisterResult>>(allActiveXServersRequest, cancellationToken).ConfigureAwait(false);
                                     if (allActiveXServersResult.StatusCode == HttpStatusCode.OK)
                                     {
                                         var activeXServersList = allActiveXServersResult.Data;
-                                        foreach (var serverResult in activeXServersList)
+                                        if (activeXServersList.Count() == 0)
                                         {
-                                            if (serverResult.ProfileName == selfProfile)
-                                            {
-                                                foundSelf = true;
-                                            }
-                                            var registeredServer = serverNodes.Where(s => s.Signature == serverResult.Signature).FirstOrDefault();
-                                            if (registeredServer == null)
-                                            {
-                                                var newServer = new ServerNodeData()
-                                                {
-                                                    ProfileName = serverResult.ProfileName,
-                                                    NetworkAddress = serverResult.NetworkAddress,
-                                                    NetworkPort = serverResult.NetworkPort,
-                                                    NetworkProtocol = serverResult.NetworkProtocol,
-                                                    Signature = serverResult.Signature,
-                                                    Tier = serverResult.Tier,
-                                                    FeeAddress = serverResult.FeeAddress,
-                                                    SignAddress = serverResult.SignAddress,
-                                                    KeyAddress = serverResult.KeyAddress,
-                                                    Active = true,
-                                                    DateAdded = DateTime.UtcNow,
-                                                    LastSeen = DateTime.UtcNow,
-                                                    Priority = 0,
-                                                    Relayed = true
-                                                };
-
-                                                // Local Registration of new nodes we don't know about.
-                                                await networkFeatures.Register(newServer);
-                                            }
+                                            xServerSyncComplete = true;
                                         }
-                                        if (!foundSelf)
+                                        else
                                         {
-                                            result.Add(xServerURL);
+                                            foreach (var serverResult in activeXServersList)
+                                            {
+                                                if (serverResult.Id > lastId)
+                                                {
+                                                    lastId = serverResult.Id;
+                                                }
+                                                if (serverResult.ProfileName == selfProfile)
+                                                {
+                                                    foundSelf = true;
+                                                }
+                                                var registeredServer = serverNodes.Where(s => s.Signature == serverResult.Signature).FirstOrDefault();
+                                                if (registeredServer == null)
+                                                {
+                                                    var newServer = new ServerNodeData()
+                                                    {
+                                                        ProfileName = serverResult.ProfileName,
+                                                        NetworkAddress = serverResult.NetworkAddress,
+                                                        NetworkPort = serverResult.NetworkPort,
+                                                        NetworkProtocol = serverResult.NetworkProtocol,
+                                                        Signature = serverResult.Signature,
+                                                        Tier = serverResult.Tier,
+                                                        FeeAddress = serverResult.FeeAddress,
+                                                        SignAddress = serverResult.SignAddress,
+                                                        KeyAddress = serverResult.KeyAddress,
+                                                        Active = true,
+                                                        DateAdded = DateTime.UtcNow,
+                                                        LastSeen = DateTime.UtcNow,
+                                                        Priority = 0,
+                                                        Relayed = true
+                                                    };
+
+                                                    // Local Registration of new nodes we don't know about.
+                                                    await networkFeatures.Register(newServer);
+                                                }
+                                            }
                                         }
                                     }
+                                    else
+                                    {
+                                        xServerSyncComplete = true;
+                                    }
                                 }
+                                catch (Exception ex)
+                                {
+                                    logger.LogDebug($"Server failed to request during reco", ex);
+                                }
+                            }
+                            if (!foundSelf)
+                            {
+                                result.Add(xServerURL);
                             }
                         }
                         catch (Exception ex)

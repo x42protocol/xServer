@@ -110,15 +110,15 @@ namespace x42.Controllers.Public
         }
 
         /// <summary>
-        ///     Returns the active xServers.
+        ///     Returns the active xServers from Id.
         /// </summary>
         /// <returns>A JSON object containing a list of active xServers.</returns>
         [HttpGet]
-        [Route("getallactivexservers")]
-        public IActionResult GetAllActiveXServers()
+        [Route("getactivexservers")]
+        public IActionResult GetActiveXServers(int fromId)
         {
             xServer.Stats.IncrementPublicRequest();
-            var allServers = xServer.GetAllActiveXServers();
+            var allServers = xServer.GetActiveXServers(fromId);
             return Json(allServers);
         }
 

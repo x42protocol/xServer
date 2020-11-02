@@ -91,12 +91,6 @@ namespace x42.Server
         int GetActiveServerCount();
 
         /// <summary>
-        ///     Return all active xServers available
-        /// </summary>
-        /// <returns>Will return all of active servers.</returns>
-        List<ServerRegisterRequest> GetAllActiveXServers();
-
-        /// <summary>
         ///     Get the nodes fee address.
         /// </summary>
         /// <returns>Will return a the fee address as a string</returns>
