@@ -31,8 +31,8 @@ namespace x42.Feature.Network
         /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
         private readonly IxServerLifetime serverLifetime;
 
-        /// <summary>Loop in which the node attempts to maintain a connection with the x42 network.</summary>
-        private IAsyncLoop networkMonitorLoop;
+        /// <summary>The status of the x42 network startup.</summary>
+        public StartupStatus NetworkStartupStatus;
 
         /// <summary>Factory for creating background async loop tasks.</summary>
         private readonly IAsyncLoopFactory asyncLoopFactory;
@@ -67,11 +67,15 @@ namespace x42.Feature.Network
             this.databaseSettings = databaseSettings;
             this.networkFeatures = networkFeatures;
             this.network = network;
+
+            NetworkStartupStatus = StartupStatus.NotStarted;
         }
 
         public void Start()
         {
             this.networkCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { serverLifetime.ApplicationStopping });
+
+            Startup().ConfigureAwait(false);
 
             asyncLoopFactory.Run("NetworkManager.NetworkWorker", async token =>
             {
@@ -110,13 +114,13 @@ namespace x42.Feature.Network
             repeatEvery: TimeSpan.FromSeconds(this.relaySleepSeconds),
             startAfter: TimeSpans.Second);
 
-            asyncLoopFactory.Run("NetworkManager.Reconciliation", async token =>
+            asyncLoopFactory.Run("NetworkManager.xServerReconciliation", async token =>
             {
                 try
                 {
                     if (networkFeatures.IsServerReady())
                     {
-                        await RecoServiceAsync(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                        await ReconcilexServersAsync(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -152,12 +156,58 @@ namespace x42.Feature.Network
         {
             try
             {
-                await CheckActiveServersAsync().ConfigureAwait(false);
+                await CheckActiveServersAsync();
             }
             catch (Exception ex)
             {
                 logger.LogDebug($"Error in UpdateNetworkHealth", ex);
             }
+        }
+
+        public async Task Startup()
+        {
+            NetworkStartupStatus = StartupStatus.NodeAndDB;
+            while (!networkFeatures.IsServerConnected())
+            {
+                Thread.Sleep(5000);
+            }
+
+            NetworkStartupStatus = StartupStatus.IBD;
+            var blockchainInfo = await networkFeatures.GetBlockchainInfo();
+            while (blockchainInfo.initialblockdownload)
+            {
+                Thread.Sleep(5000);
+                blockchainInfo = await networkFeatures.GetBlockchainInfo();
+            }
+
+            NetworkStartupStatus = StartupStatus.AddressIndexer;
+            blockchainInfo = await networkFeatures.GetBlockchainInfo();
+            var addressIndexerTip = await networkFeatures.GetAddressIndexerTip();
+            while (blockchainInfo.blocks != addressIndexerTip.tipHeight)
+            {
+                Thread.Sleep(5000);
+                addressIndexerTip = await networkFeatures.GetAddressIndexerTip();
+                blockchainInfo = await networkFeatures.GetBlockchainInfo();
+            }
+
+            NetworkStartupStatus = StartupStatus.XServer;
+            int tier2Count = 0;
+            int tier3Count = 0;
+            while (tier2Count == 0 || tier3Count == 0)
+            {
+                var xServers = await networkFeatures.GetXServerStats();
+                tier2Count = xServers.Nodes.Where(n => n.Tier == (int)TierLevel.Two).Count();
+                tier3Count = xServers.Nodes.Where(n => n.Tier == (int)TierLevel.Two).Count();
+                Thread.Sleep(5000);
+            }
+
+            NetworkStartupStatus = StartupStatus.Profile;
+            await networkFeatures.SyncProfiles(this.networkCancellationTokenSource.Token);
+
+            NetworkStartupStatus = StartupStatus.XServer;
+            await ReconcilexServersAsync(this.networkCancellationTokenSource.Token);
+
+            NetworkStartupStatus = StartupStatus.Started;
         }
 
         /// <summary>
@@ -310,17 +360,11 @@ namespace x42.Feature.Network
             return serverNode;
         }
 
-        public async Task RecoServiceAsync(CancellationToken cancellationToken)
-        {
-            await ReconciliationAsync(cancellationToken).ConfigureAwait(false);
-        }
-
-
         /// <summary>
         ///     Reconcile with other active xServers to check for discrepancies.
         ///     This function will only add newly discovered xServers.
         /// </summary>
-        private async Task ReconciliationAsync(CancellationToken cancellationToken)
+        private async Task ReconcilexServersAsync(CancellationToken cancellationToken)
         {
             var xServerUrls = await LocateAndAddNewServers(cancellationToken);
 

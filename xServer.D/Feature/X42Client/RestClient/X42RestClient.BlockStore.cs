@@ -78,7 +78,24 @@ namespace x42.Feature.X42Client.RestClient
             }
             catch (Exception ex)
             {
-                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Block Height'!", ex);
+                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Block Height!", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the address indexer tip
+        /// </summary>
+        /// <returns></returns>
+        public async Task<GetAddressIndexerTipResponse> GetAddressIndexerTip()
+        {
+            try
+            {
+                return await base.SendGet<GetAddressIndexerTipResponse>("/api/BlockStore/addressindexertip");
+            }
+            catch (Exception ex)
+            {
+                logger.LogCritical($"An Error '{ex.Message}' Occured When Getting Address Indexer Tip!", ex);
                 throw;
             }
         }

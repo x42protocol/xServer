@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace x42.Migrations
 {
@@ -7,6 +8,18 @@ namespace x42.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "dictionary",
+                columns: table => new
+                {
+                    Key = table.Column<string>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_dictionary", x => x.Key);
+                });
+
             migrationBuilder.CreateTable(
                 name: "pricelock",
                 columns: table => new
@@ -23,7 +36,7 @@ namespace x42.Migrations
                     SignAddress = table.Column<string>(nullable: true),
                     PriceLockSignature = table.Column<string>(nullable: true),
                     PayeeSignature = table.Column<string>(nullable: true),
-                    ExpireBlock = table.Column<long>(nullable: false),
+                    ExpireBlock = table.Column<int>(nullable: false),
                     Relayed = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -41,6 +54,7 @@ namespace x42.Migrations
                     Signature = table.Column<string>(nullable: true),
                     Status = table.Column<int>(nullable: false),
                     PriceLockId = table.Column<string>(nullable: true),
+                    BlockConfirmed = table.Column<int>(nullable: false),
                     Relayed = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -59,7 +73,7 @@ namespace x42.Migrations
                     Signature = table.Column<string>(nullable: true),
                     Status = table.Column<int>(nullable: false),
                     PriceLockId = table.Column<string>(nullable: true),
-                    ReservationExpirationBlock = table.Column<long>(nullable: false),
+                    ReservationExpirationBlock = table.Column<int>(nullable: false),
                     Relayed = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -68,23 +82,12 @@ namespace x42.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "server",
-                columns: table => new
-                {
-                    ProfileName = table.Column<string>(nullable: false),
-                    SignAddress = table.Column<string>(nullable: true),
-                    DateAdded = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_server", x => x.ProfileName);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "servernode",
                 columns: table => new
                 {
-                    ProfileName = table.Column<string>(nullable: false),
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProfileName = table.Column<string>(nullable: true),
                     NetworkProtocol = table.Column<int>(nullable: false),
                     NetworkAddress = table.Column<string>(nullable: true),
                     NetworkPort = table.Column<long>(nullable: false),
@@ -101,8 +104,19 @@ namespace x42.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_servernode", x => x.ProfileName);
+                    table.PrimaryKey("PK_servernode", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_dictionary_Key",
+                table: "dictionary",
+                column: "Key",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_profile_BlockConfirmed",
+                table: "profile",
+                column: "BlockConfirmed");
 
             migrationBuilder.CreateIndex(
                 name: "IX_profile_KeyAddress",
@@ -117,9 +131,9 @@ namespace x42.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_server_ProfileName",
-                table: "server",
-                column: "ProfileName",
+                name: "IX_servernode_Id",
+                table: "servernode",
+                column: "Id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -132,6 +146,9 @@ namespace x42.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "dictionary");
+
+            migrationBuilder.DropTable(
                 name: "pricelock");
 
             migrationBuilder.DropTable(
@@ -139,9 +156,6 @@ namespace x42.Migrations
 
             migrationBuilder.DropTable(
                 name: "profilereservation");
-
-            migrationBuilder.DropTable(
-                name: "server");
 
             migrationBuilder.DropTable(
                 name: "servernode");

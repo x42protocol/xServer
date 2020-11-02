@@ -223,9 +223,9 @@ namespace x42.Feature.X42Client
             } //end of try-catch
         } //end of private async void GetStaticData()
 
-        public async Task<GetTXOutResponse> GetTXOutData(string txid, long vout)
+        public async Task<BlockchainInfoResponse> GetBlockchainInfo()
         {
-            return await restClient.GetTXOut(txid, vout.ToString());
+            return await restClient.GetBlockchainInfo();
         }
 
         public async Task<GetAddressesBalancesResponse> GetAddressBalances(string address, int minConfirmations = 1)
@@ -242,6 +242,12 @@ namespace x42.Feature.X42Client
         {
             return await restClient.GetXServerStats();
         }
+
+        public async Task<GetAddressIndexerTipResponse> GetAddressIndexerTip()
+        {
+            return await restClient.GetAddressIndexerTip();
+        }
+
 
         #region IDisposable Code
 

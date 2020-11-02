@@ -16,7 +16,7 @@ namespace x42.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.6")
+                .HasAnnotation("ProductVersion", "3.1.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("x42.Feature.Database.Tables.DictionaryData", b =>
@@ -161,8 +161,10 @@ namespace x42.Migrations
 
             modelBuilder.Entity("x42.Feature.Database.Tables.ServerNodeData", b =>
                 {
-                    b.Property<string>("ProfileName")
-                        .HasColumnType("text");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<bool>("Active")
                         .HasColumnType("boolean");
@@ -191,6 +193,9 @@ namespace x42.Migrations
                     b.Property<long>("Priority")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("ProfileName")
+                        .HasColumnType("text");
+
                     b.Property<bool>("Relayed")
                         .HasColumnType("boolean");
 
@@ -203,7 +208,10 @@ namespace x42.Migrations
                     b.Property<int>("Tier")
                         .HasColumnType("integer");
 
-                    b.HasKey("ProfileName");
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
 
                     b.HasIndex("ProfileName")
                         .IsUnique();

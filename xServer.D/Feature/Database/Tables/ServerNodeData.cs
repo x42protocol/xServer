@@ -7,7 +7,9 @@ namespace x42.Feature.Database.Tables
     [Table("servernode")]
     public class ServerNodeData
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
+        public long Id { get; set; }
         public string ProfileName { get; set; }
         public int NetworkProtocol { get; set; }
         public string NetworkAddress { get; set; }

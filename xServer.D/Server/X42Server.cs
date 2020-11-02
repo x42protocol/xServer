@@ -315,6 +315,7 @@ namespace x42.Server
                     // Only update tier level when running.
                     Stats.UpdateTierLevel(serverSetupResult.TierLevel);
                 }
+                Stats.StartupState = networkFeatures.GetStartupStatus();
                 return Task.CompletedTask;
             },
                 serverLifetime.ApplicationStopping,
@@ -325,6 +326,8 @@ namespace x42.Server
         /// <inheritdoc />
         public async Task<string> SetupServer(SetupRequest setupRequest = null)
         {
+            Guard.NotNull(setupRequest, nameof(setupRequest));
+
             string result = string.Empty;
 
             var profile = profileFunctions.GetProfileByKeyAddress(setupRequest.KeyAddress);

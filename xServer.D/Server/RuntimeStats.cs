@@ -1,5 +1,5 @@
-﻿using NBitcoin.Policy;
-using System;
+﻿using System;
+using x42.Feature.Network;
 using x42.ServerNode;
 
 namespace x42.Server
@@ -16,6 +16,8 @@ namespace x42.Server
 
         private readonly object LOCK_PUBLIC_REQUEST = new object();
         private long _publicRequestCount;
+
+        public StartupStatus StartupState { get; set; }
 
         public enum RuntimeState
         {

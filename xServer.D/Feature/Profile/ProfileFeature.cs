@@ -167,7 +167,10 @@ namespace x42.Feature.Profile
             {
                 try
                 {
-                    await SyncProfiles(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    if (networkFeatures.IsServerReady())
+                    {
+                        await SyncProfiles(this.networkCancellationTokenSource.Token).ConfigureAwait(false);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -216,7 +219,7 @@ namespace x42.Feature.Profile
                 {
                     if (Convert.ToInt64(networkFeatures.BestBlockHeight) <= profileReservation.ReservationExpirationBlock)
                     {
-                        if (!ProfileExists(profileReservation.Name, profileReservation.KeyAddress, true))
+                        if (!networkFeatures.ProfileExists(profileReservation.Name, profileReservation.KeyAddress, true))
                         {
                             await RegisterProfile(cancellationToken, profileReservation);
                         }
@@ -282,36 +285,6 @@ namespace x42.Feature.Profile
             }
         }
 
-        private bool ProfileExists(string name = "", string keyAddress = "", bool skipReservations = false)
-        {
-            int profileCount = 0;
-            if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(keyAddress))
-            {
-                if (!skipReservations)
-                {
-                    profileCount = database.dataStore.GetProfileReservationCountSearch(name, keyAddress);
-                }
-                profileCount += database.dataStore.GetProfileCountSearch(name, keyAddress);
-            }
-            else if (!string.IsNullOrEmpty(name))
-            {
-                if (!skipReservations)
-                {
-                    profileCount = database.dataStore.GetProfileReservationCountByName(name);
-                }
-                profileCount += database.dataStore.GetProfileCountByName(name);
-            }
-            else if (!string.IsNullOrEmpty(keyAddress))
-            {
-                if (!skipReservations)
-                {
-                    profileCount = database.dataStore.GetProfileReservationCountByKeyAddress(keyAddress);
-                }
-                profileCount += database.dataStore.GetProfileCountByKeyAddress(keyAddress);
-            }
-
-            return profileCount > 0;
-        }
 
         /// <summary>
         ///     Register a new profile.
@@ -320,7 +293,7 @@ namespace x42.Feature.Profile
         {
             ReserveProfileResult result = new ReserveProfileResult();
 
-            if (!ProfileExists(profileRegisterRequest.Name, profileRegisterRequest.KeyAddress))
+            if (!networkFeatures.ProfileExists(profileRegisterRequest.Name, profileRegisterRequest.KeyAddress))
             {
                 bool isProfileKeyValid = await networkFeatures.IsProfileKeyValid(profileRegisterRequest.Name, profileRegisterRequest.KeyAddress, profileRegisterRequest.ReturnAddress, profileRegisterRequest.Signature);
                 if (!isProfileKeyValid)
@@ -419,28 +392,6 @@ namespace x42.Feature.Profile
             return result;
         }
 
-        private async Task<bool> AddProfile(ProfileData profileData)
-        {
-            bool result = false;
-            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-            {
-                bool isProfileKeyValid = await networkFeatures.IsProfileKeyValid(profileData.Name, profileData.KeyAddress, profileData.ReturnAddress, profileData.Signature);
-                if (isProfileKeyValid)
-                {
-                    var newRecord = dbContext.Profiles.Add(profileData);
-                    if (newRecord.State == EntityState.Added)
-                    {
-                        var saved = dbContext.SaveChanges();
-                        if (saved > 0)
-                        {
-                            result = true;
-                        }
-                    }
-                }
-            }
-            return result;
-        }
-
         public List<ProfilesResult> GetProfiles(int fromBlock)
         {
             var result = new List<ProfilesResult>();
@@ -468,132 +419,7 @@ namespace x42.Feature.Profile
 
         public async Task SyncProfiles(CancellationToken cancellationToken)
         {
-            var profileHeight = database.dataStore.GetIntFromDictionary("ProfileHeight");
-            var t2Servers = networkFeatures.GetAllTier2ConnectionInfo();
-            foreach (var server in t2Servers)
-            {
-                int newHeight = 0;
-                var profiles = await networkFeatures.GetProfiles(cancellationToken, server, profileHeight);
-                while (profiles.Count > 0)
-                {
-                    foreach (var profile in profiles)
-                    {
-                        if (profile.BlockConfirmed > newHeight)
-                        {
-                            newHeight = profile.BlockConfirmed;
-                        }
-                        var newProfile = new ProfileData()
-                        {
-                            KeyAddress = profile.KeyAddress,
-                            Name = profile.Name,
-                            ReturnAddress = profile.ReturnAddress,
-                            Signature = profile.Signature,
-                            BlockConfirmed = profile.BlockConfirmed,
-                            PriceLockId = profile.PriceLockId,
-                            Relayed = true,
-                            Status = (int)Status.Created
-                        };
-                        if (!ProfileExists(newProfile.Name, newProfile.KeyAddress, true))
-                        {
-                            var priceLock = await networkFeatures.GetPriceLockFromT3(cancellationToken, newProfile.PriceLockId);
-                            if (priceLock != null)
-                            {
-                                var priceLockExists = AddCompletePriceLock(priceLock);
-                                if (priceLockExists)
-                                {
-                                    await AddProfile(newProfile);
-                                }
-                            }
-                        }
-                    }
-                    profiles = await networkFeatures.GetProfiles(cancellationToken, server, newHeight);
-                }
-                if (newHeight > profileHeight)
-                {
-                    networkFeatures.SetProfileHeightOnSelf(newHeight);
-                }
-            }
-        }
-
-        public bool AddCompletePriceLock(PriceLockResult priceLockResult)
-        {
-            bool result = false;
-            if (Guid.TryParse(priceLockResult.PriceLockId, out Guid validPriceLockId))
-            {
-                var priceLock = networkFeatures.GetPriceLockData(validPriceLockId);
-                if (priceLock != null)
-                {
-                    // TODO: Validate transaction ID, and amounts.
-                    if (!string.IsNullOrEmpty(priceLock?.TransactionId))
-                    {
-                        return true;
-                    }
-                    else if (!string.IsNullOrEmpty(priceLockResult?.TransactionId))
-                    {
-                        using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-                        {
-                            var priceLockRecord = dbContext.PriceLocks.Where(p => p.PriceLockId == validPriceLockId).FirstOrDefault();
-                            priceLockRecord.DestinationAddress = priceLockResult.DestinationAddress;
-                            priceLockRecord.DestinationAmount = priceLockResult.DestinationAmount;
-                            priceLockRecord.ExpireBlock = priceLockResult.ExpireBlock;
-                            priceLockRecord.FeeAddress = priceLockResult.FeeAddress;
-                            priceLockRecord.FeeAmount = priceLockResult.FeeAmount;
-                            priceLockRecord.PayeeSignature = priceLockResult.PayeeSignature;
-                            priceLockRecord.PriceLockId = validPriceLockId;
-                            priceLockRecord.PriceLockSignature = priceLockResult.PriceLockSignature;
-                            priceLockRecord.Relayed = true;
-                            priceLockRecord.RequestAmount = priceLockResult.RequestAmount;
-                            priceLockRecord.RequestAmountPair = priceLockResult.RequestAmountPair;
-                            priceLockRecord.SignAddress = priceLockResult.SignAddress;
-                            priceLockRecord.Status = priceLockResult.Status;
-                            priceLockRecord.TransactionId = priceLockResult.TransactionId;
-
-                            var saved = dbContext.SaveChanges();
-                            if (saved > 0)
-                            {
-                                result = true;
-                            }
-                        }
-                    }
-
-                }
-                else
-                {
-                    var newPriceLock = new PriceLockData()
-                    {
-                        DestinationAddress = priceLockResult.DestinationAddress,
-                        DestinationAmount = priceLockResult.DestinationAmount,
-                        ExpireBlock = priceLockResult.ExpireBlock,
-                        FeeAddress = priceLockResult.FeeAddress,
-                        FeeAmount = priceLockResult.FeeAmount,
-                        PayeeSignature = priceLockResult.PayeeSignature,
-                        PriceLockId = validPriceLockId,
-                        PriceLockSignature = priceLockResult.PriceLockSignature,
-                        Relayed = true,
-                        RequestAmount = priceLockResult.RequestAmount,
-                        RequestAmountPair = priceLockResult.RequestAmountPair,
-                        SignAddress = priceLockResult.SignAddress,
-                        Status = priceLockResult.Status,
-                        TransactionId = priceLockResult.TransactionId
-                    };
-                    using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
-                    {
-                        var newPriceLockRecord = dbContext.PriceLocks.Add(newPriceLock);
-                        if (newPriceLockRecord.State == EntityState.Added)
-                        {
-                            var saved = dbContext.SaveChanges();
-                            if (saved > 0)
-                            {
-                                if (!string.IsNullOrEmpty(newPriceLock?.TransactionId)) // TODO: Validate transaction ID, and amounts.
-                                {
-                                    result = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return result;
+            await networkFeatures.SyncProfiles(cancellationToken);
         }
 
         /// <summary>

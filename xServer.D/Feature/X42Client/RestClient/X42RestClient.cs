@@ -41,6 +41,29 @@ namespace x42.Feature.X42Client.RestClient
         }
 
         /// <summary>
+        ///     Gets the Blockchain Information For The Target Node
+        /// </summary>
+        public async Task<BlockchainInfoResponse> GetBlockchainInfo()
+        {
+            try
+            {
+                BlockchainInfoResponse response = await base.SendGet<BlockchainInfoResponse>("api/Node/getblockchaininfo");
+
+                Guard.Null(response, nameof(response), "'api/Node/getblockchaininfo' API Response Was Null!");
+
+                logger.LogDebug("Got Node Blockchain Response!");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug($"An Error '{ex.Message}' Occured When Getting The Node Blockchain info!", ex);
+
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Gets an unspent transaction
         /// </summary>
         /// <param name="txid">The transaction id</param>

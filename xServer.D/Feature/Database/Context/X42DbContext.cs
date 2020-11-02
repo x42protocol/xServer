@@ -23,7 +23,10 @@ namespace x42.Feature.Database.Context
                 .HasIndex(p => new { p.BlockConfirmed });
 
             builder.Entity<ServerNodeData>()
-                .HasIndex(p => new { p.ProfileName })
+                .HasIndex(sn => new { sn.Id })
+                .IsUnique();
+            builder.Entity<ServerNodeData>()
+                .HasIndex(sn => new { sn.ProfileName })
                 .IsUnique();
 
             builder.Entity<DictionaryData>()
