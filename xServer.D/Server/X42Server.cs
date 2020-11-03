@@ -310,7 +310,7 @@ namespace x42.Server
             periodicLogLoop = AsyncLoopFactory.Run("PeriodicChecks", cancellation =>
             {
                 var serverSetupResult = GetServerSetupStatus();
-                if (Stats.State == (int)RuntimeState.Started)
+                if (Stats.State == (int)RuntimeState.Started && networkFeatures.IsServerReady())
                 {
                     // Only update tier level when running.
                     Stats.UpdateTierLevel(serverSetupResult.TierLevel);
