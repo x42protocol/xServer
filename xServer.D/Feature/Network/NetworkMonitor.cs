@@ -166,8 +166,14 @@ namespace x42.Feature.Network
 
         public async Task Startup()
         {
-            NetworkStartupStatus = StartupStatus.NodeAndDB;
-            while (!networkFeatures.IsServerConnected())
+            NetworkStartupStatus = StartupStatus.NodeConnection;
+            while (!networkFeatures.IsNodeStatusOnline())
+            {
+                Thread.Sleep(5000);
+            }
+
+            NetworkStartupStatus = StartupStatus.Database;
+            while (!networkFeatures.IsDatabaseConnected())
             {
                 Thread.Sleep(5000);
             }

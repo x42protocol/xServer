@@ -762,7 +762,17 @@ namespace x42.Feature.Network
 
         public bool IsServerConnected()
         {
-            return x42FullNode.Status == ConnectionStatus.Online && database.DatabaseConnected;
+            return IsNodeStatusOnline() && IsDatabaseConnected();
+        }
+
+        public bool IsNodeStatusOnline()
+        {
+            return x42FullNode.Status == ConnectionStatus.Online;
+        }
+
+        public bool IsDatabaseConnected()
+        {
+            return database.DatabaseConnected;
         }
 
         public bool IsServerReady()
