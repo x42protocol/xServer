@@ -9,7 +9,7 @@
     xServer as the foundation of the x42 distributed network and hosting distributed applications.
   </p>
   <p align="center">
-      <a href="https://github.com/x42protocol/xServer/actions"><img src="https://github.com/x42protocol/xServer/workflows/Build/badge.svg" /></a>
+      <a href="https://github.com/x42protocol/xServer/actions"><img src="https://github.com/x42protocol/xServer/workflows/Build/badge.svg?branch=master" /></a>
   </p>
 </p>
 
