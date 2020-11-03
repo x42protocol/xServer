@@ -292,7 +292,7 @@ namespace x42.Feature.Network
                 var xServerPingResult = await client.ExecuteAsync<PingResult>(xServersPingRequest).ConfigureAwait(false);
                 if (xServerPingResult.StatusCode == HttpStatusCode.OK)
                 {
-                    ulong minimumBlockHeight = xServerPingResult.Data.BestBlockHeight + network.BlockGracePeriod;
+                    ulong minimumBlockHeight = (xServerPingResult.Data.BestBlockHeight ?? 0) + network.BlockGracePeriod;
                     if (minimumBlockHeight >= BestBlockHeight)
                     {
                         result = true;

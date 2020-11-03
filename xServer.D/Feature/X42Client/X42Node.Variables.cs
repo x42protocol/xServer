@@ -22,6 +22,11 @@ namespace x42.Feature.X42Client
         public uint BlockTIP { private set; get; }
 
         /// <summary>
+        ///     Current Block Height of The Nodes Address Indexer
+        /// </summary>
+        public uint? AddressIndexterTip { private set; get; }
+
+        /// <summary>
         ///     Peers The Node Is Connected To
         /// </summary>
         public List<Peer> Peers { private set; get; } = new List<Peer>();

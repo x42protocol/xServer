@@ -110,6 +110,10 @@ namespace x42.Feature.X42Client
                     //update current height
                     BlockTIP = statusData.consensusHeight;
 
+                    //update address indexer height
+                    var addressIndexerStats = await GetAddressIndexerTip();
+                    AddressIndexterTip = addressIndexerStats.tipHeight;
+
                     DataDirectory = statusData.dataDirectoryPath;
 
                     NodeVersion = statusData.version;

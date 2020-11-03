@@ -14,7 +14,7 @@
         public string Version { get; set; }
 
         /// <summary>The nodes best block height.</summary>
-        public uint BestBlockHeight { get; set; }
+        public uint? BestBlockHeight { get; set; }
 
         /// <summary>The node's tier level.</summary>
         public int Tier { get; set; }

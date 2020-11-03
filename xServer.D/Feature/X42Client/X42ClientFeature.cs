@@ -32,6 +32,7 @@ namespace x42.Feature.X42Client
 
         public ConnectionStatus Status => x42Client.Status;
         public uint BlockTIP => x42Client.BlockTIP;
+        public uint? AddressIndexterTip => x42Client.AddressIndexterTip;
 
         public X42ClientFeature(
             ServerNodeBase network,

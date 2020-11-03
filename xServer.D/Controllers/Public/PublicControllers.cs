@@ -46,7 +46,7 @@ namespace x42.Controllers.Public
             PingResult pingResult = new PingResult()
             {
                 Version = xServer.Version.ToString(),
-                BestBlockHeight = xServer.BestBlockHeight,
+                BestBlockHeight = xServer.AddressIndexerHeight,
                 Tier = (int)xServer.Stats.TierLevel
             };
             return Json(pingResult);

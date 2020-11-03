@@ -152,6 +152,8 @@ namespace x42.Server
 
         public uint BestBlockHeight { get => x42FullNode.BlockTIP; }
 
+        public uint? AddressIndexerHeight { get => x42FullNode.AddressIndexterTip; }
+
         public async Task<RegisterResult> Register(ServerNodeData serverNode)
         {
             return await networkFeatures.Register(serverNode);
