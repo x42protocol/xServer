@@ -231,6 +231,10 @@ namespace x42.Feature.Profile
                         {
                             dbContext.ProfileReservations.Remove(profileReservation);
                         }
+                        else if (networkFeatures.ProfileExists(profileReservation.Name, profileReservation.KeyAddress, true))
+                        {
+                            dbContext.ProfileReservations.Remove(profileReservation);
+                        }
                     }
                 }
                 dbContext.SaveChanges();
