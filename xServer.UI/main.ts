@@ -69,7 +69,8 @@ function createWindow() {
     minHeight: 800,
     title: "x42 Server",
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      enableRemoteModule: true
     }
   });
 
