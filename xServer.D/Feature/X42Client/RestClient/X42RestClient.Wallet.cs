@@ -614,7 +614,7 @@ namespace x42.Feature.X42Client.RestClient
             {
                 Guard.Null(txid, nameof(txid), "Unable to get raw tx, Provided transaction id Is NULL/Empty!");
 
-                StringBuilder queryURL = new StringBuilder($"api/Node/getrawtransaction?txid={txid}&verbose={verbose}");
+                StringBuilder queryURL = new StringBuilder($"api/Node/getrawtransaction?trxid={txid}&verbose={verbose}");
 
                 RawTransactionResponse response = await base.SendGet<RawTransactionResponse>(queryURL.ToString());
 
