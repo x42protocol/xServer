@@ -196,7 +196,7 @@ namespace x42.Feature.Network
                 blockchainInfo = await networkFeatures.GetBlockchainInfo();
             }
 
-            NetworkStartupStatus = StartupStatus.XServer;
+            NetworkStartupStatus = StartupStatus.XServerConnection;
             int tier2Count = 0;
             int tier3Count = 0;
             while (tier2Count == 0 || tier3Count == 0)

@@ -8,8 +8,9 @@
         Database = 2,
         IBD = 3,
         AddressIndexer = 4,
-        Profile = 5,
-        XServer = 6,
+        XServerConnection = 5,
+        Profile = 6,
+        XServer = 7,
         Started = 100
     }
 }
