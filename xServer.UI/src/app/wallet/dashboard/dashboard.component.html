@@ -101,6 +101,7 @@
           <div *ngIf="serverStatus.stats.startupState > 7"><i class="fa fa-object-group" style="color:green;"></i> xServers Synced</div>
         </section>
         <section *ngIf="serverStatus && serverStatus.stats.startupState == 100">
+          <div *ngIf="(serverStatus.stats.blockHeight - serverStatus.stats.addressIndexerHeight) > 6"><i class="fa fa-exclamation-triangle fa-3x" style="color:red;"></i> Address Indexer has stalled!</div>
           <section *ngIf="serverSetupStatus < 3">
             <button type="button" pButton (click)="onOpenServerSetup()" label="Open Server Setup" class="ui-button-success btn-block" icon="pi pi-play" style="margin-right: 10px;"></button>
           </section>

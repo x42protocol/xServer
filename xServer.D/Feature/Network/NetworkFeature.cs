@@ -87,6 +87,7 @@ namespace x42.Feature.Network
         }
 
         public uint BestBlockHeight { get => x42FullNode.BlockTIP; }
+        public uint? AddressIndexerHeight { get => x42FullNode.AddressIndexterTip; }
 
         /// <summary>
         ///     Prints command-line help.

@@ -19,6 +19,10 @@ namespace x42.Server
 
         public StartupStatus StartupState { get; set; }
 
+        public long BlockHeight { get; set; }
+
+        public long AddressIndexerHeight { get; set; }
+
         public enum RuntimeState
         {
             Started = 1,

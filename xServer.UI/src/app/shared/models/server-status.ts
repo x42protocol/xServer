@@ -1,5 +1,7 @@
 export class ServerStatus {
-  constructor(version: string, processId: number, connectedServers: [Peer], enabledFeatures: [string], dataDirectoryPath: string, runningtime: string, protocolVersion: number, state: string, databaseConnected: boolean) {
+  constructor(name: string, version: string, processId: number, connectedServers: [Peer], enabledFeatures: [string], dataDirectoryPath: string, runningtime: string, protocolVersion: number, state: string, databaseConnected: boolean, stats: Stats, feeAddress?: any) {
+    this.name = name;
+    this.feeAddress = feeAddress;
     this.version = version;
     this.processId = processId;
     this.connectedServers = connectedServers;
@@ -9,8 +11,11 @@ export class ServerStatus {
     this.protocolVersion = protocolVersion;
     this.state = state;
     this.databaseConnected = databaseConnected;
+    this.stats = stats;
   }
-  
+
+  public name: string;
+  public feeAddress?: any;
   public version: string;
   public processId: number;
   public connectedServers: [Peer];
@@ -20,6 +25,7 @@ export class ServerStatus {
   public protocolVersion: number;
   public state: string;
   public databaseConnected: boolean;
+  public stats: Stats;
 }
 
 class Peer {
@@ -32,4 +38,14 @@ class Peer {
   public version: string;
   public remoteSocketEndpoint: string;
   public tipHeight: number;
+}
+
+class Stats {
+  startupState: number;
+  blockHeight: number;
+  addressIndexerHeight: number;
+  publicRequestCount: number;
+  sessionRunTimeSeconds: number;
+  state: number;
+  tierLevel: number;
 }
