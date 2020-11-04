@@ -312,12 +312,25 @@ namespace x42.Server
             periodicLogLoop = AsyncLoopFactory.Run("PeriodicChecks", cancellation =>
             {
                 var serverSetupResult = GetServerSetupStatus();
+
+                Stats.StartupState = networkFeatures.GetStartupStatus();
+                Stats.BlockHeight = networkFeatures.BestBlockHeight;
+                Stats.AddressIndexerHeight = networkFeatures.AddressIndexerHeight ?? 0;
+
+                // Only update tier level when running.
                 if (Stats.State == (int)RuntimeState.Started && networkFeatures.IsServerReady())
                 {
-                    // Only update tier level when running.
-                    Stats.UpdateTierLevel(serverSetupResult.TierLevel);
+                    var blocksBehind = Stats.BlockHeight - Stats.AddressIndexerHeight;
+                    if (blocksBehind > 6) // TODO: Need to use the BlockGracePeriod instead of setting this manually to 6
+                    {
+                        Stats.UpdateTierLevel(Tier.TierLevel.Seed);
+                    }
+                    else
+                    {
+                        Stats.UpdateTierLevel(serverSetupResult.TierLevel);
+                    }
                 }
-                Stats.StartupState = networkFeatures.GetStartupStatus();
+
                 return Task.CompletedTask;
             },
                 serverLifetime.ApplicationStopping,
