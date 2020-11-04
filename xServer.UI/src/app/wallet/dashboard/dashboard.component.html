@@ -128,8 +128,8 @@
             </div>
           </form>
         </div>
-        <p-footer>
-          <section *ngIf="serverSetupStatus == 3 && stakingEnabled">
+        <p-footer *ngIf="serverSetupStatus == 3 && stakingEnabled">
+          <section>
             <button type="button" class="btn-block" [disabled]="isStopping" (click)="stopStaking()" label="Stop xServer" pButton></button>
           </section>
         </p-footer>
