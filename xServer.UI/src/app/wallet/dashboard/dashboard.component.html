@@ -76,58 +76,84 @@
             </div>
           </div>
         </p-header>
-        <section *ngIf="serverSetupStatus < 3">
-          <button type="button" pButton (click)="onOpenServerSetup()" label="Open Server Setup" class="ui-button-success btn-block" icon="pi pi-play" style="margin-right: 10px;"></button>
+        <section *ngIf="serverStatus && serverStatus.stats.startupState < 100">
+          <div class="mt-1 h5">Starting Up...</div>
+
+          <div *ngIf="serverStatus.stats.startupState == 1"><i class="fa fa-plug"></i> Connecting to node <i class="fa fa-spinner fa-pulse fa-fw"></i></div>
+          <div *ngIf="serverStatus.stats.startupState > 1"><i class="fa fa-plug" style="color:green;"></i> Node connected</div>
+
+          <div *ngIf="serverStatus.stats.startupState == 2"><i class="fa fa-database"></i> Database Connecting <i class="fa fa-spinner fa-pulse fa-fw"></i></div>
+          <div *ngIf="serverStatus.stats.startupState > 2"><i class="fa fa-database" style="color:green;"></i> Database Connected</div>
+
+          <div *ngIf="serverStatus.stats.startupState == 3"><i class="fa fa-th"></i> Initial Blocks Downloading <i class="fa fa-spinner fa-pulse fa-fw"></i></div>
+          <div *ngIf="serverStatus.stats.startupState > 3"><i class="fa fa-th" style="color:green;"></i> Initial Blocks Downloaded</div>
+
+          <div *ngIf="serverStatus.stats.startupState == 4"><i class="fa fa-address-book-o"></i> Address Indexer Syncing <i class="fa fa-spinner fa-pulse fa-fw"></i></div>
+          <div *ngIf="serverStatus.stats.startupState > 4"><i class="fa fa-address-book-o" style="color:green;"></i> Address Indexer Synced</div>
+
+          <div *ngIf="serverStatus.stats.startupState == 5"><i class="fa fa-server"></i> Connecting to T2 & T3 xServers <i class="fa fa-spinner fa-pulse fa-fw"></i></div>
+          <div *ngIf="serverStatus.stats.startupState > 5"><i class="fa fa-server" style="color:green;"></i> Connected to T2 & T3 xServers </div>
+
+          <div *ngIf="serverStatus.stats.startupState == 6"><i class="fa fa-users"></i> Syncing Profiles <i class="fa fa-spinner fa-pulse fa-fw"></i></div>
+          <div *ngIf="serverStatus.stats.startupState > 6"><i class="fa fa-users" style="color:green;"></i> Profiles Syncd</div>
+
+          <div *ngIf="serverStatus.stats.startupState == 7"><i class="fa fa-object-group"></i> Syncing xServers <i class="fa fa-spinner fa-pulse fa-fw"></i></div>
+          <div *ngIf="serverStatus.stats.startupState > 7"><i class="fa fa-object-group" style="color:green;"></i> xServers Synced</div>
         </section>
-        <section *ngIf="serverSetupStatus == 3 && stakingEnabled && serverStatus.stats.state == 2">
-          <ul class="list-unstyled mb-3">
-            <li>Waiting for xServer to start...</li>
-          </ul>
-        </section>
-        <section *ngIf="serverSetupStatus == 3 && serverStatus.stats.state == 1">
-          <div>
-            <div class="row">
-              <div class="col-4 text-left">
-                <p class="text-muted" style="font-weight: bold; font-size: 14px;">Fee Address</p>
+        <section *ngIf="serverStatus && serverStatus.stats.startupState == 100">
+          <section *ngIf="serverSetupStatus < 3">
+            <button type="button" pButton (click)="onOpenServerSetup()" label="Open Server Setup" class="ui-button-success btn-block" icon="pi pi-play" style="margin-right: 10px;"></button>
+          </section>
+          <section *ngIf="serverSetupStatus == 3 && stakingEnabled && serverStatus.stats.state == 2">
+            <ul class="list-unstyled mb-3">
+              <li>Waiting for xServer to start...</li>
+            </ul>
+          </section>
+          <section *ngIf="serverSetupStatus == 3 && serverStatus.stats.state == 1">
+            <div>
+              <div class="row">
+                <div class="col-4 text-left">
+                  <p class="text-muted" style="font-weight: bold; font-size: 14px;">Fee Address</p>
+                </div>
+                <div class="col-8 text-left">
+                  {{ serverStatus.feeAddress }}
+                </div>
               </div>
-              <div class="col-8 text-left">
-                {{ serverStatus.feeAddress }}
+              <div class="row">
+                <div class="col-4 text-left">
+                  <p class="text-muted" style="font-weight: bold; font-size: 14px;">Runtime</p>
+                </div>
+                <div class="col-8 text-left">
+                  {{ formatSeconds(serverStatus.stats.sessionRunTimeSeconds) }}
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-4 text-left">
-                <p class="text-muted" style="font-weight: bold; font-size: 14px;">Runtime</p>
-              </div>
-              <div class="col-8 text-left">
-                {{ formatSeconds(serverStatus.stats.sessionRunTimeSeconds) }}
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-4 text-left">
-                <p class="text-muted" style="font-weight: bold; font-size: 14px;">Public Requests</p>
-              </div>
-              <div class="col-8 text-left">
-                {{ serverStatus.stats.publicRequestCount.toLocaleString() }}
-              </div>
-            </div>
-          </div>
-        </section>
-        <div *ngIf="serverSetupStatus == 3 && (!stakingEnabled || serverStatus.stats.state != 1)">
-          <ul class="list-unstyled mb-3">
-            <li>xServer Stopped</li>
-            <li>Put your wallet passwor and click start to start the xServer.</li>
-          </ul>
-          <form class="form-inline mb-3" [formGroup]="stakingForm">
-            <div class="form-group" style="width: 100%;">
-              <div class="ui-g-12 ui-md-4" style="width: 100%;">
-                <div class="ui-inputgroup" style="width: 100%;">
-                  <input type="password" style="width: 250px;" formControlName="walletPassword" class="form-control" id="inputPassword" placeholder="Password" (keyup.enter)="startServer()" pInputText>
-                  <button pButton type="button" icon="pi pi-lock" class="ui-button-warn" label="Start xServer" (click)="startServer()" [disabled]="isStarting || !stakingForm.valid"></button>
+              <div class="row">
+                <div class="col-4 text-left">
+                  <p class="text-muted" style="font-weight: bold; font-size: 14px;">Public Requests</p>
+                </div>
+                <div class="col-8 text-left">
+                  {{ serverStatus.stats.publicRequestCount.toLocaleString() }}
                 </div>
               </div>
             </div>
-          </form>
-        </div>
+          </section>
+          <div *ngIf="serverSetupStatus == 3 && (!stakingEnabled || serverStatus.stats.state != 1)">
+            <ul class="list-unstyled mb-3">
+              <li>xServer Stopped</li>
+              <li>Put your wallet passwor and click start to start the xServer.</li>
+            </ul>
+            <form class="form-inline mb-3" [formGroup]="stakingForm">
+              <div class="form-group" style="width: 100%;">
+                <div class="ui-g-12 ui-md-4" style="width: 100%;">
+                  <div class="ui-inputgroup" style="width: 100%;">
+                    <input type="password" style="width: 250px;" formControlName="walletPassword" class="form-control" id="inputPassword" placeholder="Password" (keyup.enter)="startServer()" pInputText>
+                    <button pButton type="button" icon="pi pi-lock" class="ui-button-warn" label="Start xServer" (click)="startServer()" [disabled]="isStarting || !stakingForm.valid"></button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
         <p-footer *ngIf="serverSetupStatus == 3 && stakingEnabled">
           <section>
             <button type="button" class="btn-block" [disabled]="isStopping" (click)="stopStaking()" label="Stop xServer" pButton></button>
