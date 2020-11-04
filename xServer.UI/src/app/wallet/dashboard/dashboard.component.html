@@ -61,7 +61,7 @@
     </div>
     <div class="col-6">
       <p-panel>
-        <p-header>
+        <p-header *ngIf="serverStatus">
           <div class="ui-helper-clearfix d-flex" *ngIf="serverStatus.stats">
             <div class="mt-1 h4">
               {{ serverStatus.name }}

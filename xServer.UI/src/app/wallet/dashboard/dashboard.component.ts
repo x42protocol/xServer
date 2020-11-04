@@ -20,6 +20,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { Application } from '../../shared/models/application';
 import { ServerStartRequest } from '../../shared/models/server-start-request';
+import { ServerStatus } from '../../shared/models/server-status';
 
 @Component({
   selector: 'dashboard-component',
@@ -58,7 +59,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public hotStakingAccount: string = "coldStakingHotAddresses";
   public installedApps: Application[];
   public xServerProfileName: string;
-  public serverStatus: any;
+  public serverStatus: ServerStatus;
 
   private walletBalanceSubscription: Subscription;
   private walletHistorySubscription: Subscription;
