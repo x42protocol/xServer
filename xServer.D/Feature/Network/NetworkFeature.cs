@@ -58,6 +58,7 @@ namespace x42.Feature.Network
         private readonly DatabaseFeatures database;
         private X42Node x42Client;
         private CachedServerInfo cachedServerInfo;
+        private readonly NetworkSettings networkSettings;
 
         public NetworkFeatures(
             ServerNodeBase network,
@@ -68,7 +69,8 @@ namespace x42.Feature.Network
             IxServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory,
             X42ClientFeature x42FullNode,
-            DatabaseFeatures database
+            DatabaseFeatures database,
+            NetworkSettings networkSettings
             )
         {
             this.network = network;
@@ -80,6 +82,7 @@ namespace x42.Feature.Network
             this.x42ClientSettings = x42ClientSettings;
             this.x42FullNode = x42FullNode;
             this.database = database;
+            this.networkSettings = networkSettings;
 
             cachedServerInfo = new CachedServerInfo();
 
@@ -127,7 +130,7 @@ namespace x42.Feature.Network
         /// <inheritdoc />
         public override Task InitializeAsync()
         {
-            networkMonitor = new NetworkMonitor(logger, serverLifetime, asyncLoopFactory, databaseSettings, this, network);
+            networkMonitor = new NetworkMonitor(logger, serverLifetime, asyncLoopFactory, databaseSettings, this, network, this.networkSettings);
 
             networkMonitor.Start();
 

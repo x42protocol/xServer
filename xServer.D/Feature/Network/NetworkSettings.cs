@@ -25,12 +25,14 @@ namespace x42.Feature.Network
             logger = serverSettings.LoggerFactory.CreateLogger(typeof(NetworkSettings).FullName);
 
             TextFileConfiguration config = serverSettings.ConfigReader;
+
+            BypassTierCheck = config.GetOrDefault("bypasstiercheck", false, logger);
         }
 
         /// <summary>
-        ///     An address to use for the network.
+        ///     Weather or not to bypass the tier check on startup.
         /// </summary>
-        public string ConnectionString { get; set; }
+        public bool BypassTierCheck { get; set; }
 
         /// <summary>
         ///     Displays network help information on the console.
@@ -42,6 +44,7 @@ namespace x42.Feature.Network
             StringBuilder builder = new StringBuilder();
 
             builder.AppendLine("-connect=<string>                     servernode host.");
+            builder.AppendLine("-bypasstiercheck=<bool>               Bypass the tier check on startup.");
 
             defaults.Logger.LogInformation(builder.ToString());
         }
@@ -56,6 +59,7 @@ namespace x42.Feature.Network
             builder.AppendLine("####Network Settings####");
             builder.AppendLine("#Manually connect to servernode.");
             builder.AppendLine("#connect=<string>");
+            builder.AppendLine("#bypasstiercheck=<bool>");
         }
     }
 }

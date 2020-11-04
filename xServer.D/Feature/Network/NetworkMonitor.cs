@@ -52,13 +52,16 @@ namespace x42.Feature.Network
 
         private readonly ServerNodeBase network;
 
+        private readonly NetworkSettings networkSettings;
+
         public NetworkMonitor(
             ILogger mainLogger,
             IxServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory,
             DatabaseSettings databaseSettings,
             NetworkFeatures networkFeatures,
-            ServerNodeBase network
+            ServerNodeBase network,
+            NetworkSettings networkSettings
             )
         {
             logger = mainLogger;
@@ -67,6 +70,7 @@ namespace x42.Feature.Network
             this.databaseSettings = databaseSettings;
             this.networkFeatures = networkFeatures;
             this.network = network;
+            this.networkSettings = networkSettings;
 
             NetworkStartupStatus = StartupStatus.NotStarted;
         }
@@ -196,15 +200,18 @@ namespace x42.Feature.Network
                 blockchainInfo = await networkFeatures.GetBlockchainInfo();
             }
 
-            NetworkStartupStatus = StartupStatus.XServerConnection;
-            int tier2Count = 0;
-            int tier3Count = 0;
-            while (tier2Count == 0 || tier3Count == 0)
+            if (!networkSettings.BypassTierCheck)
             {
-                var xServers = await networkFeatures.GetXServerStats();
-                tier2Count = xServers.Nodes.Where(n => n.Tier == (int)TierLevel.Two).Count();
-                tier3Count = xServers.Nodes.Where(n => n.Tier == (int)TierLevel.Two).Count();
-                Thread.Sleep(5000);
+                NetworkStartupStatus = StartupStatus.XServerConnection;
+                int tier2Count = 0;
+                int tier3Count = 0;
+                while (tier2Count == 0 || tier3Count == 0)
+                {
+                    var xServers = await networkFeatures.GetXServerStats();
+                    tier2Count = xServers.Nodes.Where(n => n.Tier == (int)TierLevel.Two).Count();
+                    tier3Count = xServers.Nodes.Where(n => n.Tier == (int)TierLevel.Three).Count();
+                    Thread.Sleep(5000);
+                }
             }
 
             NetworkStartupStatus = StartupStatus.Profile;
