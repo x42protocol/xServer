@@ -322,7 +322,7 @@ namespace x42.Feature.Network
             return Money.Zero;
         }
 
-        public async Task<PriceLockResult> GetPriceLockFromT3(CancellationToken cancellationToken, string priceLockId)
+        public async Task<PriceLockResult> GetPriceLockFromT3(CancellationToken cancellationToken, string priceLockId, bool onlyConfirmed = false)
         {
             PriceLockResult result = null;
             var tierThreeServerConnections = GetAllTier3ConnectionInfo();
@@ -342,7 +342,17 @@ namespace x42.Feature.Network
                     {
                         if (priceLockResult.Data.Success)
                         {
-                            return priceLockResult.Data;
+                            if (onlyConfirmed)
+                            {
+                                if (priceLockResult.Data.Status == (int)PriceLock.Status.Confirmed)
+                                {
+                                    return priceLockResult.Data;
+                                }
+                            }
+                            else
+                            {
+                                return priceLockResult.Data;
+                            }
                         }
                     }
                 }

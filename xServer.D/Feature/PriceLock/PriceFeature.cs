@@ -397,7 +397,7 @@ namespace x42.Feature.PriceLock
                 }
                 else
                 {
-                    result.ResultMessage = "Problem with node, Failed to sign price lock.";
+                    result.ResultMessage = "Pricelock not found.";
                     result.Success = false;
                 }
             }
