@@ -17,14 +17,10 @@ sidechain = args.some(val => val === "--sidechain" || val === "-sidechain");
 nodaemon = args.some(val => val === "--nodaemon" || val === "-nodaemon");
 
 let apiPort;
-if (testnet && !sidechain) {
+if (testnet) {
   apiPort = 42221;
-} else if (!testnet && !sidechain) {
+} else {
   apiPort = 42220;
-} else if (sidechain && testnet) {
-  apiPort = 42221;
-} else if (sidechain && !testnet) {
-  apiPort = 42221;
 }
 
 let xServerPort;

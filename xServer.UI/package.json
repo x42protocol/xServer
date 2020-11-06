@@ -1,7 +1,7 @@
 {
   "name": "xServer",
   "description": "x42 Server",
-  "version": "4.0.0-b23",
+  "version": "4.0.0-b24",
   "bc_version": "1.1.16",
   "author": {
     "name": "x42 Protocol",
