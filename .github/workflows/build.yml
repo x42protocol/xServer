@@ -68,7 +68,7 @@ jobs:
         
     - name: Release Variables
       run: |
-        echo RELEASE_NAME=${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
+        echo RELEASE_NAME=${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }} >> $GITHUB_ENV
       shell: bash
 
     - name: Setup .NET Core (${{ matrix.dotnet_version }})
