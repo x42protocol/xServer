@@ -61,13 +61,15 @@ jobs:
     - name: Package NPM Variables
       run: |
         cd ${{ env.UI_PATH }}
-        echo "::set-env name=XSERVER_NAME::$(npm run name --silent)"
-        echo "::set-env name=XSERVER_VERSION::$(npm run version --silent)"
-        echo "::set-env name=BLOCKCORE_DAEMON_VERSION::$(npm run blockcore_version --silent)"
+        echo XSERVER_NAME=$(npm run name --silent) >> $GITHUB_ENV
+        echo XSERVER_VERSION=$(npm run version --silent) >> $GITHUB_ENV
+        echo BLOCKCORE_DAEMON_VERSION=$(npm run blockcore_version --silent) >> $GITHUB_ENV
+      shell: bash
         
     - name: Release Variables
       run: |
-        echo "::set-env name=RELEASE_NAME::${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
+        echo RELEASE_NAME=${{ env.XSERVER_NAME }}-v${{ env.XSERVER_VERSION }}-${{ matrix.runtime }}${{ matrix.extension }}"
+      shell: bash
 
     - name: Setup .NET Core (${{ matrix.dotnet_version }})
       uses: actions/setup-dotnet@v1
