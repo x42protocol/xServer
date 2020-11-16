@@ -520,6 +520,12 @@ namespace x42.Feature.PriceLock
         /// </summary>
         private async Task PriceLockChecks(CancellationToken cancellationToken)
         {
+            await CheckPaidPriceLocks(cancellationToken);
+            await CheckUnPaidPriceLocks(cancellationToken);
+        }
+
+        private async Task CheckPaidPriceLocks(CancellationToken cancellationToken)
+        {
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
                 var priceLocks = dbContext.PriceLocks.Where(p => p.Status > (int)Status.New && p.Status < (int)Status.Mature);
@@ -538,6 +544,38 @@ namespace x42.Feature.PriceLock
                         }
                     }
                     catch (Exception) { }
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                }
+                dbContext.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        ///     Only check pricelocks that are not past the expiration block with grace period.
+        /// </summary>
+        private async Task CheckUnPaidPriceLocks(CancellationToken cancellationToken)
+        {
+            using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
+            {
+                var priceLocks = dbContext.PriceLocks.Where(p => p.Status == (int)Status.New && p.ExpireBlock <= (networkFeatures.BestBlockHeight - network.BlockGracePeriod));
+                foreach (var priceLock in priceLocks)
+                {
+                    try
+                    {
+                        var confirmedPL = await networkFeatures.GetPriceLockFromT3(cancellationToken, priceLock.PriceLockId.ToString(), true);
+                        if (confirmedPL != null)
+                        {
+                           networkFeatures.AddCompletePriceLock(confirmedPL);
+                        }
+                    }
+                    catch (Exception) { }
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
                 }
                 dbContext.SaveChanges();
             }
