@@ -344,7 +344,7 @@ namespace x42.Feature.Network
                         {
                             if (onlyConfirmed)
                             {
-                                if (priceLockResult.Data.Status == (int)PriceLock.Status.Confirmed)
+                                if (priceLockResult.Data.Status >= (int)PriceLock.Status.Confirmed)
                                 {
                                     return priceLockResult.Data;
                                 }
@@ -371,11 +371,11 @@ namespace x42.Feature.Network
 
         public async Task SyncProfiles(CancellationToken cancellationToken)
         {
+            int newHeight = 0;
             var profileHeight = database.dataStore.GetIntFromDictionary("ProfileHeight");
             var t2Servers = GetAllTier2ConnectionInfo();
             foreach (var server in t2Servers)
             {
-                int newHeight = 0;
                 var profiles = await GetProfiles(cancellationToken, server, profileHeight);
                 while (profiles.Count > 0)
                 {
@@ -398,7 +398,7 @@ namespace x42.Feature.Network
                         };
                         if (!ProfileExists(newProfile.Name, newProfile.KeyAddress, true))
                         {
-                            var priceLock = await GetPriceLockFromT3(cancellationToken, newProfile.PriceLockId);
+                            var priceLock = await GetPriceLockFromT3(cancellationToken, newProfile.PriceLockId, true);
                             if (priceLock != null)
                             {
                                 var priceLockExists = AddCompletePriceLock(priceLock);
@@ -411,10 +411,10 @@ namespace x42.Feature.Network
                     }
                     profiles = await GetProfiles(cancellationToken, server, newHeight);
                 }
-                if (newHeight > profileHeight)
-                {
-                    SetProfileHeightOnSelf(newHeight);
-                }
+            }
+            if (newHeight > profileHeight)
+            {
+                SetProfileHeightOnSelf(newHeight);
             }
         }
 
@@ -689,10 +689,12 @@ namespace x42.Feature.Network
             {
                 var xServerConnectionInfo = new XServerConnectionInfo()
                 {
+                    Name = server.ProfileName,
                     NetworkAddress = server.NetworkAddress,
                     NetworkProtocol = server.NetworkProtocol,
                     NetworkPort = server.NetworkPort,
-                    Priotiry = server.Priority
+                    Priotiry = server.Priority,
+                    Tier = server.Tier
                 };
                 serverAddresses.Add(xServerConnectionInfo);
             }
@@ -706,10 +708,12 @@ namespace x42.Feature.Network
             {
                 var xServerConnectionInfo = new XServerConnectionInfo()
                 {
+                    Name = peer.Name,
                     NetworkAddress = peer.NetworkAddress,
                     NetworkProtocol = peer.NetworkProtocol,
                     NetworkPort = peer.NetworkPort,
-                    Priotiry = peer.Priority
+                    Priotiry = peer.Priority,
+                    Tier = peer.Tier
                 };
                 serverAddresses.Add(xServerConnectionInfo);
             }
