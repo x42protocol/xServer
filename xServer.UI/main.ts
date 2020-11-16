@@ -131,17 +131,13 @@ app.on('ready', () => {
 /* 'before-quit' is emitted when Electron receives 
  * the signal to exit and wants to start closing windows */
 app.on('before-quit', () => {
-  if (!serve && !nodaemon) {
     shutdownx42Node(apiPort);
     shutdownxServer(xServerPort);
-  }
 });
 
 app.on('quit', () => {
-  if (!serve && !nodaemon) {
     shutdownx42Node(apiPort);
     shutdownxServer(xServerPort);
-  }
 });
 
 // Quit when all windows are closed.

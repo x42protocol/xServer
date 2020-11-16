@@ -105,6 +105,15 @@ export class ServerApiService {
     );
   }
 
+  /**
+ * Shutdown the xServer
+ */
+  shutDown(): Observable<any> {
+    return this.http.post(this.x42ApiUrl + '/shutdown', 'true').pipe(
+      catchError(err => this.handleHttpError(err))
+    );
+  }
+
   private handleHttpError(error: HttpErrorResponse, silent?: boolean) {
     console.log(error);
     if (error.status >= 400) {
