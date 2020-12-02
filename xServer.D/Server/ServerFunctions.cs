@@ -97,5 +97,48 @@ namespace x42.Server
 
             return result;
         }
+
+        /// <summary>
+        ///     Return xServer from profile name or sign address.
+        /// </summary>
+        /// <param name="profileName">The profile name to search for the xserver</param>
+        /// <param name="signAddress">The sign address to search for the xserver</param>
+        /// <returns>xServer found by the search.</returns>
+        public ServerRegisterResult SearchForXServer(string profileName = "", string signAddress = "")
+        {
+            ServerRegisterResult result = new ServerRegisterResult();
+
+            using (X42DbContext dbContext = new X42DbContext(ConnectionString))
+            {
+                ServerNodeData serverNode = null;
+                if (!string.IsNullOrEmpty(profileName))
+                {
+                    serverNode = dbContext.ServerNodes.Where(sn => sn.ProfileName == profileName).FirstOrDefault();
+                }
+                else if (!string.IsNullOrEmpty(profileName))
+                {
+                    serverNode = dbContext.ServerNodes.Where(sn => sn.SignAddress == signAddress).FirstOrDefault();
+                }
+
+                if (serverNode != null)
+                {
+                    result = new ServerRegisterResult()
+                    {
+                        Id = serverNode.Id,
+                        ProfileName = serverNode.ProfileName,
+                        NetworkProtocol = serverNode.NetworkProtocol,
+                        NetworkAddress = serverNode.NetworkAddress,
+                        NetworkPort = serverNode.NetworkPort,
+                        Signature = serverNode.Signature,
+                        Tier = serverNode.Tier,
+                        FeeAddress = serverNode.FeeAddress,
+                        KeyAddress = serverNode.KeyAddress,
+                        SignAddress = serverNode.SignAddress
+                    };
+                }
+            }
+
+            return result;
+        }
     }
 }

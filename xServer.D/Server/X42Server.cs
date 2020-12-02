@@ -415,6 +415,12 @@ namespace x42.Server
             return serverFunctions.GetActiveXServers(fromId);
         }
 
+        /// <inheritdoc />
+        public ServerRegisterResult SearchForXServer(string profileName = "", string signAddress = "")
+        {
+            return serverFunctions.SearchForXServer(profileName, signAddress);
+        }
+
         public string GetMyFeeAddress()
         {
             return networkFeatures.GetMyFeeAddress();

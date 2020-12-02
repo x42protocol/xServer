@@ -123,6 +123,19 @@ namespace x42.Controllers.Public
         }
 
         /// <summary>
+        ///     Searches for the xServer by profile name or sign address.
+        /// </summary>
+        /// <returns>A JSON object containing the xServer search result.</returns>
+        [HttpGet]
+        [Route("searchforxserver")]
+        public IActionResult SearchForXServer(string profileName = "", string signAddress = "")
+        {
+            xServer.Stats.IncrementPublicRequest();
+            var foundxServer = xServer.SearchForXServer(profileName, signAddress);
+            return Json(foundxServer);
+        }
+
+        /// <summary>
         ///     Will lookup the profile, and return the profile data.
         /// </summary>
         /// <returns>A JSON object containing the profile requested.</returns>
