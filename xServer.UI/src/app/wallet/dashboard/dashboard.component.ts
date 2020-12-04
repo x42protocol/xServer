@@ -1,40 +1,40 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ElectronService } from 'ngx-electron';
-
-import { FullNodeApiService } from '../../shared/services/fullnode.api.service';
+import { ApiService } from '../../shared/services/fullnode.api.service';
 import { ServerApiService } from '../../shared/services/server.api.service';
 import { GlobalService } from '../../shared/services/global.service';
 import { WalletInfo } from '../../shared/models/wallet-info';
 import { ThemeService } from '../../shared/services/theme.service';
 import { TransactionInfo } from '../../shared/models/transaction-info';
-
-import { SendComponent } from '../send/send.component';
-import { ReceiveComponent } from '../receive/receive.component';
-import { TransactionDetailsComponent } from '../transaction-details/transaction-details.component';
 import { CreateServerIDComponent } from '../server/create-serverid/create-serverid.component';
-
 import { Subscription } from 'rxjs';
-
 import { Router } from '@angular/router';
 import { Application } from '../../shared/models/application';
 import { ServerStartRequest } from '../../shared/models/server-start-request';
 import { ServerStatus } from '../../shared/models/server-status';
+import { TransactionDetailsComponent } from '../transaction-details/transaction-details.component';
 
 @Component({
-  selector: 'dashboard-component',
+  selector: 'app-dashboard-component',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {
-  constructor(private apiService: FullNodeApiService, private serverApiService: ServerApiService, private globalService: GlobalService, public dialogService: DialogService, private router: Router, private fb: FormBuilder, private themeService: ThemeService, private electronService: ElectronService) {
+  constructor(
+    private apiService: ApiService,
+    private serverApiService: ServerApiService,
+    private globalService: GlobalService,
+    public dialogService: DialogService,
+    private router: Router,
+    private fb: FormBuilder,
+    public themeService: ThemeService,
+  ) {
     this.buildStakingForm();
-    this.isDarkTheme = themeService.getCurrentTheme().themeType == 'dark';
+    this.isDarkTheme = themeService.getCurrentTheme().themeType === 'dark';
   }
 
-  public sidechainEnabled: boolean;
   public walletName: string;
   public coinUnit: string;
   public confirmedBalance: number;
@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public stakingEnabled: boolean;
   public stakingActive: boolean;
   public stakingWeight: number;
-  public awaitingMaturity: number = 0;
+  public awaitingMaturity = 0;
   public netStakingWeight: number;
   public expectedTime: number;
   public serverSetupStatus: number;
@@ -55,8 +55,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public isStarting: boolean;
   public isStopping: boolean;
   public isDarkTheme = false;
-  public hasBalance: boolean = false;
-  public hotStakingAccount: string = "coldStakingHotAddresses";
+  public hasBalance = false;
+  public hotStakingAccount = 'coldStakingHotAddresses';
   public installedApps: Application[];
   public xServerProfileName: string;
   public serverStatus: ServerStatus;
@@ -69,16 +69,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private serverStatusStatusSubscription: Subscription;
 
   ngOnInit() {
-    this.sidechainEnabled = this.globalService.getSidechainEnabled();
     this.walletName = this.globalService.getWalletName();
     this.coinUnit = this.globalService.getCoinUnit();
     this.startSubscriptions();
 
     this.installedApps = [
-      { name: 'TestApp', revenue: "231.32423 Tx42" },
-      { name: 'Testing', revenue: "0 Tx42" },
+      { name: 'TestApp', revenue: '231.32423 Tx42' },
+      { name: 'Testing', revenue: '0 Tx42' },
     ];
-  };
+  }
 
   ngOnDestroy() {
     this.cancelSubscriptions();
@@ -86,7 +85,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private buildStakingForm(): void {
     this.stakingForm = this.fb.group({
-      "walletPassword": ["", Validators.required]
+      walletPassword: ['', Validators.required]
     });
   }
 
@@ -94,23 +93,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/wallet/history']);
   }
 
-  public openSendDialog() {
-    this.dialogService.open(SendComponent, {
-      header: 'Send to',
-      width: '700px'
-    });
-  }
-
-  public openReceiveDialog() {
-    this.dialogService.open(ReceiveComponent, {
-      header: 'Receive',
-      width: '540px'
-    });
-  };
-
   public openTransactionDetailDialog(transaction: TransactionInfo) {
-    let modalData = {
-      "transaction": transaction
+    const modalData = {
+      transaction
     };
 
     this.dialogService.open(TransactionDetailsComponent, {
@@ -142,24 +127,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public formatSeconds(seconds) {
     seconds = Number(seconds);
-    var d = Math.floor(seconds / (3600 * 24));
-    var h = Math.floor(seconds % (3600 * 24) / 3600);
-    var m = Math.floor(seconds % 3600 / 60);
-    var s = Math.floor(seconds % 60);
+    const d = Math.floor(seconds / (3600 * 24));
+    const h = Math.floor(seconds % (3600 * 24) / 3600);
+    const m = Math.floor(seconds % 3600 / 60);
+    const s = Math.floor(seconds % 60);
 
-    var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
-    var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
-    var mDisplay = m > 0 ? m + (m == 1 ? " minute" : " minutes") : "";
-    var result = dDisplay + hDisplay + mDisplay;
-    if (result == "") {
-      result = "Less than a minute.";
+    const dDisplay = d > 0 ? d + (d === 1 ? ' day, ' : ' days, ') : '';
+    const hDisplay = h > 0 ? h + (h === 1 ? ' hour, ' : ' hours, ') : '';
+    const mDisplay = m > 0 ? m + (m === 1 ? ' minute' : ' minutes') : '';
+    let result = dDisplay + hDisplay + mDisplay;
+    if (result === '') {
+      result = 'Less than a minute.';
     }
     return result;
   }
 
 
   private getWalletBalance() {
-    let walletInfo = new WalletInfo(this.globalService.getWalletName());
+    const walletInfo = new WalletInfo(this.globalService.getWalletName());
     walletInfo.accountName = this.hotStakingAccount;
 
     this.walletBalanceSubscription = this.apiService.getWalletBalance(walletInfo)
@@ -182,7 +167,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getHotHistory() {
-    let walletInfo = new WalletInfo(this.globalService.getWalletName());
+    const walletInfo = new WalletInfo(this.globalService.getWalletName());
     walletInfo.accountName = this.hotStakingAccount;
 
     let historyResponse;
@@ -195,7 +180,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           }
         }
       );
-  };
+  }
 
   private getServerSetupStatus() {
     this.serverSetupStatusSubscription = this.serverApiService.getServerSetupStatusInterval()
@@ -209,32 +194,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.startSubscriptions();
         }
       );
-  };
+  }
 
   private getHotTransactionInfo(transactions: any) {
     this.latestTransactions = [];
 
-    for (let transaction of transactions) {
+    for (const transaction of transactions) {
       let transactionType;
-      if (transaction.type === "send") {
-        transactionType = "sent";
-      } else if (transaction.type === "received") {
-        transactionType = "received";
-      } else if (transaction.type === "staked") {
-        transactionType = "staked";
+      if (transaction.type === 'send') {
+        transactionType = 'sent';
+      } else if (transaction.type === 'received') {
+        transactionType = 'received';
+      } else if (transaction.type === 'staked') {
+        transactionType = 'staked';
       } else {
-        transactionType = "unknown";
+        transactionType = 'unknown';
       }
-      let transactionId = transaction.id;
-      let transactionAmount = transaction.amount;
+      const transactionId = transaction.id;
+      const transactionAmount = transaction.amount;
       let transactionFee;
       if (transaction.fee) {
         transactionFee = transaction.fee;
       } else {
         transactionFee = 0;
       }
-      let transactionConfirmedInBlock = transaction.confirmedInBlock;
-      let transactionTimestamp = transaction.timestamp;
+      const transactionConfirmedInBlock = transaction.confirmedInBlock;
+      const transactionTimestamp = transaction.timestamp;
 
       this.latestTransactions.push(new TransactionInfo(transactionType, transactionId, transactionAmount, transactionFee, transactionConfirmedInBlock, transactionTimestamp));
 
@@ -246,7 +231,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       }
     }
-  };
+  }
 
   public onOpenServerSetup() {
     this.dialogService.open(CreateServerIDComponent, {
@@ -270,8 +255,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
     this.apiService.startStaking(walletData)
       .subscribe(
-        response => {
-          let serverStartRequest = new ServerStartRequest(
+        startStakingresponse => {
+          const serverStartRequest = new ServerStartRequest(
             walletData.name,
             walletData.password,
             this.hotStakingAccount,
@@ -279,10 +264,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
           );
           this.serverApiService.startxServer(serverStartRequest)
             .subscribe(
-              response => {
+              startServerresponse => {
                 this.makeLatestTxListSmall();
                 this.stakingEnabled = true;
-                this.stakingForm.patchValue({ walletPassword: "" });
+                this.stakingForm.patchValue({ walletPassword: '' });
                 this.getStakingInfo();
               }
             );
@@ -290,7 +275,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         error => {
           this.isStarting = false;
           this.stakingEnabled = false;
-          this.stakingForm.patchValue({ walletPassword: "" });
+          this.stakingForm.patchValue({ walletPassword: '' });
         }
       );
   }
@@ -303,7 +288,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         response => {
           this.stakingEnabled = false;
         }
-    );
+      );
     this.serverApiService.stopxServer()
       .subscribe(
         response => {
@@ -337,38 +322,38 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private secondsToString(seconds: number) {
-    let numDays = Math.floor(seconds / 86400);
-    let numHours = Math.floor((seconds % 86400) / 3600);
-    let numMinutes = Math.floor(((seconds % 86400) % 3600) / 60);
-    let numSeconds = ((seconds % 86400) % 3600) % 60;
-    let dateString = "";
+    const numDays = Math.floor(seconds / 86400);
+    const numHours = Math.floor((seconds % 86400) / 3600);
+    const numMinutes = Math.floor(((seconds % 86400) % 3600) / 60);
+    const numSeconds = ((seconds % 86400) % 3600) % 60;
+    let dateString = '';
 
     if (numDays > 0) {
       if (numDays > 1) {
-        dateString += numDays + " days ";
+        dateString += numDays + ' days ';
       } else {
-        dateString += numDays + " day ";
+        dateString += numDays + ' day ';
       }
     }
 
     if (numHours > 0) {
       if (numHours > 1) {
-        dateString += numHours + " hours ";
+        dateString += numHours + ' hours ';
       } else {
-        dateString += numHours + " hour ";
+        dateString += numHours + ' hour ';
       }
     }
 
     if (numMinutes > 0) {
       if (numMinutes > 1) {
-        dateString += numMinutes + " minutes ";
+        dateString += numMinutes + ' minutes ';
       } else {
-        dateString += numMinutes + " minute ";
+        dateString += numMinutes + ' minute ';
       }
     }
 
-    if (dateString === "") {
-      dateString = "Unknown";
+    if (dateString === '') {
+      dateString = 'Unknown';
     }
 
     return dateString;
@@ -405,8 +390,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.getWalletBalance();
     this.getHotHistory();
     this.getServerStatus();
-    if (!this.sidechainEnabled) {
-      this.getStakingInfo();
-    }
+    this.getStakingInfo();
   }
 }

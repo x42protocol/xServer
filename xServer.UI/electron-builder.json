@@ -1,7 +1,18 @@
 {
-  "appId": "com.x42.server",
+  "appId": "xServer",
+  "artifactName": "xServer-${version}-${os}-${arch}.${ext}",
   "productName": "xServer",
-  "publish": null,
+  "asar": true,
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "x42protocol",
+      "repo": "xServer"
+    }
+  ],
+  "releaseInfo": {
+    "releaseName": "xServer"
+  },
   "directories": {
     "output": "app-builds"
   },
@@ -30,10 +41,11 @@
   "linux": {
     "icon": "dist/assets/images/icons/",
     "target": [
+      "AppImage:x64",
       "deb",
       "tar.gz"
     ],
-    "synopsis": "xServer.UI: x42's server.",
+    "synopsis": "xServer: x42's server.",
     "category": "Utility",
     "artifactName": "${productName}-v${version}-${os}-${arch}.${ext}"
   },

@@ -25,7 +25,7 @@
         <p-panel *ngIf="hasBalance">
           <p-header>
             <div class="ui-helper-clearfix">
-              <div class="col text-right" style="white-space: nowrap; width: 100px; display: inline;">
+              <div class="col text-right" style="white-space: nowrap; display: inline;">
                 <span class="ui-panel-title" style="font-size:16px;display:inline-block;margin-top:2px;">Staking</span>
                 <div style="float: right;">
                   <p-message *ngIf="!stakingEnabled && !isStarting" [style]="{'float':'right'}" severity="warn" text="Start your xServer to start staking"></p-message>
@@ -66,7 +66,7 @@
             <div class="mt-1 h4">
               {{ serverStatus.name }}
             </div>
-            <div class="col text-right" style="white-space: nowrap; width: 100px; display: inline;">
+            <div class="col text-right" style="white-space: nowrap; display: inline;">
               <div style="float: right;">
                 <p-message *ngIf="serverSetupStatus == 1" [style]="{'float':'right'}" severity="warn" text="xServer not configured"></p-message>
                 <p-message *ngIf="serverSetupStatus == 2" [style]="{'float':'right'}" severity="info" text="xServer waiting for registration"></p-message>
@@ -195,7 +195,7 @@
 
     <div *ngIf="latestTransactions; else noTransactions">
       <!-- TRANSACTIONS -->
-      <p-table [responsive]="true" [value]="latestTransactions" [style]="{'margin-top':'20px'}" *ngIf="hasBalance && !sidechainEnabled">
+      <p-table [responsive]="true" [value]="latestTransactions" [style]="{'margin-top':'20px'}" *ngIf="hasBalance">
         <ng-template pTemplate="caption">
           Latest Transactions
         </ng-template>

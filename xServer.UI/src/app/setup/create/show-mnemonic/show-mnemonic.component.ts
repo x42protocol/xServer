@@ -1,7 +1,5 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-
+import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { WalletCreation } from '../../../shared/models/wallet-creation';
 
 @Component({
@@ -10,28 +8,30 @@ import { WalletCreation } from '../../../shared/models/wallet-creation';
   styleUrls: ['./show-mnemonic.component.css']
 })
 export class ShowMnemonicComponent implements OnInit {
-  constructor(private route: ActivatedRoute, private router: Router) { }
+  constructor(
+    private router: Router,
+  ) { }
 
   @Input() queryParams: any;
 
   private mnemonic: string;
   private newWallet: WalletCreation;
   public mnemonicArray: string[];
-  
+
   ngOnInit() {
     this.newWallet = new WalletCreation(
       this.queryParams.name,
       this.queryParams.mnemonic,
       this.queryParams.password,
       this.queryParams.passphrase
-    )
+    );
     this.showMnemonic();
   }
 
   private showMnemonic() {
     this.mnemonic = this.newWallet.mnemonic;
     if (this.mnemonic) {
-      this.mnemonicArray = this.mnemonic.split(" ");
+      this.mnemonicArray = this.mnemonic.split(' ');
     }
   }
 

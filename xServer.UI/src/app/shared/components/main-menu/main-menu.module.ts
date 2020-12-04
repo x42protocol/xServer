@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MainMenuComponent } from './main-menu.component';
 import { StatusBarComponent } from '../../../wallet/status-bar/status-bar.component';
 
@@ -21,7 +21,8 @@ import { TooltipModule } from 'primeng/tooltip';
     SidebarModule,
     DropdownModule,
     FormsModule,
-    TooltipModule
+    TooltipModule,
+    ReactiveFormsModule
   ],
   exports: [MainMenuComponent],
   declarations: [

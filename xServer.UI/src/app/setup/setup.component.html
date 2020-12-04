@@ -1,8 +1,8 @@
-<main-menu [isUnLocked]="false"></main-menu>
+<app-main-menu [isUnLocked]="false"></app-main-menu>
 <div>
   <form novalidate class="p-grid">
-    <pe-steps [(activeIndex)]="activeIndex" (change)="onWizardChange($event)" class="p-col">
-      <pe-step label="Getting started">
+    <app-pe-steps [(activeIndex)]="activeIndex" (change)="onWizardChange($event)" class="p-col">
+      <app-pe-step label="Getting started">
         <p-panel header="Setup">
           The xServer is for hosting distributed applications. This software is for advanced users, <a class="text-primary" (click)="openSetupGuide()"><u class="mr-1">please refer to the setup guide here.</u> <i class="fa fa-external-link"></i></a>
 
@@ -24,15 +24,15 @@
             Tier 3: 50000+ x42
           </div>
         </p-panel>
-      </pe-step>
+      </app-pe-step>
 
-      <pe-step label="Main wallet">
-        <create-component name="Main" filename="x42ServerMain" (isCreated)="mainWalletCreated($event)"></create-component>
-      </pe-step>
+      <app-pe-step label="Main wallet">
+        <app-create-component name="Main" filename="x42ServerMain" (isCreated)="mainWalletCreated($event)"></app-create-component>
+      </app-pe-step>
 
-      <pe-step label="Finish">
-        <finalize-setup [walletComplete]="walletCreated" [databaseConnected]="databaseConnected"></finalize-setup>
-      </pe-step>
-    </pe-steps>
+      <app-pe-step label="Finish">
+        <app-finalize-setup [walletComplete]="walletCreated" [databaseConnected]="databaseConnected"></app-finalize-setup>
+      </app-pe-step>
+    </app-pe-steps>
   </form>
 </div>

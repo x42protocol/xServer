@@ -1,14 +1,18 @@
 <p-menubar [model]="menuItems">
-  <img id="logo" src="./assets/images/{{logoFileName}}" style="height:32px;" />
-  <div class="row mr-0">
-    <div class="col-9 mt-2">
-      <status-bar [isUnLocked]="isUnLocked"></status-bar>
+  <ng-template pTemplate="start">
+    <img id="logo" src="./assets/images/{{logoFileName}}" height="32" class="p-mr-2" />
+  </ng-template>
+  <ng-template pTemplate="end">
+    <div class="row mr-0">
+      <div class="col-9 mt-2">
+        <app-status-bar [isUnLocked]="isUnLocked"></app-status-bar>
+      </div>
+      <div class="col-2">
+        <button pButton icon="pi pi-cog" type="button" (click)="settingsMenu = true" *ngIf="!isUnLocked"></button>
+        <button pButton icon="pi pi-cog" type="button" (click)="openAdvanced()" *ngIf="isUnLocked"></button>
+      </div>
     </div>
-    <div class="col-2">
-      <button pButton icon="pi pi-cog" type="button" (click)="settingsMenu = true" *ngIf="!isUnLocked"></button>
-      <button pButton icon="pi pi-cog" type="button" (click)="openAdvanced()" *ngIf="isUnLocked"></button>
-    </div>
-  </div>
+  </ng-template>
 </p-menubar>
 
 <p-sidebar [(visible)]="settingsMenu" position="right" [baseZIndex]="10000" *ngIf="!isUnLocked">
@@ -16,13 +20,28 @@
   <br /><br />
 
   <h3 style="font-weight:normal">Network</h3>
-  <span *ngIf="!isTestnet">Mainnet</span>
-  <span *ngIf="isTestnet">Testnet</span>
+  <div class="row">
+    <div class="col-md-6">
+      <span *ngIf="appState.network == 'x42main'">Mainnet</span>
+      <span *ngIf="appState.network != 'x42main'">Testnet</span>
+    </div>
+    <div class="col-md-5">
+      <button type="button" class="btn-block" *ngIf="!changeNetwork" (click)="changeNetwork = true" label="Change" pButton></button>
+    </div>
+  </div>
   <br />
+
+  <form [formGroup]="networkForm" *ngIf="changeNetwork">
+    <div>
+      <p-dropdown [options]="networks" placeholder="Select a Network" optionLabel="label" formControlName="selectNetwork" autoWidth="true"></p-dropdown>
+      <button type="button" (click)="applyNetworkChange()" label="Apply" pButton></button>
+    </div>
+
+  </form>
 
   <br /><br />
   <h3 style="font-weight:normal">Look and feel</h3>
-  <p-dropdown [options]="groupedThemes" placeholder="Select a Theme" [group]="true" (onChange)="onThemeChange($event)">
+  <p-dropdown [options]="groupedThemes" placeholder="Select a Theme" [group]="true" (onChange)="onThemeChange($event)" autoWidth="true">
     <ng-template let-group pTemplate="group">
       <i class="{{group.value}}" aria-hidden="true" style="width:20px;vertical-align:middle"></i>
       <span style="margin-left:.25em">{{group.label}}</span>

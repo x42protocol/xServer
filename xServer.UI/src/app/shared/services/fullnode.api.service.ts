@@ -1,12 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, interval, throwError } from 'rxjs';
 import { catchError, switchMap, startWith } from 'rxjs/operators';
-
-import { GlobalService } from './global.service';
 import { ModalService } from './modal.service';
-
 import { AddressLabel } from '../models/address-label';
 import { WalletCreation } from '../models/wallet-creation';
 import { WalletRecovery } from '../models/wallet-recovery';
@@ -23,27 +19,87 @@ import { VerifyRequest } from '../models/wallet-verifyrequest';
 import { SplitCoins } from '../models/split-coins';
 import { ValidateAddressResponse } from '../models/validateaddressresponse';
 import { XServerStatus } from '../models/xserver-status';
+import { Logger } from './logger.service';
+import { ChainService } from './chain.service';
+import { ApplicationStateService } from './application-state.service';
+import { ElectronService } from 'ngx-electron';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class FullNodeApiService {
-  constructor(private http: HttpClient, private globalService: GlobalService, private modalService: ModalService, private router: Router) {
-    this.setApiUrl();
+export class ApiService {
+  static singletonInstance: ApiService;
+
+  constructor(
+    private http: HttpClient,
+    private log: Logger,
+    private chains: ChainService,
+    private appState: ApplicationStateService,
+    private electronService: ElectronService,
+    private notifications: NotificationService,
+    private modalService: ModalService,
+  ) {
+    if (!ApiService.singletonInstance) {
+      ApiService.singletonInstance = this;
+    }
+
+    return ApiService.singletonInstance;
   }
 
+  private daemon;
   private pollingInterval = interval(5000);
-  private apiPort;
-  private x42ApiUrl;
 
-  setApiUrl() {
-    this.apiPort = this.globalService.getFullNodeApiPort();
-    this.x42ApiUrl = 'http://localhost:' + this.apiPort + '/api';
+  public apiUrl: string;
+  public genesisDate: Date;
+  public apiPort: number;
+
+  /** Initialized the daemon running in the background, by sending configuration that has been picked by user, including chain, network and mode. */
+  initialize() {
+    // Get the current network (main, regtest, testnet), current blockchain (x42, bitcoin) and the mode (full, light, mobile)
+    const chain = this.chains.getChain(this.appState.network);
+
+    // Get the correct name of the chain that was found.
+    this.appState.networkName = chain.networkname;
+
+    // Make sure we copy some of the state information to the chain instance supplied to launch the daemon by the main process.
+    chain.mode = this.appState.daemon.mode;
+    chain.path = this.appState.daemon.path;
+    chain.datafolder = this.appState.daemon.datafolder;
+
+    this.genesisDate = chain.genesisDate;
+
+    this.log.info('Node Api Service, Chain: ', chain);
+
+    if (this.electronService.ipcRenderer) {
+      this.daemon = this.electronService.ipcRenderer.sendSync('start-daemon', chain);
+
+      if (this.daemon !== 'OK') {
+        this.notifications.add({
+          title: 'xServer Node background error',
+          hint: 'Messages from the background process received in xServer',
+          message: this.daemon,
+          icon: (this.daemon.indexOf('xServer was started in development mode') > -1) ? 'build' : 'warning'
+        });
+      }
+
+      this.log.info('Node result: ', this.daemon);
+      this.setApiPort(chain.apiPort);
+    }
   }
+
+  /**
+   * Set the API port to connect with full node API. This will differ depending on coin and network.
+   */
+  setApiPort(port: number) {
+    this.apiPort = port;
+    this.apiUrl = 'http://localhost:' + port + '/api';
+  }
+
 
   getNodeStatus(silent?: boolean): Observable<NodeStatus> {
-    return this.http.get<NodeStatus>(this.x42ApiUrl + '/node/status').pipe(
+    return this.http.get<NodeStatus>(this.apiUrl + '/node/status').pipe(
       catchError(err => this.handleHttpError(err, silent))
     );
   }
@@ -51,36 +107,36 @@ export class FullNodeApiService {
   getNodeStatusInterval(): Observable<NodeStatus> {
     return this.pollingInterval.pipe(
       startWith(0),
-      switchMap(() => this.http.get<NodeStatus>(this.x42ApiUrl + '/node/status')),
+      switchMap(() => this.http.get<NodeStatus>(this.apiUrl + '/node/status')),
       catchError(err => this.handleHttpError(err))
-    )
+    );
   }
 
   getxServerStatusInterval(): Observable<XServerStatus> {
     return this.pollingInterval.pipe(
       startWith(0),
-      switchMap(() => this.http.get<XServerStatus>(this.x42ApiUrl + '/xServer/getxserverstats')),
+      switchMap(() => this.http.get<XServerStatus>(this.apiUrl + '/xServer/getxserverstats')),
       catchError(err => this.handleHttpError(err))
-    )
+    );
   }
 
   getAddressBookAddresses(): Observable<any> {
     return this.pollingInterval.pipe(
       startWith(0),
-      switchMap(() => this.http.get(this.x42ApiUrl + '/AddressBook')),
+      switchMap(() => this.http.get(this.apiUrl + '/AddressBook')),
       catchError(err => this.handleHttpError(err))
-    )
+    );
   }
 
   addAddressBookAddress(data: AddressLabel): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/AddressBook/address', JSON.stringify(data)).pipe(
+    return this.http.post(this.apiUrl + '/AddressBook/address', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   removeAddressBookAddress(label: string): Observable<any> {
-    let params = new HttpParams().set('label', label);
-    return this.http.delete(this.x42ApiUrl + '/AddressBook/address', { params }).pipe(
+    const params = new HttpParams().set('label', label);
+    return this.http.delete(this.apiUrl + '/AddressBook/address', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -89,31 +145,31 @@ export class FullNodeApiService {
    * Gets available wallets at the default path
    */
   getWalletFiles(): Observable<any> {
-    return this.http.get(this.x42ApiUrl + '/wallet/files').pipe(
+    return this.http.get(this.apiUrl + '/wallet/files').pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   /** Gets the extended public key from a certain wallet */
   getExtPubkey(data: WalletInfo): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('walletName', data.walletName)
       .set('accountName', 'account 0');
 
-    return this.http.get(this.x42ApiUrl + '/wallet/extpubkey', { params }).pipe(
+    return this.http.get(this.apiUrl + '/wallet/extpubkey', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   /**
-  * Get a new mnemonic
-  */
+   * Get a new mnemonic
+   */
   getNewMnemonic(): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('language', 'English')
       .set('wordCount', '12');
 
-    return this.http.get(this.x42ApiUrl + '/wallet/mnemonic', { params }).pipe(
+    return this.http.get(this.apiUrl + '/wallet/mnemonic', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -122,7 +178,7 @@ export class FullNodeApiService {
    * Create a new x42 wallet.
    */
   createX42Wallet(data: WalletCreation): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/create/', JSON.stringify(data)).pipe(
+    return this.http.post(this.apiUrl + '/wallet/create/', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -131,7 +187,7 @@ export class FullNodeApiService {
    * Recover a x42 wallet.
    */
   recoverX42Wallet(data: WalletRecovery): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/recover/', JSON.stringify(data)).pipe(
+    return this.http.post(this.apiUrl + '/wallet/recover/', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -140,7 +196,7 @@ export class FullNodeApiService {
    * Load a x42 wallet
    */
   loadX42Wallet(data: WalletLoad): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/load/', JSON.stringify(data)).pipe(
+    return this.http.post(this.apiUrl + '/wallet/load/', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -149,7 +205,7 @@ export class FullNodeApiService {
    * Get wallet status info from the API.
    */
   getWalletStatus(): Observable<any> {
-    return this.http.get(this.x42ApiUrl + '/wallet/status').pipe(
+    return this.http.get(this.apiUrl + '/wallet/status').pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -158,8 +214,8 @@ export class FullNodeApiService {
    * Get general wallet info from the API once.
    */
   getGeneralInfoOnce(data: WalletInfo): Observable<any> {
-    let params = new HttpParams().set('Name', data.walletName);
-    return this.http.get(this.x42ApiUrl + '/wallet/general-info', { params }).pipe(
+    const params = new HttpParams().set('Name', data.walletName);
+    return this.http.get(this.apiUrl + '/wallet/general-info', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -168,38 +224,38 @@ export class FullNodeApiService {
    * Get general wallet info from the API.
    */
   getGeneralInfo(data: WalletInfo, silent?: boolean): Observable<any> {
-    let params = new HttpParams().set('Name', data.walletName);
+    const params = new HttpParams().set('Name', data.walletName);
     return this.pollingInterval.pipe(
       startWith(0),
-      switchMap(() => this.http.get(this.x42ApiUrl + '/wallet/general-info', { params })),
+      switchMap(() => this.http.get(this.apiUrl + '/wallet/general-info', { params })),
       catchError(err => this.handleHttpError(err, silent))
-    )
+    );
   }
 
   /**
    * Get wallet balance info from the API.
    */
   getWalletBalance(data: WalletInfo): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('walletName', data.walletName)
       .set('accountName', data.accountName);
     return this.pollingInterval.pipe(
       startWith(0),
-      switchMap(() => this.http.get(this.x42ApiUrl + '/wallet/balance', { params })),
+      switchMap(() => this.http.get(this.apiUrl + '/wallet/balance', { params })),
       catchError(err => this.handleHttpError(err))
-    )
+    );
   }
 
   /**
    * Get the maximum sendable amount for a given fee from the API
    */
   getMaximumBalance(data): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('walletName', data.walletName)
-      .set('accountName', "account 0")
+      .set('accountName', 'account 0')
       .set('feeType', data.feeType)
-      .set('allowUnconfirmed', "true");
-    return this.http.get(this.x42ApiUrl + '/wallet/maxbalance', { params }).pipe(
+      .set('allowUnconfirmed', 'true');
+    return this.http.get(this.apiUrl + '/wallet/maxbalance', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -208,24 +264,24 @@ export class FullNodeApiService {
    * Get a wallets transaction history info from the API.
    */
   getWalletHistory(data: WalletInfo): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('walletName', data.walletName)
       .set('accountName', data.accountName);
     return this.pollingInterval.pipe(
       startWith(0),
-      switchMap(() => this.http.get(this.x42ApiUrl + '/wallet/history', { params: params })),
+      switchMap(() => this.http.get(this.apiUrl + '/wallet/history', { params })),
       catchError(err => this.handleHttpError(err))
-    )
-  };
+    );
+  }
 
   /**
    * Get an unused receive address for a certain wallet from the API.
    */
   getUnusedReceiveAddress(data: WalletInfo): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('walletName', data.walletName)
-      .set('accountName', "account 0");
-    return this.http.get(this.x42ApiUrl + '/wallet/unusedaddress', { params }).pipe(
+      .set('accountName', 'account 0');
+    return this.http.get(this.apiUrl + '/wallet/unusedaddress', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -234,11 +290,11 @@ export class FullNodeApiService {
    * Get multiple unused receive addresses for a certain wallet from the API.
    */
   getUnusedReceiveAddresses(data: WalletInfo, count: string): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('walletName', data.walletName)
-      .set('accountName', "account 0")
+      .set('accountName', 'account 0')
       .set('count', count);
-    return this.http.get(this.x42ApiUrl + '/wallet/unusedaddresses', { params }).pipe(
+    return this.http.get(this.apiUrl + '/wallet/unusedaddresses', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -247,29 +303,29 @@ export class FullNodeApiService {
    * Get get all addresses for an account of a wallet from the API.
    */
   getAllAddresses(data: WalletInfo): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('walletName', data.walletName)
       .set('accountName', data.accountName);
-    return this.http.get(this.x42ApiUrl + '/wallet/addresses', { params }).pipe(
+    return this.http.get(this.apiUrl + '/wallet/addresses', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   /**
- * Estimate the fee of a transaction
- */
+   * Estimate the fee of a transaction
+   */
   estimateFee(data: FeeEstimation): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/estimate-txfee', {
-      'walletName': data.walletName,
-      'accountName': data.accountName,
-      'recipients': [
+    return this.http.post(this.apiUrl + '/wallet/estimate-txfee', {
+      walletName: data.walletName,
+      accountName: data.accountName,
+      recipients: [
         {
-          'destinationAddress': data.recipients[0].destinationAddress,
-          'amount': data.recipients[0].amount
+          destinationAddress: data.recipients[0].destinationAddress,
+          amount: data.recipients[0].amount
         }
       ],
-      'feeType': data.feeType,
-      'allowUnconfirmed': true
+      feeType: data.feeType,
+      allowUnconfirmed: true
     }).pipe(
       catchError(err => this.handleHttpError(err))
     );
@@ -279,17 +335,17 @@ export class FullNodeApiService {
    * Estimate the fee of a sidechain transaction
    */
   estimateSidechainFee(data: SidechainFeeEstimation): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/estimate-txfee', {
-      'walletName': data.walletName,
-      'accountName': data.accountName,
-      'recipients': [
+    return this.http.post(this.apiUrl + '/wallet/estimate-txfee', {
+      walletName: data.walletName,
+      accountName: data.accountName,
+      recipients: [
         {
-          'destinationAddress': data.recipients[0].destinationAddress,
-          'amount': data.recipients[0].amount
+          destinationAddress: data.recipients[0].destinationAddress,
+          amount: data.recipients[0].amount
         }
       ],
-      'feeType': data.feeType,
-      'allowUnconfirmed': true
+      feeType: data.feeType,
+      allowUnconfirmed: true
     }).pipe(
       catchError(err => this.handleHttpError(err))
     );
@@ -299,7 +355,7 @@ export class FullNodeApiService {
    * Build a transaction
    */
   buildTransaction(data: TransactionBuilding): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/build-transaction', JSON.stringify(data)).pipe(
+    return this.http.post(this.apiUrl + '/wallet/build-transaction', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -308,47 +364,47 @@ export class FullNodeApiService {
    * Send transaction
    */
   sendTransaction(data: TransactionSending): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/send-transaction', JSON.stringify(data)).pipe(
+    return this.http.post(this.apiUrl + '/wallet/send-transaction', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   /** Remove transaction */
   removeTransaction(walletName: string): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('walletName', walletName)
       .set('all', 'true')
       .set('resync', 'true');
-    return this.http.delete(this.x42ApiUrl + '/wallet/remove-transactions', { params }).pipe(
+    return this.http.delete(this.apiUrl + '/wallet/remove-transactions', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   /** Rescan wallet from a certain date using remove-transactions */
   rescanWallet(data: WalletRescan): Observable<any> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('walletName', data.name)
       .set('fromDate', data.fromDate.toDateString())
       .set('reSync', 'true');
-    return this.http.delete(this.x42ApiUrl + '/wallet/remove-transactions/', { params }).pipe(
+    return this.http.delete(this.apiUrl + '/wallet/remove-transactions/', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   /**
- * Sign the given message with the private key of the given address
- */
+   * Sign the given message with the private key of the given address
+   */
   signMessage(data: SignMessageRequest): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/signmessage', JSON.stringify(data)).pipe(
+    return this.http.post(this.apiUrl + '/wallet/signmessage', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   /**
- * Verify the given signature with the given address
- */
+   * Verify the given signature with the given address
+   */
   verifyMessage(data: VerifyRequest): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/verifymessage', JSON.stringify(data)).pipe(
+    return this.http.post(this.apiUrl + '/wallet/verifymessage', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -357,7 +413,7 @@ export class FullNodeApiService {
    * Start staking
    */
   startStaking(data: any): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/staking/startstaking', JSON.stringify(data)).pipe(
+    return this.http.post(this.apiUrl + '/staking/startstaking', JSON.stringify(data)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -368,16 +424,16 @@ export class FullNodeApiService {
   getStakingInfo(): Observable<any> {
     return this.pollingInterval.pipe(
       startWith(0),
-      switchMap(() => this.http.get(this.x42ApiUrl + '/staking/getstakinginfo')),
+      switchMap(() => this.http.get(this.apiUrl + '/staking/getstakinginfo')),
       catchError(err => this.handleHttpError(err))
-    )
+    );
   }
 
   /**
-    * Stop staking
-    */
+   * Stop staking
+   */
   stopStaking(): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/staking/stopstaking', 'true').pipe(
+    return this.http.post(this.apiUrl + '/staking/stopstaking', 'true').pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -386,7 +442,7 @@ export class FullNodeApiService {
    * Send shutdown signal to the daemon
    */
   shutdownNode(): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/node/shutdown', 'corsProtection:true').pipe(
+    return this.http.post(this.apiUrl + '/node/shutdown', 'corsProtection:true').pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -395,99 +451,18 @@ export class FullNodeApiService {
    * Get address information if valid.
    */
   validateAddress(address: string, silent?: boolean): Observable<ValidateAddressResponse> {
-    let params = new HttpParams()
+    const params = new HttpParams()
       .set('address', address);
-    return this.http.get<ValidateAddressResponse>(this.x42ApiUrl + '/node/validateaddress', { params }).pipe(
+    return this.http.get<ValidateAddressResponse>(this.apiUrl + '/node/validateaddress', { params }).pipe(
       catchError(err => this.handleHttpError(err, silent))
     );
   }
 
   /*
-    * Get the active smart contract wallet address.
-    */
-  getAccountAddress(walletName: string): Observable<any> {
-    let params = new HttpParams().set('walletName', walletName);
-    return this.http.get(this.x42ApiUrl + '/smartcontractwallet/account-address', { params }).pipe(
-      catchError(err => this.handleHttpError(err))
-    );
-  }
-
-  getAccountAddresses(walletName: string): any {
-    let params = new HttpParams().set('walletName', walletName);
-    return this.http.get(this.x42ApiUrl + '/smartcontractwallet/account-addresses', { params }).pipe(
-      catchError(err => this.handleHttpError(err))
-    );
-  }
-
-  /*
-    * Get the balance of the active smart contract address.
-    */
-  getAccountBalance(walletName: string): Observable<any> {
-    let params = new HttpParams().set('walletName', walletName);
-    return this.http.get(this.x42ApiUrl + '/smartcontractwallet/account-balance', { params }).pipe(
-      catchError(err => this.handleHttpError(err))
-    );
-  }
-
-  /*
-    * Get the balance of the active smart contract address.
-    */
-  getAddressBalance(address: string): Observable<any> {
-    let params = new HttpParams().set('address', address);
-    return this.pollingInterval.pipe(
-      startWith(0),
-      switchMap(() => this.http.get(this.x42ApiUrl + '/smartcontractwallet/address-balance', { params })),
-      catchError(err => this.handleHttpError(err))
-    )
-  }
-
-  /*
-    * Gets the transaction history of the smart contract account.
-    */
-  getAccountHistory(walletName: string, address: string): Observable<any> {
-    let params = new HttpParams()
-      .set('walletName', walletName)
-      .set('address', address);
-    return this.pollingInterval.pipe(
-      startWith(0),
-      switchMap(() => this.http.get(this.x42ApiUrl + '/smartcontractwallet/history', { params })),
-      catchError(err => this.handleHttpError(err))
-    )
-  }
-
-  /*
-    * Posts a contract creation transaction
-    */
-  postCreateTransaction(transaction: any): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/smartcontractwallet/create', transaction).pipe(
-      catchError(err => this.handleHttpError(err))
-    );
-  }
-
-  /*
-    * Posts a coin split request
-    */
+   * Posts a coin split request
+   */
   postCoinSplit(splitCoins: SplitCoins): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/wallet/splitcoins', splitCoins).pipe(
-      catchError(err => this.handleHttpError(err))
-    );
-  }
-
-  /*
-    * Posts a contract call transaction
-    */
-  postCallTransaction(transaction: any): Observable<any> {
-    return this.http.post(this.x42ApiUrl + '/smartcontractwallet/call', transaction).pipe(
-      catchError(err => this.handleHttpError(err))
-    );
-  }
-
-  /*
-    * Returns the receipt for a particular txhash, or empty JSON.
-    */
-  getReceipt(hash: string): any {
-    let params = new HttpParams().set('txHash', hash);
-    return this.http.get(this.x42ApiUrl + '/smartcontracts/receipt', { params }).pipe(
+    return this.http.post(this.apiUrl + '/wallet/splitcoins', splitCoins).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }

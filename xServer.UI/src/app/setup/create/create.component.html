@@ -61,7 +61,7 @@
 <!-- Confirmation Modal -->
 <p-dialog header="Confirm Secret Words" [(visible)]="displayMnemonicConfirm" [modal]="true" [responsive]="true" [style]="{width: '600px', minWidth: '450px'}" [minY]="70" [maximizable]="false" [baseZIndex]="10000">
   <span>
-    <app-confirm-mnemonic *ngIf="displayMnemonicConfirm" [queryParams]="queryParams" (success)="walletCreateResult($event)"></app-confirm-mnemonic>
+    <app-confirm-mnemonic *ngIf="displayMnemonicConfirm" [queryParams]="queryParams" (walletCreated)="walletCreateResult($event)"></app-confirm-mnemonic>
   </span>
   <p-footer>
     <button type="button" pButton icon="pi pi-step-backward" (click)="goBackToWords(true)" label="Back" style="float: left;"></button>

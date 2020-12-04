@@ -10,6 +10,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { ClipboardModule } from 'ngx-clipboard';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { GenericModalComponent } from './components/generic-modal/generic-modal.component';
+import { SizeUnitPipe } from './pipes/size-unit.pipe';
 
 // PrimeNG Components.
 import { ButtonModule } from 'primeng/button';
@@ -17,8 +18,8 @@ import { DynamicDialogModule, DialogService } from 'primeng/dynamicdialog';
 
 @NgModule({
   imports: [CommonModule, ButtonModule, DynamicDialogModule],
-  declarations: [CoinNotationPipe, AutoFocusDirective, PasswordValidationDirective, GenericModalComponent],
-  exports: [CommonModule, ReactiveFormsModule, FormsModule, NgbModule, NgxElectronModule, NgxQRCodeModule, NgxPaginationModule, ClipboardModule, GenericModalComponent, CoinNotationPipe, AutoFocusDirective, PasswordValidationDirective],
+  declarations: [CoinNotationPipe, AutoFocusDirective, PasswordValidationDirective, GenericModalComponent, SizeUnitPipe],
+  exports: [CommonModule, ReactiveFormsModule, FormsModule, NgbModule, NgxElectronModule, NgxQRCodeModule, NgxPaginationModule, ClipboardModule, GenericModalComponent, CoinNotationPipe, AutoFocusDirective, PasswordValidationDirective, SizeUnitPipe],
   entryComponents: [GenericModalComponent],
   providers: [DialogService]
 })

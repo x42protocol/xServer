@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FullNodeApiService } from '../../../../shared/services/fullnode.api.service';
+import { ApiService } from '../../../../shared/services/fullnode.api.service';
 import { GlobalService } from '../../../../shared/services/global.service';
-import { ModalService } from '../../../../shared/services/modal.service';
 import { WalletInfo } from '../../../../shared/models/wallet-info';
 
 @Component({
@@ -10,27 +9,30 @@ import { WalletInfo } from '../../../../shared/models/wallet-info';
   styleUrls: ['./ext-pubkey.component.css']
 })
 export class ExtPubkeyComponent implements OnInit {
-  constructor(private FullNodeApiService: FullNodeApiService, private globalService: GlobalService, private genericModalService: ModalService) { }
+  constructor(
+    private apiService: ApiService,
+    private globalService: GlobalService,
+  ) { }
 
   public extPubKey: string;
-  public copied: Boolean = false;
+  public copied = false;
 
   ngOnInit() {
-    let walletInfo = new WalletInfo(this.globalService.getWalletName());
+    const walletInfo = new WalletInfo(this.globalService.getWalletName());
     this.getExtPubKey(walletInfo);
   }
 
   private getExtPubKey(walletInfo: WalletInfo) {
-    this.FullNodeApiService.getExtPubkey(walletInfo)
+    this.apiService.getExtPubkey(walletInfo)
       .subscribe(
         response => {
-          let responseMessage = response;
+          const responseMessage = response;
           this.extPubKey = responseMessage;
         }
       );
   }
 
   public onCopiedClick() {
-    this.copied=true;
+    this.copied = true;
   }
 }

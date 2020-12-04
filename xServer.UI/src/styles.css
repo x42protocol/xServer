@@ -1918,7 +1918,6 @@ pre {
   font-size: 0.8125rem;
   line-height: 1.5;
   color: #495057;
-  background-color: #fff;
   background-image: none;
   background-clip: padding-box;
   border: 1px solid #ced4da;
@@ -1933,7 +1932,6 @@ pre {
 
   .form-control:focus {
     color: #495057;
-    background-color: #fff;
     border-color: #73c3f1;
     outline: none;
     box-shadow: 0 0 0 0.2rem rgba(21, 139, 207, 0.25);

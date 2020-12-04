@@ -7,7 +7,7 @@ import { SetupRoutingModule } from './setup-routing.module';
 import { RecoverComponent } from './recover/recover.component';
 import { ShowMnemonicComponent } from './create/show-mnemonic/show-mnemonic.component';
 import { ConfirmMnemonicComponent } from './create/confirm-mnemonic/confirm-mnemonic.component';
-import { WizardModule } from '../shared/components/wizard/wizard.module'
+import { WizardModule } from '../shared/components/wizard/wizard.module';
 import { ThemeService } from '../shared/services/theme.service';
 import { MainMenuModule } from '../shared/components/main-menu/main-menu.module';
 

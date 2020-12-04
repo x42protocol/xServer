@@ -1,10 +1,10 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-    selector: 'pe-step',
+    selector: 'app-pe-step',
     styles: ['.pe-step-container {margin-bottom: 10px;}'],
     template: `
-        <div *ngIf="active" [ngClass]="'ui-widget-content ui-corner-all pe-step-container'" [class]="styleClass">
+        <div *ngIf="active" [ngClass]="'p-widget-content p-corner-all pe-step-container'" [class]="styleClass">
             <ng-content></ng-content>
         </div>
     `
@@ -12,5 +12,5 @@ import {Component, Input} from '@angular/core';
 export class StepComponent {
     @Input() styleClass: string;
     @Input() label: string;
-    active: boolean = false;
+    active = false;
 }

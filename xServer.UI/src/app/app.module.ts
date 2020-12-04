@@ -11,6 +11,7 @@ import { SetupModule } from './setup/setup.module';
 import { WalletModule } from './wallet/wallet.module';
 import { ThemeService } from './shared/services/theme.service';
 import { MainMenuModule } from './shared/components/main-menu/main-menu.module';
+import { ShutdownModule } from './shared/components/shutdown/shutdown.module';
 
 // PrimeNG Components.
 import { MessageService } from 'primeng/api';
@@ -29,6 +30,8 @@ import { PanelModule } from 'primeng/panel';
 import { DynamicDialogModule, DialogService } from 'primeng/dynamicdialog';
 import { TableModule } from 'primeng/table';
 import { CalendarModule } from 'primeng/calendar';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { ToolbarModule } from 'primeng/toolbar';
 
 @NgModule({
   imports: [
@@ -54,7 +57,10 @@ import { CalendarModule } from 'primeng/calendar';
     DynamicDialogModule,
     MainMenuModule,
     TableModule,
-    CalendarModule
+    CalendarModule,
+    ProgressBarModule,
+    ToolbarModule,
+    ShutdownModule,
   ],
   declarations: [
     AppComponent,

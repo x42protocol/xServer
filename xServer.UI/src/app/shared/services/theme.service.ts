@@ -1,18 +1,17 @@
-import { Component, OnInit, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-
+import { Injectable } from '@angular/core';
 import { Theme } from '../theme';
 import { Themes } from '../themes';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class ThemeService {
+  public logoFileName = new BehaviorSubject<string>('logo_black.png');
   themes: Themes = new Themes();
   selectedTheme: string;
   private theme$: Subject<Theme>;
 
-  constructor(private router: Router) {
-    this.theme$ = <Subject<Theme>>new Subject();
+  constructor() {
+    this.theme$ = new Subject();
   }
 
   getThemes() {
@@ -21,14 +20,14 @@ export class ThemeService {
 
   getLogo() {
     let logoFileName: string;
-    var theme = this.findTheme(this.selectedTheme);
-    if (theme.themeType == "dark") {
-      logoFileName = "logo_white.png";
+    const theme = this.findTheme(this.selectedTheme);
+    if (theme.themeType === 'dark') {
+      logoFileName = 'logo_white.png';
     } else {
-      logoFileName = "logo_black.png";
+      logoFileName = 'logo_black.png';
     }
-    if (theme.name == "Luna-pink") {
-      logoFileName = "logo_pink.png";
+    if (theme.name === 'Luna-pink') {
+      logoFileName = 'logo_pink.png';
     }
     return logoFileName;
   }
@@ -38,29 +37,31 @@ export class ThemeService {
   }
 
   setTheme(theme: string = null) {
-    if (theme === undefined || theme === null || theme == "") {
+    if (theme === undefined || theme === null || theme === '') {
       theme = localStorage.getItem('theme');
-      theme = (theme === null || theme === undefined || theme === "" ? "Rhea" : theme);
+      theme = (theme === null || theme === undefined || theme === '' ? 'Rhea' : theme);
     }
 
     this.selectedTheme = theme;
-    var ft = this.findTheme(this.selectedTheme);
-    var d = document.getElementById('themeStyleSheet')
-    d.setAttribute('href', this.getThemePath(theme));
+    const ft = this.findTheme(this.selectedTheme);
+    const themeStyleSheet = document.getElementById('themeStyleSheet');
+    themeStyleSheet.setAttribute('href', this.getThemePath(theme));
     this.setNewTheme(ft);
 
-    var b = document.getElementById('htmlStyle')
-    b.setAttribute('style', this.buildStyle(this.getAppPageHeaderDivStyle()));
+    const hStyle = document.getElementById('htmlStyle');
+    hStyle.setAttribute('style', this.buildStyle(this.getAppPageHeaderDivStyle()));
 
-    var b = document.getElementById('pageBody')
-    b.setAttribute('style', this.buildStyle(this.getAppPageHeaderDivStyle()));
+    const pBody = document.getElementById('pageBody');
+    pBody.setAttribute('style', this.buildStyle(this.getAppPageHeaderDivStyle()));
+
+    this.logoFileName.next(this.getLogo());
 
     localStorage.setItem('theme', theme);
   }
 
-  buildStyle(obj: Object) {
-    var str = '';
-    for (var p in obj) {
+  buildStyle(obj: object) {
+    let str = '';
+    for (const p in obj) {
       if (obj.hasOwnProperty(p)) {
         str += p + ':' + obj[p] + ';';
       }
@@ -69,35 +70,36 @@ export class ThemeService {
   }
 
   findTheme(themeName: string): Theme {
-    var theme: Theme;
-    for (let t of this.themes.getThemes()) {
-      if (t.name === themeName) {
-        theme = t;
+    let themeResult: Theme;
+    for (const theme of this.themes.getThemes()) {
+      if (theme.name === themeName) {
+        themeResult = theme;
         break;
       }
     }
 
-    return theme;
+    return themeResult;
   }
 
-  getThemePath(theme: string): string {
-    var path = "";
-    for (let t of this.themes.getThemes()) {
-      if (t.name === theme) {
-        path = t.path;
+  getThemePath(themeName: string): string {
+    let pathResult = '';
+    for (const theme of this.themes.getThemes()) {
+      if (theme.name === themeName) {
+        pathResult = theme.path;
         break;
       }
     }
 
-    return path;
+    return pathResult;
   }
 
-  getAppPageHeaderDivStyle(): Object {
-    var style = { "background-color": "", "padding": "", "color": "" };
-    this.selectedTheme = (this.selectedTheme === null || this.selectedTheme === undefined || this.selectedTheme === "" ? "Rhea" : this.selectedTheme);
-    var theme = this.findTheme(this.selectedTheme);
-    style["background-color"] = theme.contentBackgroundColor;
-    style["color"] = theme.contentColor;
+  getAppPageHeaderDivStyle(): object {
+    const style = { 'background-color': '', padding: '', color: '' };
+    this.selectedTheme = (this.selectedTheme === null || this.selectedTheme === undefined || this.selectedTheme === '' ? 'Rhea' : this.selectedTheme);
+    const theme = this.findTheme(this.selectedTheme);
+    style['background-color'] = theme.contentBackgroundColor;
+    const colorIndex = 'color';
+    style[colorIndex] = theme.contentColor;
     return style;
   }
 

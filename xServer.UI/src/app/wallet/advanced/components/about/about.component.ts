@@ -1,55 +1,46 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { FullNodeApiService } from '../../../../shared/services/fullnode.api.service';
-import { ModalService } from '../../../../shared/services/modal.service';
-import { NodeStatus } from '../../../../shared/models/node-status';
-import { GlobalService } from '../../../../shared/services/global.service';
+import { Component, OnInit } from '@angular/core';
+import { ApplicationStateService } from '../../../../shared/services/application-state.service';
+import { UpdateService } from '../../../../shared/services/update.service';
+import { ElectronService } from 'ngx-electron';
 
 @Component({
   selector: 'app-about',
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.css']
 })
-export class AboutComponent implements OnInit, OnDestroy {
+export class AboutComponent implements OnInit {
+  constructor(
+    public appState: ApplicationStateService,
+    private electron: ElectronService,
+    public updateService: UpdateService,
+  ) { }
 
-  constructor(private globalService: GlobalService, private FullNodeApiService: FullNodeApiService, private genericModalService: ModalService) { }
-
-  private nodeStatusSubscription: Subscription;
-  public clientName: string;
-  public applicationVersion: string;
-  public fullNodeVersion: string;
-  public network: string;
-  public protocolVersion: number;
-  public blockHeight: number;
-  public dataDirectory: string;
+  public isElectron: boolean;
+  public installEnabled: boolean;
 
   ngOnInit() {
-    this.applicationVersion = this.globalService.getApplicationVersion();
-    this.startSubscriptions();
+    this.isElectron = this.electron.isElectronApp;
   }
 
-  ngOnDestroy() {
-    this.cancelSubscriptions();
-  }
-
-  private startSubscriptions() {
-    this.nodeStatusSubscription = this.FullNodeApiService.getNodeStatusInterval()
-      .subscribe(
-        (data: NodeStatus) =>  {
-          let statusResponse = data
-          this.clientName = statusResponse.agent;
-          this.fullNodeVersion = statusResponse.version;
-          this.network = statusResponse.network;
-          this.protocolVersion = statusResponse.protocolVersion;
-          this.blockHeight = statusResponse.blockStoreHeight;
-          this.dataDirectory = statusResponse.dataDirectoryPath;
-        }
-      );
-  }
-
-  private cancelSubscriptions() {
-    if(this.nodeStatusSubscription) {
-      this.nodeStatusSubscription.unsubscribe();
+  openWalletDirectory(directory: string): void {
+    if (!this.isElectron) {
+      return;
     }
+    this.electron.shell.showItemInFolder(directory);
+  }
+
+  releaseDateFormatted() {
+    const updatedTime = new Date(this.updateService.info.releaseDate);
+    return updatedTime.toLocaleDateString();
+  }
+
+  lastCheckDateFormatted() {
+    const lastCheckedTime = new Date(this.updateService.LastUpdateCheck);
+    return lastCheckedTime.toLocaleString();
+  }
+
+  releaseNotesFormatted() {
+    console.log(this.updateService.info.releaseNotes.replace(/<[^>]*>?/gm, ''));
+    this.updateService.info.releaseNotes.replace(/<[^>]*>?/gm, '');
   }
 }

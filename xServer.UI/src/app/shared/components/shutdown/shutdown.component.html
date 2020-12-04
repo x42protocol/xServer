@@ -1,0 +1,14 @@
+<div *ngIf="appState.shutdownInProgress">
+  <div class="login">
+    <div class="row align-items-center h-100">
+      <div id="logoAnim" class="mb-4 mx-auto">
+        <div><i class="pi pi-spin pi-spinner" style="font-size: 3em"></i> Shutdown in progress ...</div>
+        <div class="loadingText mt-4 col-12 text-center">Please wait...</div>
+        <span *ngIf="appState.shutdownDelayed">
+          <br>
+          <button (click)="forceExit()" class="btn-block" label="Exit now" pButton></button>&nbsp;
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,11 +1,13 @@
-import { Directive, ElementRef, OnInit, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, OnInit } from '@angular/core';
 
 @Directive({
-  selector: '[myAutoFocus]'
+  selector: '[appMyAutoFocus]'
 })
 export class AutoFocusDirective implements OnInit {
 
-  constructor(private renderer: Renderer2, private elementRef: ElementRef) { }
+  constructor(
+    private elementRef: ElementRef,
+  ) { }
 
   ngOnInit() {
     this.elementRef.nativeElement.focus();

@@ -4,10 +4,10 @@ export class XServerStatus {
   }
 
   public connected: number;
-  public nodes: xServerPeer[];
+  public nodes: XServerPeer[];
 }
 
-class xServerPeer {
+export class XServerPeer {
   public name: string;
 
   public networkProtocol: number;

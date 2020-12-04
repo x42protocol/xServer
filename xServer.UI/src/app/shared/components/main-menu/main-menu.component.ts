@@ -1,31 +1,30 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, NgZone } from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { ThemeService } from '../../services/theme.service';
-import { SelectItemGroup, MenuItem } from 'primeng/api';
+import { SelectItemGroup, MenuItem, SelectItem } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { ElectronService } from 'ngx-electron';
 import { Subscription } from 'rxjs';
-
 import { GlobalService } from '../../services/global.service';
 import { LogoutConfirmationComponent } from '../../../wallet/logout-confirmation/logout-confirmation.component';
-import { FullNodeApiService } from '../../../shared/services/fullnode.api.service';
+import { ApiService } from '../../../shared/services/fullnode.api.service';
 import { WalletInfo } from '../../../shared/models/wallet-info';
-
-import { SendComponent } from '../../../wallet/send/send.component';
-import { ReceiveComponent } from '../../../wallet/receive/receive.component';
 import { NodeStatus } from '../../../shared/models/node-status';
-import { TransactionDetailsComponent } from '../../../wallet/transaction-details/transaction-details.component';
-import { TransactionInfo } from '../../../shared/models/transaction-info';
+import { ApplicationStateService } from '../../services/application-state.service';
+import { UpdateService } from '../../services/update.service';
+import { Logger } from '../../services/logger.service';
 
 @Component({
-  selector: 'main-menu',
+  selector: 'app-main-menu',
   templateUrl: './main-menu.component.html',
   styleUrls: ['./main-menu.component.css']
 })
 export class MainMenuComponent implements OnInit, OnDestroy {
+  private ipc: Electron.IpcRenderer;
+  private updateTimerId: any;
 
-  @Input() public isUnLocked: boolean = false;
+  @Input() public isUnLocked = false;
 
   private generalWalletInfoSubscription: Subscription;
   private stakingInfoSubscription: Subscription;
@@ -33,26 +32,44 @@ export class MainMenuComponent implements OnInit, OnDestroy {
   public lastBlockSyncedHeight: number;
   public chainTip: number;
   public isChainSynced: boolean;
-  public connectedNodes: number = 0;
-  private percentSyncedNumber: number = 0;
+  public connectedNodes = 0;
+  private percentSyncedNumber = 0;
   public percentSynced: string;
   public stakingEnabled: boolean;
   public sidechainsEnabled: boolean;
   public settingsMenu: boolean;
+  public networks: SelectItem[] = [];
   public isTestnet: boolean;
+  public networkForm: FormGroup;
+  public changeNetwork: boolean;
+  public logoFileName: string;
 
+  groupedThemes: SelectItemGroup[];
+  menuItems: MenuItem[];
   toolTip = '';
   connectedNodesTooltip = '';
 
-  constructor(private FullNodeApiService: FullNodeApiService, private themeService: ThemeService, private globalService: GlobalService, private router: Router, private modalService: NgbModal, public dialogService: DialogService) {
+  constructor(
+    private log: Logger,
+    private apiService: ApiService,
+    private themeService: ThemeService,
+    private globalService: GlobalService,
+    private router: Router,
+    public dialogService: DialogService,
+    public appState: ApplicationStateService,
+    public updateService: UpdateService,
+    private electronService: ElectronService,
+    private fb: FormBuilder,
+    private zone: NgZone,
+  ) {
 
     this.groupedThemes = [
       {
         label: 'Light', value: 'fa fa-lightbulb-o',
         items: [
           { label: 'Green (Default)', value: 'Rhea' },
-          { label: 'Blue', value: 'Nova-Dark' },
-          { label: 'Mixed Colors', value: 'Nova-Colored' }
+          { label: 'Alt', value: 'Nova-Alt' },
+          { label: 'Accent', value: 'Nova-Accent' }
         ]
       },
       {
@@ -65,27 +82,153 @@ export class MainMenuComponent implements OnInit, OnDestroy {
         ]
       }
     ];
+
+
+    for (const network of appState.networks) {
+      this.networks.push({ label: network.name, value: network.id });
+    }
+
+    this.networkForm = this.fb.group({
+      selectNetwork: [{ value: appState.network, }],
+    });
+
+    if (this.electronService.ipcRenderer) {
+      if (this.electronService.remote) {
+        const applicationVersion = this.electronService.remote.app.getVersion();
+
+        this.appState.setVersion(applicationVersion);
+        this.log.info('Version: ' + applicationVersion);
+      }
+
+      this.ipc = electronService.ipcRenderer;
+
+      this.setupNodeIPC();
+      this.setupXServerIPC();
+
+      this.ipc.on('log-debug', (event, msg: any) => {
+        this.log.verbose(msg);
+      });
+
+      this.ipc.on('log-info', (event, msg: any) => {
+        this.log.info(msg);
+      });
+
+      this.ipc.on('log-error', (event, msg: any) => {
+        this.log.error(msg);
+      });
+    }
   }
 
-  public logoFileName: string;
+  setupNodeIPC() {
+    this.ipc.on('daemon-exiting', (event, error) => {
+      if (!this.appState.shutdownInProgress) {
+        this.zone.run(() => this.router.navigate(['shutdown']));
 
-  groupedThemes: SelectItemGroup[];
-  menuItems: MenuItem[];
+        this.log.info('x42.Node is currently being stopped... please wait...');
+        this.appState.shutdownInProgress = true;
+
+        // If the exit takes a very long time, we want to allow users to forcefully exit xCore.
+        setTimeout(() => {
+          this.appState.shutdownDelayed = true;
+        }, 60000);
+      }
+    });
+
+    this.ipc.on('daemon-exited', (event, error) => {
+      this.log.info('x42.Node is stopped.');
+      this.appState.shutdownInProgress = false;
+      this.appState.shutdownDelayed = false;
+
+      // Perform a new close event on the window, this time it will close itself.
+      window.close();
+    });
+
+    this.ipc.on('daemon-error', (event, error) => {
+      this.log.error(error);
+      // this.modalService.openModal('Failed to start x42.Node process', error);
+      // TODO: Add to a log for the user: this.log.lastEntries()
+    });
+  }
+
+  setupXServerIPC() {
+    this.ipc.on('xserver-daemon-exiting', (event, error) => {
+      if (!this.appState.shutdownInProgress) {
+        this.zone.run(() => this.router.navigate(['shutdown']));
+
+        this.log.info('xServer.D is currently being stopped... please wait...');
+        this.appState.shutdownInProgress = true;
+
+        // If the exit takes a very long time, we want to allow users to forcefully exit xCore.
+        setTimeout(() => {
+          this.appState.shutdownDelayed = true;
+        }, 60000);
+      }
+    });
+
+    this.ipc.on('xserver-daemon-exited', (event, error) => {
+      this.log.info('xServer.D is stopped.');
+      this.appState.shutdownInProgress = false;
+      this.appState.shutdownDelayed = false;
+    });
+
+    this.ipc.on('xserver-daemon-error', (event, error) => {
+      this.log.error(error);
+      // this.modalService.openModal('Failed to start xServer.D process', error);
+      // TODO: Add to a log for the user: this.log.lastEntries()
+    });
+
+  }
 
   ngOnInit() {
     this.themeService.setTheme();
+    this.themeService.logoFileName.subscribe(x => this.logoFileName = x);
     this.setLogoPath();
     if (this.isUnLocked) {
-      this.setUnlockedMenuItems()
+      this.setUnlockedMenuItems();
     } else {
       this.setDefaultMenuItems();
     }
 
-    this.isTestnet = this.globalService.getTestnetEnabled();
+    setTimeout(() => {
+      this.checkForUpdates();
+    }, 20000);
 
-    this.sidechainsEnabled = this.globalService.getSidechainEnabled();
-    this.startSubscriptions();
+    this.updateTimerId = setInterval(() => this.checkForUpdates(), 43200000);
   }
+
+  ngOnDestroy() {
+    clearInterval(this.updateTimerId);
+    this.cancelSubscriptions();
+  }
+
+  applyNetworkChange() {
+    this.changeNetwork = false;
+    const selectedNetwork = this.networkForm.get('selectNetwork').value.value;
+    console.log(this.appState.network);
+    console.log(selectedNetwork);
+    if (selectedNetwork !== undefined && this.appState.network !== selectedNetwork) {
+      this.appState.updateNetworkSelection(true, 'full', selectedNetwork, this.appState.daemon.path, this.appState.daemon.datafolder);
+      console.log('Network Chnaged: ' + selectedNetwork);
+      this.changeMode();
+    }
+  }
+
+  changeMode() {
+    this.appState.changingMode = true;
+    this.electronService.ipcRenderer.send('daemon-change');
+
+    // Make sure we shut down the existing node when user choose the change mode action.
+    this.apiService.shutdownNode().subscribe(response => { });
+
+    this.globalService.setWalletName('');
+
+    this.router.navigateByUrl('');
+  }
+
+  checkForUpdates() {
+    this.updateService.checkForUpdate();
+  }
+
 
   setUnlockedMenuItems() {
     this.menuItems = [
@@ -178,20 +321,6 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     this.router.navigate(['/wallet/history']);
   }
 
-  public openSendDialog() {
-    this.dialogService.open(SendComponent, {
-      header: 'Send to',
-      width: '700px'
-    });
-  };
-
-  public openReceiveDialog() {
-    this.dialogService.open(ReceiveComponent, {
-      header: 'Receive',
-      width: '540px'
-    });
-  };
-
   openAdvanced() {
     this.router.navigate(['/wallet/advanced']);
     this.settingsMenu = false;
@@ -203,22 +332,18 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
-    this.cancelSubscriptions();
-  }
-
   private getGeneralWalletInfo() {
-    if (this.globalService.getWalletName() == "") {
-      this.nodeStatusSubscription = this.FullNodeApiService.getNodeStatusInterval()
+    if (this.globalService.getWalletName() === '') {
+      this.nodeStatusSubscription = this.apiService.getNodeStatusInterval()
         .subscribe(
           (data: NodeStatus) => {
-            let statusResponse = data
+            const statusResponse = data;
             this.connectedNodes = statusResponse.inboundPeers.length + statusResponse.outboundPeers.length;
             this.lastBlockSyncedHeight = statusResponse.blockStoreHeight;
             if (this.connectedNodes > 0) {
-              this.percentSynced = "Connected...";
+              this.percentSynced = 'Connected...';
             } else {
-              this.percentSynced = "Connecting...";
+              this.percentSynced = 'Connecting...';
             }
           },
           error => {
@@ -227,11 +352,11 @@ export class MainMenuComponent implements OnInit, OnDestroy {
           }
         );
     } else {
-      let walletInfo = new WalletInfo(this.globalService.getWalletName())
-      this.generalWalletInfoSubscription = this.FullNodeApiService.getGeneralInfo(walletInfo)
+      const walletInfo = new WalletInfo(this.globalService.getWalletName());
+      this.generalWalletInfoSubscription = this.apiService.getGeneralInfo(walletInfo)
         .subscribe(
           response => {
-            let generalWalletInfoResponse = response;
+            const generalWalletInfoResponse = response;
             this.lastBlockSyncedHeight = generalWalletInfoResponse.lastBlockSyncedHeight;
             this.chainTip = generalWalletInfoResponse.chainTip;
             this.isChainSynced = generalWalletInfoResponse.isChainSynced;
@@ -240,18 +365,18 @@ export class MainMenuComponent implements OnInit, OnDestroy {
             const processedText = `Processed ${this.lastBlockSyncedHeight} out of ${this.chainTip} blocks.`;
             this.toolTip = `Synchronizing.  ${processedText}`;
 
-            if (this.connectedNodes == 1) {
-              this.connectedNodesTooltip = "1 connection";
+            if (this.connectedNodes === 1) {
+              this.connectedNodesTooltip = '1 connection';
             } else if (this.connectedNodes >= 0) {
               this.connectedNodesTooltip = `${this.connectedNodes} connections`;
             }
 
             if (!this.isChainSynced) {
-              this.percentSynced = "syncing...";
+              this.percentSynced = 'syncing...';
             }
             else {
               this.percentSyncedNumber = ((this.lastBlockSyncedHeight / this.chainTip) * 100);
-              if (this.percentSyncedNumber.toFixed(0) === "100" && this.lastBlockSyncedHeight != this.chainTip) {
+              if (this.percentSyncedNumber.toFixed(0) === '100' && this.lastBlockSyncedHeight !== this.chainTip) {
                 this.percentSyncedNumber = 99;
               }
 
@@ -268,13 +393,13 @@ export class MainMenuComponent implements OnInit, OnDestroy {
           }
         );
     }
-  };
+  }
 
   private getStakingInfo() {
-    this.stakingInfoSubscription = this.FullNodeApiService.getStakingInfo()
+    this.stakingInfoSubscription = this.apiService.getStakingInfo()
       .subscribe(
         response => {
-          let stakingResponse = response
+          const stakingResponse = response;
           this.stakingEnabled = stakingResponse.enabled;
         },
         error => {
@@ -297,7 +422,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     if (this.nodeStatusSubscription) {
       this.nodeStatusSubscription.unsubscribe();
     }
-  };
+  }
 
   private startSubscriptions() {
     this.getGeneralWalletInfo();

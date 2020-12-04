@@ -3,7 +3,7 @@
   <form>
     <div class="form-group clearfix text-center">
       <p class="text-muted" style="padding-bottom: 40px; font-weight: bold; font-size: 18px;">Are you sure you want to log out?</p>
-      <div *ngIf="!sidechainEnabled" class="alert alert-warning text-center" role="alert">Be aware that this will also <strong>stop the staking process</strong>.</div>
+      <div class="alert alert-warning text-center" role="alert">Be aware that this will also <strong>stop the staking process</strong>.</div>
     </div>
     <div class="modal-footer row">
       <button type="button" class="ui-button-raised ui-button-secondary col" data-dismiss="modal" aria-label="Close" (click)="ref.close('Close click')" label="Cancel" pButton></button>

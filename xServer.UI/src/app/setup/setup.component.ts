@@ -1,17 +1,14 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ElectronService } from 'ngx-electron';
 import { GlobalService } from '../shared/services/global.service';
-import { FullNodeApiService } from '../shared/services/fullnode.api.service';
+import { ApiService } from '../shared/services/fullnode.api.service';
 import { ServerApiService } from '../shared/services/server.api.service';
-import { ModalService } from '../shared/services/modal.service';
 import { ServerStatus } from '../shared/models/server-status';
-
 import { WalletLoad } from '../shared/models/wallet-load';
 import { ThemeService } from '../shared/services/theme.service';
-
-import { MenuItem, MessageService, Message, SelectItemGroup } from 'primeng/api';
+import { MessageService, Message, SelectItemGroup } from 'primeng/api';
 
 @Component({
   selector: 'app-setup',
@@ -20,15 +17,16 @@ import { MenuItem, MessageService, Message, SelectItemGroup } from 'primeng/api'
 })
 
 export class SetupComponent implements OnInit {
-  constructor(private globalService: GlobalService,
+  constructor(
+    private globalService: GlobalService,
     private themeService: ThemeService,
     private messageService: MessageService,
-    private FullNodeApiService: FullNodeApiService,
+    private apiService: ApiService,
     private serverApiService: ServerApiService,
-    private genericModalService: ModalService,
     private router: Router,
     private fb: FormBuilder,
-    private electronService: ElectronService) {
+    private electronService: ElectronService,
+  ) {
     this.buildDecryptForm();
 
     this.groupedThemes = [
@@ -52,15 +50,28 @@ export class SetupComponent implements OnInit {
     ];
   }
 
-  public hasWallet: boolean = false;
+  public hasWallet = false;
   public isDecrypting = false;
   public selectedTheme: string;
   public logoFileName: string;
   private openWalletForm: FormGroup;
   private wallets: [string];
 
-  walletCreated: boolean = false;
-  databaseConnected: boolean = false;
+  walletCreated = false;
+  databaseConnected = false;
+  msgs: Message[] = [];
+  groupedThemes: SelectItemGroup[];
+  activeIndex = 0;
+
+  formErrors = {
+    password: ''
+  };
+
+  validationMessages = {
+    password: {
+      required: 'Please enter your password.'
+    }
+  };
 
   mainWalletCreated(isCreated: boolean): void {
     this.walletCreated = isCreated;
@@ -70,29 +81,19 @@ export class SetupComponent implements OnInit {
     this.logoFileName = this.themeService.getLogo();
   }
 
-  msgs: Message[] = [];
-
-  groupedThemes: SelectItemGroup[];
 
   onThemeChange(event) {
     this.themeService.setTheme(event.value);
     this.setLogoPath();
   }
 
-
   onWizardChange(event) {
     // TODO: Validation here.
   }
 
-  activeIndex: number = 0;
-
   goToStep(stepIndex: number) {
     this.activeIndex = stepIndex;
   }
-
-  firstName: string;
-  lastName: string;
-  address: string;
 
   next() {
     this.activeIndex++;
@@ -110,14 +111,14 @@ export class SetupComponent implements OnInit {
     this.getWalletFiles();
     this.getCurrentNetwork();
 
-    this.checkDatabase()
-    this.messageService.add({ severity: 'success', summary: 'Welcome' })
+    this.checkDatabase();
+    this.messageService.add({ severity: 'success', summary: 'Welcome' });
   }
 
   private buildDecryptForm(): void {
     this.openWalletForm = this.fb.group({
-      "selectWallet": [{ value: "", disabled: this.isDecrypting }, Validators.required],
-      "password": [{ value: "", disabled: this.isDecrypting }, Validators.required]
+      selectWallet: [{ value: '', disabled: this.isDecrypting }, Validators.required],
+      password: [{ value: '', disabled: this.isDecrypting }, Validators.required]
     });
 
     this.openWalletForm.valueChanges
@@ -129,11 +130,15 @@ export class SetupComponent implements OnInit {
   onValueChanged(data?: any) {
     if (!this.openWalletForm) { return; }
     const form = this.openWalletForm;
+
+    // tslint:disable-next-line:forin
     for (const field in this.formErrors) {
       this.formErrors[field] = '';
       const control = form.get(field);
       if (control && control.dirty && !control.valid) {
         const messages = this.validationMessages[field];
+
+        // tslint:disable-next-line:forin
         for (const key in control.errors) {
           this.formErrors[field] += messages[key] + ' ';
         }
@@ -141,25 +146,17 @@ export class SetupComponent implements OnInit {
     }
   }
 
-  formErrors = {
-    'password': ''
-  };
-
-  validationMessages = {
-    'password': {
-      'required': 'Please enter your password.'
-    }
-  };
-
   private getWalletFiles() {
-    this.FullNodeApiService.getWalletFiles()
+    this.apiService.getWalletFiles()
       .subscribe(
         response => {
           this.wallets = response.walletsFiles;
           this.globalService.setWalletPath(response.walletsPath);
           if (this.wallets.length > 0) {
             this.hasWallet = true;
-            for (let wallet in this.wallets) {
+
+            // tslint:disable-next-line:forin
+            for (const wallet in this.wallets) {
               this.wallets[wallet] = this.wallets[wallet].slice(0, -12);
             }
           } else {
@@ -182,16 +179,16 @@ export class SetupComponent implements OnInit {
 
   public onDecryptClicked() {
     this.isDecrypting = true;
-    this.globalService.setWalletName(this.openWalletForm.get("selectWallet").value);
-    let walletLoad = new WalletLoad(
-      this.openWalletForm.get("selectWallet").value,
-      this.openWalletForm.get("password").value
+    this.globalService.setWalletName(this.openWalletForm.get('selectWallet').value);
+    const walletLoad = new WalletLoad(
+      this.openWalletForm.get('selectWallet').value,
+      this.openWalletForm.get('password').value
     );
     this.loadWallet(walletLoad);
   }
 
   private loadWallet(walletLoad: WalletLoad) {
-    this.FullNodeApiService.loadX42Wallet(walletLoad)
+    this.apiService.loadX42Wallet(walletLoad)
       .subscribe(
         response => {
           this.router.navigate(['wallet/dashboard']);
@@ -204,10 +201,10 @@ export class SetupComponent implements OnInit {
   }
 
   private getCurrentNetwork() {
-    this.FullNodeApiService.getNodeStatus()
+    this.apiService.getNodeStatus()
       .subscribe(
         response => {
-          let responseMessage = response;
+          const responseMessage = response;
           this.globalService.setCoinUnit(responseMessage.coinTicker);
           this.globalService.setNetwork(responseMessage.network);
         }
@@ -226,6 +223,6 @@ export class SetupComponent implements OnInit {
   }
 
   public openSetupGuide() {
-    this.electronService.shell.openExternal("https://github.com/x42protocol/xServer/wiki");
+    this.electronService.shell.openExternal('https://github.com/x42protocol/xServer/wiki');
   }
 }

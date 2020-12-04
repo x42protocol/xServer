@@ -7,30 +7,32 @@ import {
   SimpleChanges,
   EventEmitter,
   Input,
-  Output
+  Output,
+  ViewEncapsulation
 } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { StepComponent } from './step.component';
 
 @Component({
-  selector: 'pe-steps',
+  selector: 'app-pe-steps',
   template: `
         <p-steps [model]="items" [(activeIndex)]="activeIndex"
-            [class]="styleClass" [readonly]="false"></p-steps>            
+            [class]="styleClass" [readonly]="false"></p-steps>
         <ng-content></ng-content>
         <button pButton type="text" *ngIf="activeIndex > 0"
             (click)="previous()" icon="fa fa-arrow-left" label="Previous"></button>
         <button pButton type="text" *ngIf="activeIndex < items.length - 1"
             (click)="next()" icon="fa fa-arrow-right" iconPos="right" label="Next" style="float: right;"></button>
     `,
-  styleUrls: ['./wizard.component.css']
+  styleUrls: ['./wizard.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class StepsComponent implements AfterContentInit, OnChanges {
-  @Input() activeIndex: number = 0;
+  @Input() activeIndex = 0;
   @Input() styleClass: string;
   @Input() stepClass: string;
   @Output() activeIndexChange: EventEmitter<any> = new EventEmitter();
-  @Output() change = new EventEmitter();
+  @Output() stepChange = new EventEmitter();
 
   items: MenuItem[] = [];
 
@@ -61,7 +63,7 @@ export class StepsComponent implements AfterContentInit, OnChanges {
           // emit currently selected index (two-way binding)
           this.activeIndexChange.emit(index);
           // emit currently selected label
-          this.change.next(step.label);
+          this.stepChange.next(step.label);
         }
       };
     });
@@ -73,17 +75,17 @@ export class StepsComponent implements AfterContentInit, OnChanges {
       return;
     }
 
-    for (let prop in changes) {
+    for (const prop in changes) {
       if (prop === 'activeIndex') {
-        let curIndex = changes[prop].currentValue;
+        const curIndex = changes[prop].currentValue;
         this.steps.toArray().forEach((step: StepComponent, index: number) => {
           // show / hide the step
-          let selected = index === curIndex;
+          const selected = index === curIndex;
           step.active = selected;
 
           if (selected) {
             // emit currently selected label
-            this.change.next(step.label);
+            this.stepChange.next(step.label);
           }
         });
       }

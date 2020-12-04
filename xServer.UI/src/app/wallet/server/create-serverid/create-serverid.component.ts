@@ -1,15 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
-
-import { ColdStakingService } from '../../../shared/services/coldstaking.service';
 import { ServerApiService } from '../../../shared/services/server.api.service';
-import { GlobalService } from '../../../shared/services/global.service';
 import { ThemeService } from '../../../shared/services/theme.service';
-
-import { ServerIDResponse } from "../../../shared/models/serveridresponse";
+import { ServerIDResponse } from '../../../shared/models/serveridresponse';
 import { ServerSetupRequest } from '../../../shared/models/server-setuprequest';
-import { FullNodeApiService } from '../../../shared/services/fullnode.api.service';
+import { ApiService } from '../../../shared/services/fullnode.api.service';
 
 @Component({
   selector: 'app-create-serverid',
@@ -17,8 +13,14 @@ import { FullNodeApiService } from '../../../shared/services/fullnode.api.servic
   styleUrls: ['./create-serverid.component.css']
 })
 export class CreateServerIDComponent implements OnInit {
-  constructor(private globalService: GlobalService, private serverApiService: ServerApiService, private apiService: FullNodeApiService, private stakingService: ColdStakingService, public ref: DynamicDialogRef, public config: DynamicDialogConfig, private themeService: ThemeService) {
-    this.isDarkTheme = themeService.getCurrentTheme().themeType == 'dark';
+  constructor(
+    private serverApiService: ServerApiService,
+    private apiService: ApiService,
+    public ref: DynamicDialogRef,
+    public config: DynamicDialogConfig,
+    public themeService: ThemeService,
+  ) {
+    this.isDarkTheme = themeService.getCurrentTheme().themeType === 'dark';
     this.elementType = 'url';
   }
 
@@ -43,10 +45,10 @@ export class CreateServerIDComponent implements OnInit {
   }
 
   setKeyAddress() {
-    let setup = new ServerSetupRequest("", this.keyAddress);
+    const setup = new ServerSetupRequest('', this.keyAddress);
     this.serverApiService.setSetupAddress(setup).subscribe(
       response => {
-        if (response.signAddress == "") {
+        if (response.signAddress === '') {
           this.profileNotFound = true;
           this.keySaving = false;
         } else {

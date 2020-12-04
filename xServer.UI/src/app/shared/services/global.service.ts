@@ -1,100 +1,32 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
+import { XServerStatus } from '../models/xserver-status';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalService {
-  constructor(private electronService: ElectronService) {
-    this.setApplicationVersion();
-    this.setSidechainEnabled();
-    this.setTestnetEnabled();
-    this.setApiPort();
-    this.setxServerPort();
-    this.setWalletName("");
+  constructor(
+    private electronService: ElectronService,
+  ) {
+    this.setWalletName('');
   }
 
-  private applicationVersion: string = "0.1.0";
-  private testnet: boolean = false;
-  private sidechain: boolean = false;
-  private mainApiPort: number = 42220;
-  private testApiPort: number = 42221;
-  private mainSideChainApiPort: number = 42221;
-  private testSideChainApiPort: number = 42221;
-  private mainServerPort: number = 4242;
-  private apiPort: number;
-  private xServerPort: number;
   private walletPath: string;
   private currentWalletName: string;
+  private coinType: number;
+  private coinName: string;
   private coinUnit: string;
   private network: string;
+  private decimalLimit = 8;
+  private walletKeyAddress: string;
+  private blockHeight: number;
+  private xServerStatus: XServerStatus;
+  private profile: any;
 
   quitApplication() {
     this.electronService.remote.app.quit();
   }
-
-  getApplicationVersion() {
-    return this.applicationVersion;
-  }
-
-  setApplicationVersion() {
-    if (this.electronService.isElectronApp) {
-      this.applicationVersion = this.electronService.remote.app.getVersion();
-    }
-  }
-
-  getTestnetEnabled() {
-    return this.testnet;
-  }
-
-  setTestnetEnabled() {
-    if (this.electronService.isElectronApp) {
-      this.testnet = this.electronService.ipcRenderer.sendSync('get-testnet');
-    }
-  }
-
-  getSidechainEnabled() {
-    return this.sidechain;
-  }
-
-  setSidechainEnabled() {
-    if (this.electronService.isElectronApp) {
-      this.sidechain = this.electronService.ipcRenderer.sendSync('get-sidechain');
-    }
-  }
-
-  getFullNodeApiPort() {
-    return this.apiPort;
-  }
-
-  getServerApiPort() {
-    return this.xServerPort;
-  }
-
-  setApiPort() {
-    if (this.electronService.isElectronApp) {
-      this.apiPort = this.electronService.ipcRenderer.sendSync('get-port');
-    } else if (this.testnet && !this.sidechain) {
-      this.apiPort = this.testApiPort;
-    } else if (!this.testnet && !this.sidechain) {
-      this.apiPort = this.mainApiPort;
-    } else if (this.testnet && this.sidechain) {
-      this.apiPort = this.testSideChainApiPort;
-    } else if (!this.testnet && this.sidechain) {
-      this.apiPort = this.mainSideChainApiPort;
-    }
-  }
-
-  setxServerPort() {
-    if (this.electronService.isElectronApp) {
-      this.xServerPort = this.electronService.ipcRenderer.sendSync('get-xserver-port');
-    } else if (this.testnet) {
-      this.xServerPort = this.mainServerPort;
-    } else {
-      this.xServerPort = this.mainServerPort;
-    }
-  }
-
   getWalletPath() {
     return this.walletPath;
   }
@@ -119,11 +51,77 @@ export class GlobalService {
     this.currentWalletName = currentWalletName;
   }
 
+  getWalletKeyAddress() {
+    return this.walletKeyAddress;
+  }
+
+  setWalletKeyAddress(keyaddress: string) {
+    this.walletKeyAddress = keyaddress;
+  }
+
   getCoinUnit() {
     return this.coinUnit;
   }
 
   setCoinUnit(coinUnit: string) {
     this.coinUnit = coinUnit;
+  }
+
+  getCoinName() {
+    return this.coinName;
+  }
+
+  setCoinName(coinName: string) {
+    this.coinName = coinName;
+  }
+
+  setBlockHeight(height: number) {
+    this.blockHeight = height;
+  }
+
+  getBlockHeight() {
+    return this.blockHeight;
+  }
+
+  setxServerStatus(xServerStatus: XServerStatus) {
+    this.xServerStatus = xServerStatus;
+  }
+
+  getxServerStatus() {
+    return this.xServerStatus;
+  }
+
+  setProfile(profileInfo: any) {
+    this.profile = profileInfo;
+  }
+
+  getProfile() {
+    return this.profile;
+  }
+
+  transform(value: number) {
+    let temp;
+    if (typeof value === 'number') {
+      switch (this.getCoinUnit()) {
+        case 'x42':
+          temp = value / 100000000;
+          return temp.toFixed(this.decimalLimit);
+        case 'mx42':
+          temp = value / 100000;
+          return temp.toFixed(this.decimalLimit);
+        case 'ux42':
+          temp = value / 100;
+          return temp.toFixed(this.decimalLimit);
+        case 'Tx42':
+          temp = value / 100000000;
+          return temp.toFixed(this.decimalLimit);
+        case 'Tmx42':
+          temp = value / 100000;
+          return temp.toFixed(this.decimalLimit);
+        case 'Tux42':
+          temp = value / 100;
+          return temp.toFixed(this.decimalLimit);
+      }
+    }
   }
 }

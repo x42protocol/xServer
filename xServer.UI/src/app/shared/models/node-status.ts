@@ -1,6 +1,23 @@
 export class NodeStatus {
-  constructor(agent: string, version: string, network: string, coinTicker: string, processId: number, consensusHeight: number, blockStoreHeight: number, bestPeerHeight: number, inboundPeers: [Peer],
-    outboundPeers: [Peer], enabledFeatures: [string], dataDirectoryPath: string, runningtime: string, difficulty: number, protocolVersion: number, testnet: boolean, relayFee: number, state: string) {
+  constructor(
+    agent: string,
+    version: string,
+    network: string,
+    coinTicker: string,
+    processId: number,
+    consensusHeight: number,
+    blockStoreHeight: number,
+    bestPeerHeight: number,
+    inboundPeers: [Peer],
+    outboundPeers: [Peer],
+    featuresData: [FeatureData],
+    dataDirectoryPath: string,
+    runningtime: string,
+    difficulty: number,
+    protocolVersion: number,
+    testnet: boolean,
+    relayFee: number,
+    state: string) {
     this.agent = agent;
     this.version = version;
     this.network = network;
@@ -11,7 +28,7 @@ export class NodeStatus {
     this.bestPeerHeight = bestPeerHeight;
     this.inboundPeers = inboundPeers;
     this.outboundPeers = outboundPeers;
-    this.enabledFeatures = enabledFeatures;
+    this.featuresData = featuresData;
     this.dataDirectoryPath = dataDirectoryPath;
     this.runningTime = runningtime;
     this.difficulty = difficulty;
@@ -31,7 +48,7 @@ export class NodeStatus {
   public bestPeerHeight: number;
   public inboundPeers: [Peer];
   public outboundPeers: [Peer];
-  public enabledFeatures: [string];
+  public featuresData: [FeatureData];
   public dataDirectoryPath: string;
   public runningTime: string;
   public difficulty: number;
@@ -51,4 +68,14 @@ class Peer {
   public version: string;
   public remoteSocketEndpoint: string;
   public tipHeight: number;
+}
+
+class FeatureData {
+  constructor(namespace: string, state: string) {
+    this.namespace = namespace;
+    this.state = state;
+  }
+
+  public namespace: string;
+  public state: string;
 }

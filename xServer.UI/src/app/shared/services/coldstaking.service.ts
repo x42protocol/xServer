@@ -3,36 +3,43 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, interval, throwError } from 'rxjs';
 import { catchError, startWith, switchMap } from 'rxjs/operators';
-
-import { GlobalService } from './global.service';
+import { ApplicationStateService } from './application-state.service';
+import { ChainService } from './chain.service';
 import { ModalService } from './modal.service';
-
-import { ColdStakingSetup } from "../models/coldstakingsetup";
-import { ColdStakingSetupResponse } from "../models/coldstakingsetupresponse";
-import { ColdStakingCreateAddressResponse } from "../models/coldstakingcreateaddressresponse";
-import { ColdStakingCreateAccountResponse } from "../models/coldstakingcreateaccountresponse";
-import { ColdStakingCreateAccountRequest } from "../models/coldstakingcreateaccountrequest";
-import { ColdStakingGetInfoResponse } from "../models/coldstakinggetinforesponse";
-import { ColdStakingWithdrawalResponse } from "../models/coldstakingwithdrawalresponse";
-import { ColdStakingWithdrawalRequest } from "../models/coldstakingwithdrawalrequest";
-
+import { ColdStakingSetup } from '../models/coldstakingsetup';
+import { ColdStakingSetupResponse } from '../models/coldstakingsetupresponse';
+import { ColdStakingCreateAddressResponse } from '../models/coldstakingcreateaddressresponse';
+import { ColdStakingCreateAccountResponse } from '../models/coldstakingcreateaccountresponse';
+import { ColdStakingCreateAccountRequest } from '../models/coldstakingcreateaccountrequest';
+import { ColdStakingGetInfoResponse } from '../models/coldstakinggetinforesponse';
+import { ColdStakingWithdrawalResponse } from '../models/coldstakingwithdrawalresponse';
+import { ColdStakingWithdrawalRequest } from '../models/coldstakingwithdrawalrequest';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ColdStakingService {
-  constructor(private http: HttpClient, private globalService: GlobalService, private modalService: ModalService, private router: Router) {
-    this.setApiUrl();
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private chains: ChainService,
+    private modalService: ModalService,
+    private appState: ApplicationStateService,
+  ) {
+    this.initialize();
   }
 
   private pollingInterval = interval(5000);
-  private apiPort;
-  private stratisApiUrl;
+  private x42ApiUrl;
 
-  setApiUrl() {
-    this.apiPort = this.globalService.getFullNodeApiPort();
-    this.stratisApiUrl = 'http://localhost:' + this.apiPort + '/api';
+  initialize() {
+    const chain = this.chains.getChain(this.appState.network);
+    this.setApiUrl(chain.apiPort);
+  }
+
+  setApiUrl(port: number) {
+    this.x42ApiUrl = 'http://localhost:' + port + '/api';
   }
 
   getInfo(walletName: string): Observable<ColdStakingGetInfoResponse> {
@@ -41,7 +48,7 @@ export class ColdStakingService {
 
     return this.pollingInterval.pipe(
       startWith(0),
-      switchMap(() => this.http.get<ColdStakingGetInfoResponse>(this.stratisApiUrl + '/coldstaking/cold-staking-info', { params })),
+      switchMap(() => this.http.get<ColdStakingGetInfoResponse>(this.x42ApiUrl + '/coldstaking/cold-staking-info', { params })),
       catchError(err => this.handleHttpError(err))
     );
   }
@@ -52,26 +59,26 @@ export class ColdStakingService {
       .set('Segwit', segwit.toString().toLowerCase())
       .set('isColdWalletAddress', isColdWalletAddress.toString().toLowerCase());
 
-    return this.http.get<ColdStakingCreateAddressResponse>(this.stratisApiUrl + '/coldstaking/cold-staking-address', { params }).pipe(
+    return this.http.get<ColdStakingCreateAddressResponse>(this.x42ApiUrl + '/coldstaking/cold-staking-address', { params }).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   createColdstaking(coldStakingSetup: ColdStakingSetup): Observable<ColdStakingSetupResponse> {
-    return this.http.post<ColdStakingSetupResponse>(this.stratisApiUrl + '/coldstaking/setup-cold-staking', JSON.stringify(coldStakingSetup)).pipe(
+    return this.http.post<ColdStakingSetupResponse>(this.x42ApiUrl + '/coldstaking/setup-cold-staking', JSON.stringify(coldStakingSetup)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   createColdStakingAccount(walletName: string, walletPassword: string, isColdWalletAddress: boolean): Observable<ColdStakingCreateAccountResponse> {
-    var request = new ColdStakingCreateAccountRequest(walletName, walletPassword, isColdWalletAddress);
-    return this.http.post<ColdStakingCreateAccountResponse>(this.stratisApiUrl + '/coldstaking/cold-staking-account', JSON.stringify(request)).pipe(
+    const request = new ColdStakingCreateAccountRequest(walletName, walletPassword, isColdWalletAddress);
+    return this.http.post<ColdStakingCreateAccountResponse>(this.x42ApiUrl + '/coldstaking/cold-staking-account', JSON.stringify(request)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
 
   withdrawColdStaking(coldStakingWithdrawalRequest: ColdStakingWithdrawalRequest): Observable<ColdStakingWithdrawalResponse> {
-    return this.http.post<ColdStakingWithdrawalResponse>(this.stratisApiUrl + '/coldstaking/cold-staking-withdrawal', JSON.stringify(coldStakingWithdrawalRequest)).pipe(
+    return this.http.post<ColdStakingWithdrawalResponse>(this.x42ApiUrl + '/coldstaking/cold-staking-withdrawal', JSON.stringify(coldStakingWithdrawalRequest)).pipe(
       catchError(err => this.handleHttpError(err))
     );
   }
