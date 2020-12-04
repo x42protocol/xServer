@@ -133,7 +133,7 @@ jobs:
     - name: Package (npm)
       run: |
         cd ${{ env.UI_PATH }}
-        npm run package:${{ matrix.platform }}
+        npm run publish:${{ matrix.platform }}
 
     - name: Release Package
       uses: DennisAMenace/action-release@master
