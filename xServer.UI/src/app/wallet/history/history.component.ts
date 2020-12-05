@@ -31,6 +31,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
   public pageNumber = 1;
   public hasTransaction = true;
   public isDarkTheme = false;
+  public hotStakingAccount = 'coldStakingHotAddresses';
 
   private walletHistorySubscription: Subscription;
 
@@ -61,6 +62,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
   // todo: add history in seperate service to make it reusable
   private getHistory() {
     const walletInfo = new WalletInfo(this.globalService.getWalletName());
+    walletInfo.accountName = this.hotStakingAccount;
     let historyResponse;
     this.walletHistorySubscription = this.apiService.getWalletHistory(walletInfo)
       .subscribe(

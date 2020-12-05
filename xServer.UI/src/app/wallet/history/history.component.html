@@ -17,7 +17,7 @@
       <ng-template pTemplate="body" let-transaction>
         <tr>
           <td class="text-uppercase text-left">
-            <span class="ui-column-title">Type</span>
+            <span class="p-column-title">Type</span>
             <span class="bubble bg-warning" *ngIf="!transaction.transactionConfirmedInBlock"></span>
             <span class="bubble bg-success" *ngIf="transaction.transactionConfirmedInBlock"></span>
             {{ transaction.transactionType }}
@@ -39,7 +39,7 @@
             {{ transaction.transactionTimestamp * 1000 | date:'medium' }}
           </td>
           <td class="text-left" style="width: 100px;">
-            <span class="ui-column-title">Details</span>
+            <span class="p-column-title">Details</span>
             <a class="link" (click)="openTransactionDetailDialog(transaction)">Details <i class="pi pi-arrow-circle-right"></i></a>
           </td>
         </tr>

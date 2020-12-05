@@ -169,7 +169,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private getHotHistory() {
     const walletInfo = new WalletInfo(this.globalService.getWalletName());
     walletInfo.accountName = this.hotStakingAccount;
-
     let historyResponse;
     this.walletHotHistorySubscription = this.apiService.getWalletHistory(walletInfo)
       .subscribe(
@@ -242,7 +241,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private makeLatestTxListSmall() {
     if (this.latestTransactions !== undefined && this.latestTransactions.length > 0) {
-      this.latestTransactions = this.latestTransactions.slice(0, 3);
+      this.latestTransactions = this.latestTransactions.slice(0, 2);
     }
   }
 
