@@ -130,18 +130,9 @@ jobs:
         cd ${{ env.UI_PATH }}
         npm install
 
-    - name: Package (npm)
+    - name: Publish (npm)
       run: |
         cd ${{ env.UI_PATH }}
-        npm run package:${{ matrix.platform }}
-
-    - name: Release Package
-      uses: DennisAMenace/action-release@master
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        files: "${{ env.UI_PATH }}app-builds/${{ env.RELEASE_NAME }}"
-        draft: true
-        prerelease: true
-        body: ''
-        name: "${{env.XSERVER_NAME}} (Release ${{env.XSERVER_VERSION}})"
-        tag: v${{env.XSERVER_VERSION}}  
+        npm run publish:${{ matrix.platform }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
