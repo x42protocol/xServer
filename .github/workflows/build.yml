@@ -80,10 +80,10 @@ jobs:
       run: dotnet restore ${{env.XSERVER_SOLUTION_PATH}}
 
     - name: Build xServer.D
-      run: dotnet build -c ${{ env.XSERVER_BUILD_CONFIGURATION }} -r ${{ matrix.dotnet_runtime }} -v m ${{ env.XSERVER_SOLUTION_PATH }}
+      run: dotnet build -c ${{ env.XSERVER_BUILD_CONFIGURATION }} -r ${{ matrix.dotnet_runtime }} -v m ${{ env.XSERVER_SOLUTION_PATH }} -p:ImportByWildcardBeforeSolution=false
 
     - name: Publish xServer.D
-      run: dotnet publish -c ${{ env.XSERVER_BUILD_CONFIGURATION }} -r ${{ matrix.dotnet_runtime }} -v m -o ${{ env.UI_PATH }}/xserver.d ${{ env.XSERVER_PROJECT_PATH }}
+      run: dotnet publish -c ${{ env.XSERVER_BUILD_CONFIGURATION }} -r ${{ matrix.dotnet_runtime }} -v m -o ${{ env.UI_PATH }}/xserver.d ${{ env.XSERVER_PROJECT_PATH }} -p:ImportByWildcardBeforeSolution=false
 
     - name: Tooling
       if: matrix.os == 'ubuntu-latest'
