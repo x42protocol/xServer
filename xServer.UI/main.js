@@ -418,7 +418,7 @@ function startDaemon(chain) {
     var folderPath = chain.path || getDaemonPath();
     var daemonName;
     if (chain.name === 'x42') {
-        daemonName = 'x42.Node';
+        daemonName = 'Blockcore.Node';
     }
     // If path is not specified and Win32, we'll append .exe
     if (!chain.path && os.platform() === 'win32') {
@@ -480,6 +480,7 @@ function launchDaemon(apiPath, chain) {
     // If launch is called twice, it might spawn two processes and loose the reference to the first one, and the new process will die due to TCP port lock.
     var spawnDaemon = require('child_process').spawn;
     var commandLineArguments = [];
+    commandLineArguments.push('--chain=X42');
     if (chain.mode === 'local') {
         if (!apiPath || apiPath.length < 3 || !chain.datafolder || chain.datafolder.length < 3) {
             contents.send('daemon-error', "CRITICAL: Cannot launch daemon, missing either daemon path or data folder path.");

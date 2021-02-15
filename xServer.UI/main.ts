@@ -519,7 +519,7 @@ function startDaemon(chain: Chain) {
   let daemonName;
 
   if (chain.name === 'x42') {
-    daemonName = 'x42.Node';
+    daemonName = 'Blockcore.Node';
   }
 
   // If path is not specified and Win32, we'll append .exe
@@ -592,6 +592,8 @@ function launchDaemon(apiPath: string, chain: Chain) {
   const spawnDaemon = require('child_process').spawn;
 
   const commandLineArguments = [];
+
+  commandLineArguments.push('--chain=X42');
 
   if (chain.mode === 'local') {
     if (!apiPath || apiPath.length < 3 || !chain.datafolder || chain.datafolder.length < 3) {
