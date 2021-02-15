@@ -203,7 +203,7 @@ export class MainMenuComponent implements OnInit, OnDestroy {
 
   applyNetworkChange() {
     this.changeNetwork = false;
-    const selectedNetwork = this.networkForm.get('selectNetwork').value.value;
+    const selectedNetwork = this.networkForm.get('selectNetwork').value;
     console.log(this.appState.network);
     console.log(selectedNetwork);
     if (selectedNetwork !== undefined && this.appState.network !== selectedNetwork) {
