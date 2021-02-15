@@ -100,15 +100,6 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: 0.8125rem;
-  font-weight: normal;
-  line-height: 1.5;
-  color: #354052;
-  text-align: left;
-  background-color: #fff;
-  max-width: 100%;
-  overflow-x: hidden;
 }
 
 [tabindex="-1"]:focus {
