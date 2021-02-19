@@ -52,6 +52,9 @@ namespace x42.Feature.PriceLock.Results
         [JsonProperty("dkk")]
         public decimal DKK { set { Price = value; } }
 
+        [JsonProperty("eur")]
+        public decimal EUR { set { Price = value; } }
+
         [JsonProperty("gbp")]
         public decimal GBP { set { Price = value; } }
 
