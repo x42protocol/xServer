@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApplicationStateService } from '../../../../shared/services/application-state.service';
 import { UpdateService } from '../../../../shared/services/update.service';
-import { ElectronService } from 'ngx-electron';
 
 @Component({
   selector: 'app-about',
@@ -11,22 +10,17 @@ import { ElectronService } from 'ngx-electron';
 export class AboutComponent implements OnInit {
   constructor(
     public appState: ApplicationStateService,
-    private electron: ElectronService,
     public updateService: UpdateService,
   ) { }
 
-  public isElectron: boolean;
   public installEnabled: boolean;
 
   ngOnInit() {
-    this.isElectron = this.electron.isElectronApp;
+    throw new Error('Method not implemented.');
   }
 
   openWalletDirectory(directory: string): void {
-    if (!this.isElectron) {
-      return;
-    }
-    this.electron.shell.showItemInFolder(directory);
+    throw new Error('Method not implemented.');
   }
 
   releaseDateFormatted() {

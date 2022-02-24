@@ -54,7 +54,7 @@
           Wallet data directory:
         </div>
         <div class="col blockText">
-          <span *ngIf="!isElectron; else directoryLink">
+          <span *ngIf="directoryLink">
             <em>{{ appState.dataDirectory }}</em>
           </span>
           <ng-template #directoryLink>

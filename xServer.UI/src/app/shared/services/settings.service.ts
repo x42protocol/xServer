@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 import { StorageService } from './storage.service';
 
 @Injectable({
@@ -7,7 +6,6 @@ import { StorageService } from './storage.service';
 })
 export class SettingsService {
     constructor(
-        private electron: ElectronService,
         private storage: StorageService) {
 
     }

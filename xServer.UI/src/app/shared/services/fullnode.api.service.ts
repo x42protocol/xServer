@@ -22,7 +22,6 @@ import { XServerStatus } from '../models/xserver-status';
 import { Logger } from './logger.service';
 import { ChainService } from './chain.service';
 import { ApplicationStateService } from './application-state.service';
-import { ElectronService } from 'ngx-electron';
 import { NotificationService } from './notification.service';
 
 @Injectable({
@@ -37,7 +36,6 @@ export class ApiService {
     private log: Logger,
     private chains: ChainService,
     private appState: ApplicationStateService,
-    private electronService: ElectronService,
     private notifications: NotificationService,
     private modalService: ModalService,
   ) {
@@ -71,22 +69,7 @@ export class ApiService {
     this.genesisDate = chain.genesisDate;
 
     this.log.info('Node Api Service, Chain: ', chain);
-
-    if (this.electronService.ipcRenderer) {
-      this.daemon = this.electronService.ipcRenderer.sendSync('start-daemon', chain);
-
-      if (this.daemon !== 'OK') {
-        this.notifications.add({
-          title: 'xServer Node background error',
-          hint: 'Messages from the background process received in xServer',
-          message: this.daemon,
-          icon: (this.daemon.indexOf('xServer was started in development mode') > -1) ? 'build' : 'warning'
-        });
-      }
-
-      this.log.info('Node result: ', this.daemon);
-      this.setApiPort(chain.apiPort);
-    }
+    this.setApiPort(chain.apiPort);
   }
 
   /**
@@ -94,7 +77,9 @@ export class ApiService {
    */
   setApiPort(port: number) {
     this.apiPort = port;
-    this.apiUrl = 'http://localhost:' + port + '/api';
+  //  this.apiUrl = 'http://x42core.localhost:' + port + '/api';
+  //this.apiUrl = 'http://x42core.localhost/api';
+  this.apiUrl = 'http://x42core.xserver.network/api';
   }
 
 

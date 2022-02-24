@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ElectronService } from 'ngx-electron';
 import { GlobalService } from '../shared/services/global.service';
 import { ApiService } from '../shared/services/fullnode.api.service';
 import { ServerApiService } from '../shared/services/server.api.service';
@@ -25,7 +24,6 @@ export class SetupComponent implements OnInit {
     private serverApiService: ServerApiService,
     private router: Router,
     private fb: FormBuilder,
-    private electronService: ElectronService,
   ) {
     this.buildDecryptForm();
 
@@ -223,6 +221,6 @@ export class SetupComponent implements OnInit {
   }
 
   public openSetupGuide() {
-    this.electronService.shell.openExternal('https://github.com/x42protocol/xServer/wiki');
+    throw new Error('Method not implemented.');
   }
 }
