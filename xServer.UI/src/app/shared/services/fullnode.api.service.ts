@@ -23,6 +23,7 @@ import { Logger } from './logger.service';
 import { ChainService } from './chain.service';
 import { ApplicationStateService } from './application-state.service';
 import { NotificationService } from './notification.service';
+import { AppConfigService } from './appconfig.service';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,7 @@ export class ApiService {
     private appState: ApplicationStateService,
     private notifications: NotificationService,
     private modalService: ModalService,
+    private appConfigService: AppConfigService
   ) {
     if (!ApiService.singletonInstance) {
       ApiService.singletonInstance = this;
@@ -69,18 +71,8 @@ export class ApiService {
     this.genesisDate = chain.genesisDate;
 
     this.log.info('Node Api Service, Chain: ', chain);
-    this.setApiPort(chain.apiPort);
+    this.apiUrl = this.appConfigService.getConfig().fullNodeEndpoint;
   }
-
-  /**
-   * Set the API port to connect with full node API. This will differ depending on coin and network.
-   */
-  setApiPort(port: number) {
-    this.apiPort = port;
-  //  this.apiUrl = 'http://x42core.localhost:' + port + '/api';
-  this.apiUrl = 'http://x42core.localhost/api';
-  }
-
 
   getNodeStatus(silent?: boolean): Observable<NodeStatus> {
     return this.http.get<NodeStatus>(this.apiUrl + '/node/status').pipe(

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -32,6 +32,12 @@ import { TableModule } from 'primeng/table';
 import { CalendarModule } from 'primeng/calendar';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ToolbarModule } from 'primeng/toolbar';
+import { AppConfigService } from './shared/services/appconfig.service';
+
+export function initConfig(appConfig: AppConfigService) {
+  return () => appConfig.loadConfig();
+}
+
 
 @NgModule({
   imports: [
@@ -67,6 +73,7 @@ import { ToolbarModule } from 'primeng/toolbar';
     LoginComponent
   ],
   providers: [
+    { provide: APP_INITIALIZER, useFactory: initConfig, deps: [AppConfigService], multi: true},
     { provide: HTTP_INTERCEPTORS, useClass: ApiInterceptor, multi: true },
     ThemeService,
     MessageService,

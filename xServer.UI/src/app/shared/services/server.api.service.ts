@@ -13,6 +13,7 @@ import { ServerSetupResponse } from '../models/server-setupresponse';
 import { ServerStartRequest } from '../models/server-start-request';
 import { Logger } from './logger.service';
 import { NotificationService } from './notification.service';
+import { AppConfigService } from './appconfig.service';
 
 
 @Injectable({
@@ -26,6 +27,7 @@ export class ServerApiService {
     private modalService: ModalService,
     private appState: ApplicationStateService,
     private notifications: NotificationService,
+    private appConfigService: AppConfigService
   ) {
     this.initialize();
   }
@@ -48,14 +50,9 @@ export class ServerApiService {
     chain.datafolder = this.appState.daemon.datafolder;
 
     this.log.info('xServer.D Api Service, Chain: ', chain);
-    this.setApiUrl(chain.xServerPort);
-
+    this.x42ApiUrl = this.appConfigService.getConfig().xServerEndpoint;
   }
 
-  setApiUrl(port: number) {
-  //  this.x42ApiUrl = 'http://x42server.localhost:' + port;
-  this.x42ApiUrl = 'http://x42server.localhost';
-  }
 
   getServerStatus(silent?: boolean): Observable<ServerStatus> {
     return this.http.get<ServerStatus>(this.x42ApiUrl + '/status').pipe(
