@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29709.97
+VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "xServer.UI", "xServer.UI\xServer.UI.njsproj", "{509CEAB5-9EA5-4CE5-851B-86A438D95DCC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B0CA203E-086C-4625-8A77-40C41D2A18F6}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "xServer.UI", "xServer.UI\xServer.UI.njsproj", "{B9701C26-EE1A-4482-BBC0-68DAB8E3299E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +13,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{509CEAB5-9EA5-4CE5-851B-86A438D95DCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{509CEAB5-9EA5-4CE5-851B-86A438D95DCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{509CEAB5-9EA5-4CE5-851B-86A438D95DCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{509CEAB5-9EA5-4CE5-851B-86A438D95DCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9701C26-EE1A-4482-BBC0-68DAB8E3299E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9701C26-EE1A-4482-BBC0-68DAB8E3299E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9701C26-EE1A-4482-BBC0-68DAB8E3299E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9701C26-EE1A-4482-BBC0-68DAB8E3299E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {AEF04009-7BB2-4721-9E83-000C5F3D4E36}
+		SolutionGuid = {53009498-1DE4-49DB-8760-2BE536A78E0B}
 	EndGlobalSection
 EndGlobal

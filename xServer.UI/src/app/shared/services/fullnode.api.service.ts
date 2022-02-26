@@ -78,8 +78,7 @@ export class ApiService {
   setApiPort(port: number) {
     this.apiPort = port;
   //  this.apiUrl = 'http://x42core.localhost:' + port + '/api';
-  //this.apiUrl = 'http://x42core.localhost/api';
-  this.apiUrl = 'http://x42core.xserver.network/api';
+  this.apiUrl = 'http://x42core.localhost/api';
   }
 
 
