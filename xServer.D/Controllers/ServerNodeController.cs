@@ -32,7 +32,7 @@ namespace x42.Controllers
     /// </summary>
     [ApiController]
     [Route("")]
-    [Authorize(Policy = Policy.PrivateAccess)]
+    //[Authorize(Policy = Policy.PrivateAccess)]
     public class ServerNodeContoller : Controller
     {
         /// <summary>Provider of date and time functions.</summary>
