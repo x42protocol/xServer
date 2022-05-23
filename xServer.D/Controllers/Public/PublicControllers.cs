@@ -12,6 +12,7 @@ using x42.Feature.PriceLock;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using x42.Feature.PowerDns;
 
 namespace x42.Controllers.Public
 {
@@ -26,12 +27,14 @@ namespace x42.Controllers.Public
         private readonly XServer xServer;
         private readonly ProfileFeature profileFeature;
         private readonly PriceFeature priceFeature;
+        private readonly PowerDnsFeature _powerDnsFeature;
 
-        public PublicController(XServer xServer, ProfileFeature profileFeature, PriceFeature priceFeature)
+        public PublicController(XServer xServer, ProfileFeature profileFeature, PriceFeature priceFeature, PowerDnsFeature powerDnsFeature)
         {
             this.xServer = xServer;
             this.profileFeature = profileFeature;
             this.priceFeature = priceFeature;
+            _powerDnsFeature = powerDnsFeature;
         }
 
         /// <summary>
@@ -64,6 +67,15 @@ namespace x42.Controllers.Public
             xServer.Stats.IncrementPublicRequest();
             TopResult topResult = xServer.GetTopXServers(top);
             return Json(topResult);
+        }
+
+        [HttpGet]
+        [Route("addprofile")]
+        public async Task<IActionResult> AddTestProfileAsync()
+        {
+           
+            await profileFeature.AddTestProfile();
+            return Ok();
         }
 
         /// <summary>
@@ -296,6 +308,23 @@ namespace x42.Controllers.Public
                 return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
             }
         }
+
+
+        /// <summary>
+        ///     Create a price lock.
+        /// </summary>
+        /// <param name="priceLockRequest">The object with all of the nessesary data to create a price lock.</param>
+        /// <returns>A <see cref="PriceLockResult" /> with price lock results.</returns>
+        [HttpGet]
+        [Route("zones")]
+        public async Task<IActionResult> GetAllZones()
+        {
+ 
+                var priceLockResult = await _powerDnsFeature.GetAllZones();
+                return Json(priceLockResult);
+      
+        }
+
 
         /// <summary>
         ///     Update a price lock.

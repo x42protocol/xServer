@@ -16,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -78,6 +80,11 @@ namespace x42.Feature.Api
                 options.AddPolicy(Policy.PrivateAccess, policy => policy.Requirements.Add(new PrivateOnlyRequirement(privateAddressList)));
             });
 
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            };
+
             // Add framework services.
             services.AddMvc(options =>
             {
@@ -90,8 +97,15 @@ namespace x42.Feature.Api
                     options.Filters.Add(typeof(KeepaliveActionFilter));
                 }
             })
+
                 // add serializers for NBitcoin objects
-                .AddNewtonsoftJson(options => Serializer.RegisterFrontConverters(options.SerializerSettings))
+                .AddNewtonsoftJson(options =>
+                {
+
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+
+                })
                 .AddControllers(services);
 
             // Enable API versioning.

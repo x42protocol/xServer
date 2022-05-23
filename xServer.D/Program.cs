@@ -11,6 +11,7 @@ using x42.Protocol;
 using x42.Server;
 using x42.Utilities.Extensions;
 using x42.Feature.PriceLock;
+using x42.Feature.PowerDns;
 
 namespace x42
 {
@@ -30,6 +31,7 @@ namespace x42
                     .UsePriceLock()
                     .UseNetwork()
                     .UseProfile()
+                    .UsePowerDns()
                     .Build();
 
                 if (server != null) await server.RunAsync();
