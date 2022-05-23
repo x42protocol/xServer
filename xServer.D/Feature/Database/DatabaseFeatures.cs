@@ -10,7 +10,11 @@ using x42.Configuration.Logging;
 using x42.Feature.Setup;
 using x42.ServerNode;
 using x42.Server;
-using System.Linq;
+using x42.Feature.Database.UoW;
+using x42.Feature.Database.Repositories;
+using x42.Feature.Database.Tables;
+using x42.Feature.Database.Repositories.Profiles;
+using MongoDB.Driver;
 
 namespace x42.Feature.Database
 {
@@ -30,15 +34,22 @@ namespace x42.Feature.Database
 
         public bool DatabaseConnected { get; set; } = false;
 
+        private readonly IProfileReservationRepository _profileReservationRepository;
+
+
         public DatabaseFeatures(
             ServerNodeBase network,
             ILoggerFactory loggerFactory,
             DatabaseSettings databaseSettings
+,
+            IProfileReservationRepository profileReservationRepository
             )
         {
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.databaseSettings = databaseSettings;
-            dataStore = new DataStore(loggerFactory, databaseSettings);
+            _profileReservationRepository = profileReservationRepository;
+            dataStore = new DataStore(loggerFactory, databaseSettings, _profileReservationRepository);
+
         }
 
         /// <summary>
@@ -136,6 +147,13 @@ namespace x42.Feature.Database
                     {
                         services.AddSingleton<DatabaseFeatures>();
                         services.AddSingleton<DatabaseSettings>();
+                        services.AddSingleton<IMongoContext, MongoContext>();
+                        services.AddSingleton<IUnitOfWork, UnitOfWork>();
+
+                        services.AddSingleton(typeof(IRepository<ProfileReservationData2>), typeof(MongoRepository<ProfileReservationData2>));
+
+                        services.AddSingleton<IProfileReservationRepository, ProfileReservationRepository>();
+                        services.AddSingleton<IProfileRepository, ProfileRepository>();
 
                     });
             });

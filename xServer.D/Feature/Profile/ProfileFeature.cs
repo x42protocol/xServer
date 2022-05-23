@@ -19,6 +19,8 @@ using Microsoft.EntityFrameworkCore;
 using x42.Feature.Network;
 using System.Threading;
 using System;
+using x42.Feature.Database.Repositories;
+using x42.Feature.Database.UoW;
 
 namespace x42.Feature.Profile
 {
@@ -60,7 +62,8 @@ namespace x42.Feature.Profile
         private readonly NetworkFeatures networkFeatures;
         private readonly XServer xServer;
         private X42Node x42Client;
-
+        private readonly IRepository<ProfileReservationData2> _repository;
+        private readonly IUnitOfWork _unitOfWork;
         public ProfileFeature(
             ServerNodeBase network,
             ServerSettings nodeSettings,
@@ -73,7 +76,9 @@ namespace x42.Feature.Profile
             DatabaseFeatures database,
             NetworkFeatures networkFeatures,
             XServer xServer
-            )
+,
+            IRepository<ProfileReservationData2> repository,
+            IUnitOfWork unitOfWork)
         {
             this.network = network;
             this.nodeSettings = nodeSettings;
@@ -88,6 +93,8 @@ namespace x42.Feature.Profile
             this.xServer = xServer;
 
             x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
+            this._repository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         /// <inheritdoc />
@@ -98,6 +105,20 @@ namespace x42.Feature.Profile
             logger.LogInformation("Profile Initialized");
 
             return Task.CompletedTask;
+        }
+
+        public async Task AddTestProfile()
+        {
+
+            var data2 = new ProfileReservationData2();
+
+            data2.Name = "test";
+            _repository.Add(data2);
+
+            await _unitOfWork.Commit();
+
+        //   return (await _repository.GetAll()).ToList();
+
         }
 
         /// <inheritdoc />
@@ -238,6 +259,7 @@ namespace x42.Feature.Profile
         /// </summary>
         private async Task CheckReservedProfiles(CancellationToken cancellationToken)
         {
+
             using (X42DbContext dbContext = new X42DbContext(databaseSettings.ConnectionString))
             {
                 var profileReservations = dbContext.ProfileReservations;

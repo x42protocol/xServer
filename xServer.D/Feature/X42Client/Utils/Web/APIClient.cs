@@ -33,6 +33,12 @@ namespace x42.Feature.X42Client.Utils.Web
             InitClient(serviceAddress);
         }
 
+        public ApiClient(bool dnsClient, string serviceAddress, string header, string value, ILogger mainLogger)
+        {
+            logger = mainLogger;
+            InitClient2(serviceAddress, header, value);
+        }
+
         public ApiClient(string serviceAddress, string username, string password, ILogger mainLogger)
         {
             logger = mainLogger;
@@ -45,6 +51,21 @@ namespace x42.Feature.X42Client.Utils.Web
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        private void InitClient2(string serviceAddress, string header, string value)
+        {
+            Guard.Null(serviceAddress, nameof(serviceAddress), "API Service Address Cannot Be Null/Empty!");
+
+            httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(serviceAddress)
+            };
+
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Add(header, value);
+     
+        } //end of private void InitClient(string serviceAddress, string username = null, string password = null)
+
 
         /// <summary>
         ///     Setup The Client For Use
