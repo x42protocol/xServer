@@ -45,6 +45,27 @@ namespace x42.Feature.PowerDns.PowerDnsClient
             }
         }
 
+        public async Task AddNewSubDomain(string subdomain)
+        {
+            try
+            {
+                var client = new RestClient(_baseUrl);
+                var request = new RestRequest($"/api/v1/servers/localhost/zones/wordpresspreview.site", Method.Patch);
+                request.AddHeader("X-API-Key", _apiKey);
+                request.AddHeader("content-type", "application/json");
+
+                var body = new DnsRequest() { Rrsets = new List<RRset>() { new RRset($"{subdomain}.wordpresspreview.site.", "REPLACE", 60, "A", "144.91.69.12") } };
+
+                var response = await client.ExecuteAsync(request);
+                request.AddBody(body);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug($"An Error Occured When add subdomain!", ex);
+
+             }
+        }
 
 
         private async Task PatchRecord(string zone, string value, string recordType, string content)

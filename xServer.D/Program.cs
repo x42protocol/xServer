@@ -32,6 +32,7 @@ namespace x42
                     .UseNetwork()
                     .UseProfile()
                     .UsePowerDns()
+                    .UseWordPressPreview()
                     .Build();
 
                 if (server != null) await server.RunAsync();
