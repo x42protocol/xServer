@@ -187,6 +187,12 @@ namespace x42.Feature.Network
             return await x42Client.VerifyMessageAsync(keyAddress, profileKey, signature);
         }
 
+        public async Task<bool> IsRegisterKeyValid(string name, string keyAddress, string returnAddress, string signature)
+        {
+            string profileKey = $"{name}{returnAddress}";
+            return await x42Client.VerifyMessageAsync(keyAddress, profileKey, signature);
+        }
+
         public async Task<string> SignPriceLock(string priceLock)
         {
             var signRequest = new SignMessageRequest()
