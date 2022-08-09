@@ -37,7 +37,7 @@ namespace x42.ServerNode
             DowntimeGracePeriod = 90;
             BlockGracePeriod = 6;
 
-            string[] seedServers = { "63.32.82.169" };
+            string[] seedServers = { "63.32.82.169", "38.242.152.112", "38.242.152.113", "144.91.95.234" };
             SeedServers = ConvertToNetworkAddresses(seedServers, DefaultPort).ToList();
         }
     }

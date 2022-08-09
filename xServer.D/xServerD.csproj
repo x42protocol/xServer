@@ -10,7 +10,7 @@
     <Authors>x42</Authors>
     <Company>x42</Company>
     <Product>xServer</Product>
-    <Version>3.0.0.13</Version>
+    <Version>3.0.0.14</Version>
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
@@ -42,7 +42,7 @@
     <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="107.3.0" />
     <PackageReference Include="SSH.NET" Version="2020.0.0-beta1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>

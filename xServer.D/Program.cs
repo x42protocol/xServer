@@ -12,6 +12,7 @@ using x42.Server;
 using x42.Utilities.Extensions;
 using x42.Feature.PriceLock;
 using x42.Feature.PowerDns;
+using x42.Feature.Metrics;
 
 namespace x42
 {
@@ -26,6 +27,7 @@ namespace x42
                 IxServer server = new ServerBuilder()
                     .UseServerSettings(serverSettings)
                     .UseX42Client()
+                    .UseMetrics()
                     .UseSql()
                     .UseApi()
                     .UsePriceLock()
