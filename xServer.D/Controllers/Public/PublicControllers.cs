@@ -12,6 +12,8 @@ using x42.Feature.PriceLock;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using x42.Feature.Metrics;
+using x42.Feature.Metrics.Models;
 
 namespace x42.Controllers.Public
 {
@@ -26,12 +28,13 @@ namespace x42.Controllers.Public
         private readonly XServer xServer;
         private readonly ProfileFeature profileFeature;
         private readonly PriceFeature priceFeature;
-
-        public PublicController(XServer xServer, ProfileFeature profileFeature, PriceFeature priceFeature)
+        private readonly MetricsFeature _metricsFeature;
+        public PublicController(XServer xServer, ProfileFeature profileFeature, PriceFeature priceFeature, MetricsFeature metricsFeature)
         {
             this.xServer = xServer;
             this.profileFeature = profileFeature;
             this.priceFeature = priceFeature;
+            _metricsFeature = metricsFeature;
         }
 
         /// <summary>
@@ -385,6 +388,20 @@ namespace x42.Controllers.Public
             {
                 return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
             }
+        }
+
+
+        /// <summary>
+        ///     Get Hardware Metrics
+        /// </summary>
+        /// <param name="hardwaremetrics">Gets Hardware Metrics of the Host</param>
+        /// <returns>A <see cref="ContainerStatsModel" /> with hardware metrics.</returns>
+        [HttpGet]
+        [Route("hardwaremetrics")]
+        public ActionResult<HostStatsModel> HardwareMetricsAsync()
+        {
+            var response = _metricsFeature.getHardwareMetricsAsync();
+            return Json(response);
         }
 
     }
