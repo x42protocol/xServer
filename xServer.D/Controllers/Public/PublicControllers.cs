@@ -33,17 +33,18 @@ namespace x42.Controllers.Public
         private readonly PowerDnsFeature _powerDnsFeature;
         private readonly WordPressPreviewFeature _wordPressPreviewFeature;
 
-        public PublicController(
-            XServer xServer, 
-            ProfileFeature profileFeature, 
-            PriceFeature priceFeature, 
-            PowerDnsFeature powerDnsFeature, 
-            WordPressPreviewFeature wordPressPreviewFeature)
+ 
         private readonly XServer xServer;
         private readonly ProfileFeature profileFeature;
         private readonly PriceFeature priceFeature;
         private readonly MetricsFeature _metricsFeature;
-        public PublicController(XServer xServer, ProfileFeature profileFeature, PriceFeature priceFeature, MetricsFeature metricsFeature)
+        public PublicController(
+            XServer xServer, 
+            ProfileFeature profileFeature, 
+            PriceFeature priceFeature, 
+            PowerDnsFeature powerDnsFeature,
+            WordPressPreviewFeature wordPressPreviewFeature, 
+            MetricsFeature metricsFeature)
         {
             _xServer = xServer;
             _profileFeature = profileFeature;
