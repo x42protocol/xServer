@@ -1,8 +1,8 @@
 {
   "name": "xServer",
   "description": "x42 Server",
-  "version": "4.0.5",
-  "bc_version": "1.1.28",
+  "version": "4.0.6",
+  "bc_version": "1.1.38",
   "license": "MIT",
   "author": {
     "name": "x42 Protocol",
