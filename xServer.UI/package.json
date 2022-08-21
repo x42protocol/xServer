@@ -68,6 +68,7 @@
     "font-awesome": "^4.7.0",
     "ngx-pagination": "5.0.0",
     "ngx-qrcode2": "9.0.0",
+    "ngx-window-token": "^5.0.0",
     "npm-check-updates": "10.2.2",
     "primeflex": "2.0.0",
     "primeicons": "4.1.0",
