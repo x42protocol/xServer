@@ -29,8 +29,8 @@ namespace x42.Feature.Database
             ConnectionString = config.GetOrDefault("connectionstring",
                 "User ID=postgres;Password=password;Host=localhost;Port=5432;Database=x42;", logger);
 
-            Mongoconnectionstring = config.GetOrDefault("mongoconnectionstring","", logger);
-            MongoDbName = config.GetOrDefault("mongodbname", "", logger);
+            Mongoconnectionstring = config.GetOrDefault("mongoconnectionstring", "mongodb://localhost:27017", logger);
+            MongoDbName = config.GetOrDefault("mongodbname", "xServerDb", logger);
 
         }
 
