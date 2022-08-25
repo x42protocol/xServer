@@ -9,7 +9,6 @@
     <Folder Include="Models\Graviex\" />
     <Folder Include="Models\OrderBook\" />
     <Folder Include="Models\x42Blockcore\" />
-    <Folder Include="Models\XDocuments\" />
     <Folder Include="Models\XServer\" />
   </ItemGroup>
 
