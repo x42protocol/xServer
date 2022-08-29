@@ -1,31 +1,31 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>xServer.UI</Name>
-    <RootNamespace>x42-Server.UI</RootNamespace>
+    <RootNamespace>xServer.UI</RootNamespace>
+    <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
+    <JavaScriptTestRoot>C:\repos\X42Protocol\XServer\xServer.UI\</JavaScriptTestRoot>
+    <JavaScriptTestFramework>Jasmine</JavaScriptTestFramework>
+    <EnableTypeScript>true</EnableTypeScript>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>509ceab5-9ea5-4ce5-851b-86a438d95dcc</ProjectGuid>
-    <ProjectHome>
-    </ProjectHome>
-    <StartupFile>
-    </StartupFile>
-    <StartWebBrowser>False</StartWebBrowser>
+    <ProjectGuid>b9701c26-ee1a-4482-bbc0-68dab8e3299e</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>server.ts</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
-    <TypeScriptSourceMap>true</TypeScriptSourceMap>
-    <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
-    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
-    <EnableTypeScript>true</EnableTypeScript>
-    <StartWebBrowser>false</StartWebBrowser>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <NodejsPort>1337</NodejsPort>
+    <StartWebBrowser>True</StartWebBrowser>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,11 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include=".editorconfig" />
-    <Content Include=".eslintrc.js" />
     <Content Include="angular.json" />
-    <Content Include="e2e\tsconfig.e2e.json" />
-    <Content Include="electron-builder.json" />
-    <Content Include="package-lock.json" />
     <Content Include="package.json" />
     <Content Include="src\app\app.component.css" />
     <Content Include="src\app\app.component.html" />
@@ -49,39 +45,21 @@
     <Content Include="src\app\setup\create\confirm-mnemonic\confirm-mnemonic.component.html" />
     <Content Include="src\app\setup\create\create.component.css" />
     <Content Include="src\app\setup\create\create.component.html" />
-    <Content Include="src\app\shared\components\main-menu\main-menu.component.css" />
-    <Content Include="src\app\shared\components\main-menu\main-menu.component.html" />
-    <Content Include="src\app\wallet\cold-staking\create-address\create-address.component.css" />
-    <Content Include="src\app\wallet\cold-staking\create-address\create-address.component.html" />
-    <Content Include="src\app\wallet\cold-staking\create-hot\create-hot.component.css" />
-    <Content Include="src\app\wallet\cold-staking\create-hot\create-hot.component.html" />
-    <Content Include="src\app\wallet\cold-staking\create-success\create-success.component.css" />
-    <Content Include="src\app\wallet\cold-staking\create-success\create-success.component.html" />
-    <Content Include="src\app\wallet\cold-staking\create\create.component.css" />
-    <Content Include="src\app\wallet\cold-staking\create\create.component.html" />
-    <Content Include="src\app\wallet\cold-staking\overview.component.css" />
-    <Content Include="src\app\wallet\cold-staking\overview.component.html" />
-    <Content Include="src\app\wallet\cold-staking\withdraw\withdraw-confirmation\withdraw-confirmation.component.css" />
-    <Content Include="src\app\wallet\cold-staking\withdraw\withdraw-confirmation\withdraw-confirmation.component.html" />
-    <Content Include="src\app\wallet\cold-staking\withdraw\withdraw.component.css" />
-    <Content Include="src\app\wallet\cold-staking\withdraw\withdraw.component.html" />
-    <Content Include="src\app\wallet\collateral-setup\collateral-setup.component.css" />
-    <Content Include="src\app\wallet\collateral-setup\collateral-setup.component.html" />
-    <Content Include="src\app\setup\finalize-setup\finalize-setup.component.css" />
-    <Content Include="src\app\setup\finalize-setup\finalize-setup.component.html" />
     <Content Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.css" />
     <Content Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.html" />
+    <Content Include="src\app\setup\finalize-setup\finalize-setup.component.css" />
+    <Content Include="src\app\setup\finalize-setup\finalize-setup.component.html" />
     <Content Include="src\app\setup\recover\recover.component.css" />
     <Content Include="src\app\setup\recover\recover.component.html" />
     <Content Include="src\app\setup\setup.component.css" />
     <Content Include="src\app\setup\setup.component.html" />
     <Content Include="src\app\shared\components\generic-modal\generic-modal.component.css" />
     <Content Include="src\app\shared\components\generic-modal\generic-modal.component.html" />
+    <Content Include="src\app\shared\components\main-menu\main-menu.component.css" />
+    <Content Include="src\app\shared\components\main-menu\main-menu.component.html" />
+    <Content Include="src\app\shared\components\shutdown\shutdown.component.css" />
+    <Content Include="src\app\shared\components\shutdown\shutdown.component.html" />
     <Content Include="src\app\shared\components\wizard\wizard.component.css" />
-    <Content Include="src\app\wallet\address-book\address-book.component.css" />
-    <Content Include="src\app\wallet\address-book\address-book.component.html" />
-    <Content Include="src\app\wallet\address-book\modals\add-new-address\add-new-address.component.css" />
-    <Content Include="src\app\wallet\address-book\modals\add-new-address\add-new-address.component.html" />
     <Content Include="src\app\wallet\advanced\advanced.component.css" />
     <Content Include="src\app\wallet\advanced\advanced.component.html" />
     <Content Include="src\app\wallet\advanced\components\about\about.component.css" />
@@ -100,18 +78,10 @@
     <Content Include="src\app\wallet\logout-confirmation\logout-confirmation.component.html" />
     <Content Include="src\app\wallet\menu\menu.component.css" />
     <Content Include="src\app\wallet\menu\menu.component.html" />
-    <Content Include="src\app\wallet\receive\receive.component.css" />
-    <Content Include="src\app\wallet\receive\receive.component.html" />
-    <Content Include="src\app\wallet\send\send-confirmation\send-confirmation.component.css" />
-    <Content Include="src\app\wallet\send\send-confirmation\send-confirmation.component.html" />
-    <Content Include="src\app\wallet\send\send.component.css" />
-    <Content Include="src\app\wallet\send\send.component.html" />
+    <Content Include="src\app\wallet\server\applications-manage\applications-manage.component.css" />
+    <Content Include="src\app\wallet\server\applications-manage\applications-manage.html" />
     <Content Include="src\app\wallet\server\create-serverid\create-serverid.component.css" />
     <Content Include="src\app\wallet\server\create-serverid\create-serverid.component.html" />
-    <Content Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.css" />
-    <Content Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.html" />
-    <Content Include="src\app\wallet\smart-contracts\components\smart-contracts.component.css" />
-    <Content Include="src\app\wallet\smart-contracts\components\smart-contracts.component.html" />
     <Content Include="src\app\wallet\status-bar\status-bar.component.css" />
     <Content Include="src\app\wallet\status-bar\status-bar.component.html" />
     <Content Include="src\app\wallet\transaction-details\transaction-details.component.css" />
@@ -133,12 +103,105 @@
     <Content Include="src\assets\images\icons\icon.svg" />
     <Content Include="src\assets\images\if_Error_16.png" />
     <Content Include="src\assets\images\license_en.txt" />
+    <Content Include="src\assets\images\logo-failed.png" />
+    <Content Include="src\assets\images\logo.png" />
     <Content Include="src\assets\images\logo.svg" />
+    <Content Include="src\assets\images\logo_aqua.png" />
+    <Content Include="src\assets\images\logo_black.png" />
+    <Content Include="src\assets\images\logo_pink.png" />
+    <Content Include="src\assets\images\logo_white.png" />
     <Content Include="src\assets\images\logo_white.svg" />
     <Content Include="src\assets\images\notransactions.svg" />
     <Content Include="src\assets\images\Tick_Mark-16.png" />
-    <Content Include="src\index.prod.html" />
-    <Content Include="src\index.html" />
+    <Content Include="src\assets\images\xserver-anim.svg" />
+    <Content Include="src\assets\themes\arya-blue\theme.css" />
+    <Content Include="src\assets\themes\arya-green\theme.css" />
+    <Content Include="src\assets\themes\arya-orange\theme.css" />
+    <Content Include="src\assets\themes\arya-purple\theme.css" />
+    <Content Include="src\assets\themes\bootstrap4-dark-blue\theme.css" />
+    <Content Include="src\assets\themes\bootstrap4-dark-purple\theme.css" />
+    <Content Include="src\assets\themes\bootstrap4-light-blue\theme.css" />
+    <Content Include="src\assets\themes\bootstrap4-light-purple\theme.css" />
+    <Content Include="src\assets\themes\fluent-light\theme.css" />
+    <Content Include="src\assets\themes\luna-amber\theme.css" />
+    <Content Include="src\assets\themes\luna-blue\theme.css" />
+    <Content Include="src\assets\themes\luna-green\theme.css" />
+    <Content Include="src\assets\themes\luna-pink\theme.css" />
+    <Content Include="src\assets\themes\md-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-500.woff" />
+    <Content Include="src\assets\themes\md-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-500.woff2" />
+    <Content Include="src\assets\themes\md-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-700.woff" />
+    <Content Include="src\assets\themes\md-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-700.woff2" />
+    <Content Include="src\assets\themes\md-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-regular.woff" />
+    <Content Include="src\assets\themes\md-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-regular.woff2" />
+    <Content Include="src\assets\themes\md-dark-deeppurple\theme.css" />
+    <Content Include="src\assets\themes\md-dark-indigo\fonts\roboto-v20-latin-ext_latin-500.woff" />
+    <Content Include="src\assets\themes\md-dark-indigo\fonts\roboto-v20-latin-ext_latin-500.woff2" />
+    <Content Include="src\assets\themes\md-dark-indigo\fonts\roboto-v20-latin-ext_latin-700.woff" />
+    <Content Include="src\assets\themes\md-dark-indigo\fonts\roboto-v20-latin-ext_latin-700.woff2" />
+    <Content Include="src\assets\themes\md-dark-indigo\fonts\roboto-v20-latin-ext_latin-regular.woff" />
+    <Content Include="src\assets\themes\md-dark-indigo\fonts\roboto-v20-latin-ext_latin-regular.woff2" />
+    <Content Include="src\assets\themes\md-dark-indigo\theme.css" />
+    <Content Include="src\assets\themes\md-light-deeppurple\fonts\roboto-v20-latin-ext_latin-500.woff" />
+    <Content Include="src\assets\themes\md-light-deeppurple\fonts\roboto-v20-latin-ext_latin-500.woff2" />
+    <Content Include="src\assets\themes\md-light-deeppurple\fonts\roboto-v20-latin-ext_latin-700.woff" />
+    <Content Include="src\assets\themes\md-light-deeppurple\fonts\roboto-v20-latin-ext_latin-700.woff2" />
+    <Content Include="src\assets\themes\md-light-deeppurple\fonts\roboto-v20-latin-ext_latin-regular.woff" />
+    <Content Include="src\assets\themes\md-light-deeppurple\fonts\roboto-v20-latin-ext_latin-regular.woff2" />
+    <Content Include="src\assets\themes\md-light-deeppurple\theme.css" />
+    <Content Include="src\assets\themes\md-light-indigo\fonts\roboto-v20-latin-ext_latin-500.woff" />
+    <Content Include="src\assets\themes\md-light-indigo\fonts\roboto-v20-latin-ext_latin-500.woff2" />
+    <Content Include="src\assets\themes\md-light-indigo\fonts\roboto-v20-latin-ext_latin-700.woff" />
+    <Content Include="src\assets\themes\md-light-indigo\fonts\roboto-v20-latin-ext_latin-700.woff2" />
+    <Content Include="src\assets\themes\md-light-indigo\fonts\roboto-v20-latin-ext_latin-regular.woff" />
+    <Content Include="src\assets\themes\md-light-indigo\fonts\roboto-v20-latin-ext_latin-regular.woff2" />
+    <Content Include="src\assets\themes\md-light-indigo\theme.css" />
+    <Content Include="src\assets\themes\mdc-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-500.woff" />
+    <Content Include="src\assets\themes\mdc-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-500.woff2" />
+    <Content Include="src\assets\themes\mdc-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-700.woff" />
+    <Content Include="src\assets\themes\mdc-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-700.woff2" />
+    <Content Include="src\assets\themes\mdc-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-regular.woff" />
+    <Content Include="src\assets\themes\mdc-dark-deeppurple\fonts\roboto-v20-latin-ext_latin-regular.woff2" />
+    <Content Include="src\assets\themes\mdc-dark-deeppurple\theme.css" />
+    <Content Include="src\assets\themes\mdc-dark-indigo\fonts\roboto-v20-latin-ext_latin-500.woff" />
+    <Content Include="src\assets\themes\mdc-dark-indigo\fonts\roboto-v20-latin-ext_latin-500.woff2" />
+    <Content Include="src\assets\themes\mdc-dark-indigo\fonts\roboto-v20-latin-ext_latin-700.woff" />
+    <Content Include="src\assets\themes\mdc-dark-indigo\fonts\roboto-v20-latin-ext_latin-700.woff2" />
+    <Content Include="src\assets\themes\mdc-dark-indigo\fonts\roboto-v20-latin-ext_latin-regular.woff" />
+    <Content Include="src\assets\themes\mdc-dark-indigo\fonts\roboto-v20-latin-ext_latin-regular.woff2" />
+    <Content Include="src\assets\themes\mdc-dark-indigo\theme.css" />
+    <Content Include="src\assets\themes\mdc-light-deeppurple\fonts\roboto-v20-latin-ext_latin-500.woff" />
+    <Content Include="src\assets\themes\mdc-light-deeppurple\fonts\roboto-v20-latin-ext_latin-500.woff2" />
+    <Content Include="src\assets\themes\mdc-light-deeppurple\fonts\roboto-v20-latin-ext_latin-700.woff" />
+    <Content Include="src\assets\themes\mdc-light-deeppurple\fonts\roboto-v20-latin-ext_latin-700.woff2" />
+    <Content Include="src\assets\themes\mdc-light-deeppurple\fonts\roboto-v20-latin-ext_latin-regular.woff" />
+    <Content Include="src\assets\themes\mdc-light-deeppurple\fonts\roboto-v20-latin-ext_latin-regular.woff2" />
+    <Content Include="src\assets\themes\mdc-light-deeppurple\theme.css" />
+    <Content Include="src\assets\themes\mdc-light-indigo\fonts\roboto-v20-latin-ext_latin-500.woff" />
+    <Content Include="src\assets\themes\mdc-light-indigo\fonts\roboto-v20-latin-ext_latin-500.woff2" />
+    <Content Include="src\assets\themes\mdc-light-indigo\fonts\roboto-v20-latin-ext_latin-700.woff" />
+    <Content Include="src\assets\themes\mdc-light-indigo\fonts\roboto-v20-latin-ext_latin-700.woff2" />
+    <Content Include="src\assets\themes\mdc-light-indigo\fonts\roboto-v20-latin-ext_latin-regular.woff" />
+    <Content Include="src\assets\themes\mdc-light-indigo\fonts\roboto-v20-latin-ext_latin-regular.woff2" />
+    <Content Include="src\assets\themes\mdc-light-indigo\theme.css" />
+    <Content Include="src\assets\themes\nova-accent\theme.css" />
+    <Content Include="src\assets\themes\nova-alt\theme.css" />
+    <Content Include="src\assets\themes\nova\theme.css" />
+    <Content Include="src\assets\themes\rhea\theme.css" />
+    <Content Include="src\assets\themes\saga-blue\theme.css" />
+    <Content Include="src\assets\themes\saga-green\theme.css" />
+    <Content Include="src\assets\themes\saga-orange\theme.css" />
+    <Content Include="src\assets\themes\saga-purple\theme.css" />
+    <Content Include="src\assets\themes\vela-blue\theme.css" />
+    <Content Include="src\assets\themes\vela-green\theme.css" />
+    <Content Include="src\assets\themes\vela-orange\theme.css" />
+    <Content Include="src\assets\themes\vela-purple\theme.css" />
+    <Content Include="src\index.html">
+      <Publish>True</Publish>
+    </Content>
+    <Content Include="src\index.prod.html">
+      <Publish>True</Publish>
+    </Content>
+    <Content Include="src\karma.conf.js" />
     <Content Include="src\scss\bootstrap-grid.scss" />
     <Content Include="src\scss\bootstrap-reboot.scss" />
     <Content Include="src\scss\bootstrap.scss" />
@@ -230,152 +293,197 @@
     <Content Include="src\styles.css.map" />
     <Content Include="src\tsconfig.app.json" />
     <Content Include="src\tsconfig.spec.json" />
-    <Content Include="tsconfig-serve.json" />
+    <Content Include="tsconfig.app.json" />
     <Content Include="tsconfig.json" />
+    <Content Include="tslint.json" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="e2e\app.e2e-spec.ts" />
-    <TypeScriptCompile Include="e2e\app.po.ts" />
-    <TypeScriptCompile Include="main.ts" />
+    <Folder Include="src\" />
+    <Folder Include="src\app\" />
+    <Folder Include="src\app\login\" />
+    <Folder Include="src\app\setup\" />
+    <Folder Include="src\app\setup\create\" />
+    <Folder Include="src\app\setup\create\confirm-mnemonic\" />
+    <Folder Include="src\app\setup\create\show-mnemonic\" />
+    <Folder Include="src\app\setup\finalize-setup\" />
+    <Folder Include="src\app\setup\recover\" />
+    <Folder Include="src\app\shared\" />
+    <Folder Include="src\app\shared\components\" />
+    <Folder Include="src\app\shared\components\generic-modal\" />
+    <Folder Include="src\app\shared\components\main-menu\" />
+    <Folder Include="src\app\shared\components\shutdown\" />
+    <Folder Include="src\app\shared\components\wizard\" />
+    <Folder Include="src\app\shared\directives\" />
+    <Folder Include="src\app\shared\http-interceptors\" />
+    <Folder Include="src\app\shared\models\" />
+    <Folder Include="src\app\shared\pipes\" />
+    <Folder Include="src\app\shared\services\" />
+    <Folder Include="src\app\wallet\" />
+    <Folder Include="src\app\wallet\advanced\" />
+    <Folder Include="src\app\wallet\advanced\components\" />
+    <Folder Include="src\app\wallet\advanced\components\about\" />
+    <Folder Include="src\app\wallet\advanced\components\ext-pubkey\" />
+    <Folder Include="src\app\wallet\advanced\components\generate-addresses\" />
+    <Folder Include="src\app\wallet\advanced\components\resync\" />
+    <Folder Include="src\app\wallet\dashboard\" />
+    <Folder Include="src\app\wallet\history\" />
+    <Folder Include="src\app\wallet\logout-confirmation\" />
+    <Folder Include="src\app\wallet\menu\" />
+    <Folder Include="src\app\wallet\server\" />
+    <Folder Include="src\app\wallet\server\applications-manage\" />
+    <Folder Include="src\app\wallet\server\create-serverid\" />
+    <Folder Include="src\app\wallet\status-bar\" />
+    <Folder Include="src\app\wallet\transaction-details\" />
+    <Folder Include="src\assets\" />
+    <Folder Include="src\assets\fonts\" />
+    <Folder Include="src\assets\images\" />
+    <Folder Include="src\assets\images\icons\" />
+    <Folder Include="src\assets\themes\" />
+    <Folder Include="src\assets\themes\arya-blue\" />
+    <Folder Include="src\assets\themes\arya-green\" />
+    <Folder Include="src\assets\themes\arya-orange\" />
+    <Folder Include="src\assets\themes\arya-purple\" />
+    <Folder Include="src\assets\themes\bootstrap4-dark-blue\" />
+    <Folder Include="src\assets\themes\bootstrap4-dark-purple\" />
+    <Folder Include="src\assets\themes\bootstrap4-light-blue\" />
+    <Folder Include="src\assets\themes\bootstrap4-light-purple\" />
+    <Folder Include="src\assets\themes\fluent-light\" />
+    <Folder Include="src\assets\themes\luna-amber\" />
+    <Folder Include="src\assets\themes\luna-blue\" />
+    <Folder Include="src\assets\themes\luna-green\" />
+    <Folder Include="src\assets\themes\luna-pink\" />
+    <Folder Include="src\assets\themes\md-dark-deeppurple\" />
+    <Folder Include="src\assets\themes\md-dark-deeppurple\fonts\" />
+    <Folder Include="src\assets\themes\md-dark-indigo\" />
+    <Folder Include="src\assets\themes\md-dark-indigo\fonts\" />
+    <Folder Include="src\assets\themes\md-light-deeppurple\" />
+    <Folder Include="src\assets\themes\md-light-deeppurple\fonts\" />
+    <Folder Include="src\assets\themes\md-light-indigo\" />
+    <Folder Include="src\assets\themes\md-light-indigo\fonts\" />
+    <Folder Include="src\assets\themes\mdc-dark-deeppurple\" />
+    <Folder Include="src\assets\themes\mdc-dark-deeppurple\fonts\" />
+    <Folder Include="src\assets\themes\mdc-dark-indigo\" />
+    <Folder Include="src\assets\themes\mdc-dark-indigo\fonts\" />
+    <Folder Include="src\assets\themes\mdc-light-deeppurple\" />
+    <Folder Include="src\assets\themes\mdc-light-deeppurple\fonts\" />
+    <Folder Include="src\assets\themes\mdc-light-indigo\" />
+    <Folder Include="src\assets\themes\mdc-light-indigo\fonts\" />
+    <Folder Include="src\assets\themes\nova-accent\" />
+    <Folder Include="src\assets\themes\nova-alt\" />
+    <Folder Include="src\assets\themes\nova\" />
+    <Folder Include="src\assets\themes\rhea\" />
+    <Folder Include="src\assets\themes\saga-blue\" />
+    <Folder Include="src\assets\themes\saga-green\" />
+    <Folder Include="src\assets\themes\saga-orange\" />
+    <Folder Include="src\assets\themes\saga-purple\" />
+    <Folder Include="src\assets\themes\vela-blue\" />
+    <Folder Include="src\assets\themes\vela-green\" />
+    <Folder Include="src\assets\themes\vela-orange\" />
+    <Folder Include="src\assets\themes\vela-purple\" />
+    <Folder Include="src\environments\" />
+    <Folder Include="src\scss\" />
+    <Folder Include="src\scss\mixins\" />
+    <Folder Include="src\scss\themes\" />
+    <Folder Include="src\scss\utilities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="server.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\app\app-routing.module.ts" />
-    <TypeScriptCompile Include="src\app\app.component.spec.ts" />
     <TypeScriptCompile Include="src\app\app.component.ts" />
     <TypeScriptCompile Include="src\app\app.module.ts" />
-    <TypeScriptCompile Include="src\app\login\login.component.spec.ts" />
     <TypeScriptCompile Include="src\app\login\login.component.ts" />
-    <TypeScriptCompile Include="src\app\setup\create\confirm-mnemonic\confirm-mnemonic.component.spec.ts" />
     <TypeScriptCompile Include="src\app\setup\create\confirm-mnemonic\confirm-mnemonic.component.ts" />
     <TypeScriptCompile Include="src\app\setup\create\confirm-mnemonic\secret-word-index-generator.ts" />
-    <TypeScriptCompile Include="src\app\setup\create\create.component.spec.ts" />
     <TypeScriptCompile Include="src\app\setup\create\create.component.ts" />
-    <TypeScriptCompile Include="src\app\shared\components\main-menu\main-menu.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\finalize-setup\finalize-setup.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\recover\recover.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\setup-routing.module.ts" />
+    <TypeScriptCompile Include="src\app\setup\setup.component.ts" />
+    <TypeScriptCompile Include="src\app\setup\setup.module.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\generic-modal\generic-modal.component.ts" />
     <TypeScriptCompile Include="src\app\shared\components\main-menu\main-menu.component.ts" />
     <TypeScriptCompile Include="src\app\shared\components\main-menu\main-menu.module.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\shutdown\shutdown.component.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\shutdown\shutdown.module.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\wizard\step.component.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\wizard\steps.component.ts" />
+    <TypeScriptCompile Include="src\app\shared\components\wizard\wizard.module.ts" />
+    <TypeScriptCompile Include="src\app\shared\directives\auto-focus.directive.ts" />
+    <TypeScriptCompile Include="src\app\shared\directives\password-validation.directive.ts" />
+    <TypeScriptCompile Include="src\app\shared\http-interceptors\api-interceptor.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\address-label.ts" />
     <TypeScriptCompile Include="src\app\shared\models\application.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaccountrequest.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaccountresponse.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\server-start-request.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\server-setuprequest.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\server-setupstatusresponse.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\serveridresponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingcreateaddressresponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakinggetinforesponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingsetup.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingsetupresponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingwithdrawalrequest.ts" />
     <TypeScriptCompile Include="src\app\shared\models\coldstakingwithdrawalresponse.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\server-status.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\validateaddressresponse.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\split-coins.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\xserver-status.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\wallet-rescan.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="src\app\shared\models\wallet-signmessagerequest.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\wallet-verifyrequest.ts" />
-    <TypeScriptCompile Include="src\app\shared\services\coldstaking.service.ts" />
-    <TypeScriptCompile Include="src\app\shared\services\server.api.service.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\create-address\create-address.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\create-address\create-address.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\create-hot\create-hot.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\create-hot\create-hot.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\create-success\create-success.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\create-success\create-success.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\create\create.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\create\create.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\overview.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\overview.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\withdraw\withdraw-confirmation\withdraw-confirmation.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\withdraw\withdraw-confirmation\withdraw-confirmation.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\withdraw\withdraw.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\cold-staking\withdraw\withdraw.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\collateral-setup\collateral-setup.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\collateral-setup\collateral-setup.component.ts" />
-    <TypeScriptCompile Include="src\app\setup\finalize-setup\finalize-setup.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\setup\finalize-setup\finalize-setup.component.ts" />
-    <TypeScriptCompile Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\setup\create\show-mnemonic\show-mnemonic.component.ts" />
-    <TypeScriptCompile Include="src\app\setup\recover\recover.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\setup\recover\recover.component.ts" />
-    <TypeScriptCompile Include="src\app\setup\setup-routing.module.ts" />
-    <TypeScriptCompile Include="src\app\setup\setup.component.ts" />
-    <TypeScriptCompile Include="src\app\setup\setup.module.ts" />
-    <TypeScriptCompile Include="src\app\shared\components\generic-modal\generic-modal.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\shared\components\generic-modal\generic-modal.component.ts" />
-    <TypeScriptCompile Include="src\app\shared\components\wizard\step.component.ts" />
-    <TypeScriptCompile Include="src\app\shared\components\wizard\steps.component.ts" />
-    <TypeScriptCompile Include="src\app\shared\components\wizard\wizard.module.ts" />
-    <TypeScriptCompile Include="src\app\shared\directives\auto-focus.directive.spec.ts" />
-    <TypeScriptCompile Include="src\app\shared\directives\auto-focus.directive.ts" />
-    <TypeScriptCompile Include="src\app\shared\directives\password-validation.directive.spec.ts" />
-    <TypeScriptCompile Include="src\app\shared\directives\password-validation.directive.ts" />
-    <TypeScriptCompile Include="src\app\shared\http-interceptors\api-interceptor.ts" />
-    <TypeScriptCompile Include="src\app\shared\models\address-label.ts" />
     <TypeScriptCompile Include="src\app\shared\models\error-response.ts" />
     <TypeScriptCompile Include="src\app\shared\models\fee-estimation.ts" />
     <TypeScriptCompile Include="src\app\shared\models\mnemonic.ts" />
     <TypeScriptCompile Include="src\app\shared\models\node-status.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\profileresult.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\server-setuprequest.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\server-setupresponse.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\server-setupstatusresponse.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\server-start-request.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\server-status.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\serveridresponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\sidechain-fee-estimation.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\split-coins.ts" />
     <TypeScriptCompile Include="src\app\shared\models\transaction-building.ts" />
     <TypeScriptCompile Include="src\app\shared\models\transaction-info.ts" />
     <TypeScriptCompile Include="src\app\shared\models\transaction-sending.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\update-info.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\validateaddressresponse.ts" />
     <TypeScriptCompile Include="src\app\shared\models\wallet-creation.ts" />
     <TypeScriptCompile Include="src\app\shared\models\wallet-info.ts" />
     <TypeScriptCompile Include="src\app\shared\models\wallet-load.ts" />
     <TypeScriptCompile Include="src\app\shared\models\wallet-recovery.ts" />
-    <TypeScriptCompile Include="src\app\shared\pipes\coin-notation.pipe.spec.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\wallet-rescan.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\wallet-signmessagerequest.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\wallet-verifyrequest.ts" />
+    <TypeScriptCompile Include="src\app\shared\models\xserver-status.ts" />
     <TypeScriptCompile Include="src\app\shared\pipes\coin-notation.pipe.ts" />
+    <TypeScriptCompile Include="src\app\shared\pipes\size-unit.pipe.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\application-state.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\chain.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\coldstaking.service.ts" />
     <TypeScriptCompile Include="src\app\shared\services\fullnode.api.service.ts" />
     <TypeScriptCompile Include="src\app\shared\services\global.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\logger.service.ts" />
     <TypeScriptCompile Include="src\app\shared\services\modal.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\notification.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\server.api.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\settings.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\storage.service.ts" />
     <TypeScriptCompile Include="src\app\shared\services\theme.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\title.service.ts" />
+    <TypeScriptCompile Include="src\app\shared\services\update.service.ts" />
     <TypeScriptCompile Include="src\app\shared\shared.module.ts" />
     <TypeScriptCompile Include="src\app\shared\theme.ts" />
     <TypeScriptCompile Include="src\app\shared\themes.ts" />
-    <TypeScriptCompile Include="src\app\wallet\address-book\address-book.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\address-book\address-book.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\address-book\modals\add-new-address\add-new-address.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\address-book\modals\add-new-address\add-new-address.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\advanced\advanced.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\advanced\advanced.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\advanced\components\about\about.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\advanced\components\about\about.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\advanced\components\ext-pubkey\ext-pubkey.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\advanced\components\ext-pubkey\ext-pubkey.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\advanced\components\generate-addresses\generate-addresses.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\advanced\components\generate-addresses\generate-addresses.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\advanced\components\resync\resync.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\advanced\components\resync\resync.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\dashboard\dashboard.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\dashboard\dashboard.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\history\history.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\history\history.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\logout-confirmation\logout-confirmation.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\logout-confirmation\logout-confirmation.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\menu\menu.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\menu\menu.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\receive\receive.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\receive\receive.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\send\send-confirmation\send-confirmation.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\send\send-confirmation\send-confirmation.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\send\send.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\send\send.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\server\create-serverid\create-serverid.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\wallet\server\applications-manage\applications-manage.component.ts" />
     <TypeScriptCompile Include="src\app\wallet\server\create-serverid\create-serverid.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\balance\balance.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\contract-type.pipe.ts" />
-    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\modals\transaction\transaction.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\smart-contracts.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\wallet\smart-contracts\components\smart-contracts.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\smart-contracts\smart-contracts.module.ts" />
-    <TypeScriptCompile Include="src\app\wallet\smart-contracts\smart-contracts.service.ts" />
-    <TypeScriptCompile Include="src\app\wallet\status-bar\status-bar.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\status-bar\status-bar.component.ts" />
-    <TypeScriptCompile Include="src\app\wallet\transaction-details\transaction-details.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\transaction-details\transaction-details.component.ts" />
     <TypeScriptCompile Include="src\app\wallet\wallet-routing.module.ts" />
-    <TypeScriptCompile Include="src\app\wallet\wallet.component.spec.ts" />
     <TypeScriptCompile Include="src\app\wallet\wallet.component.ts" />
     <TypeScriptCompile Include="src\app\wallet\wallet.module.ts" />
     <TypeScriptCompile Include="src\environments\environment.dev.ts" />
@@ -386,77 +494,6 @@
     <TypeScriptCompile Include="src\polyfills.ts" />
     <TypeScriptCompile Include="src\test.ts" />
     <TypeScriptCompile Include="src\typings.d.ts" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="postcss.config.js" />
-    <Compile Include="postinstall-web.js" />
-    <Compile Include="postinstall.js" />
-    <Compile Include="src\karma.conf.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="e2e\" />
-    <Folder Include="src\" />
-    <Folder Include="src\app\" />
-    <Folder Include="src\app\login\" />
-    <Folder Include="src\app\setup\" />
-    <Folder Include="src\app\setup\create\" />
-    <Folder Include="src\app\setup\create\confirm-mnemonic\" />
-    <Folder Include="src\app\shared\components\main-menu\" />
-    <Folder Include="src\app\wallet\cold-staking\create-address\" />
-    <Folder Include="src\app\wallet\cold-staking\create-hot\" />
-    <Folder Include="src\app\wallet\cold-staking\create-success\" />
-    <Folder Include="src\app\wallet\cold-staking\create\" />
-    <Folder Include="src\app\wallet\cold-staking\withdraw\" />
-    <Folder Include="src\app\wallet\cold-staking\withdraw\withdraw-confirmation\" />
-    <Folder Include="src\app\wallet\collateral-setup\" />
-    <Folder Include="src\app\setup\finalize-setup\" />
-    <Folder Include="src\app\setup\create\show-mnemonic\" />
-    <Folder Include="src\app\setup\recover\" />
-    <Folder Include="src\app\shared\" />
-    <Folder Include="src\app\shared\components\" />
-    <Folder Include="src\app\shared\components\generic-modal\" />
-    <Folder Include="src\app\shared\components\wizard\" />
-    <Folder Include="src\app\shared\directives\" />
-    <Folder Include="src\app\shared\http-interceptors\" />
-    <Folder Include="src\app\shared\models\" />
-    <Folder Include="src\app\shared\pipes\" />
-    <Folder Include="src\app\shared\services\" />
-    <Folder Include="src\app\wallet\" />
-    <Folder Include="src\app\wallet\address-book\" />
-    <Folder Include="src\app\wallet\address-book\modals\" />
-    <Folder Include="src\app\wallet\address-book\modals\add-new-address\" />
-    <Folder Include="src\app\wallet\advanced\" />
-    <Folder Include="src\app\wallet\advanced\components\" />
-    <Folder Include="src\app\wallet\advanced\components\about\" />
-    <Folder Include="src\app\wallet\advanced\components\ext-pubkey\" />
-    <Folder Include="src\app\wallet\advanced\components\generate-addresses\" />
-    <Folder Include="src\app\wallet\advanced\components\resync\" />
-    <Folder Include="src\app\wallet\cold-staking\" />
-    <Folder Include="src\app\wallet\dashboard\" />
-    <Folder Include="src\app\wallet\history\" />
-    <Folder Include="src\app\wallet\logout-confirmation\" />
-    <Folder Include="src\app\wallet\menu\" />
-    <Folder Include="src\app\wallet\server\" />
-    <Folder Include="src\app\wallet\receive\" />
-    <Folder Include="src\app\wallet\send\" />
-    <Folder Include="src\app\wallet\send\send-confirmation\" />
-    <Folder Include="src\app\wallet\server\create-serverid\" />
-    <Folder Include="src\app\wallet\smart-contracts\" />
-    <Folder Include="src\app\wallet\smart-contracts\components\" />
-    <Folder Include="src\app\wallet\smart-contracts\components\balance\" />
-    <Folder Include="src\app\wallet\smart-contracts\components\modals\" />
-    <Folder Include="src\app\wallet\smart-contracts\components\modals\transaction\" />
-    <Folder Include="src\app\wallet\status-bar\" />
-    <Folder Include="src\app\wallet\transaction-details\" />
-    <Folder Include="src\assets\" />
-    <Folder Include="src\assets\fonts\" />
-    <Folder Include="src\assets\images\" />
-    <Folder Include="src\assets\images\icons\" />
-    <Folder Include="src\environments\" />
-    <Folder Include="src\scss\" />
-    <Folder Include="src\scss\mixins\" />
-    <Folder Include="src\scss\themes\" />
-    <Folder Include="src\scss\utilities\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

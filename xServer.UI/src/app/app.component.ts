@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { ApplicationStateService } from '../app/shared/services/application-state.service';
 import { ApiService } from '../app/shared/services/fullnode.api.service';
 import { Logger } from '../app/shared/services/logger.service';
-import { ElectronService } from 'ngx-electron';
 import { ThemeService } from './shared/services/theme.service';
 import { TitleService } from './shared/services/title.service';
 import { NodeStatus } from './shared/models/node-status';
@@ -40,8 +39,8 @@ export class AppComponent implements OnInit, OnDestroy {
   loading = true;
   loadingFailed = false;
 
-  nodeStarted = false;
-  nodeFailed = false;
+  nodeStarted = true;
+  nodeFailed = true;
   serverStarted = false;
   serverFailed = false;
   mainWalletExists = false;
@@ -57,7 +56,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private themeService: ThemeService,
-    private electronService: ElectronService,
     private router: Router,
     private log: Logger,
     private zone: NgZone,
@@ -146,8 +144,10 @@ export class AppComponent implements OnInit, OnDestroy {
       // };
 
       this.appState.connected = true;
-      this.startServer();
+
     }
+    this.startServer();
+    
   }
 
   onDaemonFolderChange(event) {
@@ -220,11 +220,12 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  
   startServer() {
     setTimeout(() => {
       this.loading = false;
       // We have successful connection with daemon, make sure we inform the main process of |.
-      this.electronService.ipcRenderer.send('daemon-started');
       this.appState.connected = true;
       if (!this.databaseConnected || !this.mainWalletExists) {
         this.router.navigate(['setup']);
@@ -245,11 +246,11 @@ export class AppComponent implements OnInit, OnDestroy {
           } else {
             this.mainWalletExists = false;
           }
-          this.startServer();
         }
       );
   }
 
+  
   // Attempts to initialise the fullnode by contacting the daemon.  Will try to do this MaxRetryCount times.
   private tryStartNode() {
     let retry = 0;
@@ -349,6 +350,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public openSupport() {
-    this.electronService.shell.openExternal('https://github.com/x42protocol/xServer/blob/master/README.md');
+    throw new Error('Method not implemented.');
   }
 }

@@ -131,8 +131,7 @@ export class NotificationService {
 
     const notification = {
       title: tile.title,
-      body: tile.body,
-      icon: require('path').join(__dirname, '/assets/images/logo.png')
+      body: tile.body
     };
 
     const nativeNotification = new window.Notification(notification.title, notification);

@@ -4,7 +4,6 @@ import { ThemeService } from '../../services/theme.service';
 import { SelectItemGroup, MenuItem, SelectItem } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Router } from '@angular/router';
-import { ElectronService } from 'ngx-electron';
 import { Subscription } from 'rxjs';
 import { GlobalService } from '../../services/global.service';
 import { LogoutConfirmationComponent } from '../../../wallet/logout-confirmation/logout-confirmation.component';
@@ -21,7 +20,6 @@ import { Logger } from '../../services/logger.service';
   styleUrls: ['./main-menu.component.css']
 })
 export class MainMenuComponent implements OnInit, OnDestroy {
-  private ipc: Electron.IpcRenderer;
   private updateTimerId: any;
 
   @Input() public isUnLocked = false;
@@ -58,7 +56,6 @@ export class MainMenuComponent implements OnInit, OnDestroy {
     public dialogService: DialogService,
     public appState: ApplicationStateService,
     public updateService: UpdateService,
-    private electronService: ElectronService,
     private fb: FormBuilder,
     private zone: NgZone,
   ) {
@@ -92,90 +89,15 @@ export class MainMenuComponent implements OnInit, OnDestroy {
       selectNetwork: [{ value: appState.network, }],
     });
 
-    if (this.electronService.ipcRenderer) {
-      if (this.electronService.remote) {
-        const applicationVersion = this.electronService.remote.app.getVersion();
 
-        this.appState.setVersion(applicationVersion);
-        this.log.info('Version: ' + applicationVersion);
-      }
-
-      this.ipc = electronService.ipcRenderer;
-
-      this.setupNodeIPC();
-      this.setupXServerIPC();
-
-      this.ipc.on('log-debug', (event, msg: any) => {
-        this.log.verbose(msg);
-      });
-
-      this.ipc.on('log-info', (event, msg: any) => {
-        this.log.info(msg);
-      });
-
-      this.ipc.on('log-error', (event, msg: any) => {
-        this.log.error(msg);
-      });
-    }
   }
 
   setupNodeIPC() {
-    this.ipc.on('daemon-exiting', (event, error) => {
-      if (!this.appState.shutdownInProgress) {
-        this.zone.run(() => this.router.navigate(['shutdown']));
-
-        this.log.info('x42.Node is currently being stopped... please wait...');
-        this.appState.shutdownInProgress = true;
-
-        // If the exit takes a very long time, we want to allow users to forcefully exit xCore.
-        setTimeout(() => {
-          this.appState.shutdownDelayed = true;
-        }, 60000);
-      }
-    });
-
-    this.ipc.on('daemon-exited', (event, error) => {
-      this.log.info('x42.Node is stopped.');
-      this.appState.shutdownInProgress = false;
-      this.appState.shutdownDelayed = false;
-
-      // Perform a new close event on the window, this time it will close itself.
-      window.close();
-    });
-
-    this.ipc.on('daemon-error', (event, error) => {
-      this.log.error(error);
-      // this.modalService.openModal('Failed to start x42.Node process', error);
-      // TODO: Add to a log for the user: this.log.lastEntries()
-    });
+    throw new Error('Method not implemented.');
   }
 
   setupXServerIPC() {
-    this.ipc.on('xserver-daemon-exiting', (event, error) => {
-      if (!this.appState.shutdownInProgress) {
-        this.zone.run(() => this.router.navigate(['shutdown']));
-
-        this.log.info('xServer.D is currently being stopped... please wait...');
-        this.appState.shutdownInProgress = true;
-
-        // If the exit takes a very long time, we want to allow users to forcefully exit xCore.
-        setTimeout(() => {
-          this.appState.shutdownDelayed = true;
-        }, 60000);
-      }
-    });
-
-    this.ipc.on('xserver-daemon-exited', (event, error) => {
-      this.log.info('xServer.D is stopped.');
-      this.appState.shutdownInProgress = false;
-      this.appState.shutdownDelayed = false;
-    });
-
-    this.ipc.on('xserver-daemon-error', (event, error) => {
-      this.log.error(error);
-      // this.modalService.openModal('Failed to start xServer.D process', error);
-      // TODO: Add to a log for the user: this.log.lastEntries()
-    });
+    throw new Error('Method not implemented.');
 
   }
 
@@ -215,7 +137,6 @@ export class MainMenuComponent implements OnInit, OnDestroy {
 
   changeMode() {
     this.appState.changingMode = true;
-    this.electronService.ipcRenderer.send('daemon-change');
 
     // Make sure we shut down the existing node when user choose the change mode action.
     this.apiService.shutdownNode().subscribe(response => { });

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using x42.Configuration;
@@ -25,7 +26,18 @@ namespace x42.Feature.X42Client
             TextFileConfiguration config = serverSettings.ConfigReader;
 
             Name = config.GetOrDefault("name", "X42Node", logger);
-            Address = config.GetOrDefault("address", IPAddress.Parse("127.0.0.1"), logger);
+
+            try
+            {
+                var addressConfig = config.GetOrDefault("address", "127.0.0.1", logger);
+                logger.LogInformation("Address Configuration:" + addressConfig);
+                Address = Dns.GetHostAddresses(addressConfig).First(addr => addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+            }
+            catch (System.Exception)
+            {
+                throw;
+            } 
+         
             Port = config.GetOrDefault("port", (uint)serverSettings.ServerNode.DefaultNodeAPIPort, logger);
             SshUserName = config.GetOrDefault("sshusername", "username", logger);
             SshPassword = config.GetOrDefault("sshpassword", "password", logger);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using NBitcoin;
 
@@ -200,6 +201,8 @@ namespace x42.Configuration
             if (typeof(T) == typeof(ulong)) return (T) (object) ulong.Parse(str, CultureInfo.InvariantCulture);
 
             if (typeof(T) == typeof(Uri)) return (T) (object) new Uri(str);
+
+            if (typeof(T) == typeof(IPAddress)) return (T) (object) IPAddress.Parse(str);
 
             if (typeof(T) == typeof(uint256))
             {

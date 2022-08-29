@@ -1,5 +1,4 @@
 
-// TODO: Find the official UpdateInfo type from "electron-builder" lib.
 export interface UpdateInfo {
     files: UpdateFile[];
     path: string;

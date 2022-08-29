@@ -1,7 +1,8 @@
 {
   "profiles": {
     "xServerD": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "enableswagger=true"
     },
     "xServerD Test": {
       "commandName": "Project",

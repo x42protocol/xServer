@@ -22,8 +22,8 @@ import { XServerStatus } from '../models/xserver-status';
 import { Logger } from './logger.service';
 import { ChainService } from './chain.service';
 import { ApplicationStateService } from './application-state.service';
-import { ElectronService } from 'ngx-electron';
 import { NotificationService } from './notification.service';
+import { AppConfigService } from './appconfig.service';
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +37,9 @@ export class ApiService {
     private log: Logger,
     private chains: ChainService,
     private appState: ApplicationStateService,
-    private electronService: ElectronService,
     private notifications: NotificationService,
     private modalService: ModalService,
+    private appConfigService: AppConfigService
   ) {
     if (!ApiService.singletonInstance) {
       ApiService.singletonInstance = this;
@@ -71,32 +71,8 @@ export class ApiService {
     this.genesisDate = chain.genesisDate;
 
     this.log.info('Node Api Service, Chain: ', chain);
-
-    if (this.electronService.ipcRenderer) {
-      this.daemon = this.electronService.ipcRenderer.sendSync('start-daemon', chain);
-
-      if (this.daemon !== 'OK') {
-        this.notifications.add({
-          title: 'xServer Node background error',
-          hint: 'Messages from the background process received in xServer',
-          message: this.daemon,
-          icon: (this.daemon.indexOf('xServer was started in development mode') > -1) ? 'build' : 'warning'
-        });
-      }
-
-      this.log.info('Node result: ', this.daemon);
-      this.setApiPort(chain.apiPort);
-    }
+    this.apiUrl = this.appConfigService.getConfig().fullNodeEndpoint;
   }
-
-  /**
-   * Set the API port to connect with full node API. This will differ depending on coin and network.
-   */
-  setApiPort(port: number) {
-    this.apiPort = port;
-    this.apiUrl = 'http://localhost:' + port + '/api';
-  }
-
 
   getNodeStatus(silent?: boolean): Observable<NodeStatus> {
     return this.http.get<NodeStatus>(this.apiUrl + '/node/status').pipe(

@@ -12,8 +12,8 @@ import { ProfileResult } from '../models/profileresult';
 import { ServerSetupResponse } from '../models/server-setupresponse';
 import { ServerStartRequest } from '../models/server-start-request';
 import { Logger } from './logger.service';
-import { ElectronService } from 'ngx-electron';
 import { NotificationService } from './notification.service';
+import { AppConfigService } from './appconfig.service';
 
 
 @Injectable({
@@ -25,9 +25,9 @@ export class ServerApiService {
     private http: HttpClient,
     private chains: ChainService,
     private modalService: ModalService,
-    private electronService: ElectronService,
     private appState: ApplicationStateService,
     private notifications: NotificationService,
+    private appConfigService: AppConfigService
   ) {
     this.initialize();
   }
@@ -50,27 +50,9 @@ export class ServerApiService {
     chain.datafolder = this.appState.daemon.datafolder;
 
     this.log.info('xServer.D Api Service, Chain: ', chain);
-
-    if (this.electronService.ipcRenderer) {
-      this.daemon = this.electronService.ipcRenderer.sendSync('start-xserver-daemon', chain);
-
-      if (this.daemon !== 'OK') {
-        this.notifications.add({
-          title: 'xServer.D background error',
-          hint: 'Messages from the background process received in xServer',
-          message: this.daemon,
-          icon: (this.daemon.indexOf('xServer was started in development mode') > -1) ? 'build' : 'warning'
-        });
-      }
-
-      this.log.info('xServer.D result: ', this.daemon);
-      this.setApiUrl(chain.xServerPort);
-    }
+    this.x42ApiUrl = this.appConfigService.getConfig().xServerEndpoint;
   }
 
-  setApiUrl(port: number) {
-    this.x42ApiUrl = 'http://localhost:' + port;
-  }
 
   getServerStatus(silent?: boolean): Observable<ServerStatus> {
     return this.http.get<ServerStatus>(this.x42ApiUrl + '/status').pipe(

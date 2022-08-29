@@ -14,6 +14,7 @@ import { ColdStakingCreateAccountRequest } from '../models/coldstakingcreateacco
 import { ColdStakingGetInfoResponse } from '../models/coldstakinggetinforesponse';
 import { ColdStakingWithdrawalResponse } from '../models/coldstakingwithdrawalresponse';
 import { ColdStakingWithdrawalRequest } from '../models/coldstakingwithdrawalrequest';
+import { AppConfigService } from './appconfig.service';
 
 
 @Injectable({
@@ -26,6 +27,7 @@ export class ColdStakingService {
     private chains: ChainService,
     private modalService: ModalService,
     private appState: ApplicationStateService,
+    private appConfigService: AppConfigService
   ) {
     this.initialize();
   }
@@ -39,7 +41,7 @@ export class ColdStakingService {
   }
 
   setApiUrl(port: number) {
-    this.x42ApiUrl = 'http://localhost:' + port + '/api';
+    this.x42ApiUrl = this.appConfigService.getConfig().fullNodeEndpoint;
   }
 
   getInfo(walletName: string): Observable<ColdStakingGetInfoResponse> {

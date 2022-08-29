@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 import { XServerStatus } from '../models/xserver-status';
 
 @Injectable({
@@ -7,7 +6,6 @@ import { XServerStatus } from '../models/xserver-status';
 })
 export class GlobalService {
   constructor(
-    private electronService: ElectronService,
   ) {
     this.setWalletName('');
   }
@@ -25,7 +23,7 @@ export class GlobalService {
   private profile: any;
 
   quitApplication() {
-    this.electronService.remote.app.quit();
+    throw new Error('Method not implemented.');
   }
   getWalletPath() {
     return this.walletPath;
