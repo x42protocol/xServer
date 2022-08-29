@@ -15,6 +15,7 @@ using System.Net;
 using x42.Controllers.Results;
 using x42.ServerNode;
 using static x42.ServerNode.Tier;
+using x42.Feature.Metrics.Models;
 
 namespace x42.Feature.Metrics
 {
@@ -35,24 +36,29 @@ namespace x42.Feature.Metrics
         private readonly IAsyncLoopFactory _asyncLoopFactory;
 
         /// <summary>Time in seconds between attempts run the network health monitor</summary>
-        private readonly int _checkSleepSeconds = 10;
+        private readonly int _checkSleepSeconds = 5;
 
-        private MetricsFeature _metricsFeature;
-
-        public List<int> CPUUtilization { get; }
+        private MetricsService _metricsService;
+        public float[] cpuMetrics = new float[12]; // one minute average, over 5 second checks
+        public float[] memoryMetrics = new float[12]; // one minute average, over 5 second checks
+        private int cpuMetricsPos = 0;
+        private int memoryMetricsPos = 0;
+        private bool _cpuMetricsInitialized = false;
+        private bool _memoryMetricsInitialized = false;
 
         public MetricsMonitor(
             ILogger mainLogger,
             IxServerLifetime serverLifetime,
             IAsyncLoopFactory asyncLoopFactory,
-            MetricsFeature metricsFeature
+            MetricsService metricsService
             )
         {
             logger = mainLogger;
             this._serverLifetime = serverLifetime;
             this._asyncLoopFactory = asyncLoopFactory;
-            _metricsFeature = metricsFeature;
+            _metricsService = metricsService;
         }
+
 
         public void Start()
         {
@@ -65,7 +71,7 @@ namespace x42.Feature.Metrics
                 try
                 {
 
-                    await UpdateCPUMetricsCounters().ConfigureAwait(false);
+                    await UpdateHostHardwareMetricsCounters().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -79,12 +85,36 @@ namespace x42.Feature.Metrics
             startAfter: TimeSpans.Second);
         }
           
+        public float GetCpuMetrics()
+        {
+            if (_cpuMetricsInitialized)
+            {
+                return cpuMetrics.Average();
+            }
+            else return new float() ;
+        }
 
-        public async Task UpdateCPUMetricsCounters()
+        public float GetMemoryMetrics()
+        {
+            if (_memoryMetricsInitialized)
+            {
+                return memoryMetrics.Average();
+            }
+            else return new float();
+        }
+        public async Task UpdateHostHardwareMetricsCounters()
         {
             try
             {
-                await CountCPUUtalizationAsync();
+                 var counters = CountHostHardwareUtalizationAsync();
+                if (cpuMetricsPos == cpuMetrics.Length - 1 && !_cpuMetricsInitialized){ _cpuMetricsInitialized = true; }
+                cpuMetrics[cpuMetricsPos] = counters.ProcessorUtilizationPercent;
+                cpuMetricsPos = cpuMetricsPos == cpuMetrics.Length - 1 ? 0 : cpuMetricsPos+1;
+
+                if (memoryMetricsPos == memoryMetrics.Length - 1 && !_memoryMetricsInitialized) { _memoryMetricsInitialized = true; }
+                memoryMetrics[memoryMetricsPos] = counters.AvailableMemoryMb;
+                memoryMetricsPos = memoryMetricsPos == memoryMetrics.Length - 1 ? 0 : memoryMetricsPos+1;
+
             }
             catch (Exception ex)
             {
@@ -94,17 +124,15 @@ namespace x42.Feature.Metrics
 
         public async Task Startup()
         {
-    
+            logger.LogInformation("Metrics Monitor Starting Up");
         }
 
         /// <summary>
         ///     Check for active servers, and remove any inactive servers.
         /// </summary>
-        private async Task CountCPUUtalizationAsync()
+        private HostStatsModel CountHostHardwareUtalizationAsync()
         {
-            //Populate a round robin array (60 Slots of every 10 seconds)
-            //This array must be accessible to allow the MetricsService to Read from it.
-            throw new NotImplementedException();
+            return _metricsService.GetHardwareMetric();
         }
 
 

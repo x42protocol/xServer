@@ -13,7 +13,7 @@ namespace x42.Feature.Metrics.Models
         {
             ProcessorUtilizationPercent = processorUtilizationPercent;
             AvailableMemoryMb = availableMemoryMb;
-            date = DateTime.Now;
+            date = DateTime.UtcNow;
         }
     }
 }
