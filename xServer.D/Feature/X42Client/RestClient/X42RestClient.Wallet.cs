@@ -94,6 +94,29 @@ namespace x42.Feature.X42Client.RestClient
         }
 
         /// <summary>
+        ///     Gets the hex version of the P2PK (pay-to-pubkey) script pub key corresponding to the private key of this address.
+        /// </summary>
+        public async Task<string> GetPublicKey(string address, string walletName, string accountName)
+        {
+            try
+            {
+                string response =
+                    await base.SendGet<string>(
+                        $"api/Wallet/publicKey?address={address}&walletName={walletName}&accountName={accountName}"
+                        );
+
+                Guard.Null(response, nameof(response), "'api/Wallet/publicKey' API Response Was Null!");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug($"An Error '{ex.Message}' Occured When Getting the public key", ex);
+                return null;
+            }
+        }
+
+        /// <summary>
         ///     Gets a List of Spendable TX's
         /// </summary>
         /// <param name="walletName">Name of Wallet</param>
