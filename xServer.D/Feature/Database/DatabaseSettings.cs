@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using x42.Configuration;
 using x42.ServerNode;
 using x42.Utilities;
-
+using System.Runtime.Serialization.Formatters;
 namespace x42.Feature.Database
 {
     /// <summary>
@@ -28,12 +28,27 @@ namespace x42.Feature.Database
 
             ConnectionString = config.GetOrDefault("connectionstring",
                 "User ID=postgres;Password=password;Host=localhost;Port=5432;Database=x42;", logger);
+
+            Mongoconnectionstring = config.GetOrDefault("mongoconnectionstring","", logger);
+            MongoDbName = config.GetOrDefault("mongodbname", "", logger);
+
         }
 
         /// <summary>
         ///     An address to use for the database.
         /// </summary>
         public string ConnectionString { get; set; }
+
+
+
+        /// <summary>
+        ///     An address to use for the mongodb database.
+        /// </summary>
+        public string Mongoconnectionstring { get; set; }
+
+
+        public string MongoDbName { get; set; }
+
 
         /// <summary>
         ///     Displays database help information on the console.

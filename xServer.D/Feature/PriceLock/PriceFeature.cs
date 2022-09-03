@@ -586,7 +586,7 @@ namespace x42.Feature.PriceLock
             List<PriceResult> priceResult = new List<PriceResult>();
             string xServerURL = networkFeatures.GetServerUrl(xServerConnectionInfo.NetworkProtocol, xServerConnectionInfo.NetworkAddress, xServerConnectionInfo.NetworkPort);
             var client = new RestClient(xServerURL);
-            var activeServerCountRequest = new RestRequest("/getprices/", Method.GET);
+            var activeServerCountRequest = new RestRequest("/getprices/", Method.Get);
             var getPriceResult = await client.ExecuteAsync<List<PriceResult>>(activeServerCountRequest, cancellationToken).ConfigureAwait(false);
             if (getPriceResult.StatusCode == HttpStatusCode.OK)
             {
@@ -598,7 +598,7 @@ namespace x42.Feature.PriceLock
         private async Task<CoinGeckoPriceResult> GetCoinGeckoPrice(CancellationToken cancellationToken, FiatCurrency currency)
         {
             var client = new RestClient("https://api.coingecko.com/api/v3/simple/");
-            var request = new RestRequest($"price?ids=x42-protocol&vs_currencies={currency}", Method.GET);
+            var request = new RestRequest($"price?ids=x42-protocol&vs_currencies={currency}", Method.Get);
             var response = await client.ExecuteAsync<CoinGeckoPriceResult>(request, cancellationToken);
             if (response.ErrorException != null)
             {

@@ -10,7 +10,6 @@ using x42.Feature.Database.Tables;
 using System.Collections.Generic;
 using x42.Controllers.Requests;
 using RestSharp;
-using Newtonsoft.Json;
 using System.Net;
 using x42.Controllers.Results;
 using x42.ServerNode;
@@ -349,12 +348,9 @@ namespace x42.Feature.Network
             {
                 string xServerURL = networkFeatures.GetServerUrl(activeServer.NetworkProtocol, activeServer.NetworkAddress, activeServer.NetworkPort);
                 var client = new RestClient(xServerURL);
-                var registerRestRequest = new RestRequest("/registerserver", Method.POST);
-                var request = JsonConvert.SerializeObject(registerRequest);
-                registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
-                registerRestRequest.RequestFormat = DataFormat.Json;
+                var registerRestRequest = new RestRequest("/registerserver", Method.Post);
 
-                var result = await client.ExecuteAsync(registerRestRequest, cancellationToken);
+                await client.ExecuteAsync(registerRestRequest, cancellationToken);
             }
         }
 
@@ -404,11 +400,7 @@ namespace x42.Feature.Network
                 foreach (string xServerURL in xServerUrls)
                 {
                     var client = new RestClient(xServerURL);
-                    var registerRestRequest = new RestRequest("/register", Method.POST);
-                    var request = JsonConvert.SerializeObject(registerRequest);
-                    registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
-                    registerRestRequest.RequestFormat = DataFormat.Json;
-
+                    var registerRestRequest = new RestRequest("/register", Method.Post);
                     await client.ExecuteAsync(registerRestRequest, cancellationToken);
                 }
             }
@@ -458,7 +450,7 @@ namespace x42.Feature.Network
                                 try
                                 {
                                     var client = new RestClient(xServerURL);
-                                    var allActiveXServersRequest = new RestRequest("/getactivexservers/", Method.GET);
+                                    var allActiveXServersRequest = new RestRequest("/getactivexservers/", Method.Get);
                                     allActiveXServersRequest.AddParameter("fromId", lastId);
                                     var allActiveXServersResult = await client.ExecuteAsync<List<ServerRegisterResult>>(allActiveXServersRequest, cancellationToken).ConfigureAwait(false);
                                     if (allActiveXServersResult.StatusCode == HttpStatusCode.OK)
