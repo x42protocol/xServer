@@ -7,6 +7,9 @@
     "xServerD Test": {
       "commandName": "Project",
       "commandLineArgs": "-testnet"
+    },
+    "Docker": {
+      "commandName": "Docker"
     }
   }
 }

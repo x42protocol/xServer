@@ -1,5 +1,6 @@
 ﻿using x42.Feature.Metrics.Models;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace x42.Feature.Metrics
 {

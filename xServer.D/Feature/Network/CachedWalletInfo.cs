@@ -14,5 +14,7 @@
         public string SignAddress { get; set; }
 
         public string FeeAddress { get; set; }
+
+        public string PublicKey { get; set; }
     }
 }

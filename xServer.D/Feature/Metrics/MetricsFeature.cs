@@ -23,14 +23,15 @@ namespace x42.Feature.Metrics
 
         /// <summary>Factory for creating background async loop tasks.</summary>
         private readonly IAsyncLoopFactory _asyncLoopFactory;
+        private readonly MetricsService _metricsService;
 
         /// <summary>Instance logger.</summary>
         private readonly ILogger logger;
 
         /// <summary>Instance logger.</summary>
 
-        private readonly MetricsService _metricsService;
         private MetricsMonitor _metricsMonitor;
+        
 
 
         public MetricsFeature(
@@ -41,15 +42,18 @@ namespace x42.Feature.Metrics
             IAsyncLoopFactory asyncLoopFactory)
         {
             logger = loggerFactory.CreateLogger(GetType().FullName);
-            _metricsService = metricsService;
             _serverLifetime = serverLifetime;
             _asyncLoopFactory = asyncLoopFactory;
+            _metricsService = metricsService;
 
         }
 
         public HostStatsModel getHardwareMetricsAsync()
         {
-            return _metricsService.GetHardwareMetric();
+            var cpuMetrics = _metricsMonitor.GetCpuMetrics();
+            var memoryMetrics = _metricsMonitor.GetMemoryMetrics();
+            HostStatsModel result = new HostStatsModel(cpuMetrics,memoryMetrics);
+            return result;
         }
 
       
@@ -61,7 +65,7 @@ namespace x42.Feature.Metrics
 
         public override Task InitializeAsync()
         {
-            _metricsMonitor = new MetricsMonitor(logger, _serverLifetime, _asyncLoopFactory, this);
+            _metricsMonitor = new MetricsMonitor(logger, _serverLifetime, _asyncLoopFactory, _metricsService);
 
             _metricsMonitor.Start();
 
