@@ -178,9 +178,9 @@ namespace x42.Feature.XDocuments
             {
 
 
-                var dataObject = dynamicObject["data"];
+                var dataObject1 = dynamicObject["data"];
 
-                string dataObjectAsJson = Serialize(dataObject);
+                string dataObjectAsJson = Serialize(dataObject1);
 
                 var isValid = await _x42Client.VerifyMessageAsync(dynamicObject["keyAddress"], dataObjectAsJson, dynamicObject["signature"]);
 

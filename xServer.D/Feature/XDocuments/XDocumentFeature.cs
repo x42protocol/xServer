@@ -14,17 +14,19 @@ namespace x42.Feature.XDocuments
         private XDocumentClient _xDocumentClient;
         private readonly ILogger _logger;
         private readonly PowerDnsFeature _powerDnsFeature;
+        private readonly X42Node _x42Client;
 
-        public XDocumentFeature(ILoggerFactory loggerFactory, PowerDnsFeature powerDnsFeature)
+        public XDocumentFeature(ILoggerFactory loggerFactory, PowerDnsFeature powerDnsFeature, X42Node x42Client)
         {
             _logger = loggerFactory.CreateLogger(GetType().FullName);
             _powerDnsFeature = powerDnsFeature;
-            _xDocumentClient = new XDocumentClient(_powerDnsFeature);
+            _x42Client = x42Client;
 
+            _xDocumentClient = new XDocumentClient(_powerDnsFeature, _x42Client);
         }
         public override Task InitializeAsync()
         {
-            _xDocumentClient = new XDocumentClient(_powerDnsFeature);
+            _xDocumentClient = new XDocumentClient(_powerDnsFeature, _x42Client);
 
             return Task.CompletedTask;
 
