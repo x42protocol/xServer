@@ -5,14 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Enums\" />
     <Folder Include="Models\Graviex\" />
+    <Folder Include="Models\NewFolder\" />
     <Folder Include="Models\OrderBook\" />
     <Folder Include="Models\x42Blockcore\" />
-    <Folder Include="Models\XServer\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MongoDB.Bson" Version="2.17.1" />
+    <PackageReference Include="NBitcoin" Version="5.0.65" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 

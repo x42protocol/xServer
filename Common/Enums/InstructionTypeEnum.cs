@@ -1,6 +1,6 @@
 ﻿namespace Common.Enums
 {
-    public enum ActionTypeEnum
+    public enum InstructionTypeEnum
     {
         RegisterProfile = 1,
         PriceLock = 2,
@@ -11,6 +11,7 @@
         MigrateApp = 7,
         BackupApp = 8,
         UpdateAppPlan = 9,
+        RegisterNewNameserver = 10,
 
     }
 }

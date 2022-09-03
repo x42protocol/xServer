@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "xServerWorker": {
+      "commandName": "Project",
+      "environmentVariables": {
+        " MONGO_USER": "Dimi",
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

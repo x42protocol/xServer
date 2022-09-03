@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using x42.Configuration.Logging;
 using x42.Feature.PowerDns;
 using x42.Feature.Setup;
+using x42.Feature.X42Client;
 using x42.Server;
 
 namespace x42.Feature.XDocuments
@@ -48,6 +49,7 @@ namespace x42.Feature.XDocuments
                         services.AddSingleton<XDocumentFeature>();
                         services.AddSingleton<XDocumentClient>();
                         services.AddSingleton<PowerDnsFeature>();
+                        services.AddSingleton<X42ClientFeature>();
 
                     });
             });

@@ -18,6 +18,7 @@ using x42.Feature.Metrics;
 using x42.Feature.Metrics.Models;
 using x42.Feature.Metrics;
 using x42.Feature.Metrics.Models;
+using x42.Feature.XDocuments;
 
 namespace x42.Controllers.Public
 {
@@ -40,13 +41,16 @@ namespace x42.Controllers.Public
         private readonly ProfileFeature profileFeature;
         private readonly PriceFeature priceFeature;
         private readonly MetricsFeature _metricsFeature;
+        private readonly XDocumentClient _xDocumentService;
+
         public PublicController(
-            XServer xServer, 
-            ProfileFeature profileFeature, 
-            PriceFeature priceFeature, 
+            XServer xServer,
+            ProfileFeature profileFeature,
+            PriceFeature priceFeature,
             PowerDnsFeature powerDnsFeature,
-            WordPressPreviewFeature wordPressPreviewFeature, 
-            MetricsFeature metricsFeature)
+            WordPressPreviewFeature wordPressPreviewFeature,
+            MetricsFeature metricsFeature,
+            XDocumentClient xDocumentService)
         {
             _xServer = xServer;
             _profileFeature = profileFeature;
@@ -57,6 +61,7 @@ namespace x42.Controllers.Public
             this.profileFeature = profileFeature;
             this.priceFeature = priceFeature;
             _metricsFeature = metricsFeature;
+            _xDocumentService = xDocumentService;
         }
 
         /// <summary>
@@ -477,7 +482,38 @@ namespace x42.Controllers.Public
             return Json(response);
         }
 
+        [HttpPost]
+        [Route("/xDocument/")]
+        public async Task<string> AddDocument(object request)
+        {
+            return await _xDocumentService.AddActionRequest(request);
+        }
 
+        [HttpGet]
+        [Route("/xDocument/ping")]
+        public IActionResult Pingx()
+        {
+            return Ok(true);
+        }
+
+        [HttpGet("/xDocument/{id}")]
+        public async Task<IActionResult> GetDocumentById(Guid id)
+        {
+            return Content((await _xDocumentService.GetDocumentById(id)).ToString(), "application/json");
+        }
+
+
+        [HttpGet("/xDocument/hash/{hash}")]
+        public async Task<IActionResult> GetDocumentByHash(string hash)
+        {
+            return Content((await _xDocumentService.GetDocumentByHash(hash)).ToString(), "application/json");
+        }
+
+        [HttpGet("/xDocument/pricelock")]
+        public async Task<IActionResult> GetPriceLock(decimal value)
+        {
+            return Content((await _xDocumentService.GetPriceLock(value)).ToString(), "application/json");
+        }
 
 
     }

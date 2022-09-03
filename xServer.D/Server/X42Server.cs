@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using x42.Properties;
 using x42.Controllers.Requests;
 using x42.Controllers.Results;
-using static x42.Server.RuntimeStats;
+using static x42.Feature.Network.RuntimeStats;
 
 namespace x42.Server
 {

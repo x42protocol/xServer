@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MongoStore.Utils
+namespace Common.Utils
 {
     public static class JsonUtility
     {

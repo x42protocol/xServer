@@ -23,6 +23,7 @@ using LogLevel = NLog.LogLevel;
 using x42.Feature.Database;
 using x42.Server.Results;
 using System.Threading.Tasks;
+using Common.Models.XServer;
 
 namespace x42.Controllers
 {
