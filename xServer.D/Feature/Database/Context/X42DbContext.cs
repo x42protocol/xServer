@@ -11,6 +11,7 @@ namespace x42.Feature.Database.Context
         public virtual DbSet<ProfileReservationData> ProfileReservations { get; set; }
         public virtual DbSet<PriceLockData> PriceLocks { get; set; }
 
+        public virtual DbSet<DomainData> Domains { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProfileData>()
@@ -32,6 +33,16 @@ namespace x42.Feature.Database.Context
             builder.Entity<DictionaryData>()
                 .HasIndex(d => new { d.Key })
                 .IsUnique();
+
+            builder.Entity<DomainData>()
+                .HasIndex(p => new { p.Name })
+                .IsUnique();
+
+            builder.Entity<DomainData>()
+                .HasIndex(p => new { p.KeyAddress })
+                .IsUnique();
+            builder.Entity<DomainData>()
+                .HasIndex(p => new { p.BlockConfirmed });
         }
 
         #region Initilize

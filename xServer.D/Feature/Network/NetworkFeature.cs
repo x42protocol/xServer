@@ -31,6 +31,10 @@ using System.Threading;
 using RestSharp.Serializers.NewtonsoftJson;
 using x42.Feature.X42Client.Models;
 using static x42.ServerNode.Tier;
+using x42.Feature.Database.Repositories.Profiles;
+using x42.Feature.Database.Entities;
+using x42.Feature.Database.UoW;
+using Newtonsoft.Json.Serialization;
 
 namespace x42.Feature.Network
 {
@@ -59,7 +63,8 @@ namespace x42.Feature.Network
         private X42Node x42Client;
         private CachedServerInfo cachedServerInfo;
         private readonly NetworkSettings networkSettings;
-
+        private readonly IProfileRepository _profileRepository;
+        private readonly IUnitOfWork _unitOfWork;
         public NetworkFeatures(
             ServerNodeBase network,
             ServerSettings nodeSettings,
@@ -71,7 +76,9 @@ namespace x42.Feature.Network
             X42ClientFeature x42FullNode,
             DatabaseFeatures database,
             NetworkSettings networkSettings
-            )
+,
+            IProfileRepository profileRepository,
+            IUnitOfWork unitOfWork)
         {
             this.network = network;
             this.nodeSettings = nodeSettings;
@@ -87,6 +94,8 @@ namespace x42.Feature.Network
             cachedServerInfo = new CachedServerInfo();
 
             x42Client = new X42Node(x42ClientSettings.Name, x42ClientSettings.Address, x42ClientSettings.Port, logger, serverLifetime, asyncLoopFactory, false);
+            _profileRepository = profileRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public uint BestBlockHeight { get => x42FullNode.BlockTIP; }
@@ -179,6 +188,12 @@ namespace x42.Feature.Network
             return await x42Client.VerifyMessageAsync(keyAddress, profileKey, signature);
         }
 
+        public async Task<bool> IsRegisterKeyValid(string name, string keyAddress, string returnAddress, string signature)
+        {
+            string profileKey = $"{name}{returnAddress}";
+            return await x42Client.VerifyMessageAsync(keyAddress, profileKey, signature);
+        }
+
         public async Task<string> SignPriceLock(string priceLock)
         {
             var signRequest = new SignMessageRequest()
@@ -238,14 +253,8 @@ namespace x42.Feature.Network
                 try
                 {
                     string xServerURL = GetServerUrl(activeServer.NetworkProtocol, activeServer.NetworkAddress, activeServer.NetworkPort);
-                    var client = new RestClient(xServerURL)
-                    {
-                        Timeout = 10000 // We don't really need to wait for the result.
-                    };
-                    var registerRestRequest = new RestRequest("/updatepricelock", Method.POST);
-                    var request = JsonConvert.SerializeObject(priceLockData);
-                    registerRestRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
-                    registerRestRequest.RequestFormat = DataFormat.Json;
+                    var client = new RestClient(xServerURL);
+                    var registerRestRequest = new RestRequest("/updatepricelock", Method.Post);
 
                     await client.ExecuteAsync(registerRestRequest, cancellationToken);
                 }
@@ -298,7 +307,7 @@ namespace x42.Feature.Network
                 logger.LogDebug($"Attempting validate connection to {xServerURL}.");
 
                 var client = new RestClient(xServerURL);
-                var xServersPingRequest = new RestRequest("/ping", Method.GET);
+                var xServersPingRequest = new RestRequest("/ping", Method.Get);
                 var xServerPingResult = await client.ExecuteAsync<PingResult>(xServersPingRequest).ConfigureAwait(false);
                 if (xServerPingResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -340,8 +349,7 @@ namespace x42.Feature.Network
                     logger.LogDebug($"Attempting validate connection to {xServerURL}.");
 
                     var client = new RestClient(xServerURL);
-                    client.UseNewtonsoftJson();
-                    var getPriceLockRequest = new RestRequest("/getpricelock", Method.GET);
+                    var getPriceLockRequest = new RestRequest("/getpricelock", Method.Get);
                     getPriceLockRequest.AddParameter("priceLockId", priceLockId);
                     var priceLockResult = await client.ExecuteAsync<PriceLockResult>(getPriceLockRequest, cancellationToken).ConfigureAwait(false);
                     if (priceLockResult.StatusCode == HttpStatusCode.OK)
@@ -433,12 +441,16 @@ namespace x42.Feature.Network
                 if (isProfileKeyValid)
                 {
                     var newRecord = dbContext.Profiles.Add(profileData);
+
+                    _profileRepository.Add(new XServerProfile(profileData));
+                    await _unitOfWork.Commit();
                     if (newRecord.State == EntityState.Added)
                     {
                         var saved = dbContext.SaveChanges();
                         if (saved > 0)
                         {
                             result = true;
+
                         }
                     }
                 }
@@ -576,10 +588,7 @@ namespace x42.Feature.Network
                 logger.LogDebug($"Attempting relay profile reservation to {xServerURL}.");
 
                 var client = new RestClient(xServerURL);
-                var reserveProfileRequest = new RestRequest("/receiveprofilereservation", Method.POST);
-                var request = JsonConvert.SerializeObject(reserveRequest);
-                reserveProfileRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
-                reserveProfileRequest.RequestFormat = DataFormat.Json;
+                var reserveProfileRequest = new RestRequest("/receiveprofilereservation", Method.Post);
 
                 var result = await client.ExecuteAsync<ReserveProfileResult>(reserveProfileRequest, cancellationToken).ConfigureAwait(false);
             }
@@ -598,8 +607,7 @@ namespace x42.Feature.Network
                 logger.LogDebug($"Attempting GetProfiles from {xServerURL}.");
 
                 var client = new RestClient(xServerURL);
-                client.UseNewtonsoftJson();
-                var nextProfileRequest = new RestRequest("/getnextprofiles", Method.GET);
+                var nextProfileRequest = new RestRequest("/getnextprofiles", Method.Get);
                 nextProfileRequest.AddParameter("fromBlock", fromBlock);
                 var priceLockResult = await client.ExecuteAsync<List<ProfilesResult>>(nextProfileRequest, cancellationToken).ConfigureAwait(false);
                 if (priceLockResult.StatusCode == HttpStatusCode.OK)
@@ -618,6 +626,8 @@ namespace x42.Feature.Network
         {
             PriceLockResult result = null;
             var tierThreeServerConnections = GetAllTier3ConnectionInfo();
+            tierThreeServerConnections = tierThreeServerConnections.Take(1).ToList();
+
             foreach (var xServerConnectionInfo in tierThreeServerConnections)
             {
                 try
@@ -626,17 +636,24 @@ namespace x42.Feature.Network
                     logger.LogDebug($"Attempting validate connection to {xServerURL}.");
 
                     var client = new RestClient(xServerURL);
-                    var createPriceLockRequest = new RestRequest("/createpricelock", Method.POST);
-                    var request = JsonConvert.SerializeObject(priceLockRequest);
-                    createPriceLockRequest.AddParameter("application/json; charset=utf-8", request, ParameterType.RequestBody);
-                    createPriceLockRequest.RequestFormat = DataFormat.Json;
+                    var createPriceLockRequest = new RestRequest("/createpricelock", Method.Post);                 
+
+                    createPriceLockRequest.AddBody(priceLockRequest);
+ 
                     var createPLResult = await client.ExecuteAsync<PriceLockResult>(createPriceLockRequest);
+
+                    Console.WriteLine(createPLResult.ErrorMessage);
+
                     if (createPLResult.StatusCode == HttpStatusCode.OK)
                     {
                         return createPLResult.Data;
                     }
                 }
-                catch (Exception) { }
+                catch (Exception e) {
+
+
+                    Console.WriteLine(e.InnerException);
+                }
             }
             return result;
         }

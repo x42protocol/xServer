@@ -12,6 +12,10 @@ using x42.Feature.PriceLock;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using x42.Feature.PowerDns;
+using x42.Feature.WordPressPreview.Models;
+using x42.Feature.Metrics;
+using x42.Feature.Metrics.Models;
 using x42.Feature.Metrics;
 using x42.Feature.Metrics.Models;
 
@@ -25,12 +29,30 @@ namespace x42.Controllers.Public
     [Route("")]
     public class PublicController : Controller
     {
+        private readonly XServer _xServer;
+        private readonly ProfileFeature _profileFeature;
+        private readonly PriceFeature _priceFeature;
+        private readonly PowerDnsFeature _powerDnsFeature;
+        private readonly WordPressPreviewFeature _wordPressPreviewFeature;
+
+ 
         private readonly XServer xServer;
         private readonly ProfileFeature profileFeature;
         private readonly PriceFeature priceFeature;
         private readonly MetricsFeature _metricsFeature;
-        public PublicController(XServer xServer, ProfileFeature profileFeature, PriceFeature priceFeature, MetricsFeature metricsFeature)
+        public PublicController(
+            XServer xServer, 
+            ProfileFeature profileFeature, 
+            PriceFeature priceFeature, 
+            PowerDnsFeature powerDnsFeature,
+            WordPressPreviewFeature wordPressPreviewFeature, 
+            MetricsFeature metricsFeature)
         {
+            _xServer = xServer;
+            _profileFeature = profileFeature;
+            _priceFeature = priceFeature;
+            _powerDnsFeature = powerDnsFeature;
+            _wordPressPreviewFeature = wordPressPreviewFeature;
             this.xServer = xServer;
             this.profileFeature = profileFeature;
             this.priceFeature = priceFeature;
@@ -45,12 +67,12 @@ namespace x42.Controllers.Public
         [Route("ping")]
         public IActionResult Ping()
         {
-            xServer.Stats.IncrementPublicRequest();
+            _xServer.Stats.IncrementPublicRequest();
             PingResult pingResult = new PingResult()
             {
-                Version = xServer.Version.ToString(),
-                BestBlockHeight = xServer.AddressIndexerHeight,
-                Tier = (int)xServer.Stats.TierLevel
+                Version = _xServer.Version.ToString(),
+                BestBlockHeight = _xServer.AddressIndexerHeight,
+                Tier = (int)_xServer.Stats.TierLevel
             };
             return Json(pingResult);
         }
@@ -64,9 +86,43 @@ namespace x42.Controllers.Public
         [Route("gettop")]
         public IActionResult GetTop([FromQuery] int top = 10)
         {
-            xServer.Stats.IncrementPublicRequest();
-            TopResult topResult = xServer.GetTopXServers(top);
+            _xServer.Stats.IncrementPublicRequest();
+            TopResult topResult = _xServer.GetTopXServers(top);
             return Json(topResult);
+        }
+
+        [HttpGet]
+        [Route("addprofile")]
+        public async Task<IActionResult> AddTestProfileAsync()
+        {
+           
+            await _profileFeature.AddTestProfile();
+            return Ok();
+        }
+
+
+        [HttpGet]
+        [Route("wordpresspreviewdomains")]
+        public async Task<IActionResult> ReserveWordpressPreviewDNS()
+        {
+
+            var result = await _wordPressPreviewFeature.GetWordPressPreviewDomains();
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route("reservewordpresspreviewDNS")]
+        public async Task<IActionResult> ReserveProfile([FromBody] WordPressReserveRequest reserveRequest)
+        {
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
+            {
+                var reserveResult = await _wordPressPreviewFeature.ReserveWordpressPreviewDNS(reserveRequest);
+                return Json(reserveResult);
+            }
+            else
+            {
+                return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 2 requirement not meet", "The node you requested is not a tier 2 node.");
+            }
         }
 
         /// <summary>
@@ -78,7 +134,7 @@ namespace x42.Controllers.Public
         [Route("registerserver")]
         public async Task<IActionResult> RegisterServerAsync([FromBody] ServerRegisterRequest registerRequest)
         {
-            xServer.Stats.IncrementPublicRequest();
+            _xServer.Stats.IncrementPublicRequest();
             ServerNodeData serverNode = new ServerNodeData()
             {
                 ProfileName = registerRequest.ProfileName,
@@ -92,7 +148,7 @@ namespace x42.Controllers.Public
                 NetworkProtocol = registerRequest.NetworkProtocol
             };
 
-            RegisterResult registerResult = await xServer.Register(serverNode);
+            RegisterResult registerResult = await _xServer.Register(serverNode);
             return Json(registerResult);
         }
 
@@ -104,10 +160,10 @@ namespace x42.Controllers.Public
         [Route("getactivecount")]
         public IActionResult GetActiveCount()
         {
-            xServer.Stats.IncrementPublicRequest();
+            _xServer.Stats.IncrementPublicRequest();
             CountResult topResult = new CountResult()
             {
-                Count = xServer.GetActiveServerCount()
+                Count = _xServer.GetActiveServerCount()
             };
             return Json(topResult);
         }
@@ -120,8 +176,8 @@ namespace x42.Controllers.Public
         [Route("getactivexservers")]
         public IActionResult GetActiveXServers(int fromId)
         {
-            xServer.Stats.IncrementPublicRequest();
-            var allServers = xServer.GetActiveXServers(fromId);
+            _xServer.Stats.IncrementPublicRequest();
+            var allServers = _xServer.GetActiveXServers(fromId);
             return Json(allServers);
         }
 
@@ -133,8 +189,8 @@ namespace x42.Controllers.Public
         [Route("searchforxserver")]
         public IActionResult SearchForXServer(string profileName = "", string signAddress = "")
         {
-            xServer.Stats.IncrementPublicRequest();
-            var foundxServer = xServer.SearchForXServer(profileName, signAddress);
+            _xServer.Stats.IncrementPublicRequest();
+            var foundxServer = _xServer.SearchForXServer(profileName, signAddress);
             return Json(foundxServer);
         }
 
@@ -146,15 +202,15 @@ namespace x42.Controllers.Public
         [Route("getprofile")]
         public IActionResult GetProfile(string name = "", string keyAddress = "")
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
             {
                 var profileRequest = new ProfileRequest()
                 {
                     Name = name,
                     KeyAddress = keyAddress
                 };
-                var profile = profileFeature.GetProfile(profileRequest);
+                var profile = _profileFeature.GetProfile(profileRequest);
                 return Json(profile);
             }
             else
@@ -172,10 +228,10 @@ namespace x42.Controllers.Public
         [Route("reserveprofile")]
         public async Task<IActionResult> ReserveProfile([FromBody] ProfileReserveRequest reserveRequest)
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
             {
-                var reserveResult = await profileFeature.ReserveProfile(reserveRequest);
+                var reserveResult = await _profileFeature.ReserveProfile(reserveRequest);
                 return Json(reserveResult);
             }
             else
@@ -193,10 +249,10 @@ namespace x42.Controllers.Public
         [Route("receiveprofilereservation")]
         public async Task<IActionResult> ReceiveProfileReservation([FromBody] ReceiveProfileReserveRequest receiveProfileReserveRequest)
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Two)
             {
-                var reserveResult = await profileFeature.ReceiveProfileReservation(receiveProfileReserveRequest);
+                var reserveResult = await _profileFeature.ReceiveProfileReservation(receiveProfileReserveRequest);
                 return Json(reserveResult);
             }
             else
@@ -214,8 +270,8 @@ namespace x42.Controllers.Public
         [Route("getnextprofiles")]
         public IActionResult GetNextProfiles(int fromBlock)
         {
-            xServer.Stats.IncrementPublicRequest();
-            var reserveResult = profileFeature.GetProfiles(fromBlock);
+            _xServer.Stats.IncrementPublicRequest();
+            var reserveResult = _profileFeature.GetProfiles(fromBlock);
             return Json(reserveResult);
         }
 
@@ -227,10 +283,10 @@ namespace x42.Controllers.Public
         [Route("getprice")]
         public IActionResult GetPrice(int fiatPairId)
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
             {
-                var fiatPair = priceFeature.FiatPairs.Where(f => (int)f.Currency == fiatPairId).FirstOrDefault();
+                var fiatPair = _priceFeature.FiatPairs.Where(f => (int)f.Currency == fiatPairId).FirstOrDefault();
                 if (fiatPair != null)
                 {
                     PriceResult priceResult = new PriceResult()
@@ -258,11 +314,11 @@ namespace x42.Controllers.Public
         [Route("getprices")]
         public IActionResult GetPrices()
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
             {
                 var priceResults = new List<PriceResult>();
-                foreach (var pair in priceFeature.FiatPairs)
+                foreach (var pair in _priceFeature.FiatPairs)
                 {
                     PriceResult priceResult = new PriceResult()
                     {
@@ -288,10 +344,10 @@ namespace x42.Controllers.Public
         [Route("createpricelock")]
         public async Task<IActionResult> CreatePriceLock([FromBody] CreatePriceLockRequest priceLockRequest)
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
             {
-                var priceLockResult = await priceFeature.CreatePriceLock(priceLockRequest);
+                var priceLockResult = await _priceFeature.CreatePriceLock(priceLockRequest);
                 return Json(priceLockResult);
             }
             else
@@ -299,6 +355,23 @@ namespace x42.Controllers.Public
                 return ErrorHelpers.BuildErrorResponse(HttpStatusCode.BadRequest, "Tier 3 requirement not meet", "The node you requested is not a tier 3 node.");
             }
         }
+
+
+        /// <summary>
+        ///     Create a price lock.
+        /// </summary>
+        /// <param name="priceLockRequest">The object with all of the nessesary data to create a price lock.</param>
+        /// <returns>A <see cref="PriceLockResult" /> with price lock results.</returns>
+        [HttpGet]
+        [Route("zones")]
+        public async Task<IActionResult> GetAllZones()
+        {
+ 
+                var priceLockResult = await _powerDnsFeature.GetAllZones();
+                return Json(priceLockResult);
+      
+        }
+
 
         /// <summary>
         ///     Update a price lock.
@@ -309,10 +382,10 @@ namespace x42.Controllers.Public
         [Route("updatepricelock")]
         public async Task<IActionResult> UpdatePriceLock([FromBody] PriceLockResult priceLockData)
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
             {
-                var priceLockResult = await priceFeature.UpdatePriceLock(priceLockData);
+                var priceLockResult = await _priceFeature.UpdatePriceLock(priceLockData);
                 return Json(priceLockResult);
             }
             else
@@ -329,10 +402,10 @@ namespace x42.Controllers.Public
         [Route("getavailablepairs")]
         public IActionResult GetAvailablePairs()
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
             {
-                var pairList = priceFeature.GetPairList();
+                var pairList = _priceFeature.GetPairList();
                 return Json(pairList);
             }
             else
@@ -350,12 +423,12 @@ namespace x42.Controllers.Public
         [Route("getpricelock")]
         public IActionResult GetPriceLock(string priceLockId)
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
             {
                 if (Guid.TryParse(priceLockId, out Guid validPriceLockId))
                 {
-                    var priceLockResult = priceFeature.GetPriceLock(validPriceLockId);
+                    var priceLockResult = _priceFeature.GetPriceLock(validPriceLockId);
                     return Json(priceLockResult);
                 }
                 else
@@ -378,10 +451,10 @@ namespace x42.Controllers.Public
         [Route("submitpayment")]
         public async Task<IActionResult> SubmitPayment([FromBody] SubmitPaymentRequest submitPaymentRequest)
         {
-            xServer.Stats.IncrementPublicRequest();
-            if (xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
+            _xServer.Stats.IncrementPublicRequest();
+            if (_xServer.Stats.TierLevel == ServerNode.Tier.TierLevel.Three)
             {
-                var submitPaymentResult = await priceFeature.SubmitPayment(submitPaymentRequest);
+                var submitPaymentResult = await _priceFeature.SubmitPayment(submitPaymentRequest);
                 return Json(submitPaymentResult);
             }
             else
@@ -403,6 +476,9 @@ namespace x42.Controllers.Public
             var response = _metricsFeature.getHardwareMetricsAsync();
             return Json(response);
         }
+
+
+
 
     }
 }

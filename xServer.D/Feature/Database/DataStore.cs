@@ -4,6 +4,7 @@ using x42.Feature.Database.Context;
 using System.Linq;
 using x42.Feature.Database.Tables;
 using System.Collections.Generic;
+using x42.Feature.Database.Repositories;
 
 namespace x42.Feature.Database
 {
@@ -19,18 +20,23 @@ namespace x42.Feature.Database
         /// <summary>Instance logger.</summary>
         private readonly DatabaseSettings databaseSettings;
 
+
         public bool DatabaseConnected { get; set; } = false;
 
         public Dictionary xServerDictionary;
 
+        private readonly IProfileReservationRepository _profileReservationRepository;
+
         public DataStore(
             ILoggerFactory loggerFactory,
             DatabaseSettings databaseSettings
-            )
+,
+            IProfileReservationRepository profileReservationRepository)
         {
             logger = loggerFactory.CreateLogger(GetType().FullName);
             this.databaseSettings = databaseSettings;
             xServerDictionary = new Dictionary(loggerFactory, databaseSettings);
+            _profileReservationRepository = profileReservationRepository;
         }
 
         public int GetIntFromDictionary(string key)
@@ -47,6 +53,8 @@ namespace x42.Feature.Database
         {
             return xServerDictionary.Get<string>(key);
         }
+
+ 
 
         public bool SetDictionaryValue(string key, object value)
         {
