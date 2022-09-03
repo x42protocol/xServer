@@ -23,6 +23,9 @@ namespace x42.Controllers.Results
         /// <summary>The nodes key address.</summary>
         public string FeeAddress { get; set; }
 
+        /// <summary>Returns the public key for the xServer.</summary>
+        public string PublicKey { get; set; }
+
         /// <summary>The node's version.</summary>
         public string Version { get; set; }
 

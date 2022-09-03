@@ -1,6 +1,22 @@
 {
 	"name": "x-server-ui",
-	"version": "0.0.0",
+	"description": "x42 Server",
+	"version": "4.0.6",
+	"bc_version": "1.1.38",
+	"license": "MIT",
+	"author": {
+		"name": "x42 Protocol",
+		"email": "contact@x42.info",
+		"url": "https://www.x42.info"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/x42protocol/xServer.git"
+	},
+	"bugs": {
+		"url": "https://github.com/x42protocol/xServer/issues"
+	},
+	"homepage": "https://www.x42.info",
 	"scripts": {
 		"ng": "ng",
 		"start": "ng serve",
@@ -26,6 +42,7 @@
 		"font-awesome": "^4.7.0",
 		"ngx-pagination": "5.0.0",
 		"ngx-qrcode2": "^9.0.0",
+		"ngx-window-token": "^5.0.0",
 		"npm-check-updates": "10.2.2",
 		"primeicons": "^5.0.0",
 		"primeng": "^11.4.5",

@@ -426,6 +426,11 @@ namespace x42.Server
             return networkFeatures.GetMyFeeAddress();
         }
 
+        public string GetPublicKey()
+        {
+            return networkFeatures.GetMyFeeAddress();
+        }
+
         public string GetServerProfileName()
         {
             string result = string.Empty;

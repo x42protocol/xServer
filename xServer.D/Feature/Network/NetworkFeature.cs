@@ -128,6 +128,7 @@ namespace x42.Feature.Network
             logger.LogInformation("Connecting to network");
             this.cachedServerInfo = cachedWalletInfo;
             this.cachedServerInfo.FeeAddress = GetFeeAddressFromSignAddress(cachedWalletInfo.SignAddress);
+            this.cachedServerInfo.PublicKey = GetPublicKeyFromSignAddress(cachedWalletInfo.SignAddress, cachedWalletInfo.WalletName, cachedWalletInfo.AccountName);
             logger.LogInformation("Network connected");
         }
 
@@ -238,6 +239,11 @@ namespace x42.Feature.Network
         public string GetMyFeeAddress()
         {
             return cachedServerInfo.FeeAddress;
+        }
+
+        public string GetPublicKey()
+        {
+            return cachedServerInfo.PublicKey;
         }
 
         public async Task RelayPriceLock(PriceLockData priceLockData, List<ServerNodeData> activeXServers, CancellationToken cancellationToken)
@@ -782,6 +788,12 @@ namespace x42.Feature.Network
             }
             return feeAddress;
         }
+        public string GetPublicKeyFromSignAddress(string address, string walletName, string accountName)
+        {
+            var getPublicKeyResponse = x42Client.GetPublicKey(address, walletName, accountName).Result;
+            return getPublicKeyResponse;
+        }
+
 
         public async Task<string> GetServerAddress(string walletName)
         {

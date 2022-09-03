@@ -242,6 +242,11 @@ namespace x42.Feature.X42Client
             return await restClient.GetColdStakingAddress(walletName, isColdWalletAddress, segwit);
         }
 
+        public async Task<string> GetPublicKey(string address, string walletName, string accountName)
+        {
+            return await restClient.GetPublicKey(address, walletName, accountName);
+        }
+
         public async Task<GetXServerStatsResult> GetXServerStats()
         {
             return await restClient.GetXServerStats();

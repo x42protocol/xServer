@@ -88,7 +88,8 @@ namespace x42.Controllers
                 DatabaseConnected = databaseFeatures.DatabaseConnected,
                 Stats = xServer.Stats,
                 FeeAddress = xServer.GetMyFeeAddress(),
-                Name = xServer.GetServerProfileName()
+                Name = xServer.GetServerProfileName(),
+                PublicKey = xServer.GetPublicKey()
             };
 
             // Add the list of features that are enabled.

@@ -98,6 +98,12 @@ namespace x42.Server
         string GetMyFeeAddress();
 
         /// <summary>
+        ///     Get public key for the xServer.
+        /// </summary>
+        /// <returns>Will return a the public key as a string</returns>
+        string GetPublicKey();
+
+        /// <summary>
         ///     Get the nodes profile name.
         /// </summary>
         /// <returns>Will return the profile name as a string.</returns>
