@@ -29,7 +29,7 @@ namespace x42
                 IxServer server = new ServerBuilder()
                     .UseServerSettings(serverSettings)
                     .UseX42Client()
-                    .UseMetrics()
+                    //.UseMetrics()
                     .UseSql()
                     .UseApi()
                     .UsePriceLock()

@@ -1,6 +1,7 @@
 ﻿using Common.Models.Graviex;
 using Common.Models.OrderBook;
 using Common.Utils;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
@@ -9,9 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using x42.Feature.PowerDns;
 using x42.Feature.X42Client;
+using x42.Utilities;
 
 namespace x42.Feature.XDocuments
 {
@@ -20,14 +23,30 @@ namespace x42.Feature.XDocuments
         private readonly MongoClient _client;
         private readonly IMongoDatabase _db;
         private readonly PowerDnsFeature _powerDnsService;
-        private readonly X42Node _x42Client;
+        private X42Node _x42Client;
+        private X42ClientSettings _x42ClientSettings;
+
+        /// <summary>Instance logger.</summary>
+ 
+        /// <summary>
+        ///     A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IxServerLifetime.ApplicationStopping"/>.
+        /// </summary>
+        private CancellationTokenSource _networkCancellationTokenSource;
+
+        /// <summary>Global application life cycle control - triggers when application shuts down.</summary>
+        private readonly IxServerLifetime _serverLifetime;
+
+        /// <summary>Factory for creating background async loop tasks.</summary>
+        private readonly IAsyncLoopFactory _asyncLoopFactory;
+        private readonly ILogger _logger;
 
 
-        public XDocumentClient(PowerDnsFeature powerDnsService, X42Node x42Client)
+        public XDocumentClient(PowerDnsFeature powerDnsService, X42ClientSettings x42ClientSettings, ILoggerFactory loggerFactory, IxServerLifetime serverLifetime, IAsyncLoopFactory asyncLoopFactory)
         {
             var conventionPack = new ConventionPack { new CamelCaseElementNameConvention() };
             ConventionRegistry.Register("camelCase", conventionPack, t => true);
 
+            _logger = loggerFactory.CreateLogger(GetType().FullName);
 
             var mongoUser = Environment.GetEnvironmentVariable("MONGO_USER");
             var mongoPassword = Environment.GetEnvironmentVariable("MONGO_PASSWORD");
@@ -38,11 +57,17 @@ namespace x42.Feature.XDocuments
             _client = new MongoClient($"mongodb://{mongoUser}:{mongoPassword}@xDocumentStore:27017/");
 #endif
 
-
+ 
 
             _db = _client.GetDatabase("xServerDb");
             _powerDnsService = powerDnsService;
-            _x42Client = x42Client;
+            _x42ClientSettings = x42ClientSettings;
+            _serverLifetime = serverLifetime;
+
+            this._networkCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { _serverLifetime.ApplicationStopping });
+            _asyncLoopFactory = asyncLoopFactory;
+
+            _x42Client = new X42Node(_x42ClientSettings.Name, _x42ClientSettings.Address, _x42ClientSettings.Port, _logger, _serverLifetime, _asyncLoopFactory, false);
         }
 
         public async Task<object> GetDocumentById(Guid Id)
@@ -133,6 +158,7 @@ namespace x42.Feature.XDocuments
                 {
                     totalAmount = totalAmount - (item.Quantity * item.Price);
                     TotalQty += item.Quantity;
+                    Console.WriteLine(item.Price + " : " + item.Quantity);
                 }
                 else
                 {

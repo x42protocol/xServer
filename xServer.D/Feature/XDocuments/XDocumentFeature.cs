@@ -6,27 +6,36 @@ using x42.Feature.PowerDns;
 using x42.Feature.Setup;
 using x42.Feature.X42Client;
 using x42.Server;
+using x42.Utilities;
 
 namespace x42.Feature.XDocuments
 {
     public class XDocumentFeature : ServerFeature
     {
         private XDocumentClient _xDocumentClient;
-        private readonly ILogger _logger;
         private readonly PowerDnsFeature _powerDnsFeature;
-        private readonly X42Node _x42Client;
+        private X42ClientSettings _x42ClientSettings;
+        private readonly IxServerLifetime _serverLifetime;
+        private readonly ILogger _logger;
 
-        public XDocumentFeature(ILoggerFactory loggerFactory, PowerDnsFeature powerDnsFeature, X42Node x42Client)
+        /// <summary>Factory for creating background async loop tasks.</summary>
+        private readonly IAsyncLoopFactory _asyncLoopFactory;
+
+
+        public XDocumentFeature(ILoggerFactory loggerFactory, PowerDnsFeature powerDnsFeature, X42ClientSettings x42ClientSettings, IxServerLifetime serverLifetime, IAsyncLoopFactory asyncLoopFactory)
         {
-            _logger = loggerFactory.CreateLogger(GetType().FullName);
-            _powerDnsFeature = powerDnsFeature;
-            _x42Client = x42Client;
 
-            _xDocumentClient = new XDocumentClient(_powerDnsFeature, _x42Client);
+            _x42ClientSettings = x42ClientSettings;
+            _logger = loggerFactory.CreateLogger(GetType().FullName);
+            _serverLifetime = serverLifetime;
+            _asyncLoopFactory = asyncLoopFactory;
+
+
+            _xDocumentClient = new XDocumentClient(_powerDnsFeature, _x42ClientSettings, loggerFactory, _serverLifetime, _asyncLoopFactory);
         }
         public override Task InitializeAsync()
         {
-            _xDocumentClient = new XDocumentClient(_powerDnsFeature, _x42Client);
+           // _xDocumentClient = new XDocumentClient(_powerDnsFeature, _x42ClientSettings, _logger, _serverLifetime, _asyncLoopFactory);
 
             return Task.CompletedTask;
 
@@ -52,6 +61,8 @@ namespace x42.Feature.XDocuments
                         services.AddSingleton<XDocumentClient>();
                         services.AddSingleton<PowerDnsFeature>();
                         services.AddSingleton<X42ClientFeature>();
+                        services.AddSingleton<X42ClientSettings>();
+
 
                     });
             });

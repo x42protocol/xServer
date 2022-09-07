@@ -40,7 +40,7 @@ namespace x42.Controllers.Public
         private readonly XServer xServer;
         private readonly ProfileFeature profileFeature;
         private readonly PriceFeature priceFeature;
-        private readonly MetricsFeature _metricsFeature;
+      //  private readonly MetricsFeature _metricsFeature;
         private readonly XDocumentClient _xDocumentService;
 
         public PublicController(
@@ -49,7 +49,7 @@ namespace x42.Controllers.Public
             PriceFeature priceFeature,
             PowerDnsFeature powerDnsFeature,
             WordPressPreviewFeature wordPressPreviewFeature,
-            MetricsFeature metricsFeature,
+         //   MetricsFeature metricsFeature,
             XDocumentClient xDocumentService)
         {
             _xServer = xServer;
@@ -60,7 +60,7 @@ namespace x42.Controllers.Public
             this.xServer = xServer;
             this.profileFeature = profileFeature;
             this.priceFeature = priceFeature;
-            _metricsFeature = metricsFeature;
+           // _metricsFeature = metricsFeature;
             _xDocumentService = xDocumentService;
         }
 
@@ -469,18 +469,18 @@ namespace x42.Controllers.Public
         }
 
 
-        /// <summary>
-        ///     Get Hardware Metrics
-        /// </summary>
-        /// <param name="hardwaremetrics">Gets Hardware Metrics of the Host</param>
-        /// <returns>A <see cref="ContainerStatsModel" /> with hardware metrics.</returns>
-        [HttpGet]
-        [Route("hardwaremetrics")]
-        public ActionResult<HostStatsModel> HardwareMetricsAsync()
-        {
-            var response = _metricsFeature.getHardwareMetricsAsync();
-            return Json(response);
-        }
+        ///// <summary>
+        /////     Get Hardware Metrics
+        ///// </summary>
+        ///// <param name="hardwaremetrics">Gets Hardware Metrics of the Host</param>
+        ///// <returns>A <see cref="ContainerStatsModel" /> with hardware metrics.</returns>
+        //[HttpGet]
+        //[Route("hardwaremetrics")]
+        //public ActionResult<HostStatsModel> HardwareMetricsAsync()
+        //{
+        //    var response = _metricsFeature.getHardwareMetricsAsync();
+        //    return Json(response);
+        //}
 
         [HttpPost]
         [Route("/xDocument/")]
