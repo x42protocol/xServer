@@ -45,6 +45,10 @@ namespace x42.Feature.Database.Context
                 return;
             }
 
+            if (string.IsNullOrEmpty(this.databaseSettings.Mongoconnectionstring))
+            {
+                throw new Exception("MongoDB connection has not been configured. Check your mongo settings.");
+            }
             MongoClient = new MongoClient(this.databaseSettings.Mongoconnectionstring);
             Database = MongoClient.GetDatabase(this.databaseSettings.MongoDbName);
         }

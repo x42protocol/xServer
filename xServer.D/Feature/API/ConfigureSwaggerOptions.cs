@@ -41,7 +41,7 @@ namespace x42.Feature.API
                 options.IncludeXmlComments(apiXmlPath);
             }
 
-            options.DescribeAllEnumsAsStrings();
+            options.SchemaFilter<EnumSchemaFilter>();
         }
 
         static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using x42.Configuration;
 using x42.ServerNode;
 using x42.Utilities;
-using System.Runtime.Serialization.Formatters;
 namespace x42.Feature.Database
 {
     /// <summary>

@@ -16,8 +16,6 @@ using x42.Feature.PowerDns;
 using x42.Feature.WordPressPreview.Models;
 using x42.Feature.Metrics;
 using x42.Feature.Metrics.Models;
-using x42.Feature.Metrics;
-using x42.Feature.Metrics.Models;
 
 namespace x42.Controllers.Public
 {

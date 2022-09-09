@@ -25,16 +25,12 @@ using x42.Server.Results;
 using System.Collections.Generic;
 using x42.Feature.X42Client.Enums;
 using x42.Feature.X42Client.RestClient.Requests;
-using Newtonsoft.Json;
 using x42.Controllers.Requests;
 using System.Threading;
-using RestSharp.Serializers.NewtonsoftJson;
 using x42.Feature.X42Client.Models;
-using static x42.ServerNode.Tier;
 using x42.Feature.Database.Repositories.Profiles;
 using x42.Feature.Database.Entities;
 using x42.Feature.Database.UoW;
-using Newtonsoft.Json.Serialization;
 
 namespace x42.Feature.Network
 {

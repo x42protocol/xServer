@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using x42.Server;
 
 namespace x42.Controllers.Results

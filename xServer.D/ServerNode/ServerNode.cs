@@ -65,7 +65,7 @@ namespace x42.ServerNode
                 yield return new NetworkAddress
                 {
                     Time = DateTime.UtcNow - TimeSpan.FromSeconds(rand.NextDouble() * oneWeek.TotalSeconds) - oneWeek,
-                    Endpoint = Utils.ParseIpEndpoint(seed, defaultPort)
+                    Endpoint = Utils.ParseEndpoint(seed, defaultPort)
                 };
         }
     }

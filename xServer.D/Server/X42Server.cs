@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using x42.Configuration;
 using x42.Feature.Setup;
 using x42.ServerNode;
@@ -132,7 +131,7 @@ namespace x42.Server
             {
                 string versionString = typeof(XServer).GetTypeInfo().Assembly
                                            .GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ??
-                                       PlatformServices.Default.Application.ApplicationVersion;
+                                       Assembly.GetEntryAssembly().GetName().Version.ToString();
 
                 if (!string.IsNullOrEmpty(versionString))
                     try
