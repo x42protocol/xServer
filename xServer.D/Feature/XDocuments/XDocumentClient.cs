@@ -1,5 +1,6 @@
 ﻿using Common.Models.Graviex;
 using Common.Models.OrderBook;
+using Common.Models.XDocuments.Zones;
 using Common.Utils;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -27,7 +28,7 @@ namespace x42.Feature.XDocuments
         private X42ClientSettings _x42ClientSettings;
 
         /// <summary>Instance logger.</summary>
- 
+
         /// <summary>
         ///     A cancellation token source that can cancel the node monitoring processes and is linked to the <see cref="IxServerLifetime.ApplicationStopping"/>.
         /// </summary>
@@ -57,7 +58,7 @@ namespace x42.Feature.XDocuments
             _client = new MongoClient($"mongodb://{mongoUser}:{mongoPassword}@xDocumentStore:27017/");
 #endif
 
- 
+
 
             _db = _client.GetDatabase("xServerDb");
             _powerDnsService = powerDnsService;
@@ -188,7 +189,7 @@ namespace x42.Feature.XDocuments
 
             var dynamicObject = JsonConvert.DeserializeObject<dynamic>(jsonRequest);
             string data = JsonConvert.SerializeObject(dynamicObject["data"]);
- 
+
 
 
             jsonRequest = JsonUtility.NormalizeJsonString(jsonRequest);
@@ -208,9 +209,17 @@ namespace x42.Feature.XDocuments
 
                 string dataObjectAsJson = Serialize(dataObject1);
 
-                var isValid = await _x42Client.VerifyMessageAsync(dynamicObject["keyAddress"], dataObjectAsJson, dynamicObject["signature"]);
 
-                if (!isValid) {
+                string key = dynamicObject["keyAddress"];
+                string signature = dynamicObject["signature"];
+
+
+
+
+                var isValid = await _x42Client.VerifyMessageAsync(key, dataObjectAsJson, signature);
+
+                if (!isValid)
+                {
 
                     throw new Exception("Invalid Signature");
 
@@ -226,19 +235,20 @@ namespace x42.Feature.XDocuments
             // Get xDocumentHashReference Collection Reference
             var xDocumentHashReference = _db.GetCollection<BsonDocument>("XDocumentHashReference");
 
+
+
+
+
+            // Convert request to JSON string
+            string json = Serialize(dynamicObject);
+
+            // Calculate Document Hash
+            var hash = HashString(json);
             var Id = Guid.NewGuid();
 
 
             dynamicObject._id = Id;
-
-            var dataObject = dynamicObject["data"];
-
-
-            // Convert request to JSON string
-            string json = Serialize(dataObject);
-
-            // Calculate Document Hash
-            var hash = HashString(json);
+            json = Serialize(dynamicObject);
 
 
             BsonDocument xDocumentEntry
@@ -255,6 +265,35 @@ namespace x42.Feature.XDocuments
             xDocumentHashReference.InsertOne(xDocumentHashReferenceEntry);
 
             return hash;
+
+        }
+
+        public List<string> GetZonesByKeyAddress(string keyAddress)
+        {
+
+            var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("zones");
+            var filter = Builders<BsonDocument>.Filter.Eq("keyAddress", keyAddress);
+            var zones = xDocumentDictionaryCollection.Find(filter).ToList();
+            var result = new List<string>();
+
+            foreach (var zone in zones)
+            {
+                var entry = zone["zone"].ToString();
+                result.Add(entry);
+            }
+
+            return result.ToList();
+
+        }
+
+        public bool ZoneExists(string zone)
+        {
+
+            var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("zones");
+            var filter = Builders<BsonDocument>.Filter.Eq("zone", zone);
+            var zones = xDocumentDictionaryCollection.Find(filter).ToList();
+
+            return zones.Count > 0;
 
         }
 

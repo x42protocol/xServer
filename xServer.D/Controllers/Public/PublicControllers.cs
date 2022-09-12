@@ -516,5 +516,15 @@ namespace x42.Controllers.Public
         }
 
 
+        [HttpGet("my-zones")]
+        public async Task<IActionResult> GetZoneForKeyAddress(string keyAddress )
+        {
+            return Ok(_xDocumentService.GetZonesByKeyAddress(keyAddress));
+        }
+        [HttpGet("zone-exists")]
+        public async Task<IActionResult> ZoneExists(string zone)
+        {
+            return Ok(_xDocumentService.ZoneExists(zone));
+        }
     }
 }

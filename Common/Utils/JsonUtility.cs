@@ -13,7 +13,7 @@ namespace Common.Utils
 
             JToken normalized = NormalizeToken(parsed);
 
-            return JsonConvert.SerializeObject(normalized);
+            return JsonConvert.SerializeObject(normalized, Formatting.Indented);
         }
 
         private static JToken NormalizeToken(JToken token)

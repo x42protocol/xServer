@@ -12,13 +12,15 @@ using Newtonsoft.Json.Serialization;
 using MongoDB.Bson.Serialization;
 using xServerWorker.Services;
 using x42.Controllers.Results;
+using System.Reflection.Metadata;
+using System.Xml.Linq;
 
 namespace xServerWorker.BackgroundServices
 {
     public class BlockProcessingWorker : BackgroundService
     {
         private readonly ILogger<BlockProcessingWorker> _logger;
-        private static int latestBlockProcessed = 0;
+        private static int latestBlockProcessed = 1910000;
 
 #if DEBUG
         private readonly RestClient _restClient = new RestClient("http://localhost:42220/api/");
@@ -55,7 +57,7 @@ namespace xServerWorker.BackgroundServices
 #if DEBUG
             _powerDnsHost = "https://poweradmin.xserver.network";
             _powerDnsApiKey = "cmp4V1Z0MnprRVRMbE10";
-            _xServerHost = "http://144.91.95.234:4242/";
+            _xServerHost = "http://127.0.0.1:4242/";
             _client = new MongoClient($"mongodb://localhost:27017/");
 
 #else
@@ -123,7 +125,7 @@ namespace xServerWorker.BackgroundServices
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    if (latestBlockProcessed < blockCount)
+                    if (latestBlockProcessed < blockCount && _feeAddress != "")
                     {
                         await ProcessBlock(stoppingToken);
 
@@ -171,7 +173,7 @@ namespace xServerWorker.BackgroundServices
                 foreach (var vout in transaction.Vout)
                 {
 
-                    if (vout.ScriptPubKey.Addresses != null && vout.ScriptPubKey.Addresses.Contains("XVxLniKCypWhqwcSYvEei6zJuJ5BsCf4eL"))
+                    if (vout.ScriptPubKey.Addresses != null && vout.ScriptPubKey.Addresses.Contains(_feeAddress))
                     {
 
                         paidToMyFeeAddress = true;
@@ -181,13 +183,14 @@ namespace xServerWorker.BackgroundServices
                 }
             }
 
-            paidToMyFeeAddress =  block.Transactions.Where(l => l.Vout.Any(x => x.ScriptPubKey.Addresses != null && x.ScriptPubKey.Addresses.Contains("XVxLniKCypWhqwcSYvEei6zJuJ5BsCf4eL"))).Any();
+            paidToMyFeeAddress =  block.Transactions.Where(l => l.Vout.Any(x => x.ScriptPubKey.Addresses != null && x.ScriptPubKey.Addresses.Contains(_feeAddress))).Any();
 
             if (paidToMyFeeAddress)
             {
-                var vouts = block.Transactions.SelectMany(l => l.Vout).Where(l => l.ScriptPubKey.Addresses != null && l.ScriptPubKey.Addresses.Contains("XVxLniKCypWhqwcSYvEei6zJuJ5BsCf4eL")).ToList();
+                var vouts = block.Transactions.SelectMany(l => l.Vout).Where(l => l.ScriptPubKey.Addresses != null && l.ScriptPubKey.Addresses.Contains(_feeAddress)).ToList();
 
                 amount = vouts.Sum(l => l.Value);
+
 
             }
 
@@ -235,7 +238,7 @@ namespace xServerWorker.BackgroundServices
                                 if (paidToMyFeeAddress)
                                 {
 
-                                    await ProcessInstruction(document, xDocumentPendingCollection, amount);
+                                    await ProcessInstruction(document, xDocumentPendingCollection, amount, block.Height);
 
                                 }
 
@@ -255,13 +258,13 @@ namespace xServerWorker.BackgroundServices
             latestBlockProcessed++;
         }
 
-        private async Task ProcessInstruction(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, double amountPaid)
+        private async Task ProcessInstruction(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, double amountPaid, int blockHeight)
         {
             if (document != null)
             {
                 int instructionType = Convert.ToInt32(document["instructionType"]);
                 var dynamicObject = JsonConvert.DeserializeObject<dynamic>(document.ToString());
-                int _keyAddress = Convert.ToInt32(document["keyAddress"]);
+                string _keyAddress = dynamicObject["keyAddress"];
 
                 
 
@@ -269,7 +272,7 @@ namespace xServerWorker.BackgroundServices
                 {
                     case (int)InstructionTypeEnum.NewDnsZone:
 
-                        await NewDnsZone(document, xDocumentPendingCollection, dynamicObject);
+                        await NewDnsZone(document, xDocumentPendingCollection, dynamicObject, blockHeight);
 
                         break;
 
@@ -295,7 +298,7 @@ namespace xServerWorker.BackgroundServices
             }
         }
 
-        private async Task NewDnsZone(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, dynamic dynamicObject)
+        private async Task NewDnsZone(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, dynamic dynamicObject, int blockHeight)
         {
             if (dynamicObject != null)
             {
@@ -309,7 +312,7 @@ namespace xServerWorker.BackgroundServices
 
                 try
                 {
-                    await CreateDNSZone(zone);
+                    await CreateDNSZone(dynamicObject, blockHeight);
                     zoneCreated = true;
 
                 }
@@ -340,26 +343,69 @@ namespace xServerWorker.BackgroundServices
             xDocumentCollection.InsertOne(document);
         }
 
-        private static async Task CreateDNSZone(string zone)
+        private async Task CreateDNSZone(dynamic dynamicObject, int blockHeight)
         {
 
+            string zone = (string)dynamicObject["data"]["zone"];
+            var zoneDocumentCollection = _db.GetCollection<BsonDocument>("zones");
+
+            var filter = Builders<BsonDocument>.Filter.Eq("zone", zone);
+            var zoneDocument = zoneDocumentCollection.Find(filter).FirstOrDefault();
 
 
-            var client = new RestClient(_powerDnsHost);
-            var request = new RestRequest($"/api/v1/servers/localhost/zones", Method.Post);
-            request.AddHeader("X-API-Key", _powerDnsApiKey);
-            request.AddHeader("content-type", "application/json");
+            if (zoneDocument == null)
+            {
 
-            var body = new NewZoneModel(zone);
+                var client = new RestClient(_powerDnsHost);
+                var request = new RestRequest($"/api/v1/servers/localhost/zones", Method.Post);
+                request.AddHeader("X-API-Key", _powerDnsApiKey);
+                request.AddHeader("content-type", "application/json");
 
-            var serializerSettings = new JsonSerializerSettings();
-            serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            var json = JsonConvert.SerializeObject(body, serializerSettings);
+                var body = new NewZoneModel(zone);
 
-            request.AddJsonBody(json);
-            await client.ExecuteAsync(request);
+                var serializerSettings = new JsonSerializerSettings();
+                serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                var json = JsonConvert.SerializeObject(body, serializerSettings);
+
+                request.AddJsonBody(json);
+                await client.ExecuteAsync(request);
 
 
+                var newZoneDocument = JsonConvert.DeserializeObject<dynamic>("{}");
+
+                var Id = Guid.NewGuid();
+
+
+                newZoneDocument._id = Id;
+                newZoneDocument.zone = zone;
+                newZoneDocument.keyAddress = dynamicObject["keyAddress"];
+                newZoneDocument.signature = dynamicObject["signature"];
+                newZoneDocument.pricelockId = dynamicObject["priceLockId"];
+                newZoneDocument.blockConfirmed = blockHeight;
+
+                dynamic insertZoneDocument = GetBsonFromDynamic(newZoneDocument);
+
+                zoneDocumentCollection.InsertOne(insertZoneDocument);
+
+
+            }
+
+            else {
+
+                throw new Exception("Owned Elsewhere");
+            
+            }
+
+
+
+
+        }
+
+        private static dynamic GetBsonFromDynamic(dynamic newZoneDocument)
+        {
+            var jsonstring = JsonConvert.SerializeObject(newZoneDocument);
+            var insertZoneDocument = BsonSerializer.Deserialize<BsonDocument>(jsonstring);
+            return insertZoneDocument;
         }
 
         private async Task<string> GetMyFeeAddress()
