@@ -489,6 +489,13 @@ namespace x42.Controllers.Public
             return await _xDocumentService.AddActionRequest(request);
         }
 
+        [HttpPost]
+        [Route("/xDocument/boadcast")]
+        public async Task<string> BoadcastDocument(object request)
+        {
+            return await _xDocumentService.AddActionRequest(request, true);
+        }
+
         [HttpGet]
         [Route("/xDocument/ping")]
         public IActionResult Pingx()

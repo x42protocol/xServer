@@ -24,9 +24,6 @@ namespace xServerWorker.Services
 
         public async Task<bool> BroadcastXDocument() {
 
-         
- 
-
         var request = new RestRequest("xServer/getxserverstats");
             var response = await _x42BlockCoreClient.GetAsync<XServerStatsReponse>(request);
 
@@ -34,7 +31,7 @@ namespace xServerWorker.Services
             {
 
                 var allNodes = response.Nodes;
-                var pingTaskList = new List<Task<PingResponse>>();
+                var broadcastTaskList = new List<Task>();
 
                 var continueTasks = new List<Task>();
 
@@ -47,47 +44,27 @@ namespace xServerWorker.Services
                         string xServerURL = GetServerUrl(node.NetworkProtocol, node.NetworkAddress, node.NetworkPort);
                         var xServerClient = new RestClient(xServerURL);
 
-                        var pingRequest = new RestRequest("/ping");
-                        var pingTask = xServerClient.GetAsync<PingResponse>(pingRequest);
-                        pingTaskList.Add(pingTask);
+                        var broadcastRequest = new RestRequest("/xDocument/");
+                        var pingTask = xServerClient.PostAsync(broadcastRequest);
+                        
+                        broadcastTaskList.Add(pingTask);
+                    
 
-                        var continueTask = pingTask.ContinueWith(async (response) =>
-                        {
-                            var pingResponse = await response;
-
- 
-                            if (pingResponse != null)
-                            {
-
- 
-                            }
-
-                            else
-                            {
-
-                            }
-
-                        });
-
-                        continueTasks.Add(continueTask);
-                    }
+                     }
                     catch (Exception e)
                     {
 
                         _logger.LogError(e.Message);
                     }
 
-
-
                 }
 
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
-                Task.WaitAll(pingTaskList.ToArray());
-                Task.WaitAll(continueTasks.ToArray());
+                Task.WaitAll(broadcastTaskList.ToArray());
                 stopWatch.Stop();
 
-                Console.WriteLine($"Executed in L {stopWatch.ElapsedMilliseconds} ms");
+                Console.WriteLine($"Document broadcast in  {stopWatch.ElapsedMilliseconds} ms");
 
 
             }

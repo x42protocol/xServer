@@ -182,7 +182,7 @@ namespace x42.Feature.XDocuments
         }
 
 
-        public async Task<string> AddActionRequest(object request)
+        public async Task<string> AddActionRequest(object request, bool boadcast = false)
         {
 
             string jsonRequest = JsonConvert.SerializeObject(request);
@@ -263,6 +263,13 @@ namespace x42.Feature.XDocuments
             };
 
             xDocumentHashReference.InsertOne(xDocumentHashReferenceEntry);
+
+            if (boadcast) {
+
+                var broadcastCollection = _db.GetCollection<BsonDocument>("BroadcastQueue");
+                broadcastCollection.InsertOne(xDocumentEntry);
+
+            }
 
             return hash;
 
