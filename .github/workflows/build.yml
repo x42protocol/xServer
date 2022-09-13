@@ -129,7 +129,7 @@ jobs:
     - name: Install (npm)
       run: |
         cd ${{ env.UI_PATH }}
-        npm install
+        npm install --force
 
     - name: Publish (npm)
       run: |
