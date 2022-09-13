@@ -1,8 +1,8 @@
 {
 	"name": "x-server-ui",
 	"description": "x42 Server",
-	"version": "4.0.6",
-	"bc_version": "1.1.38",
+	"version": "4.0.7",
+	"bc_version": "1.1.40",
 	"license": "MIT",
 	"author": {
 		"name": "x42 Protocol",
@@ -23,7 +23,10 @@
 		"build": "ng build",
 		"test": "ng test",
 		"lint": "ng lint",
-		"e2e": "ng e2e"
+		"e2e": "ng e2e",
+		"name": "node -p \"require('./package.json').name\"",
+		"blockcore_version": "node -p \"require('./package.json').bc_version\"",
+		"version": "node -p \"require('./package.json').version\""
 	},
 	"private": true,
 	"dependencies": {

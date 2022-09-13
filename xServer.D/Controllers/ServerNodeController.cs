@@ -2,17 +2,14 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Config;
-using x42.Feature.API.Requirements;
 using x42.Configuration;
 using x42.Controllers.Results;
 using x42.Controllers.Requests;
 using x42.Feature.Setup;
-using x42.ServerNode;
 using x42.Server;
 using x42.Utilities;
 using x42.Utilities.Extensions;
