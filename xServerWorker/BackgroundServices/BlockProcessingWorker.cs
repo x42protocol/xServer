@@ -31,7 +31,6 @@ namespace xServerWorker.BackgroundServices
 
         private readonly MongoClient _client;
         private readonly IMongoDatabase _db;
-        private readonly BroadCaster _broacaster;
         private static string _powerDnsHost = "";
         private static string _powerDnsApiKey = "";
         private static string _xServerHost = "http://x42server:4242/";
@@ -40,7 +39,7 @@ namespace xServerWorker.BackgroundServices
 
         private static List<SimpleBlockModel> _blockHashes = new List<SimpleBlockModel>();
 
-        public BlockProcessingWorker(ILogger<BlockProcessingWorker> logger, BroadCaster broacaster)
+        public BlockProcessingWorker(ILogger<BlockProcessingWorker> logger)
         {
             var mongoUser = Environment.GetEnvironmentVariable("MONGO_USER");
             var mongoPassword = Environment.GetEnvironmentVariable("MONGO_PASSWORD");
@@ -56,7 +55,7 @@ namespace xServerWorker.BackgroundServices
             _powerDnsHost = "https://poweradmin.xserver.network";
             _powerDnsApiKey = "cmp4V1Z0MnprRVRMbE10";
             _xServerHost = "http://127.0.0.1:4242/";
-            _client = new MongoClient($"mongodb://localhost:27017");
+            _client = new MongoClient($"mongodb+srv://dimi:RUYspmkvo9gej9bR@cluster0.eu2sqtt.mongodb.net/test");
 
 #else
             _client = new MongoClient($"mongodb://{mongoUser}:{mongoPassword}@xDocumentStore:27017/");
@@ -67,7 +66,6 @@ namespace xServerWorker.BackgroundServices
 
 
             _db = _client.GetDatabase("xServerDb");
-            _broacaster = broacaster;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -141,8 +139,6 @@ namespace xServerWorker.BackgroundServices
                     else
                     {
 
-                        await Task.Delay(5000, stoppingToken);
-                        await _broacaster.BroadcastXDocument();
 
                         blockCount = await GetBlockCount();
 

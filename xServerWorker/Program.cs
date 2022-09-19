@@ -8,7 +8,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHostedService<BlockProcessingWorker>();
         try
         {
-            services.AddSingleton<BroadCaster, BroadCaster>();
+            //services.AddSingleton<BroadCaster, BroadCaster>();
 
         }
         catch (Exception)

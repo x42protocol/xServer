@@ -1,5 +1,7 @@
 ﻿using Common.Models.x42Blockcore;
 using Common.Models.XServer;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using RestSharp;
 using System.Diagnostics;
 
@@ -14,26 +16,45 @@ namespace xServerWorker.Services
 #else
         private readonly RestClient _x42BlockCoreClient = new RestClient("http://x42core:42220/api/");
 #endif
+        private readonly IMongoDatabase _db;
+        private readonly IMongoClient _client;
 
 
-        public BroadCaster(ILogger<BroadCaster> logger)
+        public BroadCaster(ILogger<BroadCaster> logger, IMongoDatabase db, IMongoClient client)
         {
             _logger = logger;
-         }
+            _client = new MongoClient($"mongodb+srv://dimi:RUYspmkvo9gej9bR@cluster0.eu2sqtt.mongodb.net/test");
+            _db = _client.GetDatabase("xServerDb");
+
+        }
 
 
         public async Task<bool> BroadcastXDocument() {
 
-        var request = new RestRequest("xServer/getxserverstats");
+
+            var broadcastCollection = _db.GetCollection<BsonDocument>("BroadcastQueue");
+            var document = broadcastCollection.Find("").FirstOrDefault();
+
+            if (document == null) {
+
+                return false;
+            }
+
+
+            var request = new RestRequest("xServer/getxserverstats");
             var response = await _x42BlockCoreClient.GetAsync<XServerStatsReponse>(request);
 
+
+            var serverlist = new List<string>();
+            serverlist.Add("Eleni");
+            serverlist.Add("Alexandros"); 
+            serverlist.Add("dimiT3");
             if (response != null)
             {
 
-                var allNodes = response.Nodes;
+                var allNodes = response.Nodes.Where(l => serverlist.Contains(l.Name));
                 var broadcastTaskList = new List<Task>();
 
-                var continueTasks = new List<Task>();
 
 
                 foreach (var node in allNodes)
