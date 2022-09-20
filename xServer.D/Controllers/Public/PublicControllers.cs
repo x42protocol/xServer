@@ -33,17 +33,17 @@ namespace x42.Controllers.Public
         private readonly PowerDnsFeature _powerDnsFeature;
         private readonly WordPressPreviewFeature _wordPressPreviewFeature;
 
- 
+
         private readonly XServer xServer;
         private readonly ProfileFeature profileFeature;
         private readonly PriceFeature priceFeature;
         private readonly MetricsFeature _metricsFeature;
         public PublicController(
-            XServer xServer, 
-            ProfileFeature profileFeature, 
-            PriceFeature priceFeature, 
+            XServer xServer,
+            ProfileFeature profileFeature,
+            PriceFeature priceFeature,
             PowerDnsFeature powerDnsFeature,
-            WordPressPreviewFeature wordPressPreviewFeature, 
+            WordPressPreviewFeature wordPressPreviewFeature,
             MetricsFeature metricsFeature)
         {
             _xServer = xServer;
@@ -70,7 +70,8 @@ namespace x42.Controllers.Public
             {
                 Version = _xServer.Version.ToString(),
                 BestBlockHeight = _xServer.AddressIndexerHeight,
-                Tier = (int)_xServer.Stats.TierLevel
+                Tier = (int)_xServer.Stats.TierLevel,
+                PublicKey = xServer.GetMyPublicKey()
             };
             return Json(pingResult);
         }
@@ -93,7 +94,7 @@ namespace x42.Controllers.Public
         [Route("addprofile")]
         public async Task<IActionResult> AddTestProfileAsync()
         {
-           
+
             await _profileFeature.AddTestProfile();
             return Ok();
         }
@@ -364,10 +365,10 @@ namespace x42.Controllers.Public
         [Route("zones")]
         public async Task<IActionResult> GetAllZones()
         {
- 
-                var priceLockResult = await _powerDnsFeature.GetAllZones();
-                return Json(priceLockResult);
-      
+
+            var priceLockResult = await _powerDnsFeature.GetAllZones();
+            return Json(priceLockResult);
+
         }
 
 

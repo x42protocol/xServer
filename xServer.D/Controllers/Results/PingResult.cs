@@ -18,5 +18,8 @@
 
         /// <summary>The node's tier level.</summary>
         public int Tier { get; set; }
+
+        /// <summary>The node's public key.</summary>
+        public string PublicKey { get; set; }
     }
 }
