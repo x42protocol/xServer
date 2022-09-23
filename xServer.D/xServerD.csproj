@@ -12,6 +12,7 @@
     <ApplicationIcon />
     <StartupObject />
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <PackageId>x42server</PackageId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE</DefineConstants>

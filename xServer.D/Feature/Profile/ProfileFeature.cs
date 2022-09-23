@@ -471,7 +471,16 @@ namespace x42.Feature.Profile
 
         public async Task SyncProfiles(CancellationToken cancellationToken)
         {
-            await networkFeatures.SyncProfiles(cancellationToken);
+            try
+            {
+                await networkFeatures.SyncProfiles(cancellationToken);
+
+            }
+            catch (Exception e)
+            {
+
+                logger.LogError(e.Message);
+            }
         }
 
         /// <summary>

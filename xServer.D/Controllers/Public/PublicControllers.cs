@@ -77,7 +77,8 @@ namespace x42.Controllers.Public
             {
                 Version = _xServer.Version.ToString(),
                 BestBlockHeight = _xServer.AddressIndexerHeight,
-                Tier = (int)_xServer.Stats.TierLevel
+                Tier = (int)_xServer.Stats.TierLevel,
+                PublicKey = _xServer.GetPublicKey(),
             };
             return Json(pingResult);
         }
