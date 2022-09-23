@@ -237,7 +237,7 @@ namespace x42.Feature.Network
             return cachedServerInfo.FeeAddress;
         }
 
-        public string GetPublicKey()
+        public string GetMyPublicKey()
         {
             return cachedServerInfo.PublicKey;
         }

@@ -99,7 +99,7 @@ namespace x42.Server
         ///     Get public key for the xServer.
         /// </summary>
         /// <returns>Will return a the public key as a string</returns>
-        string GetPublicKey();
+        string GetMyPublicKey();
 
         /// <summary>
         ///     Get the nodes profile name.

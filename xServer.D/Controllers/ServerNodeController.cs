@@ -85,7 +85,7 @@ namespace x42.Controllers
                 Stats = xServer.Stats,
                 FeeAddress = xServer.GetMyFeeAddress(),
                 Name = xServer.GetServerProfileName(),
-                PublicKey = xServer.GetPublicKey()
+                PublicKey = xServer.GetMyPublicKey()
             };
 
             // Add the list of features that are enabled.
