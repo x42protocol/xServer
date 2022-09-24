@@ -96,6 +96,9 @@ namespace x42.Feature.Metrics
                     {
                         services.AddSingleton<MetricsFeature>();
                         services.AddSingleton<MetricsService>();
+                        services.AddSingleton<IRuntimeInformationService, RuntimeInformationService>();
+                        services.AddSingleton <IMemoryMetricsService,MemoryMetricsService>(); 
+                        services.AddSingleton<IProcessorMetricsService, ProcessorMetricsService>();
                     });
             });
 
