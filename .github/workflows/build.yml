@@ -129,7 +129,7 @@ jobs:
     - name: Install (npm)
       run: |
         cd ${{ env.UI_PATH }}
-        npm install
+        npm install --legacy-peer-deps
 
     - name: Publish (npm)
       run: |
