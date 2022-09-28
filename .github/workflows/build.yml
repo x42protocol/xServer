@@ -79,7 +79,7 @@ jobs:
       with:
         context:  ${{ env.UI_PATH }}/.
         push: true
-        tags: x42protocoldocker/x42serverui:v${{ env.XSERVER_VERSION }}
+        tags: x42protocoldocker/x42serverui:latest,x42protocoldocker/x42serverui:v${{ env.XSERVER_VERSION }}
         
     - name: Build and push x42Server Daemon
       uses: docker/build-push-action@v3
@@ -87,5 +87,5 @@ jobs:
         context: .
         file: ${{ env.XSERVER_PATH }}/Dockerfile
         push: true
-        tags: x42protocoldocker/x42serverd:v${{ env.BLOCKCORE_DAEMON_VERSION }}
+        tags: x42protocoldocker/x42serverd:latest,x42protocoldocker/x42serverd:v${{ env.BLOCKCORE_DAEMON_VERSION }}
 
