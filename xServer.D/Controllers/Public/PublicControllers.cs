@@ -357,10 +357,9 @@ namespace x42.Controllers.Public
 
 
         /// <summary>
-        ///     Create a price lock.
+        ///     Get all zones for power DNS
         /// </summary>
-        /// <param name="priceLockRequest">The object with all of the nessesary data to create a price lock.</param>
-        /// <returns>A <see cref="PriceLockResult" /> with price lock results.</returns>
+        /// <returns>A <see cref="List{ZoneModel}" /> list of zones.</returns>
         [HttpGet]
         [Route("zones")]
         public async Task<IActionResult> GetAllZones()
