@@ -349,7 +349,7 @@ namespace x42.Feature.Network
                 string xServerURL = networkFeatures.GetServerUrl(activeServer.NetworkProtocol, activeServer.NetworkAddress, activeServer.NetworkPort);
                 var client = new RestClient(xServerURL);
                 var registerRestRequest = new RestRequest("/registerserver", Method.Post);
-
+                registerRestRequest.AddBody(registerRequest);
                 await client.ExecuteAsync(registerRestRequest, cancellationToken);
             }
         }
