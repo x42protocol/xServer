@@ -140,9 +140,7 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Publish Docker xServerUI 
-      
+     
     - name: Build and push x42ServerUI
       uses: docker/build-push-action@v3
       with:
