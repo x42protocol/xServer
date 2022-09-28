@@ -87,5 +87,5 @@ jobs:
         context: .
         file: ${{ env.XSERVER_PATH }}/Dockerfile
         push: true
-        tags: x42protocoldocker/x42serverd:latest,x42protocoldocker/x42serverd:v${{ env.BLOCKCORE_DAEMON_VERSION }}
+        tags: x42protocoldocker/x42serverd:latest,x42protocoldocker/x42serverd:v${{ env.XSERVER_VERSION }}
 
