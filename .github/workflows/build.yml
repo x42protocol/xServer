@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        os: [ubuntu-latest]
         include:
           - os: windows-latest
             extension: ".exe"
@@ -126,14 +126,26 @@ jobs:
         mkdir daemon
         tar -xvzf daemon${{ matrix.bc_extension }} -C daemon
 
-    - name: Install (npm)
-      run: |
-        cd ${{ env.UI_PATH }}
-        npm install --legacy-peer-deps
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Publish (npm)
-      run: |
-        cd ${{ env.UI_PATH }}
-        npm run publish:${{ matrix.platform }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish Docker xServerUI 
+      
+    - name: Build and push x42ServerUI
+      uses: docker/build-push-action@v3
+      with:
+        context:  ${{ env.UI_PATH }}/.
+        push: true
+        tags: x42protocoldocker/x42serverui:v${{ env.XSERVER_VERSION }}
