@@ -84,7 +84,8 @@ jobs:
     - name: Build and push x42Server Daemon
       uses: docker/build-push-action@v3
       with:
-        context:  ${{ env.XSERVER_PATH }}/.
+        context: .
+        file: ${{ env.XSERVER_PATH }}/Dockerfile
         push: true
         tags: x42protocoldocker/x42serverd:v${{ env.BLOCKCORE_DAEMON_VERSION }}
 
