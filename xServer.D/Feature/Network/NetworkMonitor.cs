@@ -401,6 +401,7 @@ namespace x42.Feature.Network
                 {
                     var client = new RestClient(xServerURL);
                     var registerRestRequest = new RestRequest("/register", Method.Post);
+                    registerRestRequest.AddBody(registerRequest);
                     await client.ExecuteAsync(registerRestRequest, cancellationToken);
                 }
             }

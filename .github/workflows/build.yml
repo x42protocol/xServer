@@ -14,13 +14,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         include:
-          - os: windows-latest
-            extension: ".exe"
-            bc_extension: ".zip"
-            runtime: "win"
-            platform: "win"
-            dotnet_runtime: "win-x64"
-            xs_package_runtime: "win-x64"
           - os: ubuntu-latest
             extension: ".deb"
             bc_extension: ".tar.gz"
@@ -28,13 +21,6 @@ jobs:
             platform: "linux"
             dotnet_runtime: "linux-x64"
             xs_package_runtime: "linux-x64"
-          - os: macos-latest
-            runtime: "mac"
-            extension: ".dmg"
-            bc_extension: ".zip"
-            platform: "mac"
-            dotnet_runtime: "osx-x64"
-            xs_package_runtime: "mac-x64"
         node_version: [16.x]
         dotnet_version: ['6.0.400']
       fail-fast: false
