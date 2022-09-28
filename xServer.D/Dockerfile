@@ -18,5 +18,5 @@ RUN dotnet publish -c Release -r linux-x64 -v m -o ./build xServer.D/xServerD.cs
 FROM base AS final
 WORKDIR /app
 
-COPY --from=publish /src/build/xServer.D .
+COPY --from=publish /src/build/xserver.d .
 ENTRYPOINT ["dotnet", "x42.xServerD.dll"]
