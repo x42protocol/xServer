@@ -7,6 +7,5 @@ namespace Common.Models.Graviex
         public int Timestamp { get; set; }
         public List<List<decimal>> Asks { get; set; }
         public List<List<decimal>> Bids { get; set; }
-
     }
 }

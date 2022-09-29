@@ -10,9 +10,7 @@ namespace Common.Utils
         public static string NormalizeJsonString(string json)
         {
             JToken parsed = JToken.Parse(json);
-
             JToken normalized = NormalizeToken(parsed);
-
             return JsonConvert.SerializeObject(normalized, Formatting.Indented);
         }
 
@@ -45,5 +43,4 @@ namespace Common.Utils
             }
         }
     }
-
 }

@@ -1,6 +1,5 @@
 ﻿using Common.Models.Graviex;
 using Common.Models.OrderBook;
-using Common.Models.XDocuments.Zones;
 using Common.Utils;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -58,34 +57,24 @@ namespace x42.Feature.XDocuments
             _client = new MongoClient($"mongodb://{mongoUser}:{mongoPassword}@xDocumentStore:27017/");
 #endif
 
-
-
             _db = _client.GetDatabase("xServerDb");
             _powerDnsService = powerDnsService;
             _x42ClientSettings = x42ClientSettings;
             _serverLifetime = serverLifetime;
-
-            this._networkCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { _serverLifetime.ApplicationStopping });
+            _networkCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new[] { _serverLifetime.ApplicationStopping });
             _asyncLoopFactory = asyncLoopFactory;
-
             _x42Client = new X42Node(_x42ClientSettings.Name, _x42ClientSettings.Address, _x42ClientSettings.Port, _logger, _serverLifetime, _asyncLoopFactory, false);
         }
 
         public async Task<object> GetDocumentById(Guid Id)
         {
-
-
             // Get xDocument Collection Reference
             var xDocumentCollection = _db.GetCollection<BsonDocument>("xDocument");
-
             var filter = Builders<BsonDocument>.Filter.Eq("_id", Id.ToString());
             var document = xDocumentCollection.Find(filter).FirstOrDefault();
-
             var dynamicObject = JsonConvert.DeserializeObject<dynamic>(document.ToString());
 
-
             // Convert request to JSON string
-
             return dynamicObject;
 
         }
@@ -93,33 +82,19 @@ namespace x42.Feature.XDocuments
         public async Task<object> GetDocumentByHash(string hash)
         {
 
-
             // Get xDocument Collection Reference
             var xDocumentHashCollection = _db.GetCollection<BsonDocument>("XDocumentHashReference");
-
-            var x = xDocumentHashCollection.GetHashCode();
-
             var filter = Builders<BsonDocument>.Filter.Eq("hash", hash);
             var document = xDocumentHashCollection.Find(filter).FirstOrDefault();
-
             var xDocumentCollection = _db.GetCollection<BsonDocument>("xDocument");
-
             var id = document["_id"].ToString();
-
 
             filter = Builders<BsonDocument>.Filter.Eq("_id", id);
             document = xDocumentCollection.Find(filter).FirstOrDefault();
 
-            var s = document.ToString();
-
-
-
             var dynamicObject = JsonConvert.DeserializeObject<dynamic>(document.ToString());
 
             string serialized = Serialize(dynamicObject);
-
-            var matched = HashString(serialized) == hash;
-
 
             // Convert request to JSON string
 
@@ -132,22 +107,14 @@ namespace x42.Feature.XDocuments
 
             // Get xDocument Collection Reference
             var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("Dictionary");
-
             var filter = Builders<BsonDocument>.Filter.Eq("_id", "graviexOrderBook");
             var document = xDocumentDictionaryCollection.Find(filter).FirstOrDefault();
-
-
             var orderBook = JsonConvert.DeserializeObject<OrderBookModel>(document.ToString());
-
             var asks = orderBook.Asks.OrderBy(l => l.Price);
-
             var btcTickerFilter = Builders<BsonDocument>.Filter.Eq("_id", "btcTicker");
             var btcTickerDocument = xDocumentDictionaryCollection.Find(btcTickerFilter).FirstOrDefault();
-
             var graviexTicker = JsonConvert.DeserializeObject<GraviexTickerModel>(btcTickerDocument.ToString());
-
             var sellprice = graviexTicker.Ticker.Sell;
-
 
             decimal totalAmount = value / sellprice;
             decimal TotalQty = 0;
@@ -163,21 +130,14 @@ namespace x42.Feature.XDocuments
                 }
                 else
                 {
-
-
                     TotalQty += totalAmount / item.Price;
                     break;
-
-
                 }
-
-
             }
 
             var fee = TotalQty * 0.05m;
 
             return Task.FromResult(Math.Round(TotalQty - fee));
-
 
         }
 
@@ -186,11 +146,8 @@ namespace x42.Feature.XDocuments
         {
 
             string jsonRequest = JsonConvert.SerializeObject(request);
-
             var dynamicObject = JsonConvert.DeserializeObject<dynamic>(jsonRequest);
             string data = JsonConvert.SerializeObject(dynamicObject["data"]);
-
-
 
             jsonRequest = JsonUtility.NormalizeJsonString(jsonRequest);
 
@@ -204,29 +161,18 @@ namespace x42.Feature.XDocuments
             if (dynamicObject["keyAddress"] != null && dynamicObject["signature"] != null)
             {
 
-
                 var dataObject1 = dynamicObject["data"];
-
                 string dataObjectAsJson = Serialize(dataObject1);
-
-
                 string key = dynamicObject["keyAddress"];
                 string signature = dynamicObject["signature"];
-
-
-
 
                 var isValid = await _x42Client.VerifyMessageAsync(key, dataObjectAsJson, signature);
 
                 if (!isValid)
                 {
-
                     throw new Exception("Invalid Signature");
-
                 }
             }
-
-
 
 
             // Get xDocument Collection Reference
@@ -234,10 +180,6 @@ namespace x42.Feature.XDocuments
 
             // Get xDocumentHashReference Collection Reference
             var xDocumentHashReference = _db.GetCollection<BsonDocument>("XDocumentHashReference");
-
-
-
-
 
             // Convert request to JSON string
             string json = Serialize(dynamicObject);
@@ -306,12 +248,8 @@ namespace x42.Feature.XDocuments
 
         private string Serialize(object obj)
         {
-
-
             string serialized = JsonConvert.SerializeObject(obj, Formatting.Indented);
-
             return JsonUtility.NormalizeJsonString(serialized);
-
         }
 
         private string HashString(string text, string salt = "")

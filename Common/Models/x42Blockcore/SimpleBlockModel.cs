@@ -4,6 +4,5 @@
     {
         public int BlockNumber { get; set; }
         public string BlockHash { get; set; }
-
     }
 }

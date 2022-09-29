@@ -11,6 +11,4 @@
         public int ResponseTime { get; set; }
         public int Tier { get; set; }
     }
-
-
 }

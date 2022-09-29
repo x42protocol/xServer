@@ -55,7 +55,8 @@ namespace xServerWorker.BackgroundServices
             _powerDnsHost = "https://poweradmin.xserver.network";
             _powerDnsApiKey = "cmp4V1Z0MnprRVRMbE10";
             _xServerHost = "http://127.0.0.1:4242/";
-            _client = new MongoClient($"mongodb+srv://dimi:RUYspmkvo9gej9bR@cluster0.eu2sqtt.mongodb.net/test");
+            _client = new MongoClient($"mongodb://localhost:27017");
+
 
 #else
             _client = new MongoClient($"mongodb://{mongoUser}:{mongoPassword}@xDocumentStore:27017/");

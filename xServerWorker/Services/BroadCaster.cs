@@ -23,7 +23,7 @@ namespace xServerWorker.Services
         public BroadCaster(ILogger<BroadCaster> logger, IMongoDatabase db, IMongoClient client)
         {
             _logger = logger;
-            _client = new MongoClient($"mongodb+srv://dimi:RUYspmkvo9gej9bR@cluster0.eu2sqtt.mongodb.net/test");
+            _client = new MongoClient($"mongodb://localhost:27017");
             _db = _client.GetDatabase("xServerDb");
 
         }
