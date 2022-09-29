@@ -250,9 +250,9 @@ namespace x42.Feature.Network
                 {
                     string xServerURL = GetServerUrl(activeServer.NetworkProtocol, activeServer.NetworkAddress, activeServer.NetworkPort);
                     var client = new RestClient(xServerURL);
-                    var registerRestRequest = new RestRequest("/updatepricelock", Method.Post);
-
-                    await client.ExecuteAsync(registerRestRequest, cancellationToken);
+                    var udpatePriceLockRestRequest = new RestRequest("/updatepricelock", Method.Post);
+                    udpatePriceLockRestRequest.AddBody(priceLockData);
+                    await client.ExecuteAsync(udpatePriceLockRestRequest, cancellationToken);
                 }
                 catch (Exception) { }
             }
@@ -585,7 +585,7 @@ namespace x42.Feature.Network
 
                 var client = new RestClient(xServerURL);
                 var reserveProfileRequest = new RestRequest("/receiveprofilereservation", Method.Post);
-
+                reserveProfileRequest.AddBody(reserveRequest);
                 var result = await client.ExecuteAsync<ReserveProfileResult>(reserveProfileRequest, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
