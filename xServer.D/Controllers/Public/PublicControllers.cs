@@ -15,7 +15,7 @@ using System;
 using x42.Feature.PowerDns;
 using x42.Feature.WordPressPreview.Models;
 using x42.Feature.Metrics;
-using x42.Feature.Metrics.Models;
+using x42.Feature.XDocuments;
 
 namespace x42.Controllers.Public
 {
@@ -33,28 +33,23 @@ namespace x42.Controllers.Public
         private readonly PowerDnsFeature _powerDnsFeature;
         private readonly WordPressPreviewFeature _wordPressPreviewFeature;
 
+        private readonly XDocumentClient _xDocumentService;
 
-        private readonly XServer xServer;
-        private readonly ProfileFeature profileFeature;
-        private readonly PriceFeature priceFeature;
-        private readonly MetricsFeature _metricsFeature;
         public PublicController(
             XServer xServer,
             ProfileFeature profileFeature,
             PriceFeature priceFeature,
             PowerDnsFeature powerDnsFeature,
             WordPressPreviewFeature wordPressPreviewFeature,
-            MetricsFeature metricsFeature)
+            MetricsFeature metricsFeature,            
+            XDocumentClient xDocumentService)
         {
             _xServer = xServer;
             _profileFeature = profileFeature;
             _priceFeature = priceFeature;
             _powerDnsFeature = powerDnsFeature;
             _wordPressPreviewFeature = wordPressPreviewFeature;
-            this.xServer = xServer;
-            this.profileFeature = profileFeature;
-            this.priceFeature = priceFeature;
-            _metricsFeature = metricsFeature;
+            _xDocumentService = xDocumentService;
         }
 
         /// <summary>
@@ -70,8 +65,7 @@ namespace x42.Controllers.Public
             {
                 Version = _xServer.Version.ToString(),
                 BestBlockHeight = _xServer.AddressIndexerHeight,
-                Tier = (int)_xServer.Stats.TierLevel,
-                PublicKey = xServer.GetMyPublicKey()
+                Tier = (int)_xServer.Stats.TierLevel
             };
             return Json(pingResult);
         }
@@ -463,21 +457,69 @@ namespace x42.Controllers.Public
         }
 
 
-        /// <summary>
-        ///     Get Hardware Metrics
-        /// </summary>
-        /// <param name="hardwaremetrics">Gets Hardware Metrics of the Host</param>
-        /// <returns>A <see cref="ContainerStatsModel" /> with hardware metrics.</returns>
-        [HttpGet]
-        [Route("hardwaremetrics")]
-        public ActionResult<HostStatsModel> HardwareMetricsAsync()
+        ///// <summary>
+        /////     Get Hardware Metrics
+        ///// </summary>
+        ///// <param name="hardwaremetrics">Gets Hardware Metrics of the Host</param>
+        ///// <returns>A <see cref="ContainerStatsModel" /> with hardware metrics.</returns>
+        //[HttpGet]
+        //[Route("hardwaremetrics")]
+        //public ActionResult<HostStatsModel> HardwareMetricsAsync()
+        //{
+        //    var response = _metricsFeature.getHardwareMetricsAsync();
+        //    return Json(response);
+        //}
+
+        [HttpPost]
+        [Route("/xDocument/")]
+        public async Task<string> AddDocument(object request)
         {
-            var response = _metricsFeature.getHardwareMetricsAsync();
-            return Json(response);
+            return await _xDocumentService.AddActionRequest(request);
+        }
+
+        [HttpPost]
+        [Route("/xDocument/boadcast")]
+        public async Task<string> BoadcastDocument(object request)
+        {
+            return await _xDocumentService.AddActionRequest(request, true);
+        }
+
+        [HttpGet]
+        [Route("/xDocument/ping")]
+        public IActionResult Pingx()
+        {
+            return Ok(true);
+        }
+
+        [HttpGet("/xDocument/{id}")]
+        public async Task<IActionResult> GetDocumentById(Guid id)
+        {
+            return Content((await _xDocumentService.GetDocumentById(id)).ToString(), "application/json");
         }
 
 
+        [HttpGet("/xDocument/hash/{hash}")]
+        public async Task<IActionResult> GetDocumentByHash(string hash)
+        {
+            return Content((await _xDocumentService.GetDocumentByHash(hash)).ToString(), "application/json");
+        }
+
+        [HttpGet("/xDocument/pricelock")]
+        public async Task<IActionResult> GetPriceLock(decimal value)
+        {
+            return Content((await _xDocumentService.GetPriceLock(value)).ToString(), "application/json");
+        }
 
 
+        [HttpGet("my-zones")]
+        public async Task<IActionResult> GetZoneForKeyAddress(string keyAddress )
+        {
+            return Ok(_xDocumentService.GetZonesByKeyAddress(keyAddress));
+        }
+        [HttpGet("zone-exists")]
+        public async Task<IActionResult> ZoneExists(string zone)
+        {
+            return Ok(_xDocumentService.ZoneExists(zone));
+        }
     }
 }

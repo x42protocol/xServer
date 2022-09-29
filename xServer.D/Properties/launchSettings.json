@@ -2,7 +2,8 @@
   "profiles": {
     "xServerD": {
       "commandName": "Project",
-      "commandLineArgs": "enableswagger=true"
+      "commandLineArgs": "enableswagger=true",
+      "nativeDebugging": true
     },
     "xServerD Test": {
       "commandName": "Project",

@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using x42.Feature.PowerDns.Models;
 using RestSharp;
+using Common.Models.XDocuments.DNS;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace x42.Feature.PowerDns.PowerDnsClient
 {
@@ -65,6 +68,25 @@ namespace x42.Feature.PowerDns.PowerDnsClient
                 _logger.LogDebug($"An Error Occured When add subdomain!", ex);
 
              }
+        }
+
+        public async Task CreateDNSZone(string zone)
+        {
+ 
+            var client = new RestClient(_baseUrl);
+            var request = new RestRequest($"/api/v1/servers/localhost/zones", Method.Post);
+            request.AddHeader("X-API-Key", _apiKey);
+            request.AddHeader("content-type", "application/json");
+
+            var body = new NewZoneModel(zone);
+
+            var serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            var json = JsonConvert.SerializeObject(body, serializerSettings);
+
+            request.AddJsonBody(json);
+            await client.ExecuteAsync(request);
+
         }
 
 

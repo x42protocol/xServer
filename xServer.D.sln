@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.3.32819.101
+VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xServerD", "xServer.D\xServerD.csproj", "{A22DA0B1-6FEC-49AF-842C-79CEF7700191}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{DAAEB94C-931A-4DC8-BACF-AEB58DB98CF2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{6DF5776A-9B2B-45F5-9A7D-0A90B0D24F51}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xServerWorker", "xServerWorker\xServerWorker.csproj", "{724A6BDA-F366-47C6-B5C1-72CF53E88122}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
