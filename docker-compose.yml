@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  xserverd:
+    build:
+      context: .
+      dockerfile: xServer.D/Dockerfile
+      target: debug
+    ports:
+      - "42220:42220"  
+      - "4242:4242" 
+    volumes:
+      - type: bind
+        source: ./xServer.conf
+        target: /root/.xserverdata/main/xServer.conf
+    depends_on:
+      - "mongo"
+      - "postgres"
+  mongo:
+    container_name: xDocumentStore
+    image: mongo:5.0.9
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+
+  postgres:
+      image: postgres:14.2-alpine3.15
+      restart: always
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=postgres

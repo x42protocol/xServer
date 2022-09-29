@@ -38,9 +38,9 @@ namespace x42.Feature.Metrics
         /// <summary>Time in seconds between attempts run the network health monitor</summary>
         private readonly int _checkSleepSeconds = 5;
 
-        private MetricsService _metricsService;
-        public float[] cpuMetrics = new float[12]; // one minute average, over 5 second checks
-        public float[] memoryMetrics = new float[12]; // one minute average, over 5 second checks
+        private readonly MetricsService _metricsService;
+        public double[] cpuMetrics = new double[12]; // one minute average, over 5 second checks
+        public double[] memoryMetrics = new double[12]; // one minute average, over 5 second checks
         private int cpuMetricsPos = 0;
         private int memoryMetricsPos = 0;
         private bool _cpuMetricsInitialized = false;
@@ -85,7 +85,7 @@ namespace x42.Feature.Metrics
             startAfter: TimeSpans.Second);
         }
           
-        public float GetCpuMetrics()
+        public double GetCpuMetrics()
         {
             if (_cpuMetricsInitialized)
             {
@@ -94,24 +94,33 @@ namespace x42.Feature.Metrics
             else return new float() ;
         }
 
-        public float GetMemoryMetrics()
+        public double GetMemoryMetrics()
         {
             if (_memoryMetricsInitialized)
             {
                 return memoryMetrics.Average();
             }
-            else return new float();
+            else return new double();
         }
         public async Task UpdateHostHardwareMetricsCounters()
         {
             try
             {
-                 var counters = CountHostHardwareUtalizationAsync();
-                if (cpuMetricsPos == cpuMetrics.Length - 1 && !_cpuMetricsInitialized){ _cpuMetricsInitialized = true; }
+                var counters = CountHostHardwareUtalizationAsync();
+
+                if (cpuMetricsPos == cpuMetrics.Length - 1 && !_cpuMetricsInitialized)
+                { 
+                    _cpuMetricsInitialized = true; 
+                }
+
                 cpuMetrics[cpuMetricsPos] = counters.ProcessorUtilizationPercent;
                 cpuMetricsPos = cpuMetricsPos == cpuMetrics.Length - 1 ? 0 : cpuMetricsPos+1;
 
-                if (memoryMetricsPos == memoryMetrics.Length - 1 && !_memoryMetricsInitialized) { _memoryMetricsInitialized = true; }
+                if (memoryMetricsPos == memoryMetrics.Length - 1 && !_memoryMetricsInitialized)
+                {
+                    _memoryMetricsInitialized = true; 
+                }
+
                 memoryMetrics[memoryMetricsPos] = counters.AvailableMemoryMb;
                 memoryMetricsPos = memoryMetricsPos == memoryMetrics.Length - 1 ? 0 : memoryMetricsPos+1;
 

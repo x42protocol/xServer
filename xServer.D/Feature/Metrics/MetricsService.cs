@@ -6,17 +6,23 @@ namespace x42.Feature.Metrics
 {
     public class MetricsService
     {
-        private PerformanceCounter _cpuCounter { get; set; }
-        private PerformanceCounter _ramCounter { get; set; }
-        public MetricsService()
+        private readonly IMemoryMetricsService _memoryMetricsService;
+        private readonly IProcessorMetricsService _processorMetricsService;
+        private double _cpuTotalTime { get; set; }
+        private double _freeMemory { get; set; }
+        public MetricsService(IMemoryMetricsService memoryMetricsService, IProcessorMetricsService processorMetricsService)
         {
-            _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total"); //Memory array - last 10 minutes, ping every 10 seconds - round robin.
-            _ramCounter = new PerformanceCounter("Memory", "Available MBytes");
+            _memoryMetricsService = memoryMetricsService;
+            _processorMetricsService = processorMetricsService;
         }
 
         public HostStatsModel GetHardwareMetric()
         {
-            return new HostStatsModel(this._cpuCounter.NextValue(), this._ramCounter.NextValue());
+            _cpuTotalTime = _processorMetricsService.GetMetrics().ProcessorTime;
+
+            _freeMemory = _memoryMetricsService.GetMetrics().Free;
+
+            return new HostStatsModel(_cpuTotalTime, _freeMemory);
         }
     }
 }
