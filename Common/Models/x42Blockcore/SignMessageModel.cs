@@ -10,14 +10,6 @@ namespace Common.Models.x42Blockcore
         public string ExternalAddress { get; set; }
         public string Message { get; set; }
 
-        public SignMessageModel(string message)
-        {
-            WalletName = "WordpressPreview";
-            Message = message;
-            AccountName = "coldStakingColdAddresses";
-            Password = "!Coco1nut";
-            ExternalAddress = "XJ4Vnin64v9hqp5gD6UvAjx4dCdmHS6SXm";
-        }
     }
 
 }

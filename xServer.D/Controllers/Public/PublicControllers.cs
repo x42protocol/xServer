@@ -15,9 +15,6 @@ using System;
 using x42.Feature.PowerDns;
 using x42.Feature.WordPressPreview.Models;
 using x42.Feature.Metrics;
-using x42.Feature.Metrics.Models;
-using x42.Feature.Metrics;
-using x42.Feature.Metrics.Models;
 using x42.Feature.XDocuments;
 
 namespace x42.Controllers.Public
@@ -36,11 +33,6 @@ namespace x42.Controllers.Public
         private readonly PowerDnsFeature _powerDnsFeature;
         private readonly WordPressPreviewFeature _wordPressPreviewFeature;
 
-
-        private readonly XServer xServer;
-        private readonly ProfileFeature profileFeature;
-        private readonly PriceFeature priceFeature;
-      //  private readonly MetricsFeature _metricsFeature;
         private readonly XDocumentClient _xDocumentService;
 
         public PublicController(
@@ -49,9 +41,7 @@ namespace x42.Controllers.Public
             PriceFeature priceFeature,
             PowerDnsFeature powerDnsFeature,
             WordPressPreviewFeature wordPressPreviewFeature,
-            MetricsFeature metricsFeature)
-            WordPressPreviewFeature wordPressPreviewFeature,
-         //   MetricsFeature metricsFeature,
+            MetricsFeature metricsFeature,            
             XDocumentClient xDocumentService)
         {
             _xServer = xServer;
@@ -59,10 +49,6 @@ namespace x42.Controllers.Public
             _priceFeature = priceFeature;
             _powerDnsFeature = powerDnsFeature;
             _wordPressPreviewFeature = wordPressPreviewFeature;
-            this.xServer = xServer;
-            this.profileFeature = profileFeature;
-            this.priceFeature = priceFeature;
-           // _metricsFeature = metricsFeature;
             _xDocumentService = xDocumentService;
         }
 
