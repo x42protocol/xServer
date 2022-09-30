@@ -854,6 +854,7 @@ namespace x42.Feature.Network
                         if (serverKeysAreValid)
                         {
                             string xServerURL = GetServerUrl(serverNode.NetworkProtocol, serverNode.NetworkAddress, serverNode.NetworkPort);
+                            Console.WriteLine(xServerURL);
                             bool nodeAvailable = ValidateNodeOnline(serverNode.NetworkAddress);
                             if (nodeAvailable)
                             {

@@ -36,6 +36,7 @@ namespace x42.Feature.Api
             // Adds ServerNodeContoller with API endpoints.
             builder.AddApplicationPart(typeof(ServerNodeContoller).Assembly);
 
+
             // Adds PublicController with API endpoints.
             builder.AddApplicationPart(typeof(PublicController).Assembly);
 
