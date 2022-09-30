@@ -16,6 +16,7 @@ using x42.Feature.PowerDns;
 using x42.Feature.WordPressPreview.Models;
 using x42.Feature.Metrics;
 using x42.Feature.XDocuments;
+using x42.Feature.Metrics.Models;
 
 namespace x42.Controllers.Public
 {
@@ -32,7 +33,7 @@ namespace x42.Controllers.Public
         private readonly PriceFeature _priceFeature;
         private readonly PowerDnsFeature _powerDnsFeature;
         private readonly WordPressPreviewFeature _wordPressPreviewFeature;
-
+        private readonly MetricsFeature _metricsFeature;
         private readonly XDocumentClient _xDocumentService;
 
         public PublicController(
@@ -457,18 +458,18 @@ namespace x42.Controllers.Public
         }
 
 
-        ///// <summary>
-        /////     Get Hardware Metrics
-        ///// </summary>
-        ///// <param name="hardwaremetrics">Gets Hardware Metrics of the Host</param>
-        ///// <returns>A <see cref="ContainerStatsModel" /> with hardware metrics.</returns>
-        //[HttpGet]
-        //[Route("hardwaremetrics")]
-        //public ActionResult<HostStatsModel> HardwareMetricsAsync()
-        //{
-        //    var response = _metricsFeature.getHardwareMetricsAsync();
-        //    return Json(response);
-        //}
+        /// <summary>
+        ///     Get Hardware Metrics
+        /// </summary>
+        /// <param name="hardwaremetrics">Gets Hardware Metrics of the Host</param>
+        /// <returns>A <see cref="ContainerStatsModel" /> with hardware metrics.</returns>
+        [HttpGet]
+        [Route("hardwaremetrics")]
+        public ActionResult<HostStatsModel> HardwareMetricsAsync()
+        {
+            var response = _metricsFeature.getHardwareMetricsAsync();
+            return Json(response);
+        }
 
         [HttpPost]
         [Route("/xDocument/")]

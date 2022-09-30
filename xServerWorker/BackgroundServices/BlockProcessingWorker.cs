@@ -259,9 +259,7 @@ namespace xServerWorker.BackgroundServices
             {
                 int instructionType = Convert.ToInt32(document["instructionType"]);
                 var dynamicObject = JsonConvert.DeserializeObject<dynamic>(document.ToString());
-                string _keyAddress = dynamicObject["keyAddress"];
-
-                
+                string _keyAddress = dynamicObject["keyAddress"];             
 
                 switch (instructionType)
                 {
