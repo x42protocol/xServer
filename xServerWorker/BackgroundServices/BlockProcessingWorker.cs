@@ -41,8 +41,7 @@ namespace xServerWorker.BackgroundServices
 
         public BlockProcessingWorker(ILogger<BlockProcessingWorker> logger)
         {
-            var mongoUser = Environment.GetEnvironmentVariable("MONGO_USER");
-            var mongoPassword = Environment.GetEnvironmentVariable("MONGO_PASSWORD");
+            var mongoConnectionString = Environment.GetEnvironmentVariable("MONGOCONNECTIONSTRING");
 
             _logger = logger;
 
@@ -59,7 +58,7 @@ namespace xServerWorker.BackgroundServices
 
 
 #else
-            _client = new MongoClient($"mongodb://{mongoUser}:{mongoPassword}@xDocumentStore:27017/");
+            _client = new MongoClient(mongoConnectionString);
             //_xServerHost = Environment.GetEnvironmentVariable("XSERVER_BACKEND") ?? "";
 
 #endif
