@@ -24,10 +24,11 @@ namespace xServerWorker.Jobs
 #if DEBUG
             _client = new MongoClient($"mongodb://localhost:27017");
 #else
-                var mongoUser = Environment.GetEnvironmentVariable("MONGO_USER");
-                var mongoPassword = Environment.GetEnvironmentVariable("MONGO_PASSWORD");
 
-                _client = new MongoClient($"mongodb://{mongoUser}:{mongoPassword}@xDocumentStore:27017/");
+            var mongoConnectionString = Environment.GetEnvironmentVariable("MONGOCONNECTIONSTRING");
+
+
+            _client = new MongoClient(mongoConnectionString);
 #endif
 
             _db = _client.GetDatabase("xServerDb");
@@ -88,7 +89,7 @@ namespace xServerWorker.Jobs
                     .Set("asks", orderBookModel.Asks);
                 dictionaryCollaection.UpdateOne(filter, update);
 
-       
+
 
             }
             else
@@ -104,13 +105,13 @@ namespace xServerWorker.Jobs
 
 
 
-             var tickerRequest = new RestRequest("tickers/btcusdt.json");
-             var tickerReponse = await client.GetAsync<GraviexTickerModel>(tickerRequest);
+            var tickerRequest = new RestRequest("tickers/btcusdt.json");
+            var tickerReponse = await client.GetAsync<GraviexTickerModel>(tickerRequest);
 
             jsonstring = JsonConvert.SerializeObject(tickerReponse);
             jsonstring = JsonUtility.NormalizeJsonString(jsonstring);
             tickerReponse = JsonConvert.DeserializeObject<GraviexTickerModel>(jsonstring);
-                
+
             if (document != null)
             {
 
@@ -142,7 +143,7 @@ namespace xServerWorker.Jobs
 
             }
 
-    
+
 
 
 

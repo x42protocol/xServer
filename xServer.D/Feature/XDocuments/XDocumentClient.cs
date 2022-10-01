@@ -48,13 +48,14 @@ namespace x42.Feature.XDocuments
 
             _logger = loggerFactory.CreateLogger(GetType().FullName);
 
-            var mongoUser = Environment.GetEnvironmentVariable("MONGO_USER");
-            var mongoPassword = Environment.GetEnvironmentVariable("MONGO_PASSWORD");
+            var mongoConnectionString = Environment.GetEnvironmentVariable("MONGOCONNECTIONSTRING");
+
+
 
 #if DEBUG
             _client = new MongoClient($"mongodb://localhost:27017");
 #else
-            _client = new MongoClient($"mongodb://{mongoUser}:{mongoPassword}@xDocumentStore:27017/");
+            _client = new MongoClient(mongoConnectionString);
 #endif
 
             _db = _client.GetDatabase("xServerDb");
