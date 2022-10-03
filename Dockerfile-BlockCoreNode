@@ -8,6 +8,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 ARG BCNODE_VERSION
-RUN curl -Ls https://github.com/block-core/blockcore-nodes/releases/download/x42.Node-${BCNODE_VERSION}-linux-x64.tar.gz | tar -xvz -C .
+RUN curl -Ls https://github.com/x42protocol/x42-BlockCore/releases/download/v${BCNODE_VERSION}/x42.Node-${BCNODE_VERSION}-linux-x64.tar.gz | tar -xvz -C .
 
 ENTRYPOINT ["dotnet", "Blockcore.Node.dll"]
