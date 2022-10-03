@@ -103,7 +103,8 @@ jobs:
       with:
         context: .
         file: Dockerfile-BlockCoreNode
-        build-args: BCNODE_VERSION=${{ env.BLOCKCORE_DAEMON_VERSION }}
+        build-args: |
+          BCNODE_VERSION=${{ env.BLOCKCORE_DAEMON_VERSION }}
         push: true
         tags: x42protocoldocker/x42blockcorenode:latest,x42protocoldocker/x42blockcorenode:v${{ env.BLOCKCORE_DAEMON_VERSION }}
 
