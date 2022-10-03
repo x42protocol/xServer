@@ -98,3 +98,12 @@ jobs:
         push: true
         tags: x42protocoldocker/x42serverworker:latest,x42protocoldocker/x42serverworker:v${{ env.XSERVER_VERSION }}
 
+    - name: Build and push x42BlockCoreNode
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: Dockerfile-BlockCoreNode
+        build-args: BCNODE_VERSION=${{ env.BLOCKCORE_DAEMON_VERSION }}
+        push: true
+        tags: x42protocoldocker/x42blockcoreNode:latest,x42protocoldocker/x42blockcoreNode:v${{ env.BLOCKCORE_DAEMON_VERSION }}
+
