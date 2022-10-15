@@ -13,8 +13,8 @@ using x42.Utilities.Extensions;
 using x42.Feature.PriceLock;
 using x42.Feature.Metrics;
 using x42.Feature.PowerDns;
-using x42.Feature.Metrics;
 using x42.Feature.XDocuments;
+using x42.Feature.DApps;
 
 namespace x42
 {
@@ -38,6 +38,7 @@ namespace x42
                     .UsePowerDns()
                     .UseWordPressPreview()
                     .UseXDocuments()
+                    .UseDApps()
                     .Build();
 
                 if (server != null) await server.RunAsync();
