@@ -523,5 +523,17 @@ namespace x42.Controllers.Public
         {
             return Ok(_xDocumentService.ZoneExists(zone));
         }
+
+        [HttpGet("dapp-by-name")]
+        public async Task<IActionResult> GetDAppByName(string name,string version)
+        {
+            return Ok(_xDocumentService.GetDAppByName(name,version));
+        }
+
+        [HttpGet("dapp-list")]
+        public async Task<IActionResult> GetDAppsList()
+        {
+            return Ok(_xDocumentService.GetDAppsList());
+        }
     }
 }

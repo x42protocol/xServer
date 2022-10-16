@@ -9,6 +9,11 @@ using x42.Feature.Metrics;
 using x42.Server;
 using x42.Configuration.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Ductus.FluentDocker.Services;
+using Ductus.FluentDocker.Commands;
+using System.Diagnostics;
+using MongoDB.Bson.IO;
+using Newtonsoft.Json;
 
 namespace x42.Feature.DApps
 {
@@ -16,10 +21,16 @@ namespace x42.Feature.DApps
     {
 
         private readonly ILogger logger;
+        private IHostService _docker;
 
         public DAppsFeature(ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger(GetType().FullName);
+            var hosts = new Hosts().Discover();
+            _docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == "default");
+
+            var result = _docker.Host.Version(_docker.Certificates);
+            logger.LogInformation(result.Data.ToString());
 
         }
         public override Task InitializeAsync()
@@ -27,6 +38,9 @@ namespace x42.Feature.DApps
             logger.LogInformation("DApps Feature Initialized");
             return Task.CompletedTask;
         }
+
+
+
     }
 
     public static class DAppsBuilderExtension
@@ -38,7 +52,7 @@ namespace x42.Feature.DApps
         /// <returns>The server builder, enriched with the new component.</returns>
         public static IServerBuilder UseDApps(this IServerBuilder serverBuilder)
         {
-            LoggingConfiguration.RegisterFeatureNamespace<MetricsFeature>("dapps");
+            LoggingConfiguration.RegisterFeatureNamespace<DAppsFeature>("dapps");
 
             serverBuilder.ConfigureFeature(features =>
             {
