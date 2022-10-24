@@ -21,16 +21,10 @@ namespace x42.Feature.DApps
     {
 
         private readonly ILogger logger;
-        private IHostService _docker;
 
         public DAppsFeature(ILoggerFactory loggerFactory)
         {
-            logger = loggerFactory.CreateLogger(GetType().FullName);
-            var hosts = new Hosts().Discover();
-            _docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == "default");
 
-            var result = _docker.Host.Version(_docker.Certificates);
-            logger.LogInformation(result.Data.ToString());
 
         }
         public override Task InitializeAsync()

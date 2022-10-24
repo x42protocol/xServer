@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Ductus.FluentDocker.Commands;
+using Ductus.FluentDocker.Services;
+using Microsoft.Extensions.Logging;
+using Renci.SshNet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +12,20 @@ namespace x42.Feature.DApps
 {
     public class DAppManager : IDAppManager
     {
+        private IHostService _docker;
+        private readonly ILogger logger;
+
+        public DAppManager(ILoggerFactory loggerFactory)
+        {
+            logger = loggerFactory.CreateLogger(GetType().FullName);
+
+
+            var hosts = new Hosts().Discover();
+            _docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == "default");
+
+            var result = _docker.Host.Version(_docker.Certificates);
+            logger.LogInformation(result.Data.ToString());
+        }
         public DAppManager()
         {
 
@@ -28,15 +46,15 @@ namespace x42.Feature.DApps
             throw new NotImplementedException();
         }
 
-        public Task ProvisionNewApp()
+        public Task ProvisionNewAppAsync(string appName, string[] deployargs)
         {
-            
-            return Task.CompletedTask;
-        }
+            // shell.execute (./deploy_script.sh deployargs)
 
-        public Task ProvisionNewAppAsync()
-        {
-            throw new NotImplementedException();
+            
+
+            
+
+
         }
     }
 
