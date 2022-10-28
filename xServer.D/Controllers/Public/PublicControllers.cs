@@ -17,6 +17,8 @@ using x42.Feature.WordPressPreview.Models;
 using x42.Feature.Metrics;
 using x42.Feature.XDocuments;
 using x42.Feature.Metrics.Models;
+using x42.Feature.DApps;
+using x42.Feature.DApps.Models;
 
 namespace x42.Controllers.Public
 {
@@ -35,6 +37,7 @@ namespace x42.Controllers.Public
         private readonly WordPressPreviewFeature _wordPressPreviewFeature;
         private readonly MetricsFeature _metricsFeature;
         private readonly XDocumentClient _xDocumentService;
+        private readonly DAppManager _dApps;
 
         public PublicController(
             XServer xServer,
@@ -43,7 +46,8 @@ namespace x42.Controllers.Public
             PowerDnsFeature powerDnsFeature,
             WordPressPreviewFeature wordPressPreviewFeature,
             MetricsFeature metricsFeature,            
-            XDocumentClient xDocumentService)
+            XDocumentClient xDocumentService,
+            DAppManager dApps)
         {
             _xServer = xServer;
             _profileFeature = profileFeature;
@@ -51,6 +55,7 @@ namespace x42.Controllers.Public
             _powerDnsFeature = powerDnsFeature;
             _wordPressPreviewFeature = wordPressPreviewFeature;
             _xDocumentService = xDocumentService;
+            _dApps = dApps;
         }
 
         /// <summary>
@@ -534,6 +539,13 @@ namespace x42.Controllers.Public
         public async Task<IActionResult> GetDAppsList()
         {
             return Ok(_xDocumentService.GetDAppsList());
+        }
+
+        [HttpGet("dapp-provision")]
+        public async Task<IActionResult> ProvisionWordPress()
+        {
+            DappDeploymentModel deploymentModel = new DappDeploymentModel();
+            return Ok(_dApps.ProvisionNewAppAsync(deploymentModel));
         }
     }
 }

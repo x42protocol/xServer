@@ -55,6 +55,7 @@ namespace x42.Feature.DApps
                     .FeatureServices(services =>
                     {
                         services.AddSingleton<DAppsFeature>();
+                        services.AddSingleton<DAppManager>();
                     });
             });
 

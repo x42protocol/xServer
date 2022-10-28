@@ -10,7 +10,7 @@ namespace x42.Feature.DApps.Models
     /// 
     /// </summary>
 
-    public class DappModel
+    public class DappDefinitionModel
     {
         public string appName { get; set; }
         public string ImageURL { get; set; }

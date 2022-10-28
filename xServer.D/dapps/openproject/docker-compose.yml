@@ -1,0 +1,140 @@
+version: '3'
+services:
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    stop_grace_period: "3s"
+    volumes:
+      - "./pgdata:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: openproject
+    networks:
+      #domain#:
+        aliases:
+          - #domain#
+
+  cache:
+    image: memcached
+    restart: unless-stopped
+    networks:
+      #domain#:
+        aliases:
+          - #domain#
+
+  web:
+    image: openproject/community:12.2.1
+    hostname: #DOMAIN#
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.#domain#.rule=Host(`#DOMAIN#`)"
+      - "traefik.http.routers.#domain#.entrypoints=websecure"
+      - "traefik.http.services.#domain#.loadbalancer.server.port=8080"
+      - "traefik.http.routers.#domain#.tls.certresolver=myresolver"
+    restart: unless-stopped
+    command: "./docker/prod/web"
+    environment:
+      RAILS_CACHE_STORE: "memcache"
+      OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
+      DATABASE_URL: "postgres://postgres:${POSTGRES_PASSWORD}@db/openproject?pool=20&encoding=unicode&reconnect=true"
+      RAILS_MIN_THREADS: 4
+      RAILS_MAX_THREADS: 16
+      # set to true to enable the email receiving feature. See ./docker/cron for more options
+      IMAP_ENABLED: "${IMAP_ENABLED:-false}"
+      OPENPROJECT_HTTPS: "true"
+    volumes:
+    - "./opdata:/var/openproject/assets"
+    networks:
+      proxy:
+        aliases:
+          - proxy
+      #domain#:
+        aliases:
+          - #domain#
+    depends_on:
+      - db
+      - cache
+      - seeder
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health_checks/default"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+  worker:
+    image: openproject/community:12.2.1
+    restart: unless-stopped
+    command: "./docker/prod/worker"
+    environment:
+      RAILS_CACHE_STORE: "memcache"
+      OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
+      DATABASE_URL: "postgres://postgres:${POSTGRES_PASSWORD}@db/openproject?pool=20&encoding=unicode&reconnect=true"
+      RAILS_MIN_THREADS: 4
+      RAILS_MAX_THREADS: 16
+      # set to true to enable the email receiving feature. See ./docker/cron for more options
+      IMAP_ENABLED: "${IMAP_ENABLED:-false}"
+      OPENPROJECT_HTTPS: "true"
+    volumes:
+    - "./opdata:/var/openproject/assets"
+    networks:
+      #domain#:
+        aliases:
+          - #domain#
+    depends_on:
+      - db
+      - cache
+      - seeder
+
+  cron:
+    image: openproject/community:12.2.1
+    restart: unless-stopped
+    command: "./docker/prod/cron"
+    environment:
+      RAILS_CACHE_STORE: "memcache"
+      OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
+      DATABASE_URL: "postgres://postgres:${POSTGRES_PASSWORD}@db/openproject?pool=20&encoding=unicode&reconnect=true"
+      RAILS_MIN_THREADS: 4
+      RAILS_MAX_THREADS: 16
+      # set to true to enable the email receiving feature. See ./docker/cron for more options
+      IMAP_ENABLED: "${IMAP_ENABLED:-false}"
+      OPENPROJECT_HTTPS: "true"
+    volumes:
+    - "./opdata:/var/openproject/assets"
+    networks:
+      #domain#:
+        aliases:
+          - #domain#
+    depends_on:
+      - db
+      - cache
+      - seeder
+
+  seeder:
+    image: openproject/community:12.2.1
+    command: "./docker/prod/seeder"
+    restart: on-failure
+    environment:
+      RAILS_CACHE_STORE: "memcache"
+      OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
+      DATABASE_URL: "postgres://postgres:${POSTGRES_PASSWORD}@db/openproject?pool=20&encoding=unicode&reconnect=true"
+      RAILS_MIN_THREADS: 4
+      RAILS_MAX_THREADS: 16
+      # set to true to enable the email receiving feature. See ./docker/cron for more options
+      IMAP_ENABLED: "${IMAP_ENABLED:-false}"
+      OPENPROJECT_HTTPS: "true"
+    volumes:
+    - "./opdata:/var/openproject/assets"
+    networks:
+      #domain#:
+        aliases:
+          - #domain#
+
+networks:
+  proxy:
+    external: true
+    name: proxy
+  #domain#:
+    external: false
+    name: #domain#

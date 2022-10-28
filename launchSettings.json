@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "xserverd",
+      "composeLaunchUrl": "http://localhost:4242/swagger/index.html",
+      "serviceActions": {
+        "mongo": "StartWithoutDebugging",
+        "postgres": "StartWithoutDebugging",
+        "xserverd": "StartDebugging"
+      }
+    }
+  }
+}
