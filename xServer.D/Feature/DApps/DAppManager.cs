@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 using x42.Feature.DApps.Models;
 using NBitcoin.DataEncoders;
 using System.Diagnostics;
+using Ductus.FluentDocker.Model.Builders;
+using static System.Net.WebRequestMethods;
+using System.Net.Sockets;
 
 namespace x42.Feature.DApps
 {
@@ -56,31 +59,49 @@ namespace x42.Feature.DApps
         public Task ProvisionNewAppAsync(DappDeploymentModel deploymentModel)
         {
             var file = Path.Combine(Directory.GetCurrentDirectory(),
-            (TemplateString)"dapps/wordpress/docker-compose.yml");
+            (TemplateString)"dapps/wordpress/sites/oti.x42.com/docker-compose.yml");
 
             Console.WriteLine("DEBUG: file: "+ file);
+
+
+            ProcessStartInfo preInfo = new ProcessStartInfo()
+            {
+                FileName = "/bin/bash",
+                Arguments = "./dapps/wordpress/pre_deploy_site.sh wordpress oti.x42.com psavva@gmail.com password password"
+            };
+
+            Process preProc = new Process() { StartInfo = preInfo};
+            preProc.Start();
+
+
             using (var svc = new Builder()
                               .UseContainer()
                               .UseCompose()
-                              .FromFile(file)
-                              .WithEnvironment(new string[] {"TimeZone=America/New_York",
+                                .FromFile(file)
+                                .WithEnvironment(new string[] {"TimeZone=America/New_York",
                                                              "OLS_VERSION=1.7.15",
                                                              "PHP_VERSION=lsphp80",
                                                              "MYSQL_DATABASE=wordpress",
                                                              "MYSQL_ROOT_PASSWORD=password",
                                                              "MYSQL_USER=wordpress",
                                                              "MYSQL_PASSWORD=password",
-                                                             "DOMAIN=oti.x42.cloud"}
-                              )
+                                                             "DOMAIN=oti.x42.com"}
+                                )
                               .RemoveOrphans()
                               .KeepRunning()
-                              .Build().Start()) 
+                            .Build().Start()) 
             {
                 Console.WriteLine("Wordpress State: " + svc.State.ToString());
 
-                ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = "/bin/bash", Arguments = "./", };
-                Process proc = new Process() { StartInfo = startInfo, };
-                proc.Start();
+
+                ProcessStartInfo postInfo = new ProcessStartInfo()
+                {
+                    FileName = "/bin/bash",
+                    Arguments = "./dapps/wordpress/post_deploy_site.sh wordpress oti.x42.com psavva@gmail.com password password"
+                };
+
+                Process postProc = new Process() { StartInfo = postInfo};
+                postProc.Start();
 
             }
             return Task.CompletedTask;

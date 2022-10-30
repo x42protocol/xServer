@@ -16,26 +16,13 @@ MYSQL_ROOT_PASSWORD=$5
 main(){
 	echo "Setting Up ${DOMAIN_LOWER}"
 	echo Setting up Envrionment
+	
+	echo Making Directory: sites/${DOMAIN}
 	mkdir -p sites/${DOMAIN}
+	echo RUNNING: sed -e 's/#DOMAIN#/'${DOMAIN}'/g' -e 's/#domain#/'${DOMAIN_LOWER}'/g' docker-compose.yml > sites/${DOMAIN}/docker-compose.yml
 	sed -e 's/#DOMAIN#/'${DOMAIN}'/g' -e 's/#domain#/'${DOMAIN_LOWER}'/g' docker-compose.yml > sites/${DOMAIN}/docker-compose.yml
 	cp -r bin sites/${DOMAIN}/
 	cd sites/${DOMAIN}
-	mkdir acme
-	mkdir data
-	mkdir logs
-	mkdir lsws
-	mkdir sites
-
-cat <<EOF > .env
-TimeZone=America/New_York
-OLS_VERSION=1.7.15
-PHP_VERSION=lsphp80
-MYSQL_DATABASE=wordpress
-MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-MYSQL_USER=wordpress
-MYSQL_PASSWORD=${MYSQL_PASSWORD}
-DOMAIN=${DOMAIN}
-EOF
 
 	docker-compose up -d
 	
@@ -46,9 +33,6 @@ EOF
 	bash ./bin/database.sh -D ${DOMAIN}
 	echo "Installing ${APP_NAME} on ${DOMAIN}"
 	bash ./bin/appinstall.sh -A ${APP_NAME} -D ${DOMAIN}
-	
-#	echo "Issuing Certificate on ${DOMAIN}"
-#	source ./bin/acme.sh -I -E ${EMAIL} -D ${DOMAIN}
 	
 	echo "Done."
 }

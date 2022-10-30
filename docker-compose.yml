@@ -15,6 +15,9 @@ services:
       - type: bind
         source: ./xServer.conf
         target: /root/.xserverdata/main/xServer.conf
+      - type: bind
+        source: ./xServer.D/dapps/
+        target: /app/dapps/
       - "/var/run/docker.sock:/var/run/docker.sock"
     depends_on:
       - "mongo"

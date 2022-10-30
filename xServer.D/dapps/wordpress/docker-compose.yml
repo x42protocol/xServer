@@ -4,7 +4,7 @@ services:
     image: mariadb:10.5.9
     command: --max_allowed_packet=256M
     volumes:
-      - "./data/db:/var/lib/mysql"
+      - "data:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -12,45 +12,40 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     restart: always
     networks:
-      oti.x42.cloud:
+      #domain#:
         aliases:
-          - oti.x42.cloud
+          - #domain#
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
       retries: 5
 
   litespeed:
-    image: litespeedtech/openlitespeed:1.7.16-lsphp81
+    image: litespeedtech/openlitespeed:${OLS_VERSION}-${PHP_VERSION}
     environment:
-      OLS_VERSION: ${OLS_VERSION},
-      PHP_VERSION: ${PHP_VERSION},
       TZ: America/New_York
-
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.oti.x42.cloud.rule=Host(`oti.x42.cloud`)"
-      - "traefik.http.routers.oti.x42.cloud.entrypoints=websecure"
-      - "traefik.http.services.oti.x42.cloud.loadbalancer.server.port=80"
-      - "traefik.http.routers.oti.x42.cloud.tls.certresolver=myresolver"
+      - "traefik.http.routers.#domain#.rule=Host(`#DOMAIN#`)"
+      - "traefik.http.routers.#domain#.entrypoints=websecure"
+      - "traefik.http.services.#domain#.loadbalancer.server.port=80"
+      - "traefik.http.routers.#domain#.tls.certresolver=myresolver"
     volumes:
-        - ./lsws/conf:/usr/local/lsws/conf
-        - ./lsws/admin-conf:/usr/local/lsws/admin/conf
-        - ./bin/container:/usr/local/bin
-        - ./sites:/var/www/vhosts/
-        - ./acme:/root/.acme.sh/
-        - ./logs:/usr/local/lsws/logs/
+        - lsws_conf:/usr/local/lsws/conf
+        - lsws_admin-conf:/usr/local/lsws/admin/conf
+        - container:/usr/local/bin
+        - sites:/var/www/vhosts/
+        - acme:/root/.acme.sh/
+        - logs:/usr/local/lsws/logs/
     restart: always
-    ports:
-      - "0.0.0.0:7080:7080" #OLS Port
     networks:
       proxy:
         aliases:
           - proxy
-      oti.x42.cloud:
+      #domain#:
         aliases:
-          - oti.x42.cloud
+          - #domain#
     depends_on:
             mysql:
                 condition: service_healthy
@@ -59,6 +54,14 @@ networks:
   proxy:
     external: true
     name: proxy
-  oti.x42.cloud:
+  #domain#:
     external: false
-    name: oti.x42.cloud
+    name: #domain#
+volumes:
+  lsws_conf:
+  lsws_admin-conf:
+  container:
+  sites:
+  acme:
+  logs:
+  data:

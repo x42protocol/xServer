@@ -22,7 +22,7 @@ namespace x42.Feature.DApps.Models
 
 
     public class JsonForms
-    {
+    { 
         public object schema { get; set; }
         public object uiSchema { get; set; }
     }
