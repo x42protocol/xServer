@@ -44,6 +44,10 @@ namespace x42.Feature.DApps.Models
 
     public class File
     {
+        public int seq { get; set; }
+        public bool pre { get; set; } = false;
+        public bool post { get; set; } = false;
+        public bool dockercompose { get; set; } = false;
         public string path { get; set; }
         public string filename { get; set; }
         public string content { get; set; }

@@ -544,8 +544,11 @@ namespace x42.Controllers.Public
         [HttpGet("dapp-provision")]
         public async Task<IActionResult> ProvisionWordPress()
         {
+
+
             DappDeploymentModel deploymentModel = new DappDeploymentModel();
-            return Ok(_dApps.ProvisionNewAppAsync(deploymentModel));
+            DappDefinitionModel dappDefinitionModel = new DappDefinitionModel();
+            return Ok(_dApps.ProvisionNewAppAsync(deploymentModel, dappDefinitionModel));
         }
     }
 }

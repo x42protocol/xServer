@@ -35,12 +35,16 @@ EOF
 	docker cp ./bin/container/. temp_container:/usr/local/bin
 	docker rm temp_container
 	sleep 4
+
 	docker run --rm -dit --name  temp_container -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}"
 	sleep 4
+
 	docker run --rm -dit --name  temp_container -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}/html"
 	sleep 4
+
 	docker run --rm -dit --name  temp_container -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}/logs"
 	sleep 4
+
 	docker run --rm -dit --name  temp_container -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}/certs"
 	sleep 4
 

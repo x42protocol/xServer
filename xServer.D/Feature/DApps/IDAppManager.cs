@@ -5,7 +5,7 @@ namespace x42.Feature.DApps
 {
     public interface IDAppManager
     {
-        public Task ProvisionNewAppAsync(DappDeploymentModel deploymentModel);
+        public Task ProvisionNewAppAsync(DappDeploymentModel deploymentModel, DappDefinitionModel dappDefinitionModel);
         Task DeleteAppAsync();
         Task MigrateAppAsync();
         Task FullBackupAppAsync();
