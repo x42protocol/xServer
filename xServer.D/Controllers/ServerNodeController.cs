@@ -74,7 +74,7 @@ namespace x42.Controllers
         [Route("status")]
         public IActionResult Status()
         {
-            StatusResult model = new StatusResult
+            Results.StatusResult model = new Results.StatusResult
             {
                 Version = xServer.Version?.ToString() ?? "0",
                 ProtocolVersion = (uint)nodeSettings.ProtocolVersion,

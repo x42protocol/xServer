@@ -221,7 +221,7 @@ namespace x42.Feature.XDocuments
         public List<string> GetZonesByKeyAddress(string keyAddress)
         {
 
-            var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("zones");
+            var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("DnsZones");
             var filter = Builders<BsonDocument>.Filter.Eq("keyAddress", keyAddress);
             var zones = xDocumentDictionaryCollection.Find(filter).ToList();
             var result = new List<string>();

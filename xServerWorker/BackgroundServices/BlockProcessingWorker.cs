@@ -11,7 +11,9 @@ using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json.Serialization;
 using MongoDB.Bson.Serialization;
 using xServerWorker.Services;
-using x42.Controllers.Results;
+using MongoDB.Driver.Builders;
+using Common.Models.XDocuments.Zones;
+using Common.Models.XServer;
 
 namespace xServerWorker.BackgroundServices
 {
@@ -31,6 +33,8 @@ namespace xServerWorker.BackgroundServices
 
         private readonly MongoClient _client;
         private readonly IMongoDatabase _db;
+        private readonly PowerDnsRestClient _powerDnsRestClient;
+
         private static string _powerDnsHost = "";
         private static string _powerDnsApiKey = "";
         private static string _xServerHost = "http://x42server:4242/";
@@ -39,7 +43,7 @@ namespace xServerWorker.BackgroundServices
 
         private static List<SimpleBlockModel> _blockHashes = new List<SimpleBlockModel>();
 
-        public BlockProcessingWorker(ILogger<BlockProcessingWorker> logger)
+        public BlockProcessingWorker(ILogger<BlockProcessingWorker> logger, PowerDnsRestClient powerDnsRestClient)
         {
             var mongoConnectionString = Environment.GetEnvironmentVariable("MONGOCONNECTIONSTRING");
 
@@ -66,6 +70,14 @@ namespace xServerWorker.BackgroundServices
 
 
             _db = _client.GetDatabase("xServerDb");
+
+            var options = new CreateIndexOptions() { Unique = false };
+            var field = new StringFieldDefinition<BsonDocument>("keyAddress");
+            var indexDefinition = new IndexKeysDefinitionBuilder<BsonDocument>().Ascending(field);
+
+            var indexModel = new CreateIndexModel<BsonDocument>(indexDefinition, options);
+            _db.GetCollection<BsonDocument>("DnsZones").Indexes.CreateOne(indexModel);
+            _powerDnsRestClient = powerDnsRestClient;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -229,12 +241,12 @@ namespace xServerWorker.BackgroundServices
 
                             try
                             {
-                                if (paidToMyFeeAddress)
-                                {
+                                //if (paidToMyFeeAddress)
+                                //{
 
                                     await ProcessInstruction(document, xDocumentPendingCollection, amount, block.Height);
 
-                                }
+                                //}
 
                             }
                             catch (Exception e)
@@ -258,13 +270,21 @@ namespace xServerWorker.BackgroundServices
             {
                 int instructionType = Convert.ToInt32(document["instructionType"]);
                 var dynamicObject = JsonConvert.DeserializeObject<dynamic>(document.ToString());
-                string _keyAddress = dynamicObject["keyAddress"];             
+                string _keyAddress = dynamicObject["keyAddress"];
+
+                var data = dynamicObject["data"];
+
 
                 switch (instructionType)
                 {
                     case (int)InstructionTypeEnum.NewDnsZone:
 
                         await NewDnsZone(document, xDocumentPendingCollection, dynamicObject, blockHeight);
+
+                        break;
+                    case (int)InstructionTypeEnum.UpdateDnsZone:
+
+                        await UpdateDnsZone(document, xDocumentPendingCollection, dynamicObject, blockHeight, data.rrSets);
 
                         break;
 
@@ -290,6 +310,41 @@ namespace xServerWorker.BackgroundServices
             }
         }
 
+        public async Task UpdateDnsZone(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, dynamic dynamicObject, int blockHeight, List<RrSet> rrSets)
+        {
+            if (dynamicObject != null)
+            {
+                string zone = (string)dynamicObject["data"]["zone"];
+
+
+                _logger.LogInformation($"New Zone Instruction Found");
+                _logger.LogInformation($"Creating DNS Zone");
+
+                var zoneUpdate = false;
+
+                try
+                {
+                    await _powerDnsRestClient.UpdateDNSZone(dynamicObject, blockHeight, rrSets);
+                    zoneUpdate = true;
+
+                }
+                catch (Exception e)
+                {
+                    _logger.LogInformation($"Updating DNS zone '{zone}'failed");
+                    _logger.LogInformation(e.Message);
+
+                }
+
+                if (zoneUpdate)
+                {
+
+                    MoveDocument(document, xDocumentPendingCollection);
+
+                }
+
+            }
+        }
+
         private async Task NewDnsZone(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, dynamic dynamicObject, int blockHeight)
         {
             if (dynamicObject != null)
@@ -304,7 +359,8 @@ namespace xServerWorker.BackgroundServices
 
                 try
                 {
-                    await CreateDNSZone(dynamicObject, blockHeight);
+ 
+                    await _powerDnsRestClient.CreateDNSZone(dynamicObject, blockHeight);
                     zoneCreated = true;
 
                 }
@@ -335,70 +391,8 @@ namespace xServerWorker.BackgroundServices
             xDocumentCollection.InsertOne(document);
         }
 
-        private async Task CreateDNSZone(dynamic dynamicObject, int blockHeight)
-        {
-
-            string zone = (string)dynamicObject["data"]["zone"];
-            var zoneDocumentCollection = _db.GetCollection<BsonDocument>("zones");
-
-            var filter = Builders<BsonDocument>.Filter.Eq("zone", zone);
-            var zoneDocument = zoneDocumentCollection.Find(filter).FirstOrDefault();
 
 
-            if (zoneDocument == null)
-            {
-
-                var client = new RestClient(_powerDnsHost);
-                var request = new RestRequest($"/api/v1/servers/localhost/zones", Method.Post);
-                request.AddHeader("X-API-Key", _powerDnsApiKey);
-                request.AddHeader("content-type", "application/json");
-
-                var body = new NewZoneModel(zone);
-
-                var serializerSettings = new JsonSerializerSettings();
-                serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                var json = JsonConvert.SerializeObject(body, serializerSettings);
-
-                request.AddJsonBody(json);
-                await client.ExecuteAsync(request);
-
-
-                var newZoneDocument = JsonConvert.DeserializeObject<dynamic>("{}");
-
-                var Id = Guid.NewGuid();
-
-
-                newZoneDocument._id = Id;
-                newZoneDocument.zone = zone;
-                newZoneDocument.keyAddress = dynamicObject["keyAddress"];
-                newZoneDocument.signature = dynamicObject["signature"];
-                newZoneDocument.pricelockId = dynamicObject["priceLockId"];
-                newZoneDocument.blockConfirmed = blockHeight;
-
-                dynamic insertZoneDocument = GetBsonFromDynamic(newZoneDocument);
-
-                zoneDocumentCollection.InsertOne(insertZoneDocument);
-
-
-            }
-
-            else {
-
-                throw new Exception("Owned Elsewhere");
-            
-            }
-
-
-
-
-        }
-
-        private static dynamic GetBsonFromDynamic(dynamic newZoneDocument)
-        {
-            var jsonstring = JsonConvert.SerializeObject(newZoneDocument);
-            var insertZoneDocument = BsonSerializer.Deserialize<BsonDocument>(jsonstring);
-            return insertZoneDocument;
-        }
 
         private async Task<string> GetMyFeeAddress()
         {
