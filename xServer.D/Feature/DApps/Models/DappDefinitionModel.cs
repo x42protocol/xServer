@@ -12,11 +12,12 @@ namespace x42.Feature.DApps.Models
 
     public class DappDefinitionModel
     {
+        public Guid id { get; set; }
         public string appName { get; set; }
-        public string ImageURL { get; set; }
+        public string description { get; set; }
+        public string imageURL { get; set; }
         public int deploymentVersion { get; set; }
-        public JsonForms jsonForms { get; set; }
-        public DeployScript deployScript { get; set; }
+        public DeploymentScriptSet deploymentScriptSet { get; set; }
         public File[] files { get; set; }
     }
 
@@ -27,27 +28,26 @@ namespace x42.Feature.DApps.Models
         public object uiSchema { get; set; }
     }
 
-   
-
-   public class DeployScript
+    public class DeploymentScriptSet
     {
+        public DeployScript[] deploymentScript { get; set; }
+        public JsonForms jsonForms { get; set; }
+
+    }
+
+    public class DeployScript
+    {
+        public int seq { get; set; }
+        public bool preContainer { get; set; } = false;
+        public bool postContainer { get; set; } = false;
+        public bool composeScript { get; set; } = false;
         public string filename { get; set; }
-        public Arg[] args { get; set; }
-        public string base64content { get; set; }
+        public string path { get; set; } = "./";
     }
 
-    public class Arg
-    {
-        public string name { get; set; }
-        public string value { get; set; }
-    }
 
     public class File
     {
-        public int seq { get; set; }
-        public bool pre { get; set; } = false;
-        public bool post { get; set; } = false;
-        public bool dockercompose { get; set; } = false;
         public string path { get; set; }
         public string filename { get; set; }
         public string content { get; set; }

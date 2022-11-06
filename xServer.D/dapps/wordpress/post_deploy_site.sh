@@ -16,39 +16,19 @@ MYSQL_ROOT_PASSWORD=$5
 
 main(){
 
-	cd /app/dapps/wordpress/sites/${DOMAIN}
+	cd ${DOMAIN}
 	
-cat <<EOF > .env
-TimeZone=America/New_York
-OLS_VERSION=1.7.15
-PHP_VERSION=lsphp80
-MYSQL_DATABASE=wordpress
-MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-MYSQL_USER=wordpress
-MYSQL_PASSWORD=${MYSQL_PASSWORD}
-DOMAIN=${DOMAIN}
-EOF
 
 	
+	docker container create --name  temp_container1 -v ${DOMAIN_NODOT}_container:/usr/local/bin busybox
+	docker cp ./bin/container/. temp_container1:/usr/local/bin
+	docker rm temp_container1
 	
-	docker container create --name  temp_container -v ${DOMAIN_NODOT}_container:/usr/local/bin busybox
-	docker cp ./bin/container/. temp_container:/usr/local/bin
-	docker rm temp_container
-	sleep 4
-
-	docker run --rm -dit --name  temp_container -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}"
-	sleep 4
-
-	docker run --rm -dit --name  temp_container -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}/html"
-	sleep 4
-
-	docker run --rm -dit --name  temp_container -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}/logs"
-	sleep 4
-
-	docker run --rm -dit --name  temp_container -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}/certs"
-	sleep 4
-
-	cd /app/dapps/wordpress/sites/${DOMAIN}
+	docker run --rm -dit -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}"
+	docker run --rm -dit -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}/html"
+	docker run --rm -dit -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}/logs"
+	docker run --rm -dit -v ${DOMAIN_NODOT}_sites:/var/www/vhosts/${DOMAIN}/ alpine ash -c "mkdir /var/www/vhosts/${DOMAIN}/${DOMAIN}/certs"
+	
 
 	echo "Adding Domain ${DOMAIN}"
 	source ./bin/domain.sh -A ${DOMAIN}
@@ -57,9 +37,9 @@ EOF
 	bash ./bin/database.sh -D ${DOMAIN}
 
 	
-	docker container create --name  temp_container -v ${DOMAIN_NODOT}_sites:/var/www/vhosts busybox
-	docker cp sites/${DOMAIN}/.db_pass temp_container:/var/www/vhosts/${DOMAIN}/.db_pass
-	docker rm temp_container
+	docker container create --name  temp_container2 -v ${DOMAIN_NODOT}_sites:/var/www/vhosts busybox
+	docker cp sites/${DOMAIN}/.db_pass temp_container2:/var/www/vhosts/${DOMAIN}/.db_pass
+	docker rm temp_container2
 
 	echo "Installing ${APP_NAME} on ${DOMAIN}"
 	bash ./bin/appinstall.sh -A ${APP_NAME} -D ${DOMAIN}

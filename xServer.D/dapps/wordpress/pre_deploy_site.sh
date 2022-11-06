@@ -14,23 +14,19 @@ MYSQL_PASSWORD=$4
 MYSQL_ROOT_PASSWORD=$5
 
 main(){
+
+
 	echo "Setting Up ${DOMAIN_LOWER}"
-	
-	cd /app/dapps/wordpress
+	mkdir ${DOMAIN}
+	sed -e 's/#DOMAIN#/'${DOMAIN}'/g' -e 's/#domain#/'${DOMAIN_LOWER}'/g' docker-compose.yml > ${DOMAIN}/docker-compose.yml
+	cp -r bin ${DOMAIN}/
+	cd ${DOMAIN}
 
-	mkdir -p sites/${DOMAIN}
-	
-	sed -e 's/#DOMAIN#/'${DOMAIN}'/g' -e 's/#domain#/'${DOMAIN_LOWER}'/g' docker-compose.yml > ./sites/${DOMAIN}/docker-compose.yml
-	
-	cp -r bin sites/${DOMAIN}/
-	cd sites/${DOMAIN}
 
-	mkdir acme
 	mkdir data
 	mkdir logs
 	mkdir lsws
 	mkdir sites
-
 }
 
 main
