@@ -58,8 +58,7 @@ namespace x42.Feature.DApps
         public Task ProvisionNewAppAsync(DappDefinitionModel dappDefinitionModel, DappDeploymentModel deploymentModel)
         {
 
-            //var dappFolder = GenerateDAppFolders(dappDefinitionModel);
-            var dappFolder = "/app/dapps/wordpress";
+            var dappFolder = GenerateDAppFolders(dappDefinitionModel);
 
             foreach (var preScript in dappDefinitionModel.deploymentScriptSet.deploymentScript.Where(_ => _.preContainer == true).OrderBy(_=>_.seq))
             {
