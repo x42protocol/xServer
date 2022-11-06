@@ -22,6 +22,16 @@ main(){
 	cp -r bin ${DOMAIN}/
 	cd ${DOMAIN}
 
+	cat <<EOF > .env
+TimeZone=America/New_York
+OLS_VERSION=1.7.15
+PHP_VERSION=lsphp80
+MYSQL_DATABASE=wordpress
+MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+MYSQL_USER=wordpress
+MYSQL_PASSWORD=${MYSQL_PASSWORD}
+DOMAIN=${DOMAIN}
+EOF
 
 	mkdir data
 	mkdir logs

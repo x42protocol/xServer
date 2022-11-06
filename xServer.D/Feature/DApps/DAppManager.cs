@@ -60,12 +60,10 @@ namespace x42.Feature.DApps
 
             //var dappFolder = GenerateDAppFolders(dappDefinitionModel);
             var dappFolder = "/app/dapps/wordpress";
-            Console.WriteLine("DEBUG: dappFolder: " + dappFolder);
 
             foreach (var preScript in dappDefinitionModel.deploymentScriptSet.deploymentScript.Where(_ => _.preContainer == true).OrderBy(_=>_.seq))
             {
                 var args = $"{dappFolder}/{SubsituteArgs(preScript.path, deploymentModel.Args)}/{preScript.filename} {ToStringArgs(deploymentModel.Args)}";
-                Console.WriteLine(args);
                 ProcessStartInfo preInfo = new ProcessStartInfo()
                 {
                     FileName = "/bin/bash",
@@ -83,12 +81,6 @@ namespace x42.Feature.DApps
             Console.WriteLine("DEBUG: file: " + composeFile);
 
             var EnvironmentVariables = ToENVStringArray(deploymentModel.EnvVars).Select(s => SubsituteArgs(s, deploymentModel.EnvVars)).ToArray();
-
-            foreach (var value in EnvironmentVariables)
-            {
-                Console.WriteLine(value);
-            }
-
 
             using (var svc = new Builder()
                               .UseContainer()
