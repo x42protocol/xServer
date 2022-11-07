@@ -17,19 +17,15 @@ DB_PASSWORD=$4
 main(){
 	echo "Setting Up ${DOMAIN_LOWER_USCORE}"
 	echo Setting up Envrionment
-	mkdir -p sites/${DOMAIN}
-	sed -e 's/#DOMAIN#/'${DOMAIN}'/g' -e 's/#domain#/'${DOMAIN_LOWER_USCORE}'/g' docker-compose.yml > sites/${DOMAIN}/docker-compose.yml
-	cd sites/${DOMAIN}
+	mkdir -p ${DOMAIN}
+	sed -e 's/#DOMAIN#/'${DOMAIN}'/g' -e 's/#domain#/'${DOMAIN_LOWER_USCORE}'/g' docker-compose.yml > ${DOMAIN}/docker-compose.yml
+	cd ${DOMAIN}
 	mkdir pgdata
 	mkdir opdata
 
 cat <<EOF > .env
 POSTGRES_PASSWORD=${DB_PASSWORD}
 EOF
-
-	docker-compose up -d
-		
-	echo "Done."
 }
 
 main

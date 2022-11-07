@@ -542,7 +542,7 @@ namespace x42.Controllers.Public
             return Ok(_xDocumentService.GetDAppsList());
         }
 
-        [HttpGet("dapp-provision")]
+        [HttpGet("dapp-ProvisionWordPress")]
         public async Task<IActionResult> ProvisionWordPress()
         {
 
@@ -551,18 +551,14 @@ namespace x42.Controllers.Public
             {
                EnvVars = new Dictionary<string, string>
                {
-                    { "appname", "wordpress" },
-                    { "domain", "oti.x42.com" },
-                    { "email", "psavva@gmail.com" },
-                  
                     { "TimeZone", "America/New_York" },
                     { "OLS_VERSION", "1.7.15" },
                     { "PHP_VERSION", "lsphp80" },
 
-                    { "MYSQL_DATABASE", "wordpress" },
-                    { "MYSQL_USER", "password" },
-                    { "MYSQL_PASSWORD", "password" },
-                    { "MYSQL_ROOT_PASSWORD", "password" }
+                    { "MYSQL_DATABASE", "{appname}" },
+                    { "MYSQL_USER", "wordpress" },
+                    { "MYSQL_PASSWORD", "{MYSQL_PASSWORD}" },
+                    { "MYSQL_ROOT_PASSWORD", "{MYSQL_ROOT_PASSWORD}" }
               },
               Args = new Dictionary<string, string>
                {
@@ -714,6 +710,81 @@ namespace x42.Controllers.Public
                         filename="serialctl.sh",
                         content= "IyEvYmluL2Jhc2gKTFNESVI9Jy91c3IvbG9jYWwvbHN3cycKRVBBQ0U9JyAgICAgICAgJwoKZWNob3coKXsKICAgIEZMQUc9JHsxfQogICAgc2hpZnQKICAgIGVjaG8gLWUgIlwwMzNbMW0ke0VQQUNFfSR7RkxBR31cMDMzWzBtJHtAfSIKfQoKaGVscF9tZXNzYWdlKCl7CiAgICBlY2hvIC1lICJcMDMzWzFtT1BUSU9OU1wwMzNbMG0iCiAgICBlY2hvdyAnLVMsIC0tc2VyaWFsIFtZT1VSX1NFUklBTHxUUklBTF0nCiAgICBlY2hvICIke0VQQUNFfSR7RVBBQ0V9V2lsbCBhcHBseSBhbmQgcmVnaXN0ZXIgdGhlIHNlcmlhbCB0byBMU1dTLiIKICAgIGVjaG93ICctSCwgLS1oZWxwJwogICAgZWNobyAiJHtFUEFDRX0ke0VQQUNFfURpc3BsYXkgaGVscCBhbmQgZXhpdC4iICAgICAgIAogICAgZXhpdCAwCn0KCmNoZWNrX2lucHV0KCl7CiAgICBpZiBbIC16ICIkezF9IiBdOyB0aGVuCiAgICAgICAgaGVscF9tZXNzYWdlCiAgICAgICAgZXhpdCAxCiAgICBmaQp9CgpiYWNrdXBfb2xkKCl7CiAgICBpZiBbIC1mICR7MX0gXSAmJiBbICEgLWYgJHsxfV9vbGQgXTsgdGhlbgogICAgICAgbXYgJHsxfSAkezF9X29sZAogICAgZmkKfQoKZGV0ZWN0X29scygpewogICAgaWYgWyAtZSAke0xTRElSfS9iaW4vb3BlbmxpdGVzcGVlZCBdOyB0aGVuCiAgICAgICAgZWNobyAnW1hdIERldGVjdCBPcGVuTGl0ZVNwZWVkLCBhYm9ydCEnCiAgICAgICAgZXhpdCAxCiAgICBmaSAgICAKfQoKYXBwbHlfc2VyaWFsKCl7CiAgICBkZXRlY3Rfb2xzCiAgICBjaGVja19pbnB1dCAkezF9CiAgICBlY2hvICR7MX0gfCBncmVwIC1pICd0cmlhbCcgPi9kZXYvbnVsbAogICAgaWYgWyAkez99ID0gMCBdOyB0aGVuIAogICAgICAgIGVjaG8gJ0FwcGx5IFRyaWFsIExpY2Vuc2UnCiAgICAgICAgaWYgWyAhIC1lICR7TFNESVJ9L2NvbmYvc2VyaWFsLm5vIF0gJiYgWyAhIC1lICR7TFNESVJ9L2NvbmYvbGljZW5zZS5rZXkgXTsgdGhlbgogICAgICAgICAgICBybSAtZiAke0xTRElSfS9jb25mL3RyaWFsLmtleSoKICAgICAgICAgICAgd2dldCAtUCAke0xTRElSfS9jb25mIC1xIGh0dHA6Ly9saWNlbnNlLmxpdGVzcGVlZHRlY2guY29tL3Jlc2VsbGVyL3RyaWFsLmtleQogICAgICAgICAgICBlY2hvICdBcHBseSB0cmlhbCBmaW5pc2hlZCcKICAgICAgICBlbHNlCiAgICAgICAgICAgIGVjaG8gIlBsZWFzZSBiYWNrdXAgYW5kIHJlbW92ZSB5b3VyIGV4aXN0aW5nIGxpY2Vuc2UsIGFwcGx5IGFib3J0ISIKICAgICAgICAgICAgZXhpdCAxICAgIAogICAgICAgIGZpCiAgICBlbHNlCiAgICAgICAgZWNobyAiQXBwbHkgU2VyaWFsIG51bWJlcjogJHsxfSIKICAgICAgICBiYWNrdXBfb2xkICR7TFNESVJ9L2NvbmYvc2VyaWFsLm5vCiAgICAgICAgYmFja3VwX29sZCAke0xTRElSfS9jb25mL2xpY2Vuc2Uua2V5CiAgICAgICAgYmFja3VwX29sZCAke0xTRElSfS9jb25mL3RyaWFsLmtleQogICAgICAgIGVjaG8gIiR7MX0iID4gJHtMU0RJUn0vY29uZi9zZXJpYWwubm8KICAgICAgICAke0xTRElSfS9iaW4vbHNodHRwZCAtcgogICAgICAgIGlmIFsgLWYgJHtMU0RJUn0vY29uZi9saWNlbnNlLmtleSBdOyB0aGVuCiAgICAgICAgICAgIGVjaG8gJ1tPXSBBcHBseSBzdWNjZXNzJwogICAgICAgIGVsc2UgCiAgICAgICAgICAgIGVjaG8gJ1tYXSBBcHBseSBmYWlsZWQsIHBsZWFzZSBjaGVjayEnCiAgICAgICAgICAgIGV4aXQgMQogICAgICAgIGZpCiAgICBmaQp9CgpjaGVja19pbnB1dCAkezF9CndoaWxlIFsgISAteiAiJHsxfSIgXTsgZG8KICAgIGNhc2UgJHsxfSBpbgogICAgICAgIC1baEhdIHwgLWhlbHAgfCAtLWhlbHApCiAgICAgICAgICAgIGhlbHBfbWVzc2FnZQogICAgICAgICAgICA7OwogICAgICAgIC1bc1NdIHwgLXNlcmlhbCB8IC0tc2VyaWFsKSBzaGlmdAogICAgICAgICAgICBhcHBseV9zZXJpYWwgIiR7MX0iCiAgICAgICAgICAgIDs7ICAgICAgICAgICAgCiAgICAgICAgKikKICAgICAgICAgICAgaGVscF9tZXNzYWdlCiAgICAgICAgICAgIDs7CiAgICBlc2FjCiAgICBzaGlmdApkb25l"
                     }
+                 }
+            };
+
+            string result = JsonConvert.SerializeObject(dappDefinitionModel);
+            Console.WriteLine(result);
+            // Read Json File into dappDefinitionModel
+
+            return Ok(_dApps.ProvisionNewAppAsync(dappDefinitionModel, deploymentModel));
+        }
+
+
+        [HttpGet("dapp-ProvisionOpenProject")]
+        public async Task<IActionResult> ProvisionOpenProject()
+        {
+
+
+            DappDeploymentModel deploymentModel = new DappDeploymentModel()
+            {
+                EnvVars = new Dictionary<string, string>
+               {
+                    { "POSTGRES_PASSWORD", "{postgres_password}" }
+              },
+                Args = new Dictionary<string, string>
+               {
+                    { "appname", "openproject" },
+                    { "domain", "openproject.x42.site" },
+                    { "email", "psavva@gmail.com" },
+                    { "postgres_password", "password" }
+              }
+            };
+
+            DappDefinitionModel dappDefinitionModel = new DappDefinitionModel()
+            {
+                appName = "openproject",
+                deploymentVersion = 1,
+                deploymentScriptSet = new DeploymentScriptSet()
+                {
+                    deploymentScript = new DeployScript[2]
+                     {
+                         new DeployScript
+                         {
+                             seq = 1,
+                             preContainer = true,
+                             filename = "deploy_site.sh",
+
+                         },
+                         new DeployScript
+                         {
+                             composeScript = true,
+                             path = "./{domain}",
+                             filename = "docker-compose.yml",
+                         }
+                     },
+                    jsonForms = new JsonForms()
+                    {
+                        schema = "",
+                        uiSchema = ""
+                    }
+                },
+                files = new File[2]
+                {
+                    new File
+                    {
+                        path= "./",
+                        filename="deploy_site.sh",
+                        content = "IyEvYmluL2Jhc2gKCmlmIFsgJCMgLWx0IDQgXTsgdGhlbgogIGVjaG8gIlVzYWdlOiAkMCBhcHBuYW1lIGRvbWFpbiBlbWFpbCBteS5kYi5wYXNzd29yZCIKICBlY2hvICJVc2FnZTogJDAgb3BlbnByb2plY3Qgb3BlbnByb2plY3QueDQyLnNpdGUgbXlAZW1haWwuY29tIG15c2VjZXR3cHBhc3MiCiAgZXhpdCAxCmZpCgpBUFBfTkFNRT0kMQpET01BSU49JDIKRE9NQUlOX0xPV0VSPSQoZWNobyAiJERPTUFJTiIgfCB0ciAnWzp1cHBlcjpdJyAnWzpsb3dlcjpdJyApCkRPTUFJTl9MT1dFUl9VU0NPUkU9JChlY2hvICIkRE9NQUlOIiB8IHRyICdbOnVwcGVyOl0nICdbOmxvd2VyOl0nIHwgc2VkICdzL1wuLydfJy9nJykKRE9NQUlOX1NUUklQUEVETE9XRVI9JChlY2hvICIkRE9NQUlOX0xPV0VSX1VTQ09SRSIgfCBzZWQgJ3MvXy8vZycpCkVNQUlMPSQzCkRCX1BBU1NXT1JEPSQ0CgptYWluKCl7CgllY2hvICJTZXR0aW5nIFVwICR7RE9NQUlOX0xPV0VSX1VTQ09SRX0iCgllY2hvIFNldHRpbmcgdXAgRW52cmlvbm1lbnQKCW1rZGlyIC1wICR7RE9NQUlOfQoJc2VkIC1lICdzLyNET01BSU4jLycke0RPTUFJTn0nL2cnIC1lICdzLyNkb21haW4jLycke0RPTUFJTl9MT1dFUl9VU0NPUkV9Jy9nJyBkb2NrZXItY29tcG9zZS55bWwgPiAke0RPTUFJTn0vZG9ja2VyLWNvbXBvc2UueW1sCgljZCAke0RPTUFJTn0KCW1rZGlyIHBnZGF0YQoJbWtkaXIgb3BkYXRhCgpjYXQgPDxFT0YgPiAuZW52ClBPU1RHUkVTX1BBU1NXT1JEPSR7REJfUEFTU1dPUkR9CkVPRgp9CgptYWluCg=="
+                    },
+
+                    new File
+                    {
+                        path= "./",
+                        filename="docker-compose.yml",
+                        content = "dmVyc2lvbjogJzMnCnNlcnZpY2VzOgogIGRiOgogICAgaW1hZ2U6IHBvc3RncmVzOjEzCiAgICByZXN0YXJ0OiB1bmxlc3Mtc3RvcHBlZAogICAgc3RvcF9ncmFjZV9wZXJpb2Q6ICIzcyIKICAgIHZvbHVtZXM6CiAgICAgIC0gIi4vcGdkYXRhOi92YXIvbGliL3Bvc3RncmVzcWwvZGF0YSIKICAgIGVudmlyb25tZW50OgogICAgICBQT1NUR1JFU19QQVNTV09SRDogJHtQT1NUR1JFU19QQVNTV09SRH0KICAgICAgUE9TVEdSRVNfREI6IG9wZW5wcm9qZWN0CiAgICBuZXR3b3JrczoKICAgICAgI2RvbWFpbiM6CiAgICAgICAgYWxpYXNlczoKICAgICAgICAgIC0gI2RvbWFpbiMKCiAgY2FjaGU6CiAgICBpbWFnZTogbWVtY2FjaGVkCiAgICByZXN0YXJ0OiB1bmxlc3Mtc3RvcHBlZAogICAgbmV0d29ya3M6CiAgICAgICNkb21haW4jOgogICAgICAgIGFsaWFzZXM6CiAgICAgICAgICAtICNkb21haW4jCgogIHdlYjoKICAgIGltYWdlOiBvcGVucHJvamVjdC9jb21tdW5pdHk6MTIuMi4xCiAgICBob3N0bmFtZTogI0RPTUFJTiMKICAgIGxhYmVsczoKICAgICAgLSAidHJhZWZpay5lbmFibGU9dHJ1ZSIKICAgICAgLSAidHJhZWZpay5kb2NrZXIubmV0d29yaz1wcm94eSIKICAgICAgLSAidHJhZWZpay5odHRwLnJvdXRlcnMuI2RvbWFpbiMucnVsZT1Ib3N0KGAjRE9NQUlOI2ApIgogICAgICAtICJ0cmFlZmlrLmh0dHAucm91dGVycy4jZG9tYWluIy5lbnRyeXBvaW50cz13ZWJzZWN1cmUiCiAgICAgIC0gInRyYWVmaWsuaHR0cC5zZXJ2aWNlcy4jZG9tYWluIy5sb2FkYmFsYW5jZXIuc2VydmVyLnBvcnQ9ODA4MCIKICAgICAgLSAidHJhZWZpay5odHRwLnJvdXRlcnMuI2RvbWFpbiMudGxzLmNlcnRyZXNvbHZlcj1teXJlc29sdmVyIgogICAgcmVzdGFydDogdW5sZXNzLXN0b3BwZWQKICAgIGNvbW1hbmQ6ICIuL2RvY2tlci9wcm9kL3dlYiIKICAgIGVudmlyb25tZW50OgogICAgICBSQUlMU19DQUNIRV9TVE9SRTogIm1lbWNhY2hlIgogICAgICBPUEVOUFJPSkVDVF9DQUNIRV9fTUVNQ0FDSEVfX1NFUlZFUjogImNhY2hlOjExMjExIgogICAgICBEQVRBQkFTRV9VUkw6ICJwb3N0Z3JlczovL3Bvc3RncmVzOiR7UE9TVEdSRVNfUEFTU1dPUkR9QGRiL29wZW5wcm9qZWN0P3Bvb2w9MjAmZW5jb2Rpbmc9dW5pY29kZSZyZWNvbm5lY3Q9dHJ1ZSIKICAgICAgUkFJTFNfTUlOX1RIUkVBRFM6IDQKICAgICAgUkFJTFNfTUFYX1RIUkVBRFM6IDE2CiAgICAgICMgc2V0IHRvIHRydWUgdG8gZW5hYmxlIHRoZSBlbWFpbCByZWNlaXZpbmcgZmVhdHVyZS4gU2VlIC4vZG9ja2VyL2Nyb24gZm9yIG1vcmUgb3B0aW9ucwogICAgICBJTUFQX0VOQUJMRUQ6ICIke0lNQVBfRU5BQkxFRDotZmFsc2V9IgogICAgICBPUEVOUFJPSkVDVF9IVFRQUzogInRydWUiCiAgICB2b2x1bWVzOgogICAgLSBvcGRhdGE6L3Zhci9vcGVucHJvamVjdC9hc3NldHMKICAgIG5ldHdvcmtzOgogICAgICBwcm94eToKICAgICAgICBhbGlhc2VzOgogICAgICAgICAgLSBwcm94eQogICAgICAjZG9tYWluIzoKICAgICAgICBhbGlhc2VzOgogICAgICAgICAgLSAjZG9tYWluIwogICAgZGVwZW5kc19vbjoKICAgICAgLSBkYgogICAgICAtIGNhY2hlCiAgICAgIC0gc2VlZGVyCiAgICBoZWFsdGhjaGVjazoKICAgICAgdGVzdDogWyJDTUQiLCAiY3VybCIsICItZiIsICJodHRwOi8vbG9jYWxob3N0OjgwODAvaGVhbHRoX2NoZWNrcy9kZWZhdWx0Il0KICAgICAgaW50ZXJ2YWw6IDEwcwogICAgICB0aW1lb3V0OiAzcwogICAgICByZXRyaWVzOiAzCiAgICAgIHN0YXJ0X3BlcmlvZDogMzBzCgogIHdvcmtlcjoKICAgIGltYWdlOiBvcGVucHJvamVjdC9jb21tdW5pdHk6MTIuMi4xCiAgICByZXN0YXJ0OiB1bmxlc3Mtc3RvcHBlZAogICAgY29tbWFuZDogIi4vZG9ja2VyL3Byb2Qvd29ya2VyIgogICAgZW52aXJvbm1lbnQ6CiAgICAgIFJBSUxTX0NBQ0hFX1NUT1JFOiAibWVtY2FjaGUiCiAgICAgIE9QRU5QUk9KRUNUX0NBQ0hFX19NRU1DQUNIRV9fU0VSVkVSOiAiY2FjaGU6MTEyMTEiCiAgICAgIERBVEFCQVNFX1VSTDogInBvc3RncmVzOi8vcG9zdGdyZXM6JHtQT1NUR1JFU19QQVNTV09SRH1AZGIvb3BlbnByb2plY3Q/cG9vbD0yMCZlbmNvZGluZz11bmljb2RlJnJlY29ubmVjdD10cnVlIgogICAgICBSQUlMU19NSU5fVEhSRUFEUzogNAogICAgICBSQUlMU19NQVhfVEhSRUFEUzogMTYKICAgICAgIyBzZXQgdG8gdHJ1ZSB0byBlbmFibGUgdGhlIGVtYWlsIHJlY2VpdmluZyBmZWF0dXJlLiBTZWUgLi9kb2NrZXIvY3JvbiBmb3IgbW9yZSBvcHRpb25zCiAgICAgIElNQVBfRU5BQkxFRDogIiR7SU1BUF9FTkFCTEVEOi1mYWxzZX0iCiAgICAgIE9QRU5QUk9KRUNUX0hUVFBTOiAidHJ1ZSIKICAgIHZvbHVtZXM6CiAgICAtICIuL29wZGF0YTovdmFyL29wZW5wcm9qZWN0L2Fzc2V0cyIKICAgIG5ldHdvcmtzOgogICAgICAjZG9tYWluIzoKICAgICAgICBhbGlhc2VzOgogICAgICAgICAgLSAjZG9tYWluIwogICAgZGVwZW5kc19vbjoKICAgICAgLSBkYgogICAgICAtIGNhY2hlCiAgICAgIC0gc2VlZGVyCgogIGNyb246CiAgICBpbWFnZTogb3BlbnByb2plY3QvY29tbXVuaXR5OjEyLjIuMQogICAgcmVzdGFydDogdW5sZXNzLXN0b3BwZWQKICAgIGNvbW1hbmQ6ICIuL2RvY2tlci9wcm9kL2Nyb24iCiAgICBlbnZpcm9ubWVudDoKICAgICAgUkFJTFNfQ0FDSEVfU1RPUkU6ICJtZW1jYWNoZSIKICAgICAgT1BFTlBST0pFQ1RfQ0FDSEVfX01FTUNBQ0hFX19TRVJWRVI6ICJjYWNoZToxMTIxMSIKICAgICAgREFUQUJBU0VfVVJMOiAicG9zdGdyZXM6Ly9wb3N0Z3Jlczoke1BPU1RHUkVTX1BBU1NXT1JEfUBkYi9vcGVucHJvamVjdD9wb29sPTIwJmVuY29kaW5nPXVuaWNvZGUmcmVjb25uZWN0PXRydWUiCiAgICAgIFJBSUxTX01JTl9USFJFQURTOiA0CiAgICAgIFJBSUxTX01BWF9USFJFQURTOiAxNgogICAgICAjIHNldCB0byB0cnVlIHRvIGVuYWJsZSB0aGUgZW1haWwgcmVjZWl2aW5nIGZlYXR1cmUuIFNlZSAuL2RvY2tlci9jcm9uIGZvciBtb3JlIG9wdGlvbnMKICAgICAgSU1BUF9FTkFCTEVEOiAiJHtJTUFQX0VOQUJMRUQ6LWZhbHNlfSIKICAgICAgT1BFTlBST0pFQ1RfSFRUUFM6ICJ0cnVlIgogICAgdm9sdW1lczoKICAgIC0gb3BkYXRhOi92YXIvb3BlbnByb2plY3QvYXNzZXRzCiAgICBuZXR3b3JrczoKICAgICAgI2RvbWFpbiM6CiAgICAgICAgYWxpYXNlczoKICAgICAgICAgIC0gI2RvbWFpbiMKICAgIGRlcGVuZHNfb246CiAgICAgIC0gZGIKICAgICAgLSBjYWNoZQogICAgICAtIHNlZWRlcgoKICBzZWVkZXI6CiAgICBpbWFnZTogb3BlbnByb2plY3QvY29tbXVuaXR5OjEyLjIuMQogICAgY29tbWFuZDogIi4vZG9ja2VyL3Byb2Qvc2VlZGVyIgogICAgcmVzdGFydDogb24tZmFpbHVyZQogICAgZW52aXJvbm1lbnQ6CiAgICAgIFJBSUxTX0NBQ0hFX1NUT1JFOiAibWVtY2FjaGUiCiAgICAgIE9QRU5QUk9KRUNUX0NBQ0hFX19NRU1DQUNIRV9fU0VSVkVSOiAiY2FjaGU6MTEyMTEiCiAgICAgIERBVEFCQVNFX1VSTDogInBvc3RncmVzOi8vcG9zdGdyZXM6JHtQT1NUR1JFU19QQVNTV09SRH1AZGIvb3BlbnByb2plY3Q/cG9vbD0yMCZlbmNvZGluZz11bmljb2RlJnJlY29ubmVjdD10cnVlIgogICAgICBSQUlMU19NSU5fVEhSRUFEUzogNAogICAgICBSQUlMU19NQVhfVEhSRUFEUzogMTYKICAgICAgIyBzZXQgdG8gdHJ1ZSB0byBlbmFibGUgdGhlIGVtYWlsIHJlY2VpdmluZyBmZWF0dXJlLiBTZWUgLi9kb2NrZXIvY3JvbiBmb3IgbW9yZSBvcHRpb25zCiAgICAgIElNQVBfRU5BQkxFRDogIiR7SU1BUF9FTkFCTEVEOi1mYWxzZX0iCiAgICAgIE9QRU5QUk9KRUNUX0hUVFBTOiAidHJ1ZSIKICAgIHZvbHVtZXM6CiAgICAtICIuL29wZGF0YTovdmFyL29wZW5wcm9qZWN0L2Fzc2V0cyIKICAgIG5ldHdvcmtzOgogICAgICAjZG9tYWluIzoKICAgICAgICBhbGlhc2VzOgogICAgICAgICAgLSAjZG9tYWluIwoKbmV0d29ya3M6CiAgcHJveHk6CiAgICBleHRlcm5hbDogdHJ1ZQogICAgbmFtZTogcHJveHkKICAjZG9tYWluIzoKICAgIGV4dGVybmFsOiBmYWxzZQogICAgbmFtZTogI2RvbWFpbiMKCnZvbHVtZXM6CiAgZGJkYXRhOgogIG9wZGF0YTo="
+                    },
+
                  }
             };
 

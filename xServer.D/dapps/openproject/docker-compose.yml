@@ -44,7 +44,7 @@ services:
       IMAP_ENABLED: "${IMAP_ENABLED:-false}"
       OPENPROJECT_HTTPS: "true"
     volumes:
-    - "./opdata:/var/openproject/assets"
+    - opdata:/var/openproject/assets
     networks:
       proxy:
         aliases:
@@ -101,7 +101,7 @@ services:
       IMAP_ENABLED: "${IMAP_ENABLED:-false}"
       OPENPROJECT_HTTPS: "true"
     volumes:
-    - "./opdata:/var/openproject/assets"
+    - opdata:/var/openproject/assets
     networks:
       #domain#:
         aliases:
@@ -138,3 +138,7 @@ networks:
   #domain#:
     external: false
     name: #domain#
+
+volumes:
+  dbdata:
+  opdata:
