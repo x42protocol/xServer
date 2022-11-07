@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Mono.Unix;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,6 +53,7 @@ namespace x42.Feature.DApps.Models
         public string path { get; set; }
         public string filename { get; set; }
         public string content { get; set; }
+        public FileAccessPermissions permissions { get; set; } = FileAccessPermissions.GroupReadWriteExecute | FileAccessPermissions.UserReadWriteExecute | FileAccessPermissions.OtherReadWriteExecute;
     }
 
 }

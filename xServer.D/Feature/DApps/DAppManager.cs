@@ -4,11 +4,15 @@ using Ductus.FluentDocker.Model.Common;
 using Ductus.FluentDocker.Services;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using Mono.Unix;
+using NBitcoin;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using x42.Feature.DApps.Models;
@@ -156,6 +160,8 @@ namespace x42.Feature.DApps
                         fs.Write(fileContent, 0, fileContent.Length);
                     }
 
+                    GrantAccess(path,file.permissions);
+
                 };
 
             }
@@ -168,7 +174,17 @@ namespace x42.Feature.DApps
             return dappFolder;
 
         }
-        
+
+        private void GrantAccess(string fullPath, FileAccessPermissions permissions)
+        {
+            var unixFileInfo = new UnixFileInfo(fullPath);
+
+
+            unixFileInfo.FileAccessPermissions = permissions;
+
+        }
+
+
 
     }
 
