@@ -10,6 +10,6 @@ namespace x42.Feature.DApps.Models
     {
         public string Domain { get; set; }
         public Dictionary<string,string> Args { get; set; }
-        public Dictionary<string, string> EnvVars { get; set; }
+       
     }
 }

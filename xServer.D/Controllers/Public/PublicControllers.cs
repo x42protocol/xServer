@@ -549,17 +549,7 @@ namespace x42.Controllers.Public
 
             DappDeploymentModel deploymentModel = new DappDeploymentModel()
             {
-               EnvVars = new Dictionary<string, string>
-               {
-                    { "TimeZone", "America/New_York" },
-                    { "OLS_VERSION", "1.7.15" },
-                    { "PHP_VERSION", "lsphp80" },
-
-                    { "MYSQL_DATABASE", "{appname}" },
-                    { "MYSQL_USER", "wordpress" },
-                    { "MYSQL_PASSWORD", "{MYSQL_PASSWORD}" },
-                    { "MYSQL_ROOT_PASSWORD", "{MYSQL_ROOT_PASSWORD}" }
-              },
+            
               Args = new Dictionary<string, string>
                {
                     { "appname", "wordpress" },
@@ -574,6 +564,17 @@ namespace x42.Controllers.Public
             {
                 appName = "wordpress",
                 deploymentVersion = 1,
+                envVars = new Dictionary<string, string>
+                {
+                    { "TimeZone", "America/New_York" },
+                    { "OLS_VERSION", "1.7.15" },
+                    { "PHP_VERSION", "lsphp80" },
+
+                    { "MYSQL_DATABASE", "{appname}" },
+                    { "MYSQL_USER", "wordpress" },
+                    { "MYSQL_PASSWORD", "{MYSQL_PASSWORD}" },
+                    { "MYSQL_ROOT_PASSWORD", "{MYSQL_ROOT_PASSWORD}" }
+              },
                 deploymentScriptSet = new DeploymentScriptSet()
                 {
                     deploymentScript = new DeployScript[3]
@@ -728,14 +729,11 @@ namespace x42.Controllers.Public
 
             DappDeploymentModel deploymentModel = new DappDeploymentModel()
             {
-                EnvVars = new Dictionary<string, string>
-               {
-                    { "POSTGRES_PASSWORD", "{postgres_password}" }
-              },
+                
                 Args = new Dictionary<string, string>
                {
                     { "appname", "openproject" },
-                    { "domain", "openproject.x42.site" },
+                    { "domain", "openproject.x42.com" },
                     { "email", "psavva@gmail.com" },
                     { "postgres_password", "password" }
               }
@@ -745,6 +743,10 @@ namespace x42.Controllers.Public
             {
                 appName = "openproject",
                 deploymentVersion = 1,
+                envVars = new Dictionary<string, string>
+                {
+                    { "POSTGRES_PASSWORD", "{postgres_password}" }
+                },
                 deploymentScriptSet = new DeploymentScriptSet()
                 {
                     deploymentScript = new DeployScript[2]

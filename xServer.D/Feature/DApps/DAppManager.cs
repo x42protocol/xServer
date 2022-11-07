@@ -83,7 +83,7 @@ namespace x42.Feature.DApps
 
             Console.WriteLine("DEBUG: file: " + composeFile);
 
-            var EnvironmentVariables = ToENVStringArray(deploymentModel.EnvVars).Select(s => SubsituteArgs(s, deploymentModel.Args)).ToArray();
+            var EnvironmentVariables = ToENVStringArray(dappDefinitionModel.envVars).Select(s => SubsituteArgs(s, deploymentModel.Args)).ToArray();
 
             using (var svc = new Builder()
                               .UseContainer()

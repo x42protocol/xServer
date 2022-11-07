@@ -19,6 +19,7 @@ namespace x42.Feature.DApps.Models
         public string description { get; set; }
         public string imageURL { get; set; }
         public int deploymentVersion { get; set; }
+        public Dictionary<string, string> envVars { get; set; }
         public DeploymentScriptSet deploymentScriptSet { get; set; }
         public File[] files { get; set; }
     }
