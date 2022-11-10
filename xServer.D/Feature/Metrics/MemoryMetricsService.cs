@@ -24,7 +24,6 @@ namespace x42.Feature.Metrics
         }
         public MemoryMetrics GetMetrics()
         {
-            Console.WriteLine();
             if (RuntimeInformationService.IsUnix())
             {
                 return GetUnixMetrics();
