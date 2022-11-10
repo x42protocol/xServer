@@ -27,10 +27,10 @@ COPY ["xServer.D/xServerD.csproj", "xServer.D/"]
 RUN dotnet restore "xServer.D/xServerD.csproj"
 COPY . .
 WORKDIR "/src/xServer.D"
-RUN dotnet build "xServerD.csproj" -r linux-x64 -c Debug -o /app/build  -p:ImportByWildcardBeforeSolution=false
+RUN dotnet build "xServerD.csproj" -r linux-x64 -c Release -o /app/build  -p:ImportByWildcardBeforeSolution=false
 
 FROM build AS publish
-RUN dotnet publish "xServerD.csproj" -c Debug  -r linux-x64 -v m  -o /app/publish /p:ImportByWildcardBeforeSolution=false
+RUN dotnet publish "xServerD.csproj" -c Release  -r linux-x64 -v m  -o /app/publish /p:ImportByWildcardBeforeSolution=false
 
 FROM base AS final
 WORKDIR /app

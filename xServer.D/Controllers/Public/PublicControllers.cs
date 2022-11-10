@@ -17,9 +17,9 @@ using x42.Feature.WordPressPreview.Models;
 using x42.Feature.Metrics;
 using x42.Feature.XDocuments;
 using x42.Feature.Metrics.Models;
-using x42.Feature.DApps;
-using x42.Feature.DApps.Models;
 using Newtonsoft.Json;
+using Common.Services;
+using Common.Models.DApps.Models;
 
 namespace x42.Controllers.Public
 {
@@ -38,7 +38,7 @@ namespace x42.Controllers.Public
         private readonly WordPressPreviewFeature _wordPressPreviewFeature;
         private readonly MetricsFeature _metricsFeature;
         private readonly XDocumentClient _xDocumentService;
-        private readonly DAppManager _dApps;
+        private readonly IDappProvisioner _dApps;
 
         public PublicController(
             XServer xServer,
@@ -48,7 +48,7 @@ namespace x42.Controllers.Public
             WordPressPreviewFeature wordPressPreviewFeature,
             MetricsFeature metricsFeature,            
             XDocumentClient xDocumentService,
-            DAppManager dApps)
+            IDappProvisioner dApps)
         {
             _xServer = xServer;
             _profileFeature = profileFeature;
@@ -519,13 +519,20 @@ namespace x42.Controllers.Public
         }
 
 
-        [HttpGet("my-zones")]
-        public async Task<IActionResult> GetZoneForKeyAddress(string keyAddress )
+        [HttpGet("zones-by-key-address")]
+        public IActionResult GetZonesForKeyAddress(string keyAddress)
         {
             return Ok(_xDocumentService.GetZonesByKeyAddress(keyAddress));
         }
+
+        [HttpGet("zone-records")]
+        public IActionResult GetZoneRecordss(string zone)
+        {
+            return Ok(_xDocumentService.GetZoneRecords(zone));
+        }
+
         [HttpGet("zone-exists")]
-        public async Task<IActionResult> ZoneExists(string zone)
+        public IActionResult ZoneExists(string zone)
         {
             return Ok(_xDocumentService.ZoneExists(zone));
         }

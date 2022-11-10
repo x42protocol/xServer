@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace x42.Feature.DApps.Models
+namespace Common.Models.DApps.Models
 {
     /// <summary>
     /// 

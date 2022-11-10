@@ -59,13 +59,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration\Settings\" />
+    <Folder Include="Feature\DApps\Models\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

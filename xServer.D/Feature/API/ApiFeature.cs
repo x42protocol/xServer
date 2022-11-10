@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using x42.Feature.Setup;
 using x42.ServerNode;
 using x42.Server;
+using Common.Services;
 
 namespace x42.Feature.Api
 {
@@ -142,6 +143,8 @@ namespace x42.Feature.Api
                         services.AddSingleton(options);
                         services.AddSingleton<ApiSettings>();
                         services.AddSingleton<ICertificateStore, CertificateStore>();
+                        services.AddSingleton<IDappProvisioner, DappProvisioner>();
+
                     });
             });
 
