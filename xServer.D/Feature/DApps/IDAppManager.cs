@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using x42.Feature.DApps.Models;
+﻿using Common.Models.DApps.Models;
+using System.Threading.Tasks;
 
 namespace x42.Feature.DApps
 {

@@ -54,7 +54,7 @@ namespace x42.Feature.XDocuments
 
 
 #if DEBUG
-            _client = new MongoClient($"mongodb://mongo:mongo@localhost:27017");
+            _client = new MongoClient($"mongodb://localhost:27017");
 #else
             _client = new MongoClient(mongoConnectionString);
 #endif

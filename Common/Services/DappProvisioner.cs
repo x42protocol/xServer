@@ -1,28 +1,29 @@
-﻿using Common.Models.DApps.Models;
-using Ductus.FluentDocker.Builders;
-using Ductus.FluentDocker.Commands;
+﻿using Ductus.FluentDocker.Commands;
 using Ductus.FluentDocker.Model.Common;
 using Ductus.FluentDocker.Services;
-using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
-using Mono.Unix;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Mono.Unix;
+using Common.Models.DApps.Models;
 using File = System.IO.File;
+using Microsoft.Extensions.Logging;
+using Ductus.FluentDocker.Builders;
 
-namespace x42.Feature.DApps
+
+namespace Common.Services
 {
-    public class DAppManager : IDAppManager
+    public class DappProvisioner : IDappProvisioner
     {
         private IHostService _docker;
         private readonly ILogger logger;
 
-        public DAppManager(ILoggerFactory loggerFactory)
+
+        public DappProvisioner(ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger(GetType().FullName);
 
@@ -33,25 +34,6 @@ namespace x42.Feature.DApps
             var result = _docker.Host.Version(_docker.Certificates);
             logger.LogInformation(result.Data.ToString());
         }
-        public DAppManager()
-        {
-
-        }
-
-        public Task DeleteAppAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task FullBackupAppAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task MigrateAppAsync()
-        {
-            throw new NotImplementedException();
-        }
 
 
         public Task ProvisionNewAppAsync(DappDefinitionModel dappDefinitionModel, DappDeploymentModel deploymentModel)
@@ -59,7 +41,7 @@ namespace x42.Feature.DApps
 
             var dappFolder = GenerateDAppFolders(dappDefinitionModel);
 
-            foreach (var preScript in dappDefinitionModel.deploymentScriptSet.deploymentScript.Where(_ => _.preContainer == true).OrderBy(_=>_.seq))
+            foreach (var preScript in dappDefinitionModel.deploymentScriptSet.deploymentScript.Where(_ => _.preContainer == true).OrderBy(_ => _.seq))
             {
                 var args = $"{dappFolder}/{SubsituteArgs(preScript.path, deploymentModel.Args)}/{preScript.filename} {ToStringArgs(deploymentModel.Args)}";
                 ProcessStartInfo preInfo = new ProcessStartInfo()
@@ -74,7 +56,7 @@ namespace x42.Feature.DApps
 
             var dockerFileDefinition = dappDefinitionModel.deploymentScriptSet.deploymentScript.Where(_ => _.composeScript == true).FirstOrDefault();
 
-            var composeFile = Path.Combine(Directory.GetCurrentDirectory(),(TemplateString)$"{dappFolder}/{SubsituteArgs(dockerFileDefinition.path, deploymentModel.Args)}/{dockerFileDefinition.filename}"); ;
+            var composeFile = Path.Combine(Directory.GetCurrentDirectory(), (TemplateString)$"{dappFolder}/{SubsituteArgs(dockerFileDefinition.path, deploymentModel.Args)}/{dockerFileDefinition.filename}"); ;
 
             Console.WriteLine("DEBUG: file: " + composeFile);
 
@@ -113,7 +95,8 @@ namespace x42.Feature.DApps
             return string.Join(" ", dictionary.Select(kv => kv.Value));
         }
 
-        private string[] ToENVStringArray(IDictionary<string, string> dictionary) {
+        private string[] ToENVStringArray(IDictionary<string, string> dictionary)
+        {
             return dictionary.Select(item => string.Format("{0}={1}", item.Key.ToUpper(), item.Value))
                     .ToArray();
         }
@@ -155,14 +138,14 @@ namespace x42.Feature.DApps
                         fs.Write(fileContent, 0, fileContent.Length);
                     }
 
-                    GrantAccess(path,file.permissions);
+                    GrantAccess(path, file.permissions);
 
                 };
 
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, ex.Message);
+                logger.LogError(ex.Message);
                 throw;
             }
 
@@ -180,8 +163,5 @@ namespace x42.Feature.DApps
         }
 
 
-
     }
-
-
 }

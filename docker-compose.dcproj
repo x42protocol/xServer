@@ -11,6 +11,7 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="x42.conf" />
     <None Include="xServer.conf" />
   </ItemGroup>
 </Project>

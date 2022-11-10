@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration\Settings\" />
+    <Folder Include="Feature\DApps\Models\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
