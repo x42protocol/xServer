@@ -34,6 +34,7 @@ jobs:
       XSERVER_BUILD_CONFIGURATION: 'Release'
       UI_PATH: './xServer.UI/'
       XSERVER_PATH: './xServer.D/'
+      XSERVERWORKER_PATH: './xServerWorker/'
       ARCH: 'x64'
 
     steps:
@@ -88,4 +89,22 @@ jobs:
         file: ${{ env.XSERVER_PATH }}/Dockerfile
         push: true
         tags: x42protocoldocker/x42serverd:latest,x42protocoldocker/x42serverd:v${{ env.XSERVER_VERSION }}
+
+    - name: Build and push x42ServerWorker
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: ${{ env.XSERVERWORKER_PATH }}/Dockerfile
+        push: true
+        tags: x42protocoldocker/x42serverworker:latest,x42protocoldocker/x42serverworker:v${{ env.XSERVER_VERSION }}
+
+    - name: Build and push x42BlockCoreNode
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: Dockerfile-BlockCoreNode
+        build-args: |
+          BCNODE_VERSION=${{ env.BLOCKCORE_DAEMON_VERSION }}
+        push: true
+        tags: x42protocoldocker/x42blockcorenode:latest,x42protocoldocker/x42blockcorenode:v${{ env.BLOCKCORE_DAEMON_VERSION }}
 
