@@ -10,7 +10,8 @@
       "commandLineArgs": "-testnet"
     },
     "Docker": {
-      "commandName": "Docker"
+      "commandName": "Docker",
+      "commandLineArgs": "-v /var/run/docker.sock:/var/run/docker.sock"
     }
   }
 }

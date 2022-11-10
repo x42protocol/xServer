@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: xServer.D/Dockerfile
       target: debug
+    environment:
+        MONGOCONNECTIONSTRING: mongodb://mongo:mongo@mongo:27017
     ports:
       - "42220:42220"  
       - "4242:4242" 
@@ -13,6 +15,10 @@ services:
       - type: bind
         source: ./xServer.conf
         target: /root/.xserverdata/main/xServer.conf
+      - type: bind
+        source: ./xServer.D/dapps/
+        target: /app/dapps/
+      - "/var/run/docker.sock:/var/run/docker.sock"
     depends_on:
       - "mongo"
       - "postgres"
@@ -22,6 +28,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - '27017:27017'
 
   postgres:
       image: postgres:14.2-alpine3.15
@@ -29,4 +37,6 @@ services:
       environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
-        - POSTGRES_DB=postgres
+        - POSTGRES_DB=x42
+      ports:
+        - '5432:5432'

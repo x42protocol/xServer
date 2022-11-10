@@ -54,7 +54,7 @@ namespace x42.Feature.XDocuments
 
 
 #if DEBUG
-            _client = new MongoClient($"mongodb://localhost:27017");
+            _client = new MongoClient($"mongodb://mongo:mongo@localhost:27017");
 #else
             _client = new MongoClient(mongoConnectionString);
 #endif
@@ -310,6 +310,34 @@ namespace x42.Feature.XDocuments
                 throw new Exception(validationResults.FirstOrDefault().ErrorMessage);
 
             }
+        }
+
+
+        public List<String> GetDAppByName(string name, string version)
+        {
+            var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("dapps");
+            var filter = Builders<BsonDocument>.Filter.Eq("name", name)
+                         & Builders<BsonDocument>.Filter.Eq("version", version);
+
+            var dapps = xDocumentDictionaryCollection.Find(filter).ToList();
+            var result = new List<string>();
+            foreach (var dapp in dapps)
+            {
+                result.Add(dapp["dapp"].ToString());
+            }
+            return result.ToList();
+        }
+
+        public List<String> GetDAppsList()
+        {
+            var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("dapps");
+            var dapps = xDocumentDictionaryCollection.Find(_ => true).ToList();
+            var result = new List<string>();
+            foreach (var dapp in dapps)
+            {
+                result.Add(dapp["dapps"].ToString());
+            }
+            return result.ToList();
         }
 
     }

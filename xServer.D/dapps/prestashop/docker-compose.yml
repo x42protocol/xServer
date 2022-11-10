@@ -1,0 +1,62 @@
+version: '3'
+services:
+  mysql:
+    image: mariadb:10.5.9
+    command: --max_allowed_packet=256M --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - "./data/db:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    restart: always
+    networks:
+      #domain#:
+        aliases:
+          - #domain#
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 5
+
+  litespeed:
+    image: litespeedtech/litespeed:${LSWS_VERSION}-${PHP_VERSION}
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.#domain#.rule=Host(`#DOMAIN#`)"
+      - "traefik.http.routers.#domain#.entrypoints=websecure"
+      - "traefik.http.services.#domain#.loadbalancer.server.port=80"
+      - "traefik.http.routers.#domain#.tls.certresolver=myresolver"
+    volumes:
+        - ./lsws/conf:/usr/local/lsws/conf
+        - ./lsws/admin/conf:/usr/local/lsws/admin/conf
+        - ./bin/container:/usr/local/bin
+        - ./sites:/var/www/vhosts/
+        - ./acme:/root/.acme.sh/
+        - ./logs:/usr/local/lsws/logs/
+
+    restart: always
+    networks:
+      proxy:
+        aliases:
+          - proxy
+      #domain#:
+        aliases:
+          - #domain#
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      TZ: ${TimeZone}
+
+networks:
+  proxy:
+    external: true
+    name: proxy
+  #domain#:
+    external: false
+    name: #domain#
