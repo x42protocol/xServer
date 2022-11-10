@@ -513,13 +513,20 @@ namespace x42.Controllers.Public
         }
 
 
-        [HttpGet("my-zones")]
-        public async Task<IActionResult> GetZoneForKeyAddress(string keyAddress )
+        [HttpGet("zones-by-key-address")]
+        public IActionResult GetZonesForKeyAddress(string keyAddress)
         {
             return Ok(_xDocumentService.GetZonesByKeyAddress(keyAddress));
         }
+
+        [HttpGet("zone-records")]
+        public IActionResult GetZoneRecordss(string zone)
+        {
+            return Ok(_xDocumentService.GetZoneRecords(zone));
+        }
+
         [HttpGet("zone-exists")]
-        public async Task<IActionResult> ZoneExists(string zone)
+        public IActionResult ZoneExists(string zone)
         {
             return Ok(_xDocumentService.ZoneExists(zone));
         }

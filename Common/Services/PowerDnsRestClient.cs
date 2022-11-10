@@ -6,8 +6,13 @@ using MongoDB.Driver;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace xServerWorker.Services
+namespace Common.Services
 {
     public class PowerDnsRestClient
     {
@@ -123,52 +128,42 @@ namespace xServerWorker.Services
         {
 
             string zone = (string)dynamicObject["data"]["zone"];
-            var zoneDocumentCollection = _db.GetCollection<BsonDocument>("DnsZones");
+            var zoneDocumentCollection = _db.GetCollection<ZoneDocumentModel>("DnsZones");
 
-            var filter = Builders<BsonDocument>.Filter.Eq("zone", zone);
+            var filter = Builders<ZoneDocumentModel>.Filter.Eq("zone", zone);
             var zoneDocument = zoneDocumentCollection.Find(filter).FirstOrDefault();
 
+            var keyAddress = dynamicObject["keyAddress"];
 
-            if (zoneDocument == null)
+            var json = "";
+            try
             {
-
                 var client = new RestClient(_powerDnsHost);
-                var request = new RestRequest($"/api/v1/servers/localhost/zones/"+ zone, Method.Patch);
+                var request = new RestRequest($"/api/v1/servers/localhost/zones/" + zone, Method.Patch);
                 request.AddHeader("X-API-Key", _powerDnsApiKey);
                 request.AddHeader("content-type", "application/json");
 
- 
+
                 var serializerSettings = new JsonSerializerSettings();
                 serializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                var json = JsonConvert.SerializeObject(rrSets, serializerSettings);
+                json = JsonConvert.SerializeObject(new RrSetUpdateModel(rrSets), serializerSettings);
 
                 request.AddJsonBody(json);
-                await client.ExecuteAsync(request);
-
-
-                var updateZoneDocument = JsonConvert.DeserializeObject<dynamic>(zoneDocument.ToString());
-
-                var Id = Guid.NewGuid();
-
-
-                updateZoneDocument._id = Id;
-                updateZoneDocument.blockConfirmed = blockHeight;
-                updateZoneDocument.rrSets = rrSets;
-
-                dynamic insertZoneDocument = GetBsonFromDynamic(updateZoneDocument);
-
-                zoneDocumentCollection.InsertOne(insertZoneDocument);
-
-
+                var x = await client.ExecuteAsync(request);
             }
-
-            else
+            catch (Exception e)
             {
 
-                throw new Exception("Owned Elsewhere");
-
+                throw;
             }
 
+
+            zoneDocument.BlockConfirmed = blockHeight;
+            zoneDocument.RrSets = rrSets.Select(l => new RrSetModel(l)).ToList();
+
+            var upfdatefilter = Builders<ZoneDocumentModel>.Filter.Eq(s => s.Id, zoneDocument.Id);
+
+            await zoneDocumentCollection.ReplaceOneAsync(upfdatefilter, zoneDocument);
 
 
 

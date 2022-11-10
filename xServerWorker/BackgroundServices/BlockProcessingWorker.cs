@@ -14,6 +14,8 @@ using xServerWorker.Services;
 using MongoDB.Driver.Builders;
 using Common.Models.XDocuments.Zones;
 using Common.Models.XServer;
+using Common.Services;
+using System.Linq.Expressions;
 
 namespace xServerWorker.BackgroundServices
 {
@@ -241,12 +243,11 @@ namespace xServerWorker.BackgroundServices
 
                             try
                             {
-                                //if (paidToMyFeeAddress)
-                                //{
+                                
 
-                                    await ProcessInstruction(document, xDocumentPendingCollection, amount, block.Height);
+                                    await ProcessInstruction(document, xDocumentPendingCollection, amount,paidToMyFeeAddress, block.Height);
 
-                                //}
+                                 
 
                             }
                             catch (Exception e)
@@ -264,7 +265,7 @@ namespace xServerWorker.BackgroundServices
             latestBlockProcessed++;
         }
 
-        private async Task ProcessInstruction(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, double amountPaid, int blockHeight)
+        private async Task ProcessInstruction(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, double amountPaid, bool paidToMyFeeAddress, int blockHeight)
         {
             if (document != null)
             {
@@ -273,18 +274,18 @@ namespace xServerWorker.BackgroundServices
                 string _keyAddress = dynamicObject["keyAddress"];
 
                 var data = dynamicObject["data"];
-
+ 
 
                 switch (instructionType)
                 {
                     case (int)InstructionTypeEnum.NewDnsZone:
 
-                        await NewDnsZone(document, xDocumentPendingCollection, dynamicObject, blockHeight);
+                        await NewDnsZone(document, xDocumentPendingCollection, dynamicObject, blockHeight, amountPaid, paidToMyFeeAddress);
 
                         break;
                     case (int)InstructionTypeEnum.UpdateDnsZone:
 
-                        await UpdateDnsZone(document, xDocumentPendingCollection, dynamicObject, blockHeight, data.rrSets);
+                        await UpdateDnsZone(document, xDocumentPendingCollection, dynamicObject, blockHeight);
 
                         break;
 
@@ -310,15 +311,19 @@ namespace xServerWorker.BackgroundServices
             }
         }
 
-        public async Task UpdateDnsZone(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, dynamic dynamicObject, int blockHeight, List<RrSet> rrSets)
+        public async Task UpdateDnsZone(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, dynamic dynamicObject, int blockHeight)
         {
             if (dynamicObject != null)
             {
-                string zone = (string)dynamicObject["data"]["zone"];
 
 
-                _logger.LogInformation($"New Zone Instruction Found");
-                _logger.LogInformation($"Creating DNS Zone");
+                _logger.LogInformation($"Update Zone Instruction Found");
+                _logger.LogInformation($"Updating DNS Zone");
+
+                string zone = dynamicObject["data"]["zone"];
+                var rrSetsData = dynamicObject["data"]["rrsets"];
+
+                var rrSets = JsonConvert.DeserializeObject<List<RrSet>>(rrSetsData.ToString());
 
                 var zoneUpdate = false;
 
@@ -345,12 +350,11 @@ namespace xServerWorker.BackgroundServices
             }
         }
 
-        private async Task NewDnsZone(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, dynamic dynamicObject, int blockHeight)
+        private async Task NewDnsZone(BsonDocument document, IMongoCollection<BsonDocument> xDocumentPendingCollection, dynamic dynamicObject, int blockHeight, double amountPaid, bool paidToMyFeeAddress)
         {
             if (dynamicObject != null)
             {
                 string zone = (string)dynamicObject["data"]["zone"];
-
 
                 _logger.LogInformation($"New Zone Instruction Found");
                 _logger.LogInformation($"Creating DNS Zone");
@@ -477,6 +481,25 @@ namespace xServerWorker.BackgroundServices
                 raw[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
             }
             return raw;
+        }
+
+        private decimal GetFee(InstructionTypeEnum instructionTypeEnum)
+        {
+
+            switch (instructionTypeEnum)
+            {
+                case InstructionTypeEnum.NewDnsZone:
+                    return 2;
+
+                case InstructionTypeEnum.UpdateDnsZone:
+                    return 0.5m;
+
+                default:
+                    return 0;
+
+            }
+
+
         }
     }
 }

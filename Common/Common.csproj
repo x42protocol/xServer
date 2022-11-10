@@ -18,8 +18,10 @@
 
   <ItemGroup>
     <PackageReference Include="MongoDB.Bson" Version="2.17.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
     <PackageReference Include="NBitcoin" Version="5.0.65" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="RestSharp" Version="108.0.1" />
   </ItemGroup>
 
 </Project>
