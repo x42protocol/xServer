@@ -1,3 +1,4 @@
+using Common.Services;
 using xServerWorker;
 using xServerWorker.BackgroundServices;
 using xServerWorker.Services;
@@ -8,6 +9,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHostedService<BlockProcessingWorker>();
         try
         {
+            services.AddSingleton<PowerDnsRestClient, PowerDnsRestClient>();
 
         }
         catch (Exception)

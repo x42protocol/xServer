@@ -62,7 +62,7 @@ namespace x42.Feature.XDocuments
                         services.AddSingleton<PowerDnsFeature>();
                         services.AddSingleton<X42ClientFeature>();
                         services.AddSingleton<X42ClientSettings>();
-
+ 
 
                     });
             });

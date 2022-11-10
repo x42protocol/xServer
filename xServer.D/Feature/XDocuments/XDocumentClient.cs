@@ -1,5 +1,6 @@
 ﻿using Common.Models.Graviex;
 using Common.Models.OrderBook;
+using Common.Models.XDocuments.Zones;
 using Common.Utils;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -221,7 +222,7 @@ namespace x42.Feature.XDocuments
         public List<string> GetZonesByKeyAddress(string keyAddress)
         {
 
-            var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("zones");
+            var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("DnsZones");
             var filter = Builders<BsonDocument>.Filter.Eq("keyAddress", keyAddress);
             var zones = xDocumentDictionaryCollection.Find(filter).ToList();
             var result = new List<string>();
@@ -234,6 +235,26 @@ namespace x42.Feature.XDocuments
 
             return result.ToList();
 
+        }
+
+        public List<RrSet> GetZoneRecords(string zone)
+        {
+
+            var xDocumentDictionaryCollection = _db.GetCollection<BsonDocument>("DnsZones");
+            var filter = Builders<BsonDocument>.Filter.Eq("zone", zone);
+            var zoneEntry = xDocumentDictionaryCollection.Find(filter).FirstOrDefault();
+
+            var rrsets = zoneEntry["rrSets"].ToString();
+
+            if(rrsets == null)
+            {
+
+                return new List<RrSet>();
+            }
+
+            return JsonConvert.DeserializeObject<List<RrSet>>(rrsets);
+
+ 
         }
 
         public bool ZoneExists(string zone)
