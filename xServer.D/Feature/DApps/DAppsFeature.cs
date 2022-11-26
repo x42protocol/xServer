@@ -24,7 +24,7 @@ namespace x42.Feature.DApps
 
         public DAppsFeature(ILoggerFactory loggerFactory)
         {
-
+            logger = loggerFactory.CreateLogger(GetType().FullName);
 
         }
         public override Task InitializeAsync()
