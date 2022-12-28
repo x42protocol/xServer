@@ -1,7 +1,7 @@
 {
 	"name": "x-server-ui",
 	"description": "x42 Server",
-	"version": "4.0.8",
+	"version": "4.0.9",
 	"bc_version": "1.1.43",
 	"license": "MIT",
 	"author": {
