@@ -3,6 +3,12 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 
+RUN apt-get update \
+ && apt-get install -y procps docker.io curl ca-certificates gnupg lsb-release
+
+RUN curl -SL https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+RUN ["chmod", "+x", "/usr/local/bin/docker-compose"]
+
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["xServerWorker/xServerWorker.csproj", "xServerWorker/"]
