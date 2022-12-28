@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  xserverd:
+  x42server:
     build:
       context: .
       dockerfile: xServer.D/Dockerfile
@@ -25,9 +25,9 @@ services:
       context: .
       dockerfile: xServerWorker/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+
-      - MONGOCONNECTIONSTRING=${MONGOCONNECTIONSTRING}
+      - MONGOCONNECTIONSTRING=mongodb://mongo:mongo@mongo:27017
     restart: always
     depends_on:
       - "mongo"
@@ -36,7 +36,7 @@ services:
   x42core:
     image: x42protocoldocker/x42blockcorenode:v1.1.43
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+
     command: --chain=x42 -txindex=1 -addressindex=1
     restart: always

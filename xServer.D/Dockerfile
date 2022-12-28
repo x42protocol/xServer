@@ -9,18 +9,6 @@ RUN apt-get update \
 RUN curl -SL https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
 RUN ["chmod", "+x", "/usr/local/bin/docker-compose"]
 
-#RUN mkdir -p /etc/apt/keyrings
-#RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-#RUN echo \
-#  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-#  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-#RUN apt-get update \
-#	&& apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-
-RUN echo 'alias docker-compose="docker compose"' >> ~/.bashrc
-
-
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["xServer.D/xServerD.csproj", "xServer.D/"]

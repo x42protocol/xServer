@@ -26,14 +26,7 @@ namespace xServerWorker.BackgroundServices
         private readonly ILogger<BlockProcessingWorker> _logger;
         private static int latestBlockProcessed = 1910000;
 
-#if DEBUG
-        private readonly RestClient _restClient = new RestClient("http://localhost:42220/api/");
-#else
         private readonly RestClient _restClient = new RestClient("http://x42core:42220/api/");
-#endif
-
-
-
 
         private readonly MongoClient _client;
         private readonly IMongoDatabase _db;
@@ -59,20 +52,13 @@ namespace xServerWorker.BackgroundServices
 
 
 
-#if DEBUG
-            _powerDnsHost = "https://poweradmin.xserver.network";
-            _powerDnsApiKey = "cmp4V1Z0MnprRVRMbE10";
-            _xServerHost = "http://127.0.0.1:4242/";
-            _client = new MongoClient($"mongodb://localhost:27017");
-
-
-#else
+            if(Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") == "Development") { 
+                _powerDnsHost = "https://poweradmin.xserver.network";
+                _powerDnsApiKey = "cmp4V1Z0MnprRVRMbE10";
+                _xServerHost = "http://127.0.0.1:4242/";
+                //_client = new MongoClient($"mongodb://mongo:mongo@localhost:27017");
+            }
             _client = new MongoClient(mongoConnectionString);
-            //_xServerHost = Environment.GetEnvironmentVariable("XSERVER_BACKEND") ?? "";
-
-#endif
-
-
 
             _db = _client.GetDatabase("xServerDb");
 
