@@ -6,7 +6,9 @@ services:
       context: .
       dockerfile: xServer.D/Dockerfile
     environment:
-        MONGOCONNECTIONSTRING: mongodb://mongo:mongo@mongo:27017
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+
+      - MONGOCONNECTIONSTRING=mongodb://mongo:mongo@mongo:27017
     ports:
       - "4242:4242" 
     volumes:
@@ -30,8 +32,10 @@ services:
       - MONGOCONNECTIONSTRING=mongodb://mongo:mongo@mongo:27017
     restart: always
     depends_on:
-      - "mongo"
-      - "postgres"
+      mongo:
+        condition: service_healthy
+      x42core:
+        condition: service_healthy
 
   x42core:
     image: x42protocoldocker/x42blockcorenode:v1.1.43
@@ -52,6 +56,11 @@ services:
         target: /root/.blockcore/x42/x42Main/x42.conf
       - xcoredata:/root/.blockcore/x42
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    healthcheck:
+      test: "curl -f localhost:42220/ping"
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
     expose:
       - 42220
@@ -64,6 +73,12 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: mongo
     ports:
       - '27017:27017'
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   postgres:
       image: postgres:14.2-alpine3.15
