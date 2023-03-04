@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Ductus.FluentDocker" Version="2.10.57" />
     <PackageReference Include="MongoDB.Bson" Version="2.17.1" />
-    <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
     <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
     <PackageReference Include="NBitcoin" Version="5.0.65" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
