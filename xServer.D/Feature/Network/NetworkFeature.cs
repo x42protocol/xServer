@@ -438,8 +438,8 @@ namespace x42.Feature.Network
                 {
                     var newRecord = dbContext.Profiles.Add(profileData);
 
-                    _profileRepository.Add(new XServerProfile(profileData));
-                    await _unitOfWork.Commit();
+                  //  _profileRepository.Add(new XServerProfile(profileData));
+                  //  await _unitOfWork.Commit();
                     if (newRecord.State == EntityState.Added)
                     {
                         var saved = dbContext.SaveChanges();
