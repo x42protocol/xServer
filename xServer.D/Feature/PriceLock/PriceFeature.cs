@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using x42.Utilities.Extensions;
 using x42.Feature.X42Client.RestClient.Responses;
 using static x42.ServerNode.Tier;
+using Newtonsoft.Json.Linq;
 
 namespace x42.Feature.PriceLock
 {
@@ -56,7 +57,7 @@ namespace x42.Feature.PriceLock
         private readonly XServer xServer;
 
         /// <summary>Time in seconds between attempts to update my x42/pair price</summary>
-        private readonly int updateMyPriceSeconds = 600;
+        private readonly int updateMyPriceSeconds = 60;
 
         /// <summary>Time in seconds between attempts to update network x42/pair price</summary>
         private readonly int updateNetworkPriceSeconds = 1800;
@@ -481,14 +482,39 @@ namespace x42.Feature.PriceLock
         private async Task UpdateMyPriceList(CancellationToken cancellationToken)
         {
             // TODO: Add a configuration option for the users to add thier own API to get the prices.
+
+            string fiatPairList = string.Empty;
             foreach (var fiatPair in FiatPairs)
             {
-                var coinGeckoPriceResult = await GetCoinGeckoPrice(cancellationToken, fiatPair.Currency);
-                if (coinGeckoPriceResult != null)
+                fiatPairList += fiatPair.Currency.ToString().ToLower() + ",";
+            }
+
+            var coinGeckoPriceResultAsJson = await GetCoinGeckoPriceForAll(cancellationToken, fiatPairList);
+
+            var json = JObject.Parse(coinGeckoPriceResultAsJson);
+            var prices = GetFiatCurrencyPrices(json["x42-protocol"]);
+
+            foreach (var price in prices)
+            {
+                FiatPairs.Find(x => x.Currency == price.Key).AddMyPrice(price.Value);
+            }
+
+        }
+
+        static Dictionary<FiatCurrency, decimal> GetFiatCurrencyPrices(JToken json)
+        {
+            var prices = new Dictionary<FiatCurrency, decimal>();
+
+            foreach (FiatCurrency currency in Enum.GetValues(typeof(FiatCurrency)))
+            {
+                var currencyCode = currency.ToString().ToLower();
+                if (json[currencyCode] != null)
                 {
-                    fiatPair.AddMyPrice(coinGeckoPriceResult.X42Protocol.Price);
+                    prices[currency] = json[currencyCode].Value<decimal>();
                 }
             }
+
+            return prices;
         }
 
         /// <summary>
@@ -595,17 +621,20 @@ namespace x42.Feature.PriceLock
             return priceResult;
         }
 
-        private async Task<CoinGeckoPriceResult> GetCoinGeckoPrice(CancellationToken cancellationToken, FiatCurrency currency)
+        private async Task<string> GetCoinGeckoPriceForAll(CancellationToken cancellationToken, string currency)
         {
             var client = new RestClient("https://api.coingecko.com/api/v3/simple/");
             var request = new RestRequest($"price?ids=x42-protocol&vs_currencies={currency}", Method.Get);
-            var response = await client.ExecuteAsync<CoinGeckoPriceResult>(request, cancellationToken);
+            var response = await client.ExecuteAsync(request, cancellationToken);
             if (response.ErrorException != null)
             {
+
                 const string message = "Error retrieving response from CoinGecko. Check inner details for more info.";
+
                 throw new Exception(message, response.ErrorException);
             }
-            return response.Data;
+
+            return response.Content;
         }
     }
 
